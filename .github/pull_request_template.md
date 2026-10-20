@@ -13,5 +13,6 @@
 - [ ] `pnpm lint:landing` and `pnpm lint:admin` pass
 - [ ] `pnpm build:landing` and `pnpm build:admin` pass
 - [ ] Dependencies added with `pnpm add` and `pnpm-lock.yaml` committed
+- [ ] Change is scoped to the task; new files, dependencies and abstractions are justified (AGENTS.md, Codebase discipline)
 - [ ] No secrets, API keys or `.env` files committed
 - [ ] Checked in light and dark mode, and at phone width

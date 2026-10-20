@@ -7,3 +7,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Codebase discipline
+
+Applies to every change, by any agent or contributor.
+
+- Inspect and reuse existing functionality before adding new code.
+- Keep changes scoped to the requested task.
+- Require a concrete reason for new files, dependencies, abstractions, and configuration.
+- Prefer the simplest maintainable solution; avoid speculative generalization.
+- Preserve correctness, security, and meaningful tests.
+- Review the final diff and run relevant checks before declaring work complete.
+
+The full procedure, including the final bloat review, is in `.claude/skills/codebase-discipline/SKILL.md`. Claude Code loads it as a skill; other agents should read it before declaring work complete.
