@@ -40,3 +40,7 @@ pnpm lint:admin
 pnpm build:landing
 pnpm build:admin
 ```
+
+## License
+
+Copyright (c) 2026 raredevsgh. All rights reserved. The source is publicly visible for reference only; see [LICENSE](LICENSE).
