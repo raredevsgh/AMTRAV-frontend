@@ -181,3 +181,106 @@ export async function evaluateActivation(
     reasons,
   };
 }
+
+export interface AutoAdvanceResult {
+  status: "no_active_sprint" | "sprint_in_progress" | "sprint_advanced" | "all_sprints_complete";
+  activeSprintId?: string;
+  completedSprintId?: string;
+  nextSprintId?: string;
+  openTasks?: string[];
+}
+
+export async function autoAdvanceSprints(
+  file: ValidatedSprintFile,
+  gh: GitHubClient
+): Promise<AutoAdvanceResult> {
+  for (const sprint of file.sprints) {
+    const sprintMarker = sprintIssueMarker(sprint.id);
+    const sprintIssue = await gh.findIssueByMarker(sprintMarker);
+
+    if (!sprintIssue) {
+      // Not proposed yet
+      continue;
+    }
+
+    if (sprintIssue.state === "CLOSED") {
+      // Already completed
+      continue;
+    }
+
+    // Found active open sprint
+    const openTasks: string[] = [];
+    const closedTasks: string[] = [];
+
+    for (const t of sprint.task || []) {
+      if (t.required === false) continue;
+      const tMarker = taskIssueMarker(t.key);
+      const taskIssue = await gh.findIssueByMarker(tMarker);
+
+      if (!taskIssue || taskIssue.state !== "CLOSED") {
+        openTasks.push(t.key);
+      } else {
+        closedTasks.push(t.key);
+      }
+    }
+
+    console.log(`Sprint ${sprint.id}: ${closedTasks.length}/${(sprint.task || []).length} tasks completed.`);
+
+    if (openTasks.length > 0) {
+      console.log(`Sprint ${sprint.id} is still in progress. Remaining tasks: ${openTasks.join(", ")}`);
+      return {
+        status: "sprint_in_progress",
+        activeSprintId: sprint.id,
+        openTasks,
+      };
+    }
+
+    // All tasks completed! Close active sprint and propose next
+    console.log(`All tasks for ${sprint.id} are completed! Closing sprint issue #${sprintIssue.number}...`);
+    await gh.createComment(
+      sprintIssue.number,
+      `🎉 **Sprint Completed**: All tasks for **${sprint.id}** (${sprint.title}) have been completed and verified on \`main\`!\n\nAuto-closing sprint issue and advancing to the next sprint in roadmap.`
+    );
+    await gh.closeIssue(sprintIssue.number, "completed");
+
+    if (sprint.next) {
+      const nextSprint = file.sprints.find((s) => s.id === sprint.next);
+      if (nextSprint) {
+        console.log(`Auto-proposing next sprint: ${nextSprint.id}...`);
+        const res = await proposeSprint(file, nextSprint, gh);
+        console.log(
+          `Auto-advanced to ${nextSprint.id}: Created Sprint Issue #${res.sprintIssueNumber} and ${Object.keys(res.taskIssueNumbers).length} task issues.`
+        );
+        return {
+          status: "sprint_advanced",
+          completedSprintId: sprint.id,
+          nextSprintId: nextSprint.id,
+        };
+      }
+    }
+
+    return {
+      status: "all_sprints_complete",
+      completedSprintId: sprint.id,
+    };
+  }
+
+  // If no open sprint was found, check if first sprint needs to be proposed
+  const firstSprint = file.sprints[0];
+  if (firstSprint) {
+    const firstMarker = sprintIssueMarker(firstSprint.id);
+    const existing = await gh.findIssueByMarker(firstMarker);
+    if (!existing) {
+      console.log(`No active sprint found. Auto-proposing first sprint: ${firstSprint.id}...`);
+      await proposeSprint(file, firstSprint, gh);
+      return {
+        status: "sprint_advanced",
+        nextSprintId: firstSprint.id,
+      };
+    }
+  }
+
+  return {
+    status: "no_active_sprint",
+  };
+}

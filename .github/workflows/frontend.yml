@@ -80,3 +80,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node --experimental-strip-types scripts/autoclose-tasks.ts --commit ${{ github.sha }}
+      - name: Auto-advance sprint if all tasks completed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node --experimental-strip-types scripts/sprint-automation/src/main.ts auto-advance || true

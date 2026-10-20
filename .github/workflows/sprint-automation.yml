@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
     inputs:
       command:
-        description: 'Command to run (validate, propose, activation, evaluate, advance, sync-roadmap)'
+        description: 'Command to run (validate, propose, activation, evaluate, advance, auto-advance, sync-roadmap)'
         required: true
-        default: 'evaluate'
+        default: 'auto-advance'
         type: choice
         options:
           - validate
@@ -20,6 +20,7 @@ on:
           - activation
           - evaluate
           - advance
+          - auto-advance
           - sync-roadmap
       sprint:
         description: 'Sprint ID (e.g. sprint-f0)'
@@ -88,5 +89,5 @@ jobs:
       - name: Reconcile / evaluate on event
         if: github.event_name != 'workflow_dispatch'
         run: |
-          # Default event handling: evaluate sprint-f0
-          pnpm sprint evaluate --sprint sprint-f0 || true
+          # Auto-evaluate active sprint and advance if all tasks completed
+          pnpm sprint auto-advance || true
