@@ -18,7 +18,7 @@ flowchart LR
 
 | Sprint | Title | Risk Level | Status | Primary Output |
 | :--- | :--- | :--- | :--- | :--- |
-| **Sprint F0** | Frontend Contracts, Schema Types & Root App Shell | Level 1 | **Unstarted** | TypeScript DTO schemas, mock adapters, responsive App Shell & MVP routes |
+| **Sprint F0** | Frontend Contracts, Schema Types & Root App Shell | Level 1 | **Proposed** | TypeScript DTO schemas, mock adapters, responsive App Shell & MVP routes |
 | **Sprint F1** | Core Reusable Design System Primitives | Level 1 | **Unstarted** | DataTable, MetricCard, ModalShell, StatusBadge, ExportButton |
 | **Sprint F2** | Overview Dashboard & QR Batch Lifecycle | Level 2 | **Unstarted** | Dashboard KPIs, recent feed, Manufacturer list, batch creation modal & ledger |
 | **Sprint F3** | Inventory Balances & Stock Movement Ledger | Level 2 | **Unstarted** | Stock balance bar, movement ledger, manual count adjustment modal |

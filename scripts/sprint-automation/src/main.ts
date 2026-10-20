@@ -2,8 +2,9 @@ import { resolve } from "node:path";
 import { loadAndValidateSprints } from "./definition.ts";
 import { evaluateSprintCompletion } from "./evaluate.ts";
 import { DryRunGitHubClient, GhCliClient, type GitHubClient } from "./gh.ts";
+import { sprintIssueMarker } from "./markers.ts";
 import { syncRoadmap } from "./sync.ts";
-import { evaluateActivation, proposeSprint } from "./transition.ts";
+import { autoAdvanceSprints, evaluateActivation, proposeSprint } from "./transition.ts";
 
 function parseArgs(args: string[]) {
   const command = args[0] || "help";
@@ -122,6 +123,17 @@ async function main() {
     }
     console.log(`Advancing ${sprint.id}...`);
     // Close sprint issue and propose next
+    const sprintMarker = sprintIssueMarker(sprint.id);
+    const sprintIssue = await gh.findIssueByMarker(sprintMarker);
+    if (sprintIssue && sprintIssue.state !== "CLOSED") {
+      await gh.createComment(
+        sprintIssue.number,
+        `🎉 **Sprint Completed**: Sprint **${sprint.id}** (${sprint.title}) is complete! Closing sprint issue.`
+      );
+      await gh.closeIssue(sprintIssue.number, "completed");
+      console.log(`Closed sprint issue #${sprintIssue.number} for ${sprint.id}`);
+    }
+
     if (sprint.next) {
       const nextSprint = sprintFile.sprints.find((s) => s.id === sprint.next);
       if (nextSprint) {
@@ -130,6 +142,20 @@ async function main() {
       }
     } else {
       console.log(`Sprint ${sprint.id} is the final sprint in roadmap!`);
+    }
+    return;
+  }
+
+  if (command === "auto-advance") {
+    console.log(`Checking sprints for automatic completion and advancement (dryRun: ${dryRun})...`);
+    const res = await autoAdvanceSprints(sprintFile, gh);
+    console.log(`Auto-advance result: ${res.status}`);
+    if (res.status === "sprint_advanced" || res.status === "all_sprints_complete") {
+      try {
+        await syncRoadmap(sprintFile, roadmapPath, gh);
+      } catch (e) {
+        console.warn("Could not sync roadmap file:", e);
+      }
     }
     return;
   }
@@ -148,6 +174,7 @@ Usage:
   pnpm sprint activation --sprint <sprint-id> [--dry-run]
   pnpm sprint evaluate --sprint <sprint-id> [--dry-run]
   pnpm sprint advance --sprint <sprint-id> [--dry-run]
+  pnpm sprint auto-advance [--dry-run]
   pnpm sprint sync-roadmap [--dry-run]
 `);
 }
