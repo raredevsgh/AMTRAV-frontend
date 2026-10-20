@@ -25,9 +25,10 @@ AMTRAV-frontend/
 
 ## Getting Started
 
-Requires Node.js 20+ and pnpm 11 (`packageManager` is pinned in `package.json`).
+Requires Node.js 24 (pinned in `.nvmrc`) and pnpm 11 (pinned in `package.json` as `packageManager`). See [CONTRIBUTING.md](CONTRIBUTING.md) for the full setup and workflow.
 
 ```bash
+corepack enable   # once: use the pinned pnpm version
 pnpm install
 
 # Development servers (both default to port 3000; run one at a time or set PORT)
