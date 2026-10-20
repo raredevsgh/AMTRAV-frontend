@@ -9,6 +9,9 @@
 ## Screenshots
 <!-- For UI changes: before / after, desktop and mobile widths. -->
 
+## Dependencies
+<!-- Required if this changes `pnpm-lock.yaml`: what was added or upgraded, and why. -->
+
 ## Checklist
 - [ ] `pnpm lint:landing` and `pnpm lint:admin` pass
 - [ ] `pnpm build:landing` and `pnpm build:admin` pass
