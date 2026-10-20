@@ -26,6 +26,7 @@ export interface GitHubClient {
   isDryRun: boolean;
   findIssueByMarker(marker: string): Promise<GitHubIssue | null>;
   createIssue(title: string, body: string, assignees: string[], labels: string[]): Promise<number>;
+  updateIssueBody(issueNumber: number, body: string): Promise<void>;
   getComments(issueNumber: number): Promise<GitHubComment[]>;
   createComment(issueNumber: number, body: string): Promise<number>;
   getCommentReactions(commentId: number): Promise<GitHubReaction[]>;
@@ -42,8 +43,11 @@ export class GhCliClient implements GitHubClient {
     this.repo = repo;
   }
 
-  private runGh(cmd: string): string {
-    return execSync(`gh ${cmd} -R ${this.repo}`, { encoding: "utf-8" }).trim();
+  private runGh(cmd: string, input?: string): string {
+    if (cmd.startsWith("api ")) {
+      return execSync(`gh ${cmd}`, { encoding: "utf-8", input }).trim();
+    }
+    return execSync(`gh ${cmd} -R ${this.repo}`, { encoding: "utf-8", input }).trim();
   }
 
   async findIssueByMarker(marker: string): Promise<GitHubIssue | null> {
@@ -59,15 +63,15 @@ export class GhCliClient implements GitHubClient {
   async createIssue(title: string, body: string, assignees: string[], labels: string[]): Promise<number> {
     const assigneeFlags = assignees.length > 0 ? `--assignee "${assignees.join(",")}"` : "";
     const labelFlags = labels.length > 0 ? `--label "${labels.join(",")}"` : "";
-
-    // Escape quotes in body for safe cli passing or write to stdin
     const safeTitle = title.replace(/"/g, '\\"');
-    const safeBody = body.replace(/"/g, '\\"');
-    const output = this.runGh(`issue create --title "${safeTitle}" --body "${safeBody}" ${assigneeFlags} ${labelFlags}`);
-    // Output URL e.g. https://github.com/owner/repo/issues/123
+    const output = this.runGh(`issue create --title "${safeTitle}" --body-file - ${assigneeFlags} ${labelFlags}`, body);
     const match = output.match(/\/issues\/(\d+)$/);
     if (!match) throw new Error(`Could not parse issue number from: ${output}`);
     return parseInt(match[1], 10);
+  }
+
+  async updateIssueBody(issueNumber: number, body: string): Promise<void> {
+    this.runGh(`issue edit ${issueNumber} --body-file -`, body);
   }
 
   async getComments(issueNumber: number): Promise<GitHubComment[]> {
@@ -88,8 +92,7 @@ export class GhCliClient implements GitHubClient {
   }
 
   async createComment(issueNumber: number, body: string): Promise<number> {
-    const safeBody = body.replace(/"/g, '\\"');
-    const output = this.runGh(`issue comment ${issueNumber} --body "${safeBody}"`);
+    const output = this.runGh(`issue comment ${issueNumber} --body-file -`, body);
     const match = output.match(/#issuecomment-(\d+)/);
     return match ? parseInt(match[1], 10) : 0;
   }
@@ -162,6 +165,12 @@ export class DryRunGitHubClient implements GitHubClient {
       assignees: assignees.map((login) => ({ login })),
     });
     return num;
+  }
+
+  async updateIssueBody(issueNumber: number, body: string): Promise<void> {
+    console.log(`[DRY-RUN] Would update Issue #${issueNumber} body`);
+    const iss = this.issues.get(issueNumber);
+    if (iss) iss.body = body;
   }
 
   async getComments(issueNumber: number): Promise<GitHubComment[]> {

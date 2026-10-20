@@ -25,31 +25,34 @@ export async function proposeSprint(
   let sprintIssue = await gh.findIssueByMarker(sprintMarker);
   let sprintIssueNumber: number;
 
+  const bodyLines = [
+    sprintMarker,
+    `## Sprint Objective`,
+    sprint.objective,
+    ``,
+    `### Details`,
+    `- **Risk Level**: Level ${sprint.risk_level}`,
+    `- **Order**: ${sprint.order}`,
+    `- **Effort**: ${sprint.effort || "TBD"}`,
+    `- **Exit Gate**: ${sprint.exit_gate || "Standard exit gate"}`,
+    ``,
+    `### Acceptance Criteria`,
+    ...(sprint.acceptance_criteria || []).map((ac) => `- [ ] ${ac}`),
+    ``,
+    `### Tasks`,
+    ...(sprint.task || []).map((t) => `- [ ] **${t.key}**: ${t.title}`),
+  ];
+  const fullSprintBody = bodyLines.join("\n");
+
   if (sprintIssue) {
     sprintIssueNumber = sprintIssue.number;
-    console.log(`Found existing sprint issue #${sprintIssueNumber} for ${sprint.id}`);
+    await gh.updateIssueBody(sprintIssueNumber, fullSprintBody);
+    console.log(`Updated sprint issue #${sprintIssueNumber} for ${sprint.id}`);
   } else {
     const title = `${sprint.title} (${sprint.id})`;
-    const bodyLines = [
-      sprintMarker,
-      `## Sprint Objective`,
-      sprint.objective,
-      ``,
-      `### Details`,
-      `- **Risk Level**: Level ${sprint.risk_level}`,
-      `- **Order**: ${sprint.order}`,
-      `- **Effort**: ${sprint.effort || "TBD"}`,
-      `- **Exit Gate**: ${sprint.exit_gate || "Standard exit gate"}`,
-      ``,
-      `### Acceptance Criteria`,
-      ...(sprint.acceptance_criteria || []).map((ac) => `- [ ] ${ac}`),
-      ``,
-      `### Tasks`,
-      ...(sprint.task || []).map((t) => `- [ ] **${t.key}**: ${t.title}`),
-    ];
     sprintIssueNumber = await gh.createIssue(
       title,
-      bodyLines.join("\n"),
+      fullSprintBody,
       sprint.assignees,
       ["sprint", `risk:level-${sprint.risk_level}`]
     );
@@ -61,20 +64,22 @@ export async function proposeSprint(
   for (const t of sprint.task || []) {
     const tMarker = taskIssueMarker(t.key);
     const existingTask = await gh.findIssueByMarker(tMarker);
+    const taskTitle = `[${t.key}] ${t.title}`;
+    const taskBody = [
+      tMarker,
+      `Part of Sprint Issue #${sprintIssueNumber} (${sprint.id}).`,
+      ``,
+      `### Task Description`,
+      t.title,
+      ``,
+      `- **Required**: ${t.required !== false ? "Yes" : "No"}`,
+    ].join("\n");
+
     if (existingTask) {
       taskIssueNumbers[t.key] = existingTask.number;
-      console.log(`Found existing task issue #${existingTask.number} for task ${t.key}`);
+      await gh.updateIssueBody(existingTask.number, taskBody);
+      console.log(`Updated task issue #${existingTask.number} for task ${t.key}`);
     } else {
-      const taskTitle = `[${t.key}] ${t.title}`;
-      const taskBody = [
-        tMarker,
-        `Part of Sprint Issue #${sprintIssueNumber} (${sprint.id}).`,
-        ``,
-        `### Task Description`,
-        t.title,
-        ``,
-        `- **Required**: ${t.required !== false ? "Yes" : "No"}`,
-      ].join("\n");
       const num = await gh.createIssue(
         taskTitle,
         taskBody,
