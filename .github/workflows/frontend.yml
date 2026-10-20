@@ -60,3 +60,23 @@ jobs:
           tar -xzf "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -C "$RUNNER_TEMP" gitleaks
       - name: Scan full history for secrets
         run: '"$RUNNER_TEMP/gitleaks" git . --redact --no-banner --verbose'
+
+  autoclose:
+    name: Auto-close verified tasks
+    needs: [lint, build, secrets]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run smart task closer
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node --experimental-strip-types scripts/autoclose-tasks.ts --commit ${{ github.sha }}
