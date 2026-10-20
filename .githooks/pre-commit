@@ -1,0 +1,34 @@
+#!/bin/sh
+# Blocks commits that contain secret files or secrets in staged changes.
+# Enable once per clone: git config core.hooksPath .githooks
+#
+# Fails closed: every blocking path ends in an explicit `exit 1`, and a closed
+# terminal or pipe (SIGPIPE) can never turn a block into a pass.
+set -u
+trap '' PIPE
+
+say() { printf '%s\n' "$*" >&2 || true; }
+
+# 1. Secret files by name. Needs no extra tools. .env.example templates are allowed.
+blocked=$(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -E '(^|/)(\.env(\..+)?|[^/]+\.(pem|key|p12|pfx|jks|keystore)|id_(rsa|dsa|ecdsa|ed25519)[^/]*)$' \
+  | grep -vE '(^|/)\.env\.example$')
+if [ -n "$blocked" ]; then
+  say "pre-commit: refusing to commit secret files:"
+  printf '%s\n' "$blocked" | sed 's/^/  /' >&2 || true
+  say "Unstage them with 'git restore --staged <file>'; they must never be committed."
+  exit 1
+fi
+
+# 2. Secrets inside staged content (API keys, tokens, private keys, passwords).
+if ! command -v gitleaks >/dev/null 2>&1; then
+  say "pre-commit: gitleaks is not installed, so staged changes cannot be scanned for secrets."
+  say "Install it (Windows: winget install Gitleaks.Gitleaks | macOS: brew install gitleaks) and commit again."
+  exit 1
+fi
+if output=$(gitleaks git --pre-commit --staged --redact --no-banner --verbose 2>&1); then
+  exit 0
+fi
+printf '%s\n' "$output" >&2 || true
+say "pre-commit: possible secret in staged changes (details above, values redacted). Commit blocked."
+exit 1

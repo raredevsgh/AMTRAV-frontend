@@ -14,6 +14,12 @@
    ```bash
    pnpm install
    ```
+5. **Secret protection** — install [gitleaks](https://github.com/gitleaks/gitleaks) and enable the repository's pre-commit hook (once per clone):
+   ```bash
+   winget install Gitleaks.Gitleaks      # Windows (macOS: brew install gitleaks)
+   git config core.hooksPath .githooks
+   ```
+   The hook refuses commits that contain `.env` files, private keys or certificates, and scans staged changes for API keys, tokens and passwords.
 
 ## Workflow
 
@@ -34,7 +40,7 @@
 
 `main` is protected:
 - Changes land only through pull requests; direct and force pushes are blocked.
-- The `lint` and `build` checks must pass, and the branch must be up to date with `main`.
+- The `lint`, `build` and `secrets` checks must pass, and the branch must be up to date with `main`.
 - PRs are **squash-merged**, and the branch is deleted automatically after merging.
 
 ## Dependencies
@@ -43,6 +49,15 @@
 - Never edit `pnpm-lock.yaml` by hand. If it conflicts during a merge, take `main`'s version and run `pnpm install` to regenerate it.
 - CI installs with `pnpm install --frozen-lockfile`, so a lockfile that doesn't match `package.json` fails the build.
 - Dependabot opens grouped update PRs every Monday. Review them like any other PR; major Next.js/React upgrades are excluded and done deliberately.
+
+## Secrets and `.env` files
+
+- Never commit secrets: API keys, tokens, passwords, private keys, or `.env` / `.env.local` files. `.gitignore` excludes them, the pre-commit hook blocks them, and the CI `secrets` job fails any PR that contains them anywhere in its history.
+- Put local configuration in `.env.local` (ignored). If an app needs documented variables, commit a `.env.example` with names and harmless placeholder values only.
+- Anything prefixed `NEXT_PUBLIC_` is bundled into the browser and is public by definition. Never put a secret in a `NEXT_PUBLIC_` variable.
+- Do not bypass the hook with `git commit --no-verify`.
+- **If a secret is ever committed or pushed:** treat it as compromised. Revoke or rotate it immediately at its provider, then tell the repository owner. Deleting the file or the commit is not enough: this repository is public, and the secret stays in git history, forks and caches.
+- A false positive can be allow-listed by adding its fingerprint (printed by gitleaks) to a `.gitleaksignore` file, with a review in the PR.
 
 ## Line endings
 
