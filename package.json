@@ -1,0 +1,14 @@
+{
+  "name": "amtrav",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:landing": "pnpm --filter landing_page dev",
+    "dev:admin": "pnpm --filter admin_panel dev",
+    "build:landing": "pnpm --filter landing_page build",
+    "build:admin": "pnpm --filter admin_panel build",
+    "lint:landing": "pnpm --filter landing_page lint",
+    "lint:admin": "pnpm --filter admin_panel lint"
+  },
+  "packageManager": "pnpm@11.20.0"
+}

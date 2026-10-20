@@ -1,0 +1,7 @@
+packages:
+  - 'landing_page'
+  - 'admin_panel'
+
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
