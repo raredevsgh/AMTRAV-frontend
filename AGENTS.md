@@ -18,5 +18,3 @@ Applies to every change, by any agent or contributor.
 - Prefer the simplest maintainable solution; avoid speculative generalization.
 - Preserve correctness, security, and meaningful tests.
 - Review the final diff and run relevant checks before declaring work complete.
-
-The full procedure, including the final bloat review, is in `.claude/skills/codebase-discipline/SKILL.md`. Claude Code loads it as a skill; other agents should read it before declaring work complete.
