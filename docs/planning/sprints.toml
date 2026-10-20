@@ -1,0 +1,334 @@
+# AMTRAV Frontend Sprint Definitions (authoritative for the sprint automation).
+# Operational state (issues, activation, completion) lives in GitHub Issues,
+# never in this file. Change this file only through reviewed pull requests.
+
+schema_version = 1
+repository = "raredevsgh/AMTRAV-frontend"
+default_branch = "main"
+bot_login = "github-actions[bot]"
+approvers = ["raredevsgh"]
+activation_agreements = 2
+
+[[decision]]
+id = "FD1"
+summary = "Adopt Tailwind CSS v4 token conventions with CSS variables and Geist font across admin_panel"
+why = "Establishes unified design system foundation and prevents conflicting ad-hoc styling"
+blocks = "Sprint F1, Sprint F2"
+safe_meanwhile = "Sprint F0 contracts and DTO schema definition"
+
+[[decision]]
+id = "FD2"
+summary = "Adopt typed API client with TanStack React Query for data fetching, caching, and optimistic mutations"
+why = "Ensures predictable server-state management, cache invalidation, and decoupling from UI components"
+blocks = "Sprint F2, Sprint F3, Sprint F4, Sprint F5"
+safe_meanwhile = "Sprint F0 and Sprint F1 primitive component creation"
+
+[[decision]]
+id = "FD3"
+summary = "Adopt typed in-memory mock fixtures with simulated network latency for decoupled frontend iteration"
+why = "Allows full UI development, testing, and UX validation before Axum backend deployment"
+blocks = "Sprint F2 item 1"
+safe_meanwhile = "Sprint F0 contracts"
+
+[[decision]]
+id = "FD4"
+summary = "Define session and authentication token transport (HttpOnly cookie with CSRF header)"
+why = "Required for backend security boundary and authenticated route gates"
+blocks = "Sprint F5"
+safe_meanwhile = "Sprint F0 to F4 with mocked session context"
+
+[[sprint]]
+id = "sprint-f0"
+title = "Frontend Contracts, Schema Types & Root App Shell"
+order = 0
+kind = "foundation"
+next = "sprint-f1"
+risk_level = 1
+assignees = ["raredevsgh", "Anapey01"]
+objective = "Establish TypeScript contracts matching Axum backend DTOs, typed mock client adapters, and initialize the responsive Root App Shell with navigation routes for the 5 MVP domains."
+starting_state = "Fresh pnpm monorepo with default Next.js starter templates."
+dependencies = "None."
+risk = "Low risk; contracts and UI layout foundation only."
+deliverables = "TypeScript contract definitions, mock fixture handlers, responsive App Shell (Sidebar, Header, Layout), and route skeletons."
+exit_gate = "App Shell renders cleanly on desktop and tablet; all 5 MVP routes navigate without errors; lint:admin and build:admin pass."
+effort = "1 week."
+blocked_by = []
+acceptance_criteria = [
+  "Strict TypeScript types defined for Manufacturer, Batch, StockMovement, SalesRepCustody, and SalesTransaction matching backend Axum schemas.",
+  "Typed mock data service layer providing fixture data for all 5 MVP domain views.",
+  "Responsive App Shell with collapsible SidebarNav, GlobalHeader, and user profile badge.",
+  "Route skeletons wired for /dashboard, /manufacturers, /sales, /inventory, and /finance with active route highlights.",
+  "pnpm lint:admin and pnpm build:admin pass with zero warnings.",
+]
+checks_required = true
+required_checks = ["lint", "build", "secrets"]
+required_prs = []
+
+[[sprint.task]]
+key = "F0-1"
+title = "Define TypeScript schemas and DTO types matching Rust backend API contracts (ManufacturerDto, BatchDto, StockMovementDto, SalesRepCustodyDto, TransactionDto)."
+required = true
+
+[[sprint.task]]
+key = "F0-2"
+title = "Create typed mock client adapter and fixture data handlers so UI views run completely decoupled from backend service availability."
+required = true
+
+[[sprint.task]]
+key = "F0-3"
+title = "Build responsive Root App Shell with collapsible sidebar (SidebarNav), top navigation bar (GlobalHeader), route layout, and mock tenant/auth context."
+required = true
+
+[[sprint.task]]
+key = "F0-4"
+title = "Wire route skeletons for /dashboard, /manufacturers, /sales, /inventory, and /finance with breadcrumb navigation and metadata."
+required = true
+
+[[sprint]]
+id = "sprint-f1"
+title = "Core Reusable Design System Primitives"
+order = 1
+kind = "design-system"
+next = "sprint-f2"
+risk_level = 1
+assignees = ["raredevsgh", "Anapey01"]
+objective = "Implement the reusable UI primitive components required across all 5 admin views to ensure consistent UX and zero duplicate styling."
+starting_state = "Sprint F0 completed; App Shell and route skeletons available."
+dependencies = "Sprint F0."
+risk = "Low risk; isolated UI component library."
+deliverables = "DataTable, MetricCard, ModalShell, ActionDrawer, StatusBadge, and ExportButton components."
+exit_gate = "Component test suite passing; all primitives documented and usable in views."
+effort = "1 week."
+blocked_by = []
+acceptance_criteria = [
+  "DataTable supports column sorting, text filtering, status pill rendering, and pagination.",
+  "MetricCard renders title, value, delta trend percentage, and optional badge.",
+  "ModalShell provides accessible keyboard traps (Esc to dismiss), backdrop, header, and action buttons.",
+  "StatusBadge renders color-coded states: DRAFT, GENERATED, IN_TRANSIT, DELIVERED, VERIFIED, REJECTED, DAMAGED.",
+  "ExportButton triggers one-click client-side CSV generation and download from table datasets.",
+]
+checks_required = true
+required_checks = ["lint", "build", "secrets"]
+required_prs = []
+
+[[sprint.task]]
+key = "F1-1"
+title = "Build DataTable component with client/server sorting, search filter, status chip rendering, and pagination controls."
+required = true
+
+[[sprint.task]]
+key = "F1-2"
+title = "Build MetricCard KPI component with label, primary value, trend delta indicator, and optional icon."
+required = true
+
+[[sprint.task]]
+key = "F1-3"
+title = "Build ModalShell and ActionDrawer dialog components with accessible focus trap, backdrop, title, and action footer."
+required = true
+
+[[sprint.task]]
+key = "F1-4"
+title = "Build StatusBadge component supporting standard lifecycle states (DRAFT, GENERATED, IN_TRANSIT, DELIVERED, VERIFIED, REJECTED, DAMAGED)."
+required = true
+
+[[sprint.task]]
+key = "F1-5"
+title = "Build ExportButton utility component for one-click CSV export of table datasets."
+required = true
+
+[[sprint]]
+id = "sprint-f2"
+title = "Overview Dashboard & QR Batch Lifecycle"
+order = 2
+kind = "feature"
+next = "sprint-f3"
+risk_level = 2
+assignees = ["raredevsgh", "Anapey01"]
+objective = "Implement high-level operational telemetry on the Overview Dashboard and the entry point of the supply chain in Manufacturer management (QR batch creation)."
+starting_state = "Sprint F1 completed; primitives available."
+dependencies = "Sprint F1."
+risk = "Moderate risk; batch generation form validation and state updates."
+deliverables = "Dashboard KPI cards, unified activity stream, Manufacturer directory, Create Batch modal, and Batch ledger table."
+exit_gate = "Admin can view overview metrics, create a new QR batch with form validation, and inspect the batch ledger."
+effort = "1.5 weeks."
+blocked_by = []
+acceptance_criteria = [
+  "Dashboard renders 4 core KPI cards: Total QR Generated, Bags in Custody, Warehouse Stock, Total Sold.",
+  "Dashboard displays RecentActivityTable with the latest 10 inventory transitions and scan verifications.",
+  "Manufacturer directory lists active plants and contact details.",
+  "CreateBatchModal validates SKU, batch size quantity, and target manufacturer before generating a batch.",
+  "BatchLedgerTable displays created batches with status badges and download QR archive trigger.",
+]
+checks_required = true
+required_checks = ["lint", "build", "secrets"]
+required_prs = []
+
+[[sprint.task]]
+key = "F2-1"
+title = "Implement KpiSummaryCards on /dashboard displaying 4 core metrics (Total Generated, Bags in Custody, Warehouse Stock, Total Sold)."
+required = true
+
+[[sprint.task]]
+key = "F2-2"
+title = "Implement RecentActivityTable on /dashboard showing real-time unified feed of inventory transitions and scan verifications."
+required = true
+
+[[sprint.task]]
+key = "F2-3"
+title = "Implement ManufacturerList on /manufacturers showing authorized production partners."
+required = true
+
+[[sprint.task]]
+key = "F2-4"
+title = "Implement CreateBatchModal on /manufacturers with form validation (SKU, quantity, plant selection)."
+required = true
+
+[[sprint.task]]
+key = "F2-5"
+title = "Implement BatchLedgerTable on /manufacturers with status badges and download QR archive trigger."
+required = true
+
+[[sprint]]
+id = "sprint-f3"
+title = "Inventory Balances & Stock Movement Ledger"
+order = 3
+kind = "feature"
+next = "sprint-f4"
+risk_level = 2
+assignees = ["raredevsgh", "Anapey01"]
+objective = "Deliver central warehouse stock tracking, physical custody distribution split, and audit stock movement ledger."
+starting_state = "Sprint F2 completed; batch creation functioning."
+dependencies = "Sprint F2."
+risk = "Moderate risk; inventory balance reconciliation and state transitions."
+deliverables = "Stock balance summary bar, stock movement table, manual adjustment modal, and CSV export."
+exit_gate = "Inventory view accurately reflects warehouse stock vs custody vs sold, and tracks manual count adjustments."
+effort = "1 week."
+blocked_by = []
+acceptance_criteria = [
+  "StockBalanceBar visually illustrates the split between Warehouse, Sales Custody, Sold, and Damaged bags.",
+  "StockMovementTable provides filterable audit ledger of transitions (RECEIPT, DISPATCH, SCRAP).",
+  "RecordAdjustmentModal allows flagging damaged bags and recording count reconciliations.",
+  "ExportButton generates CSV export of the stock movement ledger.",
+]
+checks_required = true
+required_checks = ["lint", "build", "secrets"]
+required_prs = []
+
+[[sprint.task]]
+key = "F3-1"
+title = "Implement StockBalanceBar on /inventory showing the four-way breakdown (Warehouse, Sales Custody, Sold, Damaged)."
+required = true
+
+[[sprint.task]]
+key = "F3-2"
+title = "Implement StockMovementTable on /inventory listing timestamped transitions (RECEIPT, DISPATCH, SCRAP)."
+required = true
+
+[[sprint.task]]
+key = "F3-3"
+title = "Implement RecordAdjustmentModal on /inventory for recording damaged goods and manual count reconciliations."
+required = true
+
+[[sprint.task]]
+key = "F3-4"
+title = "Connect stock filters and search by batch ID / SKU with CSV export on /inventory."
+required = true
+
+[[sprint]]
+id = "sprint-f4"
+title = "Sales Team Custody & Financial Sales Ledger"
+order = 4
+kind = "feature"
+next = "sprint-f5"
+risk_level = 2
+assignees = ["raredevsgh", "Anapey01"]
+objective = "Implement field sales rep custody tracking, bag handoff workflows, authenticated scan verification feed, and flat revenue transaction ledger."
+starting_state = "Sprint F3 completed; inventory movements operational."
+dependencies = "Sprint F3."
+risk = "Moderate risk; custody transfers and sales ledger reconciliation."
+deliverables = "Sales rep custody table, transfer custody modal, verified scans feed, revenue summary, and transaction ledger."
+exit_gate = "Admins can assign stock to sales reps, monitor customer scan activations in real time, and audit sales transactions."
+effort = "1.5 weeks."
+blocked_by = []
+acceptance_criteria = [
+  "SalesRepCustodyTable displays active bag count in custody vs. sold count per sales rep.",
+  "TransferCustodyModal records transfer of bag batch ranges from warehouse to sales rep.",
+  "VerifiedScansFeed displays real-time verified customer scans with outlet/rep and timestamp.",
+  "GrossRevenueSummary and TransactionLedgerTable on /finance display confirmed sales with payment methods.",
+  "One-click CSV export available for sales transactions and rep custody ledger.",
+]
+checks_required = true
+required_checks = ["lint", "build", "secrets"]
+required_prs = []
+
+[[sprint.task]]
+key = "F4-1"
+title = "Implement SalesRepCustodyTable on /sales displaying active bag count in custody vs. sold count per rep."
+required = true
+
+[[sprint.task]]
+key = "F4-2"
+title = "Implement TransferCustodyModal on /sales to record stock handoff from warehouse to sales rep."
+required = true
+
+[[sprint.task]]
+key = "F4-3"
+title = "Implement VerifiedScansFeed on /sales showing authenticated bag verification telemetry from field scans."
+required = true
+
+[[sprint.task]]
+key = "F4-4"
+title = "Implement GrossRevenueSummary and TransactionLedgerTable on /finance displaying confirmed sales and payment logs."
+required = true
+
+[[sprint.task]]
+key = "F4-5"
+title = "Add CSV export for sales ledger and rep custody reconciliations on /sales and /finance."
+required = true
+
+[[sprint]]
+id = "sprint-f5"
+title = "Axum Backend API Integration & E2E Validation"
+order = 5
+kind = "integration"
+next = ""
+risk_level = 3
+assignees = ["raredevsgh", "Anapey01"]
+objective = "Replace mock fixture adapters with live Axum backend REST endpoints, implement session token management, and verify end-to-end user workflows."
+starting_state = "Sprint F4 completed; all 5 MVP views operational with mock data."
+dependencies = "Sprint F4, Backend Sprint S2 (Persistence & Registry)."
+risk = "High risk (Level 3); live network calls, authentication, and backend contract alignment."
+deliverables = "Live API client integration, authentication interceptors, error handling toasts, and Playwright/Vitest E2E test suite."
+exit_gate = "Full end-to-end flow verified against live backend: Batch creation -> Stock receipt -> Sales dispatch -> Scan verification -> Sales record."
+effort = "2 weeks."
+blocked_by = []
+acceptance_criteria = [
+  "Live fetch client configured with base URL, authentication headers, error envelopes, and retry logic.",
+  "All 5 MVP domain views successfully query and mutate data against real Axum endpoints.",
+  "Global error boundary and toast notifications handle network and 4xx/5xx API failures cleanly.",
+  "End-to-end test suite validates complete supply chain journey without regressions.",
+  "Production build succeeds and bundle size conforms to budget.",
+]
+checks_required = true
+required_checks = ["lint", "build", "secrets"]
+required_prs = []
+
+[[sprint.task]]
+key = "F5-1"
+title = "Configure live fetch / TanStack Query client with base URL, authentication headers, error envelopes, and retry logic."
+required = true
+
+[[sprint.task]]
+key = "F5-2"
+title = "Wire live endpoints for Dashboard, Manufacturers, Inventory, Sales, and Finance against Axum backend."
+required = true
+
+[[sprint.task]]
+key = "F5-3"
+title = "Implement error boundaries, toast notifications for API failures, and loading skeleton states."
+required = true
+
+[[sprint.task]]
+key = "F5-4"
+title = "Add Playwright / Vitest integration tests covering full lifecycle: Batch creation -> Stock receipt -> Sales dispatch -> Scan verification."
+required = true

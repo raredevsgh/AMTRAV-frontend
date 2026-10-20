@@ -1,0 +1,92 @@
+name: sprint-automation
+
+on:
+  issues:
+    types: [closed, reopened]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      command:
+        description: 'Command to run (validate, propose, activation, evaluate, advance, sync-roadmap)'
+        required: true
+        default: 'evaluate'
+        type: choice
+        options:
+          - validate
+          - propose
+          - activation
+          - evaluate
+          - advance
+          - sync-roadmap
+      sprint:
+        description: 'Sprint ID (e.g. sprint-f0)'
+        required: false
+        default: 'sprint-f0'
+      dry_run:
+        description: 'Simulate without modifying GitHub (dry run)'
+        required: true
+        type: boolean
+        default: false
+  schedule:
+    # Daily reconciliation safety-net at 00:00 UTC
+    - cron: '0 0 * * *'
+
+# Transitions are serialized so concurrent events never race on issue creation or state advancement
+concurrency:
+  group: sprint-automation
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+  checks: read
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test sprint automation
+        run: pnpm sprint:test
+
+      - name: Validate definitions
+        run: pnpm sprint validate
+
+      - name: Execute manual dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          cmd="${{ github.event.inputs.command }}"
+          sprint="${{ github.event.inputs.sprint }}"
+          dry_run="${{ github.event.inputs.dry_run }}"
+          
+          args=("$cmd")
+          if [ -n "$sprint" ] && [ "$cmd" != "validate" ] && [ "$cmd" != "sync-roadmap" ]; then
+            args+=(--sprint "$sprint")
+          fi
+          if [ "$dry_run" = "true" ]; then
+            args+=(--dry-run)
+          fi
+          
+          pnpm sprint "${args[@]}"
+
+      - name: Reconcile / evaluate on event
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          # Default event handling: evaluate sprint-f0
+          pnpm sprint evaluate --sprint sprint-f0 || true
