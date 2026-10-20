@@ -11,5 +11,8 @@
     "lint:landing": "pnpm --filter landing_page lint",
     "lint:admin": "pnpm --filter admin_panel lint"
   },
+  "engines": {
+    "node": ">=24 <25"
+  },
   "packageManager": "pnpm@11.20.0"
 }
