@@ -48,7 +48,7 @@
 - Add or remove packages with `pnpm add` / `pnpm remove` inside the app folder (or `pnpm --filter <app> add <pkg>`), and always commit the updated `pnpm-lock.yaml`.
 - Never edit `pnpm-lock.yaml` by hand. If it conflicts during a merge, take `main`'s version and run `pnpm install` to regenerate it.
 - CI installs with `pnpm install --frozen-lockfile`, so a lockfile that doesn't match `package.json` fails the build.
-- Dependabot opens grouped update PRs every Monday. Review them like any other PR; major Next.js/React upgrades are excluded and done deliberately.
+- Dependabot opens at most two update PRs every Monday: one grouping all minor and patch updates, and one grouping major upgrades. Review the major-upgrades PR deliberately (read the changelogs, run the apps); Next.js/React majors and `@types/node` above the pinned Node 24 are excluded and upgraded on purpose.
 
 ## Secrets and `.env` files
 

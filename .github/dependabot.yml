@@ -1,23 +1,30 @@
-# Weekly dependency update PRs. Each PR must pass the required lint and build
-# checks before it can merge.
+# Weekly dependency update PRs. Each PR must pass the required lint, build and
+# secrets checks before it can merge.
 version: 2
 updates:
-  - package-ecosystem: npm # pnpm workspace (pnpm-lock.yaml)
-    directories:
-      - "/"
-      - "/landing_page"
-      - "/admin_panel"
+  - package-ecosystem: npm
+    # The workspace root covers every package in pnpm-workspace.yaml through the
+    # single pnpm-lock.yaml. Listing the app folders as well duplicates every PR.
+    directory: "/"
     schedule:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
     groups:
-      # One PR for all minor/patch updates; majors arrive separately for review
+      # Safe updates: one PR per week
       minor-and-patch:
         update-types: [minor, patch]
+      # Breaking updates: one PR to review and test deliberately before merging
+      major-upgrades:
+        update-types: [major]
     ignore:
-      # Next.js, React and their types move together; upgrade majors deliberately
+      # @types/node must match the pinned Node.js major (.nvmrc: 24)
+      - dependency-name: "@types/node"
+        versions: [">=25"]
+      # Framework majors are planned upgrades, not weekly maintenance
       - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-config-next"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
