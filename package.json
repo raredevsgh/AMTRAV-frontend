@@ -12,7 +12,8 @@
     "lint:landing": "pnpm --filter landing_page lint",
     "lint:admin": "pnpm --filter admin_panel lint",
     "sprint": "node --experimental-strip-types scripts/sprint-automation/src/main.ts",
-    "sprint:test": "node --test --experimental-strip-types scripts/sprint-automation/tests/*.test.ts"
+    "sprint:test": "node --test --experimental-strip-types scripts/sprint-automation/tests/*.test.ts",
+    "autoclose": "node --experimental-strip-types scripts/autoclose-tasks.ts"
   },
   "engines": {
     "node": ">=24 <25"
