@@ -1,63 +1,74 @@
 # AMTRAV Frontend Sprint Definitions (authoritative for the sprint automation).
 # Operational state (issues, activation, completion) lives in GitHub Issues,
 # never in this file. Change this file only through reviewed pull requests.
+#
+# The admin panel is planned against the backend API contract published at
+# https://dev.amortrav.com/swagger-ui/ (OpenAPI: /api/v1/openapi.json).
+# Avoid square brackets inside strings in arrays: this parser ends an array at the first ].
 
 schema_version = 1
 repository = "raredevsgh/AMTRAV-frontend"
 default_branch = "main"
 bot_login = "github-actions[bot]"
 approvers = ["raredevsgh"]
-activation_agreements = 2
+activation_agreements = 0
 
 [[decision]]
 id = "FD1"
-summary = "Adopt Tailwind CSS v4 token conventions with CSS variables and Geist font across admin_panel"
-why = "Establishes unified design system foundation and prevents conflicting ad-hoc styling"
-blocks = "Sprint F1, Sprint F2"
-safe_meanwhile = "Sprint F0 contracts and DTO schema definition"
+summary = "Admin panel visual design: reuse the AMORTRAV tokens and components from landing_page, or provide a dedicated admin design"
+why = "Keeps the two apps consistent and avoids ad-hoc styling in admin_panel"
+blocks = "Sprint F2 styling"
+safe_meanwhile = "Sprint F0 and Sprint F1"
 
 [[decision]]
 id = "FD2"
-summary = "Adopt typed API client with TanStack React Query for data fetching, caching, and optimistic mutations"
-why = "Ensures predictable server-state management, cache invalidation, and decoupling from UI components"
-blocks = "Sprint F2, Sprint F3, Sprint F4, Sprint F5"
-safe_meanwhile = "Sprint F0 and Sprint F1 primitive component creation"
+summary = "Server-state approach: TanStack Query in client components, or Next.js server components and route handlers"
+why = "Determines caching, refetching and mutation patterns for every data view"
+blocks = "Sprint F3, Sprint F4"
+safe_meanwhile = "Sprint F0 to F2"
 
 [[decision]]
 id = "FD3"
-summary = "Adopt typed in-memory mock fixtures with simulated network latency for decoupled frontend iteration"
-why = "Allows full UI development, testing, and UX validation before Axum backend deployment"
-blocks = "Sprint F2 item 1"
+summary = "Typed mock fixtures that return the real API DTOs for development without a backend"
+why = "Allows UI work to continue when dev.amortrav.com is unavailable"
+blocks = "Sprint F0 item 2"
 safe_meanwhile = "Sprint F0 contracts"
 
 [[decision]]
 id = "FD4"
-summary = "Define session and authentication token transport (HttpOnly cookie with CSRF header)"
-why = "Required for backend security boundary and authenticated route gates"
-blocks = "Sprint F5"
-safe_meanwhile = "Sprint F0 to F4 with mocked session context"
+summary = "Session handling: the Next.js server keeps the access and refresh tokens in HttpOnly, Secure, SameSite=Strict cookies and proxies /api/v1"
+why = "The API returns tokens in JSON and has no CORS, so the browser cannot call it cross-origin or hold tokens safely"
+blocks = "Sprint F1"
+safe_meanwhile = "Sprint F0 with a mocked session"
+
+[[decision]]
+id = "FD5"
+summary = "Admin panel audience: administrators only, or administrators and manufacturers"
+why = "The API serves both staff roles with different scopes; the navigation and route gates depend on it"
+blocks = "Sprint F1 item 4"
+safe_meanwhile = "Role-aware shell for both roles"
 
 [[sprint]]
 id = "sprint-f0"
-title = "Frontend Contracts, Schema Types & Root App Shell"
+title = "API Contracts, Mock Data & Root App Shell"
 order = 0
 kind = "foundation"
 next = "sprint-f1"
 risk_level = 1
 assignees = ["raredevsgh", "Anapey01"]
-objective = "Establish TypeScript contracts matching Axum backend DTOs, typed mock client adapters, and initialize the responsive Root App Shell with navigation routes for the 5 MVP domains."
-starting_state = "Fresh pnpm monorepo with default Next.js starter templates."
+objective = "Define TypeScript types that match the backend API contract, provide typed mock data, and build the role-aware App Shell with the admin routes."
+starting_state = "admin_panel is the default Next.js starter; the backend API is live at dev.amortrav.com."
 dependencies = "None."
-risk = "Low risk; contracts and UI layout foundation only."
-deliverables = "TypeScript contract definitions, mock fixture handlers, responsive App Shell (Sidebar, Header, Layout), and route skeletons."
-exit_gate = "App Shell renders cleanly on desktop and tablet; all 5 MVP routes navigate without errors; lint:admin and build:admin pass."
+risk = "Low risk; contracts and UI layout only, no live calls."
+deliverables = "API types, mock fixtures, responsive App Shell and route skeletons."
+exit_gate = "App Shell renders on desktop and mobile; all routes navigate without errors; lint:admin and build:admin pass."
 effort = "1 week."
 blocked_by = []
 acceptance_criteria = [
-  "Strict TypeScript types defined for Manufacturer, Batch, StockMovement, SalesRepCustody, and SalesTransaction matching backend Axum schemas.",
-  "Typed mock data service layer providing fixture data for all 5 MVP domain views.",
-  "Responsive App Shell with collapsible SidebarNav, GlobalHeader, and user profile badge.",
-  "Route skeletons wired for /dashboard, /manufacturers, /sales, /inventory, and /finance with active route highlights.",
+  "Types for User, Role, TokenPair, Credentials, Device, ProvisionedDevice, RegisterDevice, UpdateDevice, DeviceAudit, FileMetadata, JobReceipt, JobResult, ManufacturerResponse, RoleUpdate and ErrorResponse match /api/v1/openapi.json.",
+  "Mock fixtures return those DTOs, paginate with limit and offset, and use the API error envelope.",
+  "App Shell shows the signed-in user and role; navigation shows only the sections the role can use.",
+  "Routes /login, /devices, /devices/{id}, /users and /files exist with breadcrumbs and metadata.",
   "pnpm lint:admin and pnpm build:admin pass with zero warnings.",
 ]
 checks_required = true
@@ -66,46 +77,46 @@ required_prs = []
 
 [[sprint.task]]
 key = "F0-1"
-title = "Define TypeScript schemas and DTO types matching Rust backend API contracts (ManufacturerDto, BatchDto, StockMovementDto, SalesRepCustodyDto, TransactionDto)."
+title = "Define TypeScript types matching the backend OpenAPI contract (/api/v1/openapi.json): User, Role, TokenPair, Credentials, Device, ProvisionedDevice, RegisterDevice, UpdateDevice, DeviceAudit, FileMetadata, JobReceipt, JobResult, ManufacturerResponse, RoleUpdate, ErrorResponse."
 required = true
 
 [[sprint.task]]
 key = "F0-2"
-title = "Create typed mock client adapter and fixture data handlers so UI views run completely decoupled from backend service availability."
+title = "Create typed mock fixtures that return those DTOs, paginate with limit and offset, and use the API error envelope, so views run without a backend."
 required = true
 
 [[sprint.task]]
 key = "F0-3"
-title = "Build responsive Root App Shell with collapsible sidebar (SidebarNav), top navigation bar (GlobalHeader), route layout, and mock tenant/auth context."
+title = "Build the responsive App Shell: sidebar, header with the signed-in user and role badge, and role-aware navigation (administrator: Devices, Users, Files; manufacturer: Devices, Files)."
 required = true
 
 [[sprint.task]]
 key = "F0-4"
-title = "Wire route skeletons for /dashboard, /manufacturers, /sales, /inventory, and /finance with breadcrumb navigation and metadata."
+title = "Wire route skeletons for /login, /devices, /devices/[id], /users and /files with breadcrumbs and metadata."
 required = true
 
 [[sprint]]
 id = "sprint-f1"
-title = "Core Reusable Design System Primitives"
+title = "Staff Authentication & Same-Origin API Proxy"
 order = 1
-kind = "design-system"
+kind = "integration"
 next = "sprint-f2"
-risk_level = 1
+risk_level = 3
 assignees = ["raredevsgh", "Anapey01"]
-objective = "Implement the reusable UI primitive components required across all 5 admin views to ensure consistent UX and zero duplicate styling."
-starting_state = "Sprint F0 completed; App Shell and route skeletons available."
-dependencies = "Sprint F0."
-risk = "Low risk; isolated UI component library."
-deliverables = "DataTable, MetricCard, ModalShell, ActionDrawer, StatusBadge, and ExportButton components."
-exit_gate = "Component test suite passing; all primitives documented and usable in views."
-effort = "1 week."
-blocked_by = []
+objective = "Sign staff in with the API, keep their session on the Next.js server, and reach the API through a same-origin proxy."
+starting_state = "Sprint F0 completed; FD4 decided."
+dependencies = "Sprint F0; FD4 and FD5."
+risk = "High risk (Level 3); credentials, session tokens and the security boundary to the API."
+deliverables = "API proxy route, login page, session refresh and logout, route protection."
+exit_gate = "A manufacturer and an administrator can sign in, stay signed in across token refresh, and sign out, against dev.amortrav.com."
+effort = "1.5 weeks."
+blocked_by = ["FD4"]
 acceptance_criteria = [
-  "DataTable supports column sorting, text filtering, status pill rendering, and pagination.",
-  "MetricCard renders title, value, delta trend percentage, and optional badge.",
-  "ModalShell provides accessible keyboard traps (Esc to dismiss), backdrop, header, and action buttons.",
-  "StatusBadge renders color-coded states: DRAFT, GENERATED, IN_TRANSIT, DELIVERED, VERIFIED, REJECTED, DAMAGED.",
-  "ExportButton triggers one-click client-side CSV generation and download from table datasets.",
+  "The browser never receives or stores the access or refresh token; both live in HttpOnly cookies set by the Next.js server.",
+  "All API calls go through the same-origin proxy, which adds the Bearer token server-side.",
+  "Login shows one generic error for unknown accounts, wrong passwords and mobile accounts, and honours Retry-After on 429.",
+  "Concurrent requests trigger at most one refresh; both returned tokens replace the old pair.",
+  "Unauthenticated visitors are sent to /login; users with the user role cannot enter; manufacturers cannot open administrator routes.",
 ]
 checks_required = true
 required_checks = ["lint", "build", "secrets"]
@@ -113,51 +124,46 @@ required_prs = []
 
 [[sprint.task]]
 key = "F1-1"
-title = "Build DataTable component with client/server sorting, search filter, status chip rendering, and pagination controls."
+title = "Add a same-origin proxy (Next.js route handler) that forwards /api/v1 requests to the API base URL from server configuration and adds the Bearer token from the HttpOnly cookie (the API has no CORS)."
 required = true
 
 [[sprint.task]]
 key = "F1-2"
-title = "Build MetricCard KPI component with label, primary value, trend delta indicator, and optional icon."
+title = "Build the login page: POST /api/v1/auth/login with email and password; one generic error for any 401; on 429 tell the user to retry after the Retry-After delay."
 required = true
 
 [[sprint.task]]
 key = "F1-3"
-title = "Build ModalShell and ActionDrawer dialog components with accessible focus trap, backdrop, title, and action footer."
+title = "Implement the session lifecycle: store the TokenPair in HttpOnly cookies, rotate with POST /api/v1/auth/refresh (single-flight, replace both tokens), and sign out with POST /api/v1/auth/logout."
 required = true
 
 [[sprint.task]]
 key = "F1-4"
-title = "Build StatusBadge component supporting standard lifecycle states (DRAFT, GENERATED, IN_TRANSIT, DELIVERED, VERIFIED, REJECTED, DAMAGED)."
-required = true
-
-[[sprint.task]]
-key = "F1-5"
-title = "Build ExportButton utility component for one-click CSV export of table datasets."
+title = "Protect routes: load GET /api/v1/auth/me, redirect anonymous visitors to /login, refuse the user role, and show a 403 page to manufacturers on administrator routes."
 required = true
 
 [[sprint]]
 id = "sprint-f2"
-title = "Overview Dashboard & QR Batch Lifecycle"
+title = "Core Reusable UI Primitives"
 order = 2
-kind = "feature"
+kind = "design-system"
 next = "sprint-f3"
-risk_level = 2
+risk_level = 1
 assignees = ["raredevsgh", "Anapey01"]
-objective = "Implement high-level operational telemetry on the Overview Dashboard and the entry point of the supply chain in Manufacturer management (QR batch creation)."
-starting_state = "Sprint F1 completed; primitives available."
-dependencies = "Sprint F1."
-risk = "Moderate risk; batch generation form validation and state updates."
-deliverables = "Dashboard KPI cards, unified activity stream, Manufacturer directory, Create Batch modal, and Batch ledger table."
-exit_gate = "Admin can view overview metrics, create a new QR batch with form validation, and inspect the batch ledger."
-effort = "1.5 weeks."
-blocked_by = []
+objective = "Build the reusable components every admin view needs, shaped by how the API pages, reports state and returns errors."
+starting_state = "Sprint F1 completed; FD1 decided."
+dependencies = "Sprint F1; FD1."
+risk = "Low risk; isolated UI components."
+deliverables = "DataTable, StatusBadge, RoleBadge, ModalShell, ConfirmDialog, form error handling and a one-time secret reveal."
+exit_gate = "Primitives are used by at least one route and documented in the code."
+effort = "1 week."
+blocked_by = ["FD1"]
 acceptance_criteria = [
-  "Dashboard renders 4 core KPI cards: Total QR Generated, Bags in Custody, Warehouse Stock, Total Sold.",
-  "Dashboard displays RecentActivityTable with the latest 10 inventory transitions and scan verifications.",
-  "Manufacturer directory lists active plants and contact details.",
-  "CreateBatchModal validates SKU, batch size quantity, and target manufacturer before generating a batch.",
-  "BatchLedgerTable displays created batches with status badges and download QR archive trigger.",
+  "DataTable pages with limit and offset using previous and next controls (the API returns no total count) and has loading and empty states.",
+  "StatusBadge renders the device states registered, claimed and revoked; RoleBadge renders user, manufacturer and admin.",
+  "ModalShell and ConfirmDialog trap focus, close on Escape and label irreversible actions.",
+  "Form errors show the API error message; 400, 409 and 422 appear inline, 429 asks to retry and 503 shows a generic message.",
+  "The one-time secret reveal supports copy and print and states that the value will not be shown again.",
 ]
 checks_required = true
 required_checks = ["lint", "build", "secrets"]
@@ -165,50 +171,51 @@ required_prs = []
 
 [[sprint.task]]
 key = "F2-1"
-title = "Implement KpiSummaryCards on /dashboard displaying 4 core metrics (Total Generated, Bags in Custody, Warehouse Stock, Total Sold)."
+title = "Build a DataTable with limit and offset pagination (previous and next; the API returns no total count), loading and empty states."
 required = true
 
 [[sprint.task]]
 key = "F2-2"
-title = "Implement RecentActivityTable on /dashboard showing real-time unified feed of inventory transitions and scan verifications."
+title = "Build StatusBadge for device status (registered, claimed, revoked) and RoleBadge for user roles (user, manufacturer, admin)."
 required = true
 
 [[sprint.task]]
 key = "F2-3"
-title = "Implement ManufacturerList on /manufacturers showing authorized production partners."
+title = "Build ModalShell and ConfirmDialog with focus trap, Escape to close and clear wording for irreversible actions."
 required = true
 
 [[sprint.task]]
 key = "F2-4"
-title = "Implement CreateBatchModal on /manufacturers with form validation (SKU, quantity, plant selection)."
+title = "Build form fields and API error handling for the error envelope: 400, 409 and 422 inline, 429 retry, 503 generic."
 required = true
 
 [[sprint.task]]
 key = "F2-5"
-title = "Implement BatchLedgerTable on /manufacturers with status badges and download QR archive trigger."
+title = "Build a one-time secret reveal (copy, print, will not be shown again) for device claim codes."
 required = true
 
 [[sprint]]
 id = "sprint-f3"
-title = "Inventory Balances & Stock Movement Ledger"
+title = "Device Registry"
 order = 3
 kind = "feature"
 next = "sprint-f4"
 risk_level = 2
 assignees = ["raredevsgh", "Anapey01"]
-objective = "Deliver central warehouse stock tracking, physical custody distribution split, and audit stock movement ledger."
-starting_state = "Sprint F2 completed; batch creation functioning."
-dependencies = "Sprint F2."
-risk = "Moderate risk; inventory balance reconciliation and state transitions."
-deliverables = "Stock balance summary bar, stock movement table, manual adjustment modal, and CSV export."
-exit_gate = "Inventory view accurately reflects warehouse stock vs custody vs sold, and tracks manual count adjustments."
-effort = "1 week."
-blocked_by = []
+objective = "Let manufacturers manage their device inventory and administrators manage every device, using the device registry API."
+starting_state = "Sprint F2 completed; FD2 decided."
+dependencies = "Sprint F2; FD2."
+risk = "Moderate risk; one-time claim codes and irreversible revocation."
+deliverables = "Device list, registration with claim code reveal, device detail and edit, claim code rotation, revocation and audit history."
+exit_gate = "A manufacturer can register a device, hand over its claim code, edit it, rotate the code while unclaimed, revoke it and read its audit history."
+effort = "1.5 weeks."
+blocked_by = ["FD2"]
 acceptance_criteria = [
-  "StockBalanceBar visually illustrates the split between Warehouse, Sales Custody, Sold, and Damaged bags.",
-  "StockMovementTable provides filterable audit ledger of transitions (RECEIPT, DISPATCH, SCRAP).",
-  "RecordAdjustmentModal allows flagging damaged bags and recording count reconciliations.",
-  "ExportButton generates CSV export of the stock movement ledger.",
+  "The device list pages through GET /api/v1/devices; administrators see every device and manufacturers only their own.",
+  "Registration shows the returned claim code once, and a duplicate serial number shows the 409 message.",
+  "Model and firmware version can be edited; the firmware version is labelled as declared metadata, not live device state.",
+  "Claim code rotation is offered only for unclaimed devices; revocation asks for confirmation and states that it does not lock or wipe the bag.",
+  "The audit history pages through GET /api/v1/devices/{id}/audit.",
 ]
 checks_required = true
 required_checks = ["lint", "build", "secrets"]
@@ -216,46 +223,51 @@ required_prs = []
 
 [[sprint.task]]
 key = "F3-1"
-title = "Implement StockBalanceBar on /inventory showing the four-way breakdown (Warehouse, Sales Custody, Sold, Damaged)."
+title = "Implement the device list on /devices with GET /api/v1/devices (limit, offset); administrators see all devices, manufacturers their own inventory."
 required = true
 
 [[sprint.task]]
 key = "F3-2"
-title = "Implement StockMovementTable on /inventory listing timestamped transitions (RECEIPT, DISPATCH, SCRAP)."
+title = "Implement device registration with POST /api/v1/devices (serial_number, model, firmware_version; administrators also choose manufacturer_id) and reveal the returned claim_code once."
 required = true
 
 [[sprint.task]]
 key = "F3-3"
-title = "Implement RecordAdjustmentModal on /inventory for recording damaged goods and manual count reconciliations."
+title = "Implement the device detail page /devices/[id] with GET /api/v1/devices/{id} and editing of model and firmware_version with PATCH."
 required = true
 
 [[sprint.task]]
 key = "F3-4"
-title = "Connect stock filters and search by batch ID / SKU with CSV export on /inventory."
+title = "Implement claim code rotation (POST /api/v1/devices/{id}/claim-code, unclaimed devices only) and revocation (POST /api/v1/devices/{id}/revoke) with confirmation."
+required = true
+
+[[sprint.task]]
+key = "F3-5"
+title = "Implement the audit history with GET /api/v1/devices/{id}/audit (limit, offset)."
 required = true
 
 [[sprint]]
 id = "sprint-f4"
-title = "Sales Team Custody & Financial Sales Ledger"
+title = "Administration & Private Files"
 order = 4
 kind = "feature"
 next = "sprint-f5"
 risk_level = 2
 assignees = ["raredevsgh", "Anapey01"]
-objective = "Implement field sales rep custody tracking, bag handoff workflows, authenticated scan verification feed, and flat revenue transaction ledger."
-starting_state = "Sprint F3 completed; inventory movements operational."
+objective = "Let administrators manage accounts and manufacturers, and let staff keep private files, using the administration and files APIs."
+starting_state = "Sprint F3 completed."
 dependencies = "Sprint F3."
-risk = "Moderate risk; custody transfers and sales ledger reconciliation."
-deliverables = "Sales rep custody table, transfer custody modal, verified scans feed, revenue summary, and transaction ledger."
-exit_gate = "Admins can assign stock to sales reps, monitor customer scan activations in real time, and audit sales transactions."
+risk = "Moderate risk; role changes invalidate sessions and manufacturer creation is asynchronous."
+deliverables = "User list, role change, manufacturer creation with job polling, and the files area."
+exit_gate = "An administrator can create a manufacturer and change roles; staff can upload, list and download their files."
 effort = "1.5 weeks."
 blocked_by = []
 acceptance_criteria = [
-  "SalesRepCustodyTable displays active bag count in custody vs. sold count per sales rep.",
-  "TransferCustodyModal records transfer of bag batch ranges from warehouse to sales rep.",
-  "VerifiedScansFeed displays real-time verified customer scans with outlet/rep and timestamp.",
-  "GrossRevenueSummary and TransactionLedgerTable on /finance display confirmed sales with payment methods.",
-  "One-click CSV export available for sales transactions and rep custody ledger.",
+  "The user list pages through GET /api/v1/admin/users and is visible to administrators only.",
+  "Role changes explain that the user is signed out everywhere; administrators cannot change their own role and Google accounts stay users.",
+  "Manufacturer creation polls the job with the X-Job-Receipt header (never in the URL), respects poll_after_ms, shows the final http_status and handles an expired job (410).",
+  "File upload sends raw bytes with an X-File-Name of letters, digits, spaces, dots, hyphens and underscores, up to 10 MiB.",
+  "Files can be listed, inspected and downloaded.",
 ]
 checks_required = true
 required_checks = ["lint", "build", "secrets"]
@@ -263,51 +275,45 @@ required_prs = []
 
 [[sprint.task]]
 key = "F4-1"
-title = "Implement SalesRepCustodyTable on /sales displaying active bag count in custody vs. sold count per rep."
+title = "Implement the user list on /users with GET /api/v1/admin/users (limit, offset) and role badges, for administrators only."
 required = true
 
 [[sprint.task]]
 key = "F4-2"
-title = "Implement TransferCustodyModal on /sales to record stock handoff from warehouse to sales rep."
+title = "Implement role changes with PATCH /api/v1/admin/users/{id}/role, explaining that the user is signed out everywhere, that you cannot change your own role and that Google accounts stay users."
 required = true
 
 [[sprint.task]]
 key = "F4-3"
-title = "Implement VerifiedScansFeed on /sales showing authenticated bag verification telemetry from field scans."
+title = "Implement manufacturer creation with POST /api/v1/admin/manufacturers (email, 12 to 128 byte password): poll GET /api/v1/auth/jobs/{id} with the X-Job-Receipt header and show the outcome, including an expired job (410)."
 required = true
 
 [[sprint.task]]
 key = "F4-4"
-title = "Implement GrossRevenueSummary and TransactionLedgerTable on /finance displaying confirmed sales and payment logs."
-required = true
-
-[[sprint.task]]
-key = "F4-5"
-title = "Add CSV export for sales ledger and rep custody reconciliations on /sales and /finance."
+title = "Implement /files: list (GET /api/v1/files), upload raw bytes (POST with X-File-Name, up to 10 MiB), metadata and download."
 required = true
 
 [[sprint]]
 id = "sprint-f5"
-title = "Axum Backend API Integration & E2E Validation"
+title = "End-to-End Tests & Release Readiness"
 order = 5
 kind = "integration"
 next = ""
-risk_level = 3
+risk_level = 2
 assignees = ["raredevsgh", "Anapey01"]
-objective = "Replace mock fixture adapters with live Axum backend REST endpoints, implement session token management, and verify end-to-end user workflows."
-starting_state = "Sprint F4 completed; all 5 MVP views operational with mock data."
-dependencies = "Sprint F4, Backend Sprint S2 (Persistence & Registry)."
-risk = "High risk (Level 3); live network calls, authentication, and backend contract alignment."
-deliverables = "Live API client integration, authentication interceptors, error handling toasts, and Playwright/Vitest E2E test suite."
-exit_gate = "Full end-to-end flow verified against live backend: Batch creation -> Stock receipt -> Sales dispatch -> Scan verification -> Sales record."
-effort = "2 weeks."
+objective = "Prove the staff journeys end to end against a real backend and prepare the admin panel for deployment."
+starting_state = "Sprint F4 completed; all admin views use the live API."
+dependencies = "Sprint F4; backend Compose stack for tests; hosting decision for deployment."
+risk = "Moderate risk; test infrastructure and environment configuration."
+deliverables = "Playwright end-to-end suite, error boundaries and loading states, and deployment configuration."
+exit_gate = "The end-to-end suite passes against the backend Compose stack and the production build is configured per environment."
+effort = "1.5 weeks."
 blocked_by = []
 acceptance_criteria = [
-  "Live fetch client configured with base URL, authentication headers, error envelopes, and retry logic.",
-  "All 5 MVP domain views successfully query and mutate data against real Axum endpoints.",
-  "Global error boundary and toast notifications handle network and 4xx/5xx API failures cleanly.",
-  "End-to-end test suite validates complete supply chain journey without regressions.",
-  "Production build succeeds and bundle size conforms to budget.",
+  "End-to-end tests cover: sign in, register a device, rotate its claim code, revoke it and read its audit history.",
+  "End-to-end tests cover: an administrator creates a manufacturer, the job completes, and a role is changed.",
+  "A global error boundary, error toasts and loading skeletons handle network and API failures.",
+  "The API base URL is configured per environment and the production build succeeds.",
 ]
 checks_required = true
 required_checks = ["lint", "build", "secrets"]
@@ -315,20 +321,20 @@ required_prs = []
 
 [[sprint.task]]
 key = "F5-1"
-title = "Configure live fetch / TanStack Query client with base URL, authentication headers, error envelopes, and retry logic."
+title = "Add Playwright end-to-end tests against the backend Compose stack: sign in, register a device, rotate its claim code, revoke it and read the audit history."
 required = true
 
 [[sprint.task]]
 key = "F5-2"
-title = "Wire live endpoints for Dashboard, Manufacturers, Inventory, Sales, and Finance against Axum backend."
+title = "Add Playwright end-to-end tests for administration: create a manufacturer, wait for the job, and change a user role."
 required = true
 
 [[sprint.task]]
 key = "F5-3"
-title = "Implement error boundaries, toast notifications for API failures, and loading skeleton states."
+title = "Add a global error boundary, error toasts and loading skeletons for network and API failures."
 required = true
 
 [[sprint.task]]
 key = "F5-4"
-title = "Add Playwright / Vitest integration tests covering full lifecycle: Batch creation -> Stock receipt -> Sales dispatch -> Scan verification."
+title = "Configure the API base URL per environment and the production deployment settings."
 required = true

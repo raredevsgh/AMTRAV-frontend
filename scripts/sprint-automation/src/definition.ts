@@ -22,6 +22,11 @@ export function loadAndValidateSprints(filePath: string): ValidatedSprintFile {
   return validateSprintFile(parseSprintsToml(content));
 }
 
+/** Accounts whose issues and comments the automation trusts: the bot and the approvers. */
+export function trustedAuthors(file: ValidatedSprintFile): string[] {
+  return [file.bot_login, ...file.approvers];
+}
+
 export function validateSprintFile(raw: RawTomlFile): ValidatedSprintFile {
   if (raw.schema_version !== 1) {
     throw new Error(`Unsupported schema_version: ${raw.schema_version}. Expected 1.`);
@@ -35,8 +40,8 @@ export function validateSprintFile(raw: RawTomlFile): ValidatedSprintFile {
     throw new Error("approvers list cannot be empty.");
   }
 
-  if (raw.activation_agreements < 1) {
-    throw new Error("activation_agreements must be at least 1.");
+  if (!Number.isInteger(raw.activation_agreements) || raw.activation_agreements < 0) {
+    throw new Error("activation_agreements must be a whole number of 0 or more.");
   }
 
   const sprints = raw.sprint || [];

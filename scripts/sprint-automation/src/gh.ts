@@ -32,15 +32,18 @@ export interface GitHubClient {
   getCommentReactions(commentId: number): Promise<GitHubReaction[]>;
   closeIssue(issueNumber: number, reason?: string): Promise<void>;
   isPrMerged(prNumber: number): Promise<boolean>;
-  getCheckRuns(commitSha: string): Promise<Record<string, string>>;
+  getCheckRuns(ref: string): Promise<Record<string, string>>;
 }
 
 export class GhCliClient implements GitHubClient {
   public isDryRun = false;
   private repo: string;
+  private trustedAuthors: string[];
+  private issueCache: GitHubIssue[] | null = null;
 
-  constructor(repo: string) {
+  constructor(repo: string, trustedAuthors: string[]) {
     this.repo = repo;
+    this.trustedAuthors = trustedAuthors;
   }
 
   private runGh(cmd: string, input?: string): string {
@@ -50,14 +53,28 @@ export class GhCliClient implements GitHubClient {
     return execSync(`gh ${cmd} -R ${this.repo}`, { encoding: "utf-8", input }).trim();
   }
 
-  async findIssueByMarker(marker: string): Promise<GitHubIssue | null> {
-    try {
-      const output = this.runGh(`issue list --state all --limit 100 --json number,title,body,state,stateReason,author,assignees`);
-      const issues: GitHubIssue[] = JSON.parse(output);
-      return issues.find((iss) => iss.body && iss.body.includes(marker)) || null;
-    } catch {
-      return null;
+  // Every page of issues (pull requests excluded), cached until the automation changes an issue.
+  // Lookup errors are thrown, never treated as "not found", so a failed call cannot create duplicates.
+  private listIssues(): GitHubIssue[] {
+    if (!this.issueCache) {
+      const pages: any[][] = JSON.parse(this.runGh(`api --paginate --slurp "repos/${this.repo}/issues?state=all&per_page=100"`));
+      this.issueCache = pages.flat().filter((i) => !i.pull_request).map((i) => ({
+        number: i.number,
+        title: i.title,
+        body: i.body || "",
+        state: i.state === "closed" ? "CLOSED" : "OPEN",
+        stateReason: i.state_reason ? String(i.state_reason).toUpperCase() : undefined,
+        author: { login: i.user?.login || "" },
+        assignees: (i.assignees || []).map((a: any) => ({ login: a.login })),
+      }));
     }
+    return this.issueCache;
+  }
+
+  async findIssueByMarker(marker: string): Promise<GitHubIssue | null> {
+    return (
+      this.listIssues().find((iss) => iss.body.includes(marker) && this.trustedAuthors.includes(iss.author.login)) || null
+    );
   }
 
   async createIssue(title: string, body: string, assignees: string[], labels: string[]): Promise<number> {
@@ -65,6 +82,7 @@ export class GhCliClient implements GitHubClient {
     const labelFlags = labels.length > 0 ? `--label "${labels.join(",")}"` : "";
     const safeTitle = title.replace(/"/g, '\\"');
     const output = this.runGh(`issue create --title "${safeTitle}" --body-file - ${assigneeFlags} ${labelFlags}`, body);
+    this.issueCache = null;
     const match = output.match(/\/issues\/(\d+)$/);
     if (!match) throw new Error(`Could not parse issue number from: ${output}`);
     return parseInt(match[1], 10);
@@ -72,23 +90,19 @@ export class GhCliClient implements GitHubClient {
 
   async updateIssueBody(issueNumber: number, body: string): Promise<void> {
     this.runGh(`issue edit ${issueNumber} --body-file -`, body);
+    this.issueCache = null;
   }
 
   async getComments(issueNumber: number): Promise<GitHubComment[]> {
-    try {
-      const output = this.runGh(`api repos/${this.repo}/issues/${issueNumber}/comments --jq ".[].id"`);
-      if (!output) return [];
-      const commentRaw = this.runGh(`api repos/${this.repo}/issues/${issueNumber}/comments`);
-      const comments = JSON.parse(commentRaw);
-      return comments.map((c: any) => ({
-        id: c.id,
-        body: c.body,
-        author: { login: c.user?.login || "" },
-        createdAt: c.created_at,
-      }));
-    } catch {
-      return [];
-    }
+    const pages: any[][] = JSON.parse(
+      this.runGh(`api --paginate --slurp "repos/${this.repo}/issues/${issueNumber}/comments?per_page=100"`)
+    );
+    return pages.flat().map((c: any) => ({
+      id: c.id,
+      body: c.body || "",
+      author: { login: c.user?.login || "" },
+      createdAt: c.created_at,
+    }));
   }
 
   async createComment(issueNumber: number, body: string): Promise<number> {
@@ -112,6 +126,7 @@ export class GhCliClient implements GitHubClient {
 
   async closeIssue(issueNumber: number, reason: string = "completed"): Promise<void> {
     this.runGh(`issue close ${issueNumber} --reason ${reason}`);
+    this.issueCache = null;
   }
 
   async isPrMerged(prNumber: number): Promise<boolean> {
@@ -123,9 +138,10 @@ export class GhCliClient implements GitHubClient {
     }
   }
 
-  async getCheckRuns(commitSha: string): Promise<Record<string, string>> {
+  // Latest check run per name on a branch or commit. A failed call returns no runs, so checks count as missing.
+  async getCheckRuns(ref: string): Promise<Record<string, string>> {
     try {
-      const output = this.runGh(`api repos/${this.repo}/commits/${commitSha}/check-runs`);
+      const output = this.runGh(`api "repos/${this.repo}/commits/${ref}/check-runs?per_page=100"`);
       const data = JSON.parse(output);
       const results: Record<string, string> = {};
       for (const run of data.check_runs || []) {
@@ -191,8 +207,17 @@ export class DryRunGitHubClient implements GitHubClient {
     return num;
   }
 
-  async getCommentReactions(_commentId: number): Promise<GitHubReaction[]> {
-    return [];
+  private reactions: Map<number, GitHubReaction[]> = new Map();
+
+  /** Test helper: records a 👍 from `login` on a comment. */
+  addThumbsUp(commentId: number, login: string): void {
+    const list = this.reactions.get(commentId) || [];
+    list.push({ user: { login }, content: "+1" });
+    this.reactions.set(commentId, list);
+  }
+
+  async getCommentReactions(commentId: number): Promise<GitHubReaction[]> {
+    return this.reactions.get(commentId) || [];
   }
 
   async closeIssue(issueNumber: number, reason: string = "completed"): Promise<void> {
@@ -200,7 +225,7 @@ export class DryRunGitHubClient implements GitHubClient {
     const iss = this.issues.get(issueNumber);
     if (iss) {
       iss.state = "CLOSED";
-      iss.stateReason = reason;
+      iss.stateReason = reason === "not planned" ? "NOT_PLANNED" : reason.toUpperCase();
     }
   }
 
@@ -209,7 +234,7 @@ export class DryRunGitHubClient implements GitHubClient {
     return true;
   }
 
-  async getCheckRuns(_commitSha: string): Promise<Record<string, string>> {
+  async getCheckRuns(_ref: string): Promise<Record<string, string>> {
     return { lint: "success", build: "success", secrets: "success" };
   }
 }

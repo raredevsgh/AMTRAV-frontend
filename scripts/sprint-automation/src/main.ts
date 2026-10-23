@@ -1,10 +1,10 @@
 import { resolve } from "node:path";
-import { loadAndValidateSprints } from "./definition.ts";
+import { loadAndValidateSprints, trustedAuthors } from "./definition.ts";
 import { evaluateSprintCompletion } from "./evaluate.ts";
 import { DryRunGitHubClient, GhCliClient, type GitHubClient } from "./gh.ts";
 import { sprintIssueMarker } from "./markers.ts";
 import { syncRoadmap } from "./sync.ts";
-import { autoAdvanceSprints, evaluateActivation, proposeSprint } from "./transition.ts";
+import { autoAdvanceSprints, completeSprint, evaluateActivation, proposeSprint } from "./transition.ts";
 
 function parseArgs(args: string[]) {
   const command = args[0] || "help";
@@ -34,7 +34,7 @@ async function main() {
   const sprintFile = loadAndValidateSprints(sprintsTomlPath);
   console.log(`Validated ${sprintFile.sprints.length} sprints. Repository: ${sprintFile.repository}`);
 
-  const gh: GitHubClient = dryRun ? new DryRunGitHubClient() : new GhCliClient(sprintFile.repository);
+  const gh: GitHubClient = dryRun ? new DryRunGitHubClient() : new GhCliClient(sprintFile.repository, trustedAuthors(sprintFile));
 
   if (command === "validate") {
     console.log("Validation succeeded! Sprints and decisions are well-formed.");
@@ -98,7 +98,6 @@ async function main() {
     console.log(`- Tasks Completed: ${evalRes.tasksCompleted ? "YES" : "NO"}`);
     console.log(`- PRs Merged: ${evalRes.prsMerged ? "YES" : "NO"}`);
     console.log(`- Checks Passed: ${evalRes.checksPassed ? "YES" : "NO"}`);
-    console.log(`- Approval Present: ${evalRes.approvalPresent ? "YES" : "NO"}`);
     if (evalRes.blockingReasons.length > 0) {
       console.log(`- Blockers:`);
       for (const b of evalRes.blockingReasons) console.log(`  * ${b}`);
@@ -121,28 +120,14 @@ async function main() {
       console.error(`Cannot advance ${sprint.id}; completion conditions not satisfied.`);
       process.exit(1);
     }
+    const sprintIssue = await gh.findIssueByMarker(sprintIssueMarker(sprint.id));
+    if (!sprintIssue) {
+      console.error(`Error: sprint issue for ${sprint.id} not found.`);
+      process.exit(1);
+    }
     console.log(`Advancing ${sprint.id}...`);
-    // Close sprint issue and propose next
-    const sprintMarker = sprintIssueMarker(sprint.id);
-    const sprintIssue = await gh.findIssueByMarker(sprintMarker);
-    if (sprintIssue && sprintIssue.state !== "CLOSED") {
-      await gh.createComment(
-        sprintIssue.number,
-        `🎉 **Sprint Completed**: Sprint **${sprint.id}** (${sprint.title}) is complete! Closing sprint issue.`
-      );
-      await gh.closeIssue(sprintIssue.number, "completed");
-      console.log(`Closed sprint issue #${sprintIssue.number} for ${sprint.id}`);
-    }
-
-    if (sprint.next) {
-      const nextSprint = sprintFile.sprints.find((s) => s.id === sprint.next);
-      if (nextSprint) {
-        await proposeSprint(sprintFile, nextSprint, gh);
-        console.log(`Advanced to next sprint: ${nextSprint.id}`);
-      }
-    } else {
-      console.log(`Sprint ${sprint.id} is the final sprint in roadmap!`);
-    }
+    const nextSprintId = await completeSprint(sprintFile, sprint, sprintIssue, gh);
+    console.log(nextSprintId ? `Advanced to next sprint: ${nextSprintId}` : `Sprint ${sprint.id} is the final sprint in roadmap!`);
     return;
   }
 
