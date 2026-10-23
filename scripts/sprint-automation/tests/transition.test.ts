@@ -52,7 +52,7 @@ test("autoAdvanceSprints reports sprint in progress when tasks are open", async 
     default_branch: "main",
     bot_login: "github-actions[bot]",
     approvers: ["raredevsgh"],
-    activation_agreements: 2,
+    activation_agreements: 0,
     decision: [],
     sprint: [
       {
@@ -87,7 +87,8 @@ test("autoAdvanceSprints reports sprint in progress when tasks are open", async 
   const res = await autoAdvanceSprints(sprintFile, gh);
   assert.strictEqual(res.status, "sprint_in_progress");
   assert.strictEqual(res.activeSprintId, "sprint-f0");
-  assert.deepStrictEqual(res.openTasks, ["F0-1", "F0-2"]);
+  assert.strictEqual(res.blockingReasons?.length, 2);
+  assert.match(res.blockingReasons![0], /F0-1/);
 });
 
 test("autoAdvanceSprints automatically closes completed sprint and proposes next sprint", async () => {
@@ -97,7 +98,7 @@ test("autoAdvanceSprints automatically closes completed sprint and proposes next
     default_branch: "main",
     bot_login: "github-actions[bot]",
     approvers: ["raredevsgh"],
-    activation_agreements: 2,
+    activation_agreements: 0,
     decision: [],
     sprint: [
       {
@@ -150,4 +151,67 @@ test("autoAdvanceSprints automatically closes completed sprint and proposes next
   const taskF1Issue = await gh.findIssueByMarker("<!-- sprint-automation:task:F1-1 -->");
   assert.ok(taskF1Issue);
   assert.strictEqual(taskF1Issue?.state, "OPEN");
+});
+
+function twoSprintFile(riskLevel: number) {
+  return validateSprintFile({
+    schema_version: 1,
+    repository: "raredevsgh/AMTRAV-frontend",
+    default_branch: "main",
+    bot_login: "github-actions[bot]",
+    approvers: ["raredevsgh"],
+    activation_agreements: 0,
+    decision: [],
+    sprint: [
+      {
+        id: "sprint-f0",
+        title: "Foundation Sprint",
+        order: 0,
+        risk_level: riskLevel,
+        assignees: ["raredevsgh"],
+        objective: "Test objective",
+        next: "sprint-f1",
+        task: [{ key: "F0-1", title: "Task 1", required: true }],
+      },
+      {
+        id: "sprint-f1",
+        title: "Next Sprint",
+        order: 1,
+        risk_level: 1,
+        assignees: ["raredevsgh"],
+        objective: "Next objective",
+        task: [{ key: "F1-1", title: "Task 2", required: true }],
+      },
+    ],
+  });
+}
+
+test("autoAdvanceSprints does not complete a sprint whose task was closed as not planned", async () => {
+  const sprintFile = twoSprintFile(1);
+  const gh = new DryRunGitHubClient();
+  const proposed = await proposeSprint(sprintFile, sprintFile.sprints[0], gh);
+  await gh.closeIssue(proposed.taskIssueNumbers["F0-1"], "not planned");
+
+  const res = await autoAdvanceSprints(sprintFile, gh);
+  assert.strictEqual(res.status, "sprint_in_progress");
+  assert.match(res.blockingReasons![0], /NOT_PLANNED/);
+});
+
+test("autoAdvanceSprints waits for the owner's approval before completing a Level 3 sprint", async () => {
+  const sprintFile = twoSprintFile(3);
+  const gh = new DryRunGitHubClient();
+  const proposed = await proposeSprint(sprintFile, sprintFile.sprints[0], gh);
+  await gh.closeIssue(proposed.taskIssueNumbers["F0-1"]);
+
+  const waiting = await autoAdvanceSprints(sprintFile, gh);
+  assert.strictEqual(waiting.status, "awaiting_activation");
+
+  const [readyToStart] = await gh.getComments(proposed.sprintIssueNumber);
+  gh.addThumbsUp(readyToStart.id, "someone-else");
+  assert.strictEqual((await autoAdvanceSprints(sprintFile, gh)).status, "awaiting_activation");
+
+  gh.addThumbsUp(readyToStart.id, "raredevsgh");
+  const res = await autoAdvanceSprints(sprintFile, gh);
+  assert.strictEqual(res.status, "sprint_advanced");
+  assert.strictEqual(res.nextSprintId, "sprint-f1");
 });

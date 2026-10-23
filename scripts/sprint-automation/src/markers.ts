@@ -14,11 +14,3 @@ export function taskIssueMarker(taskKey: string): string {
 export function readyToStartMarker(sprintId: string): string {
   return `<!-- sprint-automation:ready-to-start:${sprintId} -->`;
 }
-
-export function readyToCompleteMarker(sprintId: string, definitionHash: string): string {
-  return `<!-- sprint-automation:ready-to-complete:${sprintId}:${definitionHash} -->`;
-}
-
-export function readyToCompletePrefix(sprintId: string): string {
-  return `<!-- sprint-automation:ready-to-complete:${sprintId}:`;
-}
