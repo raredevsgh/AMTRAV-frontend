@@ -4,6 +4,7 @@
 #
 # The admin panel is planned against the backend API contract published at
 # https://dev.amortrav.com/swagger-ui/ (OpenAPI: /api/v1/openapi.json).
+# Avoid square brackets inside strings in arrays: this parser ends an array at the first ].
 
 schema_version = 1
 repository = "raredevsgh/AMTRAV-frontend"
@@ -67,7 +68,7 @@ acceptance_criteria = [
   "Types for User, Role, TokenPair, Credentials, Device, ProvisionedDevice, RegisterDevice, UpdateDevice, DeviceAudit, FileMetadata, JobReceipt, JobResult, ManufacturerResponse, RoleUpdate and ErrorResponse match /api/v1/openapi.json.",
   "Mock fixtures return those DTOs, paginate with limit and offset, and use the API error envelope.",
   "App Shell shows the signed-in user and role; navigation shows only the sections the role can use.",
-  "Routes /login, /devices, /devices/[id], /users and /files exist with breadcrumbs and metadata.",
+  "Routes /login, /devices, /devices/{id}, /users and /files exist with breadcrumbs and metadata.",
   "pnpm lint:admin and pnpm build:admin pass with zero warnings.",
 ]
 checks_required = true
