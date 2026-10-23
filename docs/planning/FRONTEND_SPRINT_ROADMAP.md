@@ -118,3 +118,14 @@ flowchart LR
   - `F5-3`: Implement error boundaries, toast notifications for API failures, and loading skeleton states.
   - `F5-4`: Add Playwright / Vitest integration tests covering full lifecycle: Batch creation -> Stock receipt -> Sales dispatch -> Scan verification.
 - **Exit Gate**: Full end-to-end flow verified against live backend: Batch creation -> Stock receipt -> Sales dispatch -> Scan verification -> Sales record.
+
+---
+
+## 4. Marketing Site (`landing_page`)
+
+The public marketing site is tracked outside the F0–F5 admin sprints, with GitHub issues labelled [`landing_page`](https://github.com/raredevsgh/AMTRAV-frontend/issues?q=label%3Alanding_page).
+
+- **Done:** four routes (`/`, `/features`, `/how-it-works`, `/for-brands`) built from the [AMORTRAV Figma file](https://www.figma.com/design/ATFfIHtQWHYG6S7rLRQCtG/AMORTRAV?node-id=2-2), desktop and mobile, merged in #29 (recorded in #30).
+- **Waiting on owner input:** footer link destinations (#31), app-store links (#33), "Talk to us" / "Open the console" destinations (#34), testimonial content (#36), web font decision (#38), `experimental.agentFeedback` setting (#42).
+- **Ready for collaborators:** social links once URLs are known (#32), `[VERSION]` placeholder (#37), image compression (#40), Safari/iOS QA (#41).
+- **Needs design or backend work first:** tablet layout (#39), waitlist endpoint for the email signup (#35, depends on the backend).
