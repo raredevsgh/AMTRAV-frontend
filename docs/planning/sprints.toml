@@ -11,7 +11,7 @@ repository = "raredevsgh/AMTRAV-frontend"
 default_branch = "main"
 bot_login = "github-actions[bot]"
 approvers = ["raredevsgh"]
-activation_agreements = 2
+activation_agreements = 0
 
 [[decision]]
 id = "FD1"
