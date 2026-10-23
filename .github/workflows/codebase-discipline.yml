@@ -16,7 +16,7 @@ jobs:
   dependencies:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # the diff needs the merge base
       - name: Dependency changes are justified
@@ -53,7 +53,7 @@ jobs:
       - if: env.ANTHROPIC_API_KEY == ''
         run: echo "::notice::ANTHROPIC_API_KEY is not set; skipping the AI review."
       - if: env.ANTHROPIC_API_KEY != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - if: env.ANTHROPIC_API_KEY != ''
         uses: anthropics/claude-code-action@v1
         with:
