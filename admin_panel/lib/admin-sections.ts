@@ -1,37 +1,53 @@
+export type AdminRole = "administrator" | "manufacturer";
+
 export type AdminSection = {
   href: string;
   label: string;
   description: string;
+  roles?: readonly AdminRole[];
 };
 
-// The five MVP admin sections, in navigation order. Shared by pages,
-// breadcrumbs and the sidebar.
+// Section navigation configuration matching the OpenAPI contract and Sprint F0 roadmap.
+// In F0-3, the App Shell will filter navigation items based on the signed-in user's role:
+// - administrator: Devices, Users, Files
+// - manufacturer: Devices, Files
 export const adminSections = {
-  dashboard: {
-    href: "/dashboard",
-    label: "Dashboard",
-    description:
-      "Overview of QR bags generated, bags in sales custody, warehouse stock and total sold.",
+  devices: {
+    href: "/devices",
+    label: "Devices",
+    description: "Manage registered AMTRAV devices, claim codes and audit logs.",
+    roles: ["administrator", "manufacturer"],
   },
-  manufacturers: {
-    href: "/manufacturers",
-    label: "Manufacturers",
-    description: "Manufacturer accounts and QR batch generation.",
+  users: {
+    href: "/users",
+    label: "Users",
+    description: "Manage user accounts, staff roles and administrative access.",
+    roles: ["administrator"],
   },
-  sales: {
-    href: "/sales",
-    label: "Sales",
-    description:
-      "Sales rep custody, stock handoffs and verified customer scans.",
+  files: {
+    href: "/files",
+    label: "Files",
+    description: "Access and upload private files, firmware bundles and exports.",
+    roles: ["administrator", "manufacturer"],
   },
-  inventory: {
-    href: "/inventory",
-    label: "Inventory",
-    description: "Warehouse stock balances and the stock movement ledger.",
-  },
-  finance: {
-    href: "/finance",
-    label: "Finance",
-    description: "Gross revenue and the sales transaction ledger.",
+  login: {
+    href: "/login",
+    label: "Sign In",
+    description: "Staff portal authentication for administrators and manufacturers.",
   },
 } as const satisfies Record<string, AdminSection>;
+
+export type AdminSectionKey = keyof typeof adminSections;
+
+/**
+ * Safely sanitizes dynamic route parameters before rendering or metadata generation.
+ * Handles URL decoding, whitespace trimming, and bounds checking to prevent UI truncation.
+ */
+export function sanitizeIdentifier(rawId: string): string {
+  try {
+    const decoded = decodeURIComponent(rawId);
+    return decoded.trim().slice(0, 100);
+  } catch {
+    return rawId.trim().slice(0, 100);
+  }
+}

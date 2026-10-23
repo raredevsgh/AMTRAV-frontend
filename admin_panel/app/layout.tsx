@@ -17,7 +17,8 @@ export const metadata: Metadata = {
     template: "%s | AMTRAV Admin",
     default: "AMTRAV Admin",
   },
-  description: "AMTRAV admin panel for manufacturers, inventory, sales and finance.",
+  description:
+    "AMTRAV Staff Portal for device registry, user administration and system files.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
