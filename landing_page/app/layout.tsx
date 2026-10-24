@@ -23,8 +23,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // data-scroll-behavior lets Next.js turn smooth scrolling off during route changes.
     <html lang="en" data-scroll-behavior="smooth" className={`${jetbrainsMono.variable} antialiased`}>
       <body className="font-sans">
-        <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[88px] pb-3 xl:gap-5 xl:px-5 xl:pt-[108px] xl:pb-5">
-          <Header />
+        <Header />
+        <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[76px] pb-3 xl:gap-5 xl:px-5 xl:pt-[84px] xl:pb-5">
           <main className="flex flex-col gap-4 xl:gap-5">{children}</main>
           <AppSignup />
           <Footer />

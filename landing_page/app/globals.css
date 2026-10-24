@@ -164,6 +164,22 @@ body {
     translate: 0 -8px;
   }
 }
+@keyframes slide-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes ticker {
   to {
     translate: -50% 0;
