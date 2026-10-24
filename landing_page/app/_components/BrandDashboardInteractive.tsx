@@ -21,19 +21,21 @@ const TABS: { id: TabKey; label: string }[] = [
 
 const TOUR_STEPS: TourStep[] = [
   // 1. Move to "Bags" tab and click
-  { tab: "bags", x: 12, y: 22, action: "click", delay: 2400 },
+  { tab: "bags", x: 12, y: 22, action: "click", delay: 2200 },
   // 2. Move into the live wave chart to inspect telemetry
   { tab: "bags", x: 58, y: 48, action: "hover", delay: 2800 },
   // 3. Move to "Updates" tab and click
-  { tab: "updates", x: 12, y: 31, action: "click", delay: 2400 },
+  { tab: "updates", x: 12, y: 31, action: "click", delay: 2200 },
   // 4. Inspect the OTA rollout progress card
-  { tab: "updates", x: 60, y: 52, action: "hover", delay: 2600 },
+  { tab: "updates", x: 60, y: 52, action: "hover", delay: 2800 },
   // 5. Move to "New batch" tab and click
-  { tab: "batch", x: 12, y: 40, action: "click", delay: 2400 },
-  // 6. Move to "Files" tab and click
-  { tab: "files", x: 12, y: 49, action: "click", delay: 2400 },
-  // 7. Hover over storage vault quota
-  { tab: "files", x: 55, y: 52, action: "hover", delay: 2600 },
+  { tab: "batch", x: 12, y: 40, action: "click", delay: 2200 },
+  // 6. Inspect Card insertion readiness
+  { tab: "batch", x: 58, y: 52, action: "hover", delay: 2800 },
+  // 7. Move to "Files" tab and click
+  { tab: "files", x: 12, y: 49, action: "click", delay: 2200 },
+  // 8. Inspect Vault storage quota
+  { tab: "files", x: 58, y: 52, action: "hover", delay: 2800 },
 ];
 
 export default function BrandDashboardInteractive() {
@@ -53,11 +55,10 @@ export default function BrandDashboardInteractive() {
     let nextTimeout: NodeJS.Timeout | null = null;
 
     if (currentStep.action === "click") {
-      // Arrive, pause briefly, then trigger click
       clickTimeout = setTimeout(() => {
         setIsClicking(true);
         setActiveTab(currentStep.tab);
-        setTimeout(() => setIsClicking(false), 260);
+        setTimeout(() => setIsClicking(false), 240);
       }, 500);
     }
 
@@ -84,6 +85,8 @@ export default function BrandDashboardInteractive() {
       setIsRealUserHovering(false);
     }, 6000);
   };
+
+  const isVirtualHovering = !isRealUserHovering && currentStep.action === "hover";
 
   return (
     <div
@@ -197,7 +200,27 @@ export default function BrandDashboardInteractive() {
                 </div>
 
                 {/* Animated Wave Chart with Live Gliding Telemetry Pulse */}
-                <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white p-3 sm:p-3.5">
+                <div
+                  className={`group relative overflow-hidden rounded-xl border bg-white p-3 sm:p-3.5 transition-all duration-300 ${
+                    isVirtualHovering && currentStep.tab === "bags"
+                      ? "border-[#0B1B3D]/30 shadow-xs bg-[#FAFBFD]"
+                      : "border-[#E4E7EE] hover:border-[#0B1B3D]/30 hover:bg-[#FAFBFD]"
+                  }`}
+                >
+                  {/* Floating Inspection Pill */}
+                  <div
+                    className={`flex items-center justify-between pb-1 text-[10px] transition-all duration-300 ${
+                      isVirtualHovering && currentStep.tab === "bags"
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                    }`}
+                  >
+                    <span className="rounded bg-[#EAF0FF] px-2 py-0.5 font-semibold text-[#1F3FBF]">
+                      Live telemetry
+                    </span>
+                    <span className="font-medium text-[#5A6377]">Today: 8 made, 4 paired</span>
+                  </div>
+
                   <svg viewBox="0 0 300 80" aria-hidden="true" className="block h-auto w-full">
                     {/* Primary Dark Navy Curve */}
                     <path
@@ -243,7 +266,7 @@ export default function BrandDashboardInteractive() {
 
                 {/* Clean Serials Status Table */}
                 <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white text-xs">
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D] tabular-nums">
                       AMT-C055-00F3A1
                     </span>
@@ -251,7 +274,7 @@ export default function BrandDashboardInteractive() {
                       Paired
                     </span>
                   </div>
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D] tabular-nums">
                       AMT-CI70-0012B7
                     </span>
@@ -259,7 +282,7 @@ export default function BrandDashboardInteractive() {
                       In stock
                     </span>
                   </div>
-                  <div className="flex items-center justify-between px-3.5 py-2.5">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D] tabular-nums">
                       AMT-WK40-1A09C3
                     </span>
@@ -296,20 +319,47 @@ export default function BrandDashboardInteractive() {
                   </div>
                 </div>
 
-                {/* Firmware Progress Graph */}
-                <div className="flex flex-col justify-center rounded-xl border border-[#E4E7EE] bg-white p-4">
+                {/* Firmware Progress Graph with Live Hover Pill */}
+                <div
+                  className={`group relative flex flex-col justify-center rounded-xl border bg-white p-4 transition-all duration-300 ${
+                    isVirtualHovering && currentStep.tab === "updates"
+                      ? "border-[#0B1B3D]/30 shadow-xs bg-[#FAFBFD]"
+                      : "border-[#E4E7EE] hover:border-[#0B1B3D]/30 hover:bg-[#FAFBFD]"
+                  }`}
+                >
                   <div className="flex items-center justify-between text-[11px] text-[#4A5266]">
-                    <span>OTA Rollout progress</span>
-                    <span className="font-semibold text-[#0B1B3D]">7 of 8 completed</span>
+                    <span className="font-medium">OTA Rollout progress</span>
+                    <span className="font-semibold text-[#0B1B3D] tabular-nums">7 of 8 completed</span>
                   </div>
-                  <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#F1F2F5]">
-                    <div className="h-full w-[89%] rounded-full bg-[#0B1B3D] transition-all duration-500" />
+
+                  {/* Inspection Pill */}
+                  <div
+                    className={`mt-1.5 flex items-center justify-between text-[10px] transition-all duration-300 ${
+                      isVirtualHovering && currentStep.tab === "updates"
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                    }`}
+                  >
+                    <span className="rounded bg-[#EAF0FF] px-2 py-0.5 font-semibold text-[#1F3FBF]">
+                      Stage 3 active • 0 error reports
+                    </span>
+                    <span className="font-medium text-[#5A6377]">89% deployed</span>
+                  </div>
+
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#F1F2F5]">
+                    <div
+                      className={`h-full w-[89%] rounded-full transition-colors duration-300 ${
+                        isVirtualHovering && currentStep.tab === "updates"
+                          ? "bg-[#2A4BD7]"
+                          : "bg-[#0B1B3D] group-hover:bg-[#2A4BD7]"
+                      }`}
+                    />
                   </div>
                 </div>
 
                 {/* Release List */}
                 <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white text-xs">
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D]">
                       Firmware v2.4.1
                     </span>
@@ -317,7 +367,7 @@ export default function BrandDashboardInteractive() {
                       Active
                     </span>
                   </div>
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D]">
                       Firmware v2.4.0
                     </span>
@@ -325,7 +375,7 @@ export default function BrandDashboardInteractive() {
                       Deployed
                     </span>
                   </div>
-                  <div className="flex items-center justify-between px-3.5 py-2.5">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D]">
                       Firmware v2.3.9
                     </span>
@@ -362,20 +412,47 @@ export default function BrandDashboardInteractive() {
                   </div>
                 </div>
 
-                {/* Batch Status Card */}
-                <div className="flex flex-col justify-center rounded-xl border border-[#E4E7EE] bg-white p-4">
+                {/* Batch Status Card with Live Hover Reaction */}
+                <div
+                  className={`group relative flex flex-col justify-center rounded-xl border bg-white p-4 transition-all duration-300 ${
+                    isVirtualHovering && currentStep.tab === "batch"
+                      ? "border-[#0B1B3D]/30 shadow-xs bg-[#FAFBFD]"
+                      : "border-[#E4E7EE] hover:border-[#0B1B3D]/30 hover:bg-[#FAFBFD]"
+                  }`}
+                >
                   <div className="flex items-center justify-between text-[11px] text-[#4A5266]">
-                    <span>Card insertion readiness</span>
-                    <span className="font-semibold text-[#0B1B3D]">50 of 50 printed</span>
+                    <span className="font-medium">Card insertion readiness</span>
+                    <span className="font-semibold text-[#0B1B3D] tabular-nums">50 of 50 printed</span>
                   </div>
-                  <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#F1F2F5]">
-                    <div className="h-full w-full rounded-full bg-[#0B1B3D]" />
+
+                  {/* Inspection Pill */}
+                  <div
+                    className={`mt-1.5 flex items-center justify-between text-[10px] transition-all duration-300 ${
+                      isVirtualHovering && currentStep.tab === "batch"
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                    }`}
+                  >
+                    <span className="rounded bg-[#EAF0FF] px-2 py-0.5 font-semibold text-[#1F3FBF]">
+                      Ready for box sealing ✓
+                    </span>
+                    <span className="font-medium text-[#5A6377]">50 QR codes signed</span>
+                  </div>
+
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#F1F2F5]">
+                    <div
+                      className={`h-full w-full rounded-full transition-colors duration-300 ${
+                        isVirtualHovering && currentStep.tab === "batch"
+                          ? "bg-[#2A4BD7]"
+                          : "bg-[#0B1B3D] group-hover:bg-[#2A4BD7]"
+                      }`}
+                    />
                   </div>
                 </div>
 
                 {/* Serials in Batch */}
                 <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white text-xs">
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D] tabular-nums">
                       AMT-C055-00F3A2
                     </span>
@@ -383,7 +460,7 @@ export default function BrandDashboardInteractive() {
                       Ready
                     </span>
                   </div>
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D] tabular-nums">
                       AMT-C055-00F3A3
                     </span>
@@ -391,7 +468,7 @@ export default function BrandDashboardInteractive() {
                       Ready
                     </span>
                   </div>
-                  <div className="flex items-center justify-between px-3.5 py-2.5">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D] tabular-nums">
                       AMT-C055-00F3A4
                     </span>
@@ -428,20 +505,47 @@ export default function BrandDashboardInteractive() {
                   </div>
                 </div>
 
-                {/* Storage Card */}
-                <div className="flex flex-col justify-center rounded-xl border border-[#E4E7EE] bg-white p-4">
+                {/* Storage Card with Live Hover Reaction */}
+                <div
+                  className={`group relative flex flex-col justify-center rounded-xl border bg-white p-4 transition-all duration-300 ${
+                    isVirtualHovering && currentStep.tab === "files"
+                      ? "border-[#0B1B3D]/30 shadow-xs bg-[#FAFBFD]"
+                      : "border-[#E4E7EE] hover:border-[#0B1B3D]/30 hover:bg-[#FAFBFD]"
+                  }`}
+                >
                   <div className="flex items-center justify-between text-[11px] text-[#4A5266]">
-                    <span>Vault storage</span>
-                    <span className="font-semibold text-[#0B1B3D]">4.8 MB of 1 GB</span>
+                    <span className="font-medium">Vault storage</span>
+                    <span className="font-semibold text-[#0B1B3D] tabular-nums">4.8 MB of 1 GB</span>
                   </div>
-                  <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#F1F2F5]">
-                    <div className="h-full w-[12%] rounded-full bg-[#0B1B3D]" />
+
+                  {/* Inspection Pill */}
+                  <div
+                    className={`mt-1.5 flex items-center justify-between text-[10px] transition-all duration-300 ${
+                      isVirtualHovering && currentStep.tab === "files"
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                    }`}
+                  >
+                    <span className="rounded bg-[#EAF0FF] px-2 py-0.5 font-semibold text-[#1F3FBF]">
+                      995.2 MB free space (99.5% available)
+                    </span>
+                    <span className="font-medium text-[#5A6377]">Encrypted & synced</span>
+                  </div>
+
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[#F1F2F5]">
+                    <div
+                      className={`h-full w-[12%] rounded-full transition-colors duration-300 ${
+                        isVirtualHovering && currentStep.tab === "files"
+                          ? "bg-[#2A4BD7]"
+                          : "bg-[#0B1B3D] group-hover:bg-[#2A4BD7]"
+                      }`}
+                    />
                   </div>
                 </div>
 
                 {/* Files List */}
                 <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white text-xs">
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D]">
                       spec-sheet-carryon.pdf
                     </span>
@@ -449,7 +553,7 @@ export default function BrandDashboardInteractive() {
                       2.4 MB
                     </span>
                   </div>
-                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
+                  <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D]">
                       declaration-conformity.pdf
                     </span>
@@ -457,7 +561,7 @@ export default function BrandDashboardInteractive() {
                       1.1 MB
                     </span>
                   </div>
-                  <div className="flex items-center justify-between px-3.5 py-2.5">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 transition-colors hover:bg-[#FAFBFD]">
                     <span className="font-semibold tracking-wide text-[#0B1B3D]">
                       firmware-v2.4.1.bin
                     </span>
