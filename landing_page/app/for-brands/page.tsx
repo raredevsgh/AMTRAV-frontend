@@ -29,7 +29,7 @@ const ROWS = [
 
 function ConsolePreview() {
   return (
-    <div aria-hidden className="flex w-full justify-center p-6 xl:w-[670px] xl:shrink-0">
+    <div aria-hidden data-reveal className="flex w-full justify-center p-6 [--motion-delay:160ms] xl:w-[670px] xl:shrink-0">
       <div className="flex w-[278px] -rotate-2 flex-col gap-3.5 overflow-clip rounded-[28px] bg-white p-[22px] shadow-lifted xl:w-[622px]">
         <div className="flex items-center justify-between">
           <span className="text-h3-m font-semibold whitespace-nowrap text-navy xl:text-h4">Amortrav console</span>
@@ -61,10 +61,14 @@ function ConsolePreview() {
 function ShipSmartBags() {
   return (
     <section className="flex flex-col items-center gap-7 overflow-clip px-5 py-10 xl:flex-row xl:gap-12 xl:rounded-[32px] xl:px-14 xl:py-16">
-      <div className="flex w-full flex-col items-start gap-[22px] xl:w-[570px] xl:shrink-0">
-        <p className="flex h-8 items-center rounded-full bg-blue-pale px-3.5 text-caption-m whitespace-nowrap text-brand xl:text-caption">For luggage makers</p>
-        <h2 className="text-h1-m font-bold text-navy xl:text-h1">Ship smart bags without building the cloud.</h2>
-        <ul className="flex w-full flex-col gap-2.5">
+      <div data-stagger className="flex w-full flex-col items-start gap-[22px] xl:w-[570px] xl:shrink-0">
+        <p data-reveal className="flex h-8 items-center rounded-full bg-blue-pale px-3.5 text-caption-m whitespace-nowrap text-brand xl:text-caption">
+          For luggage makers
+        </p>
+        <h2 data-reveal className="text-h1-m font-bold text-navy xl:text-h1">
+          Ship smart bags without building the cloud.
+        </h2>
+        <ul data-reveal className="flex w-full flex-col gap-2.5">
           {POINTS.map((point) => (
             <li key={point} className="flex items-center gap-3 rounded-[18px] bg-white px-4 py-3.5">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-navy">
@@ -74,7 +78,9 @@ function ShipSmartBags() {
             </li>
           ))}
         </ul>
-        <Button href="#" label="Open the console" size="l" />
+        <div data-reveal>
+          <Button href="#" label="Open the console" size="l" />
+        </div>
       </div>
       <ConsolePreview />
     </section>
@@ -93,15 +99,19 @@ const TOOLS = [
 function ConsoleTools() {
   return (
     <section className="flex flex-col gap-8 overflow-clip rounded-3xl bg-white px-5 py-8 xl:rounded-[32px] xl:p-14">
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
+      <div data-reveal className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">What&apos;s in the console</h2>
         <p className="text-small text-mid xl:w-[380px] xl:shrink-0 xl:text-body">
           A web console for your ops team. Fleet tools turn on as your bags start reporting in.
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[repeat(4,310px)] xl:items-start">
+      <div data-stagger className="grid grid-cols-1 gap-4 xl:grid-cols-[repeat(4,310px)] xl:items-start">
         {TOOLS.map(({ title, text, live }) => (
-          <div key={title} className="flex flex-col gap-3.5 overflow-clip rounded-[28px] bg-white p-7 shadow-card xl:min-h-[164px]">
+          <div
+            key={title}
+            data-reveal
+            className="flex flex-col gap-3.5 overflow-clip rounded-[28px] bg-white p-7 shadow-card transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1 xl:min-h-[164px]"
+          >
             <div className="flex items-center gap-2.5">
               <h3 className="flex-1 text-h3-m font-semibold text-navy xl:text-h4">{title}</h3>
               <StatusPill live={live} />
@@ -123,10 +133,12 @@ const ONBOARDING = [
 function Onboarding() {
   return (
     <section className="flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:rounded-[32px] xl:p-14">
-      <h2 className="text-h1-m font-bold text-white xl:text-h1">Live in a week, not a quarter</h2>
-      <ol className="flex flex-col gap-4 xl:flex-row">
+      <h2 data-reveal className="text-h1-m font-bold text-white xl:text-h1">
+        Live in a week, not a quarter
+      </h2>
+      <ol data-stagger className="flex flex-col gap-4 xl:flex-row">
         {ONBOARDING.map(({ title, text }, i) => (
-          <li key={title} className="flex flex-col items-start gap-3 overflow-clip rounded-3xl bg-navy-deep p-6 xl:flex-1">
+          <li key={title} data-reveal className="flex flex-col items-start gap-3 overflow-clip rounded-3xl bg-navy-deep p-6 xl:flex-1">
             <span className="flex size-12 items-center justify-center rounded-full bg-blue-faint text-h3-m font-semibold text-navy xl:text-h4">{i + 1}</span>
             <h3 className="text-h3-m font-semibold text-white xl:text-h4">{title}</h3>
             <p className="text-body-m text-blue-pale xl:text-body">{text}</p>

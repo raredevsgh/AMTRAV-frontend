@@ -5,25 +5,33 @@ import MobileMenu from "./MobileMenu";
 import { GET_THE_APP_HREF } from "./nav";
 import SiteNav from "./SiteNav";
 
-// Figma "Header / Desktop" (2020:498) and "Header / Mobile" (2020:515).
+// Figma "Header / Desktop" (2020:498) and "Header / Mobile" (2020:515). The header stays fixed
+// while the page scrolls; the outer wrapper repeats the page's 1440px column and gutters.
 export default function Header() {
   return (
-    <header className="absolute inset-x-3 top-3 z-10 flex items-center gap-2 overflow-clip rounded-full bg-white py-2 pr-2 pl-5 shadow-hairline xl:inset-x-5 xl:top-5 xl:justify-between xl:gap-0 xl:bg-white/60 xl:py-2.5 xl:pr-2.5 xl:pl-7 xl:backdrop-blur-[50px]">
-      <Link href="/" className="relative h-6 w-[116px] shrink-0 xl:h-[30.76px] xl:w-[150px]">
-        <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="150px" className="object-cover" preload />
-      </Link>
+    <div className="pointer-events-none fixed inset-x-0 top-0 z-40">
+      <div className="mx-auto max-w-[1440px] px-3 pt-3 xl:px-5 xl:pt-5">
+        <header className="glass pointer-events-auto relative flex items-center gap-2 overflow-clip rounded-full py-2 pr-2 pl-5 xl:justify-between xl:gap-0 xl:py-2.5 xl:pr-2.5 xl:pl-7">
+          <Link
+            href="/"
+            className="relative h-6 w-[116px] shrink-0 rounded-sm transition-opacity duration-200 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand xl:h-[30.76px] xl:w-[150px]"
+          >
+            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="150px" className="object-cover" preload />
+          </Link>
 
-      <div className="hidden xl:block">
-        <SiteNav />
-      </div>
+          <div className="hidden xl:block">
+            <SiteNav />
+          </div>
 
-      <div className="flex flex-1 items-center justify-end gap-2 xl:hidden">
-        <Button href={GET_THE_APP_HREF} label="Get the app" size="xs" />
-        <MobileMenu />
+          <div className="flex flex-1 items-center justify-end gap-2 xl:hidden">
+            <Button href={GET_THE_APP_HREF} label="Get the app" size="xs" />
+            <MobileMenu />
+          </div>
+          <div className="hidden xl:block">
+            <Button href={GET_THE_APP_HREF} label="Get the app" />
+          </div>
+        </header>
       </div>
-      <div className="hidden xl:block">
-        <Button href={GET_THE_APP_HREF} label="Get the app" />
-      </div>
-    </header>
+    </div>
   );
 }

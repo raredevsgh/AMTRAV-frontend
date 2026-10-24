@@ -12,7 +12,8 @@ export const metadata: Metadata = { title: "Features · AMORTRAV" };
 
 function FeatureCard({ title, text, children }: { title: string; text: string; children: React.ReactNode }) {
   return (
-    <div className="flex h-[354px] w-[296px] shrink-0 flex-col gap-3.5 overflow-clip rounded-3xl bg-white p-6 shadow-card xl:h-[363px] xl:w-auto xl:flex-1 xl:rounded-[28px] xl:p-7">
+    <div className="flex h-[354px] w-[296px] shrink-0 flex-col gap-3.5 overflow-clip rounded-3xl bg-white p-6 shadow-card transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1 xl:h-[363px] xl:w-auto xl:flex-1 xl:rounded-[28px] xl:p-7"
+    >
       <div className="flex min-h-14 w-full items-start gap-2">
         <h3 className="flex-1 text-h3-m font-semibold text-navy xl:text-h4">{title}</h3>
         <StatusPill live={false} />
@@ -26,12 +27,12 @@ function FeatureCard({ title, text, children }: { title: string; text: string; c
 function Features() {
   return (
     <section className="flex flex-col gap-6 overflow-clip py-8 xl:gap-9 xl:rounded-[32px] xl:px-14 xl:py-16">
-      <div className="flex flex-col px-5 xl:flex-row xl:items-end xl:justify-between xl:gap-8 xl:px-0">
+      <div data-reveal className="flex flex-col px-5 xl:flex-row xl:items-end xl:justify-between xl:gap-8 xl:px-0">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">Your bag has a few new tricks.</h2>
         <p className="text-body-m text-mid xl:w-[380px] xl:shrink-0 xl:text-body">Some features are ready to use. Others are still in development.</p>
       </div>
 
-      <div className="px-5 xl:px-0">
+      <div data-reveal className="px-5 xl:px-0">
         <div className="flex flex-col items-center gap-5 rounded-3xl bg-blue-pale px-4 pt-6 pb-4 xl:h-[300px] xl:flex-row xl:gap-8 xl:rounded-[28px] xl:p-8">
           <div className="flex w-full flex-col gap-3.5 px-2 xl:w-[596px] xl:shrink-0 xl:px-0">
             <h3 className="text-h2-m font-semibold text-navy xl:text-h3">Pair your bag in seconds</h3>
@@ -44,7 +45,7 @@ function Features() {
       </div>
 
       <div className="flex flex-col xl:gap-[18px]">
-        <div className="flex gap-3 overflow-x-auto px-5 pt-1 pb-6 [scrollbar-width:none] xl:gap-[18px] xl:overflow-visible xl:p-0">
+        <div data-reveal="group" data-stagger className="flex gap-3 overflow-x-auto px-5 pt-1 pb-6 [scrollbar-width:none] xl:gap-[18px] xl:overflow-visible xl:p-0">
           <FeatureCard title="Know where it is" text="Last known spot, and how fresh that fix is.">
             <div className="flex h-[156px] w-full shrink-0 items-center justify-center rounded-[20px] bg-surface">
               <Image src="/img/location-map-m.svg" alt="" width={240} height={120} className="h-[119.94px] w-[239.88px] xl:hidden" />
@@ -66,14 +67,14 @@ function Features() {
                 <span className="font-mono text-mono-m font-medium text-mid xl:text-mono">[VERSION]</span>
               </div>
               <div className="h-2.5 w-full overflow-clip rounded-full bg-blue-pale">
-                <div className="h-2.5 w-[62%] rounded-full bg-brand" />
+                <div data-reveal="grow" className="h-2.5 w-[62%] rounded-full bg-brand [--motion-delay:300ms]" />
               </div>
               <span className="text-caption-m whitespace-nowrap text-mid xl:text-caption">Signed and verified before install</span>
             </div>
           </FeatureCard>
         </div>
 
-        <div className="px-5 xl:px-0">
+        <div data-reveal className="px-5 xl:px-0">
           <div className="flex flex-col items-center gap-5 overflow-clip rounded-3xl bg-white p-6 shadow-card xl:flex-row xl:gap-10 xl:rounded-[28px] xl:p-7">
             <div className="flex w-full flex-col gap-3.5 xl:flex-1">
               <h3 className="text-h3-m font-semibold text-navy xl:text-h4">Your docs, in the app</h3>
@@ -108,7 +109,7 @@ const STATUS = [
 function WhatsLive() {
   return (
     <section className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 pt-8 pb-6 xl:flex-row xl:items-start xl:gap-10 xl:rounded-[32px] xl:p-14">
-      <div className="flex flex-col gap-4 xl:w-[429px] xl:shrink-0">
+      <div data-reveal className="flex flex-col gap-4 xl:w-[429px] xl:shrink-0">
         <h2 className="text-h1-m font-bold text-navy xl:text-h1">
           What&apos;s live, <br />
           what&apos;s next
@@ -125,9 +126,9 @@ function WhatsLive() {
           </span>
         </div>
       </div>
-      <ul className="flex flex-col xl:min-w-0 xl:flex-1">
+      <ul data-stagger className="flex flex-col xl:min-w-0 xl:flex-1">
         {STATUS.map(({ label, live }) => (
-          <li key={label} className="flex items-center gap-3 border-t border-surface py-4 xl:gap-5 xl:px-1 xl:py-[18px]">
+          <li key={label} data-reveal className="flex items-center gap-3 border-t border-surface py-4 xl:gap-5 xl:px-1 xl:py-[18px]">
             <span className="flex-1 text-h3-m font-semibold text-navy xl:text-h4">{label}</span>
             <StatusPill live={live} />
           </li>
@@ -139,11 +140,11 @@ function WhatsLive() {
 
 function OnTheRoad() {
   return (
-    <section className="flex flex-col gap-4 xl:flex-row xl:gap-5">
-      <div className="relative h-[300px] overflow-hidden rounded-3xl xl:h-[420px] xl:flex-[610_1_0] xl:rounded-[32px]">
+    <section data-stagger className="flex flex-col gap-4 xl:flex-row xl:gap-5">
+      <div data-reveal className="relative h-[300px] overflow-hidden rounded-3xl xl:h-[420px] xl:flex-[610_1_0] xl:rounded-[32px]">
         <Image src="/img/tile-carryon.jpg" alt="A traveller wheeling a silver suitcase" fill sizes="(min-width: 1280px) 610px, 100vw" className="object-cover" />
       </div>
-      <div className="flex flex-col items-start justify-center gap-4 overflow-clip rounded-3xl bg-blue-faint px-6 py-8 xl:h-[420px] xl:flex-[770_1_0] xl:gap-[18px] xl:rounded-[32px] xl:p-12">
+      <div data-reveal className="flex flex-col items-start justify-center gap-4 overflow-clip rounded-3xl bg-blue-faint px-6 py-8 xl:h-[420px] xl:flex-[770_1_0] xl:gap-[18px] xl:rounded-[32px] xl:p-12">
         <h2 className="text-h1-m font-bold text-navy xl:w-[441px] xl:text-h1">Looks like a bag. Thinks like a phone.</h2>
         <p className="text-body-m text-navy xl:w-[456px] xl:text-body">
           The familiar design of everyday luggage, with a connected system built into its shell.
