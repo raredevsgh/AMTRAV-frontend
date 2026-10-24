@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import BrandSignupForm from "./BrandSignupForm";
+import BrandDashboardInteractive from "../_components/BrandDashboardInteractive";
 
 export const metadata: Metadata = {
   title: "For brands",
@@ -142,110 +143,8 @@ export default function ForBrandsPage() {
               </div>
             </div>
 
-            {/* Right: Console Window Mockup */}
-            <div
-              role="img"
-              aria-label="Amortrav dashboard preview"
-              className="w-full max-w-[560px] justify-self-center xl:justify-self-end"
-            >
-              <div className="overflow-hidden rounded-2xl border border-[#DCE1EA] bg-white shadow-[0_30px_70px_-30px_rgba(11,27,61,0.25)]">
-                {/* Window top bar */}
-                <div className="flex items-center justify-between border-b border-[#EEF0F4] px-4 py-3 bg-white">
-                  <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-[#DCE1EA]" />
-                    <span className="size-2 rounded-full bg-[#DCE1EA]" />
-                    <span className="size-2 rounded-full bg-[#DCE1EA]" />
-                    <span className="ml-2 text-xs font-medium text-[#5A6377]">Brand dashboard</span>
-                  </div>
-                  <span className="rounded-full bg-blue-pale/80 px-2 py-0.5 text-[10px] font-semibold text-brand uppercase tracking-wider">
-                    Preview
-                  </span>
-                </div>
-
-                {/* Window body */}
-                <div className="flex">
-                  {/* Sidebar */}
-                  <div className="hidden w-28 flex-col gap-1 border-r border-[#EEF0F4] p-3 sm:flex sm:w-32">
-                    <span className="flex h-8 items-center rounded-lg bg-[#EEF1F7] px-3 text-xs font-semibold text-[#0B1B3D]">
-                      Bags
-                    </span>
-                    <span className="flex h-8 items-center px-3 text-xs font-normal text-[#4A5266]">
-                      Updates
-                    </span>
-                    <span className="flex h-8 items-center px-3 text-xs font-normal text-[#4A5266]">
-                      New batch
-                    </span>
-                    <span className="flex h-8 items-center px-3 text-xs font-normal text-[#4A5266]">
-                      Files
-                    </span>
-                  </div>
-
-                  {/* Main dashboard content */}
-                  <div className="flex flex-1 flex-col gap-3.5 bg-[#F6F7F9] p-3.5 sm:gap-4 sm:p-5">
-                    {/* 3 Stats Boxes */}
-                    <div className="grid grid-cols-3 overflow-hidden rounded-xl border border-[#E4E7EE] bg-white">
-                      <div className="p-3 border-r border-[#E4E7EE] sm:p-3.5">
-                        <span className="text-[11px] font-normal text-[#4A5266]">Made</span>
-                        <div className="text-xl font-semibold text-[#0B1B3D] sm:text-2xl">8</div>
-                      </div>
-                      <div className="p-3 border-r border-[#E4E7EE] sm:p-3.5">
-                        <span className="text-[11px] font-normal text-[#4A5266]">Paired</span>
-                        <div className="text-xl font-semibold text-[#0B1B3D] sm:text-2xl">4</div>
-                      </div>
-                      <div className="p-3 sm:p-3.5">
-                        <span className="text-[11px] font-normal text-[#4A5266]">In stock</span>
-                        <div className="text-xl font-semibold text-[#0B1B3D] sm:text-2xl">3</div>
-                      </div>
-                    </div>
-
-                    {/* Live SVG Wave Chart */}
-                    <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white p-3 sm:p-3.5">
-                      <svg viewBox="0 0 300 80" aria-hidden="true" className="block h-auto w-full">
-                        <path
-                          d="M4 66 L30 58 L56 60 L82 46 L108 52 L134 34 L160 42 L186 26 L212 36 L238 18 L264 26 L296 8"
-                          fill="none"
-                          stroke="#0B1B3D"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M4 74 L30 70 L56 68 L82 62 L108 66 L134 54 L160 56 L186 46 L212 50 L238 42 L264 38 L296 34"
-                          fill="none"
-                          stroke="#2A4BD7"
-                          strokeOpacity="0.55"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-
-                    {/* Serials Status Table */}
-                    <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white text-xs">
-                      <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
-                        <span className="font-mono font-medium text-[#0B1B3D]">AMT-C055-00F3A1</span>
-                        <span className="rounded-full bg-[#EAF0FF] px-2.5 py-0.5 font-medium text-[#1F3FBF]">
-                          Paired
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between border-b border-[#F1F2F5] px-3.5 py-2.5">
-                        <span className="font-mono font-medium text-[#0B1B3D]">AMT-CI70-0012B7</span>
-                        <span className="rounded-full bg-[#F1F2F5] px-2.5 py-0.5 font-medium text-[#4A5266]">
-                          In stock
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between px-3.5 py-2.5">
-                        <span className="font-mono font-medium text-[#0B1B3D]">AMT-WK40-1A09C3</span>
-                        <span className="rounded-full bg-[#FFF1E3] px-2.5 py-0.5 font-medium text-[#9A4A07]">
-                          Disabled
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Right: Interactive Console Window Mockup */}
+            <BrandDashboardInteractive />
           </div>
         </div>
       </section>
