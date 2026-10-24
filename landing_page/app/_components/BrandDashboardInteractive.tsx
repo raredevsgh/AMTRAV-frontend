@@ -57,9 +57,9 @@ export default function BrandDashboardInteractive() {
         {/* Window Top Bar - clean & authentic matching Figma */}
         <div className="flex items-center justify-between border-b border-[#EEF0F4] bg-white px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-[#DCE1EA]" />
-            <span className="size-2 rounded-full bg-[#DCE1EA]" />
-            <span className="size-2 rounded-full bg-[#DCE1EA]" />
+            <span className="size-2.5 rounded-full bg-[#FF5F56]" />
+            <span className="size-2.5 rounded-full bg-[#FFBD2E]" />
+            <span className="size-2.5 rounded-full bg-[#27C93F]" />
             <span className="ml-2 text-xs font-medium text-[#5A6377]">
               Brand dashboard
             </span>
