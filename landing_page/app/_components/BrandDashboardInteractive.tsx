@@ -4,6 +4,14 @@ import { useEffect, useRef, useState } from "react";
 
 type TabKey = "bags" | "updates" | "batch" | "files";
 
+type TourStep = {
+  tab: TabKey;
+  x: number; // percentage
+  y: number; // percentage
+  action: "click" | "hover";
+  delay: number; // ms to dwell
+};
+
 const TABS: { id: TabKey; label: string }[] = [
   { id: "bags", label: "Bags" },
   { id: "updates", label: "Updates" },
@@ -11,49 +19,121 @@ const TABS: { id: TabKey; label: string }[] = [
   { id: "files", label: "Files" },
 ];
 
+const TOUR_STEPS: TourStep[] = [
+  // 1. Move to "Bags" tab and click
+  { tab: "bags", x: 12, y: 22, action: "click", delay: 2400 },
+  // 2. Move into the live wave chart to inspect telemetry
+  { tab: "bags", x: 58, y: 48, action: "hover", delay: 2800 },
+  // 3. Move to "Updates" tab and click
+  { tab: "updates", x: 12, y: 31, action: "click", delay: 2400 },
+  // 4. Inspect the OTA rollout progress card
+  { tab: "updates", x: 60, y: 52, action: "hover", delay: 2600 },
+  // 5. Move to "New batch" tab and click
+  { tab: "batch", x: 12, y: 40, action: "click", delay: 2400 },
+  // 6. Move to "Files" tab and click
+  { tab: "files", x: 12, y: 49, action: "click", delay: 2400 },
+  // 7. Hover over storage vault quota
+  { tab: "files", x: 55, y: 52, action: "hover", delay: 2600 },
+];
+
 export default function BrandDashboardInteractive() {
   const [activeTab, setActiveTab] = useState<TabKey>("bags");
-  const [isPaused, setIsPaused] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [isClicking, setIsClicking] = useState(false);
+  const [isRealUserHovering, setIsRealUserHovering] = useState(false);
   const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-play demo loop: plays continuously on its own like a product video
+  const currentStep = TOUR_STEPS[stepIndex];
+
+  // Autonomous walkthrough loop: glides the virtual cursor and clicks tabs
   useEffect(() => {
-    if (isPaused) return;
+    if (isRealUserHovering) return;
 
-    const interval = setInterval(() => {
-      setActiveTab((current) => {
-        const order: TabKey[] = ["bags", "updates", "batch", "files"];
-        const nextIndex = (order.indexOf(current) + 1) % order.length;
-        return order[nextIndex];
-      });
-    }, 4500);
+    let clickTimeout: NodeJS.Timeout | null = null;
+    let nextTimeout: NodeJS.Timeout | null = null;
 
-    return () => clearInterval(interval);
-  }, [isPaused]);
+    if (currentStep.action === "click") {
+      // Arrive, pause briefly, then trigger click
+      clickTimeout = setTimeout(() => {
+        setIsClicking(true);
+        setActiveTab(currentStep.tab);
+        setTimeout(() => setIsClicking(false), 260);
+      }, 500);
+    }
 
-  // When user interacts, pause briefly then gently resume auto-play
+    nextTimeout = setTimeout(() => {
+      setStepIndex((prev) => (prev + 1) % TOUR_STEPS.length);
+    }, currentStep.delay);
+
+    return () => {
+      if (clickTimeout) clearTimeout(clickTimeout);
+      if (nextTimeout) clearTimeout(nextTimeout);
+    };
+  }, [stepIndex, isRealUserHovering, currentStep]);
+
+  // When real user interacts, smoothly hide virtual cursor and yield control
   const handleUserSelect = (tab: TabKey) => {
     setActiveTab(tab);
-    setIsPaused(true);
+    setIsRealUserHovering(true);
+
+    const matchIdx = TOUR_STEPS.findIndex((s) => s.tab === tab && s.action === "click");
+    if (matchIdx !== -1) setStepIndex(matchIdx);
 
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
     pauseTimerRef.current = setTimeout(() => {
-      setIsPaused(false);
-    }, 8000);
+      setIsRealUserHovering(false);
+    }, 6000);
   };
 
   return (
     <div
       role="region"
       aria-label="Amortrav brand dashboard preview"
-      className="w-full max-w-[560px] justify-self-center font-sans xl:justify-self-end select-none"
-      onMouseEnter={() => setIsPaused(true)}
+      className="relative w-full max-w-[560px] justify-self-center font-sans xl:justify-self-end select-none"
+      onMouseEnter={() => {
+        if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+        setIsRealUserHovering(true);
+      }}
       onMouseLeave={() => {
         if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-        pauseTimerRef.current = setTimeout(() => setIsPaused(false), 2000);
+        pauseTimerRef.current = setTimeout(() => setIsRealUserHovering(false), 2000);
       }}
     >
-      <div className="overflow-hidden rounded-2xl border border-[#DCE1EA] bg-white shadow-[0_30px_70px_-30px_rgba(11,27,61,0.25)]">
+      <div className="relative overflow-hidden rounded-2xl border border-[#DCE1EA] bg-white shadow-[0_30px_70px_-30px_rgba(11,27,61,0.25)]">
+        {/* Virtual Animated Mouse Cursor (Autonomous Video Mode) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute z-30 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hidden sm:block"
+          style={{
+            left: `${currentStep.x}%`,
+            top: `${currentStep.y}%`,
+            opacity: isRealUserHovering ? 0 : 1,
+            transform: `translate(-3px, -2px) scale(${isClicking ? 0.86 : 1})`,
+          }}
+        >
+          {/* Subtle Click Ripple */}
+          {isClicking && (
+            <span className="absolute -left-2.5 -top-2.5 size-7 rounded-full bg-[#0B1B3D]/25 animate-ping" />
+          )}
+
+          {/* Crisp Dark Pointer with White Border */}
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="drop-shadow-[0_2px_5px_rgba(0,15,40,0.35)]"
+          >
+            <path
+              d="M4 3L11 21L14.5 13.5L22 10L4 3Z"
+              fill="#0B1B3D"
+              stroke="#FFFFFF"
+              strokeWidth="1.6"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+
         {/* Window Top Bar */}
         <div className="flex items-center border-b border-[#EEF0F4] bg-white px-4 py-3">
           <div className="flex items-center gap-2">
@@ -119,13 +199,6 @@ export default function BrandDashboardInteractive() {
                 {/* Animated Wave Chart with Live Gliding Telemetry Pulse */}
                 <div className="overflow-hidden rounded-xl border border-[#E4E7EE] bg-white p-3 sm:p-3.5">
                   <svg viewBox="0 0 300 80" aria-hidden="true" className="block h-auto w-full">
-                    <defs>
-                      <path
-                        id="mainWavePath"
-                        d="M4 66 L30 58 L56 60 L82 46 L108 52 L134 34 L160 42 L186 26 L212 36 L238 18 L264 26 L296 8"
-                      />
-                    </defs>
-
                     {/* Primary Dark Navy Curve */}
                     <path
                       d="M4 66 L30 58 L56 60 L82 46 L108 52 L134 34 L160 42 L186 26 L212 36 L238 18 L264 26 L296 8"
