@@ -93,6 +93,10 @@ body {
   color: var(--color-navy);
 }
 
+html, body {
+  overflow-x: clip;
+}
+
 /* Header liquid glass (Figma: White 60% fill, 50px background blur). The blur lives on a
    pseudo-element: backdrop-filter on the header itself would become the containing block of
    the mobile menu's fixed overlay. */
@@ -163,6 +167,25 @@ body {
     opacity: 0;
     translate: 0 -8px;
   }
+}
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-8px) rotate(var(--r, 0deg));
+  }
+}
+.animate-float {
+  animation: float 5s ease-in-out infinite;
 }
 @keyframes slide-drawer-in {
   from {
