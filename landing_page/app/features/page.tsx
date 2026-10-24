@@ -8,7 +8,20 @@ import PowerModes from "./PowerModes";
 
 // Figma "Features page — Desktop 1440" (124:298) and "— Mobile 390" (124:539).
 
-export const metadata: Metadata = { title: "Features · AMORTRAV" };
+export const metadata: Metadata = {
+  title: "Features",
+  description:
+    "Discover AMORTRAV smart luggage features: one-time claim card security, flight-safe wireless controls, receipts and document storage, and manufacturer warranty tracking.",
+  alternates: {
+    canonical: "/features",
+  },
+  openGraph: {
+    title: "Features · AMORTRAV",
+    description:
+      "One-time claim codes, flight-safe wireless mode, bag receipts, and warranty alerts.",
+    url: "/features",
+  },
+};
 
 function FeatureCard({ title, text, children }: { title: string; text: string; children: React.ReactNode }) {
   return (

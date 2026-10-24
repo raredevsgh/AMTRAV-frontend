@@ -8,7 +8,7 @@ import { NAV_LINKS } from "./nav";
 export default function SiteNav() {
   const pathname = usePathname();
   return (
-    <nav className="flex h-11 items-center px-4">
+    <nav className="flex h-11 items-center gap-7 px-2">
       {NAV_LINKS.map(({ href, label }) => {
         const active = pathname === href;
         return (
@@ -16,11 +16,17 @@ export default function SiteNav() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`rounded-full p-2 text-btn font-bold transition-colors duration-200 ease-out-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-              active ? "bg-blue-pale text-brand" : "text-ink hover:text-brand"
+            className={`relative py-1 text-btn font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4 rounded-sm ${
+              active ? "text-brand" : "text-ink hover:text-brand"
             }`}
           >
-            {label}
+            <span>{label}</span>
+            {active && (
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 -bottom-1 h-[2.5px] rounded-full bg-brand"
+              />
+            )}
           </Link>
         );
       })}
