@@ -54,8 +54,8 @@ export default function BrandDashboardInteractive() {
       }}
     >
       <div className="overflow-hidden rounded-2xl border border-[#DCE1EA] bg-white shadow-[0_30px_70px_-30px_rgba(11,27,61,0.25)]">
-        {/* Window Top Bar - clean & authentic matching Figma */}
-        <div className="flex items-center justify-between border-b border-[#EEF0F4] bg-white px-4 py-3">
+        {/* Window Top Bar */}
+        <div className="flex items-center border-b border-[#EEF0F4] bg-white px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="size-2.5 rounded-full bg-[#FF5F56]" />
             <span className="size-2.5 rounded-full bg-[#FFBD2E]" />
@@ -64,9 +64,6 @@ export default function BrandDashboardInteractive() {
               Brand dashboard
             </span>
           </div>
-          <span className="rounded-full bg-blue-pale/80 px-2.5 py-0.5 text-[10px] font-semibold text-brand uppercase tracking-wider">
-            Preview
-          </span>
         </div>
 
         {/* Window Body */}
