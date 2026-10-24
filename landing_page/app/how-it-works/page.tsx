@@ -48,7 +48,7 @@ function Step({
   return (
     <div className={`sticky top-0 ${wrapper}`}>
       <div className="flex h-[358px] flex-col gap-4 overflow-clip border-t border-divider bg-surface px-2 py-4 xl:h-80 xl:flex-row xl:items-start xl:justify-center xl:gap-16 xl:px-14 xl:py-6">
-        <div className="flex flex-col px-3 pt-1 xl:h-full xl:w-[480px] xl:shrink-0 xl:justify-center xl:px-0 xl:py-2">
+        <div data-reveal className="flex flex-col px-3 pt-1 xl:h-full xl:w-[480px] xl:shrink-0 xl:justify-center xl:px-0 xl:py-2">
           <div className="flex flex-col gap-3 xl:gap-5">
             <div className="flex items-center gap-3 xl:gap-4">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy text-h3-m font-semibold text-blue-faint xl:size-12 xl:text-h4">
@@ -89,7 +89,7 @@ function Steps() {
         text="Inside the box, you'll find a card with your bag's serial number and a hidden claim code. Keep it somewhere safe."
         wrapper="z-[1] -mb-8 pt-3 pb-6 xl:-mb-[52px] xl:pt-6 xl:pb-8"
       >
-        <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white xl:h-full xl:w-[520px] xl:flex-none xl:shrink-0 xl:rounded-3xl">
+        <div data-reveal className="relative flex-1 overflow-hidden rounded-[20px] bg-white [--motion-delay:120ms] xl:h-full xl:w-[520px] xl:flex-none xl:shrink-0 xl:rounded-3xl">
           <Image
             src="/img/step-unbox.png"
             alt="An AMORTRAV suitcase next to its claim card"
@@ -106,7 +106,7 @@ function Steps() {
         text="Open the AMORTRAV app and enter both codes to register your bag to your account."
         wrapper="z-[2] -mb-8 pt-6 pb-3 xl:-mb-[52px] xl:pt-10 xl:pb-4"
       >
-        <div className="flex flex-1 items-start justify-center overflow-clip rounded-[20px] bg-blue-pale pt-[22px] xl:h-full xl:w-[520px] xl:flex-none xl:shrink-0 xl:rounded-3xl xl:pt-8">
+        <div data-reveal className="flex flex-1 items-start justify-center overflow-clip rounded-[20px] bg-blue-pale [--motion-delay:120ms] pt-[22px] xl:h-full xl:w-[520px] xl:flex-none xl:shrink-0 xl:rounded-3xl xl:pt-8">
           <div className="relative h-[280px] w-[140px] shrink-0 overflow-hidden rounded-[21.54px] xl:h-[400px] xl:w-[200px] xl:rounded-[30.77px]">
             <Image
               src="/img/step-phone.png"
@@ -126,7 +126,7 @@ function Steps() {
         text="Flight-safe mode is being designed to adjust your bag's wireless activity during air travel."
         wrapper="z-[3] pt-9 pb-3 xl:pt-14 xl:pb-6"
       >
-        <div className="relative flex flex-1 flex-col items-end overflow-hidden rounded-[20px] bg-white p-3.5 xl:h-full xl:w-[520px] xl:flex-none xl:shrink-0 xl:rounded-3xl xl:p-6">
+        <div data-reveal className="relative flex flex-1 flex-col items-end overflow-hidden rounded-[20px] bg-white p-3.5 [--motion-delay:120ms] xl:h-full xl:w-[520px] xl:flex-none xl:shrink-0 xl:rounded-3xl xl:p-6">
           <Image
             src="/img/tile-dropoff.png"
             alt="An AMORTRAV suitcase at the airport"
@@ -153,10 +153,12 @@ const POINTS = [
 function UnderTheHood() {
   return (
     <section className="flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:hidden">
-      <h2 className="text-h1-m font-bold text-white">Under the hood</h2>
-      <div className="flex flex-col gap-4">
+      <h2 data-reveal className="text-h1-m font-bold text-white">
+        Under the hood
+      </h2>
+      <div data-stagger className="flex flex-col gap-4">
         {POINTS.map(({ title, text }) => (
-          <div key={title} className="flex flex-col gap-2.5 rounded-3xl bg-navy-deep p-6">
+          <div key={title} data-reveal className="flex flex-col gap-2.5 rounded-3xl bg-navy-deep p-6">
             <h3 className="text-h3-m font-semibold text-white">{title}</h3>
             <p className="text-body-m text-blue-pale">{text}</p>
           </div>
@@ -169,8 +171,12 @@ function UnderTheHood() {
 function Faq() {
   return (
     <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:flex-row xl:items-start xl:gap-10 xl:rounded-[32px] xl:p-14">
-      <h2 className="text-h1-m font-bold text-navy xl:hidden">Questions people actually ask</h2>
-      <h2 className="hidden w-[442px] shrink-0 text-h1 font-bold text-navy xl:block">Questions you may want to ask</h2>
+      <h2 data-reveal className="text-h1-m font-bold text-navy xl:hidden">
+        Questions people actually ask
+      </h2>
+      <h2 data-reveal className="hidden w-[442px] shrink-0 text-h1 font-bold text-navy xl:block">
+        Questions you may want to ask
+      </h2>
       <FaqList items={FAQ} initialOpen={0} className="xl:min-w-0 xl:flex-1" />
     </section>
   );

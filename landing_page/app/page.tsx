@@ -3,6 +3,7 @@ import Button from "./_components/Button";
 import FaqList from "./_components/FaqList";
 import PhotoTile from "./_components/PhotoTile";
 import Tag from "./_components/Tag";
+import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import { GET_THE_APP_HREF } from "./_components/nav";
 
 // Figma "Landing page — Desktop 1440" (120:126) and "— Mobile 390" (2005:396).
@@ -36,29 +37,32 @@ function Hero() {
       <Image src="/img/hero-bg.jpg" alt="" fill sizes="(min-width: 1280px) 1400px, 100vw" className="pointer-events-none object-cover" preload />
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(0,31,77,0.94)] via-[rgba(0,31,77,0.82)] via-45% to-[rgba(0,31,77,0.55)]" />
 
-      <div className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px] xl:pb-16">
-        <p className="flex h-9 items-center gap-2.5 rounded-full bg-navy-deep pr-4 pl-2 text-caption-m whitespace-nowrap text-blue-pale xl:text-caption">
+      <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px] xl:pb-16">
+        <p data-enter className="flex h-9 items-center gap-2.5 rounded-full bg-navy-deep pr-4 pl-2 text-caption-m whitespace-nowrap text-blue-pale xl:text-caption">
           <Image src="/icons/eyebrow-new.svg" alt="" width={26} height={24} />
           Smart luggage, paired to your phone
         </p>
-        <h1 className="text-display-m font-bold text-white xl:text-display">
+        <h1 data-enter className="text-display-m font-bold text-white xl:text-display">
           Travel with a{" "}
           <span className="relative text-sky">
             better
-            <Image src="/icons/hero-underline-m.svg" alt="" width={121} height={3} className="absolute top-[51px] left-0 max-w-none xl:hidden" />
-            <Image src="/icons/hero-underline.svg" alt="" width={231} height={6} className="absolute top-[67px] left-0 hidden max-w-none xl:block" />
+            {/* The underline draws in once the heading has risen. */}
+            <span data-enter="grow" className="absolute inset-0 [--motion-delay:550ms]">
+              <Image src="/icons/hero-underline-m.svg" alt="" width={121} height={3} className="absolute top-[51px] left-0 max-w-none xl:hidden" />
+              <Image src="/icons/hero-underline.svg" alt="" width={231} height={6} className="absolute top-[67px] left-0 hidden max-w-none xl:block" />
+            </span>
           </span>{" "}
           sense <br className="xl:hidden" />
           of control
         </h1>
-        <p className="text-small text-blue-pale xl:w-[500px] xl:text-lead xl:tracking-normal">
+        <p data-enter className="text-small text-blue-pale xl:w-[500px] xl:text-lead xl:tracking-normal">
           Amortrav bags pair to your account in seconds, stay flight-safe on the plane and keep their papers right in the app.
         </p>
-        <div className="flex w-full flex-col gap-3 xl:hidden">
+        <div data-enter className="flex w-full flex-col gap-3 xl:hidden">
           <Button href={GET_THE_APP_HREF} label="Get the app" style="sky" size="m" arrow className="w-full" />
           <Button href="/how-it-works" label="See how it works" style="outline" size="m" className="w-full" />
         </div>
-        <div className="hidden w-full flex-wrap gap-3 xl:flex">
+        <div data-enter className="hidden w-full flex-wrap gap-3 xl:flex">
           <Button href={GET_THE_APP_HREF} label="Get the app" style="sky" size="l" arrow />
           <Button href="/how-it-works" label="See how it works" style="outline" size="l" />
         </div>
@@ -96,7 +100,7 @@ function HeroVisual() {
   return (
     <>
       {/* Mobile art: a 414 × 372 composition centred on the hero. */}
-      <div className="relative h-[372px] w-full xl:hidden">
+      <div data-enter className="relative h-[372px] w-full [--motion-delay:240ms] xl:hidden">
         <div className="absolute top-0 left-1/2 h-[372px] w-[414.16px] -translate-x-1/2">
           <Image src="/img/hero-glow-m.svg" alt="" width={322} height={322} className="absolute top-[12.4px] left-[45.88px] size-[322.4px] max-w-none" />
           <Image src="/img/hero-orbit-m.png" alt="" width={372} height={372} className="absolute top-[-12.4px] left-[21.08px] max-w-none" />
@@ -115,7 +119,7 @@ function HeroVisual() {
       </div>
 
       {/* Desktop art: 668 × 600. */}
-      <div className="relative hidden h-[600px] w-[668px] shrink-0 xl:block">
+      <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
         <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none" />
         <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none" />
         <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero">
@@ -134,20 +138,33 @@ function HeroVisual() {
   );
 }
 
+// The design repeats the route list twice across the bar. Each copy ends with the same gap that
+// separates its items, so the track is exactly two copies wide and the marquee (globals.css,
+// "ticker") loops by moving half its width. Reduced motion leaves it as the static bar.
 function RouteTicker() {
-  // The design repeats the route list twice across the bar.
-  const items = [...ROUTES, ...ROUTES];
   return (
-    <div className="flex items-center gap-6 overflow-clip rounded-full bg-white py-4 xl:gap-10" aria-label="Example routes">
-      {items.map((route, i) => (
-        <span key={i} className="flex shrink-0 items-center gap-6 xl:gap-10" aria-hidden={i >= ROUTES.length}>
-          <span className="font-mono text-mono-m font-medium whitespace-nowrap text-mid xl:text-mono">{route}</span>
-          <Image src="/icons/dot-ticker.svg" alt="" width={6} height={6} />
-        </span>
-      ))}
+    <div className="ticker overflow-clip rounded-full bg-white py-4 [--ticker-duration:30s] xl:[--ticker-duration:45s]">
+      <p className="sr-only">Example routes: {ROUTES.join(", ")}</p>
+      <div aria-hidden className="ticker-track flex w-max">
+        {[0, 1].map((copy) => (
+          <div key={copy} className="flex shrink-0 items-center gap-6 pr-6 xl:gap-10 xl:pr-10">
+            {ROUTES.map((route) => (
+              <span key={route} className="flex shrink-0 items-center gap-6 xl:gap-10">
+                <span className="font-mono text-mono-m font-medium whitespace-nowrap text-mid xl:text-mono">{route}</span>
+                <Image src="/icons/dot-ticker.svg" alt="" width={6} height={6} />
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
+
+// Hover lift for content cards (hover-capable pointers only; Tailwind's hover variant
+// already excludes touch screens).
+const CARD_HOVER =
+  "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1";
 
 // Experience card icons: a light-blue tile sits behind the icon, offset down and to the right.
 function CardIcon({ kind }: { kind: "location" | "status" | "security" }) {
@@ -188,18 +205,19 @@ function Experience() {
   return (
     <section className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
       <div className="flex w-full flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
-        <div className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
+        <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
           <p className="text-caption-m text-mid xl:text-small">THE EXPERIENCE</p>
           <h2 className="text-h1-m font-bold text-navy xl:text-h1">
             Know where <br className="xl:hidden" />
             things stand
           </h2>
         </div>
-        <div className="flex w-full flex-col gap-4 xl:flex-row xl:gap-6">
+        <div data-stagger className="flex w-full flex-col gap-4 xl:flex-row xl:gap-6">
           {EXPERIENCE.map(({ kind, title, text }) => (
             <div
               key={kind}
-              className="flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:flex-1 xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11"
+              data-reveal
+              className={`flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:flex-1 xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
             >
               <CardIcon kind={kind} />
               <div className="flex flex-col gap-2">
@@ -217,7 +235,7 @@ function Experience() {
 function Travel() {
   return (
     <section className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
+      <div data-reveal className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">
           Built for the walk <br className="xl:hidden" />
           to the gate.
@@ -227,7 +245,7 @@ function Travel() {
         </p>
       </div>
       <div className="flex flex-col gap-3 xl:flex-row xl:gap-4">
-        <PhotoTile caption="Pair" className="h-[280px] xl:h-[440px] xl:flex-[608_1_0]">
+        <PhotoTile caption="Pair" data-reveal className="h-[280px] xl:h-[440px] xl:flex-[608_1_0]">
           <Image src="/img/tile-dropoff-m.jpg" alt="A traveller with her bags outside the terminal" fill sizes="100vw" className="object-cover xl:hidden" />
           <Image
             src="/img/tile-dropoff.png"
@@ -238,10 +256,10 @@ function Travel() {
           />
         </PhotoTile>
         <div className="flex gap-3 xl:contents">
-          <PhotoTile caption="Travel" className="h-[220px] flex-1 xl:h-[440px] xl:flex-[324_1_0]">
+          <PhotoTile caption="Travel" data-reveal className="h-[220px] flex-1 [--motion-delay:80ms] xl:h-[440px] xl:flex-[324_1_0]">
             <Image src="/img/tile-carryon.jpg" alt="A traveller wheeling a silver suitcase" fill sizes="(min-width: 1280px) 324px, 50vw" className="object-cover" />
           </PhotoTile>
-          <PhotoTile caption="Check in" className="h-[220px] flex-1 xl:h-[440px] xl:flex-[324_1_0]">
+          <PhotoTile caption="Check in" data-reveal className="h-[220px] flex-1 [--motion-delay:160ms] xl:h-[440px] xl:flex-[324_1_0]">
             <Image src="/img/tile-gate.jpg" alt="A teal suitcase at an airport gate" fill sizes="(min-width: 1280px) 324px, 50vw" className="object-cover" />
           </PhotoTile>
         </div>
@@ -250,47 +268,16 @@ function Travel() {
   );
 }
 
-// At 1440 the side padding is the design's 140px; below that it shrinks so the fixed-width row fits.
-function Testimonial() {
-  const quote = "“I watched my bag go through the flap at check-in. Eleven hours later, in Lisbon, I still didn't know if it was on my plane.”";
-  return (
-    <section className="flex flex-col gap-6 px-5 py-8 xl:h-[455px] xl:justify-center xl:px-[calc((100%-1120px)/2)] xl:py-2.5">
-      {/* Mobile */}
-      <h2 className="text-h1-m font-bold text-mid xl:hidden">Why we’re obsessed with the problem</h2>
-      <figure className="flex flex-col gap-5 rounded-3xl bg-white p-6 shadow-card xl:hidden">
-        <Image src="/img/testimonial-avatar-m.png" alt="" width={56} height={56} />
-        <blockquote className="text-h3-m font-semibold text-navy">{quote}</blockquote>
-        <figcaption className="flex flex-col gap-1">
-          <span className="text-body-m text-navy">B. Young</span>
-          <span className="text-caption-m text-mid">An overwhelmed traveller</span>
-        </figcaption>
-      </figure>
-      <Image src="/icons/carousel-dots-m.svg" alt="" width={40} height={8} className="xl:hidden" />
-
-      {/* Desktop */}
-      <div className="hidden items-center gap-[87px] xl:flex">
-        <div className="flex w-[409px] shrink-0 flex-col gap-[102px]">
-          <h2 className="text-h1 font-bold whitespace-nowrap text-mid">
-            Why we’re obsessed
-            <br />
-            with the problem
-          </h2>
-          <Image src="/icons/carousel-dots.svg" alt="" width={87} height={12} />
-        </div>
-        <figure className="relative h-[328px] w-[664px] shrink-0">
-          <div className="absolute top-[34px] left-[36.72px] h-[294px] w-[500.23px] rounded-3xl bg-white shadow-card" />
-          <Image src="/img/testimonial-avatar.png" alt="" width={71} height={72} className="absolute top-0 left-0 h-[72px] w-[71.46px]" />
-          <blockquote className="absolute top-[84px] left-[83.37px] w-[399px] text-h3 font-semibold text-navy">{quote}</blockquote>
-          <figcaption className="absolute top-[227.5px] left-[83px] flex flex-col gap-1">
-            <span className="text-body text-navy">B. Young</span>
-            <span className="text-small text-mid">An overwhelmed traveller</span>
-          </figcaption>
-          <Image src="/icons/carousel-arrows.svg" alt="" width={16} height={74} className="absolute top-[139.08px] left-[649.1px] h-[74.34px] w-[15.9px] max-w-none" />
-        </figure>
-      </div>
-    </section>
-  );
-}
+// Testimonial content is tracked in issue #36; add entries here and the carousel starts rotating.
+const TESTIMONIALS: readonly Testimonial[] = [
+  {
+    quote: "“I watched my bag go through the flap at check-in. Eleven hours later, in Lisbon, I still didn't know if it was on my plane.”",
+    name: "B. Young",
+    label: "An overwhelmed traveller",
+    avatar: "/img/testimonial-avatar.png",
+    avatarMobile: "/img/testimonial-avatar-m.png",
+  },
+];
 
 const EXPLORE = [
   {
@@ -322,12 +309,15 @@ const EXPLORE = [
 function Explore() {
   return (
     <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
-      <h2 className="text-h1-m font-bold text-navy xl:text-h1">Find more about AMORTRAV</h2>
-      <div className="flex flex-col gap-4 xl:flex-row xl:gap-[18px]">
+      <h2 data-reveal className="text-h1-m font-bold text-navy xl:text-h1">
+        Find more about AMORTRAV
+      </h2>
+      <div data-stagger className="flex flex-col gap-4 xl:flex-row xl:gap-[18px]">
         {EXPLORE.map(({ href, label, title, text, tags, dark }) => (
           <div
             key={href}
-            className={`flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"}`}
+            data-reveal
+            className={`relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
           >
             <p className={`text-caption-m xl:text-caption ${dark ? "text-blue-faint" : "text-brand"}`}>{label}</p>
             <h3 className={`text-h2-m font-semibold xl:text-h2 ${dark ? "text-white" : "text-navy"}`}>{title}</h3>
@@ -338,7 +328,8 @@ function Explore() {
               ))}
             </div>
             <div className="hidden flex-1 xl:block" />
-            <Button href={href} label="Explore" style={dark ? "sky" : "navy"} size="s" arrow />
+            {/* The link stretches over the card, so a click anywhere on it opens the page. */}
+            <Button href={href} label="Explore" style={dark ? "sky" : "navy"} size="s" arrow stretch />
           </div>
         ))}
       </div>
@@ -349,7 +340,9 @@ function Explore() {
 function Faq() {
   return (
     <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-[34px] xl:px-10 xl:py-12">
-      <h2 className="text-h2-m font-semibold text-navy xl:text-h2">Frequently Asked Questions</h2>
+      <h2 data-reveal className="text-h2-m font-semibold text-navy xl:text-h2">
+        Frequently Asked Questions
+      </h2>
       <FaqList items={FAQ} initialOpen={1} />
     </section>
   );
@@ -362,7 +355,7 @@ export default function Home() {
       <RouteTicker />
       <Experience />
       <Travel />
-      <Testimonial />
+      <Testimonials items={TESTIMONIALS} />
       <Explore />
       <Faq />
     </>

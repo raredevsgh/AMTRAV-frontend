@@ -37,7 +37,7 @@ export default function MobileMenu() {
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
-          className="fixed inset-0 z-50 flex flex-col gap-2 overflow-y-auto bg-surface px-3 pt-3 pb-8"
+          className="fixed inset-0 z-50 flex flex-col gap-2 overflow-y-auto bg-surface px-3 pt-3 pb-8 motion-safe:animate-[menu-in_240ms_var(--ease-out-soft)]"
         >
           <div className="flex w-full items-center gap-2 rounded-full bg-white py-2 pr-2 pl-5 shadow-hairline">
             <Link href="/" onClick={close} className="relative h-6 w-[116px] shrink-0">
@@ -54,13 +54,14 @@ export default function MobileMenu() {
             </button>
           </div>
 
-          <nav className="flex w-full flex-col px-5 pt-4">
+          <nav data-stagger className="flex w-full flex-col px-5 pt-4">
             {[{ href: "/", label: "Home" }, ...NAV_LINKS].map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={close}
-                className="flex items-center justify-between border-b border-stale py-[18px] text-h2-m font-semibold text-navy"
+                data-enter
+                className="flex items-center justify-between border-b border-stale py-[18px] text-h2-m font-semibold text-navy transition-colors duration-200 active:text-brand"
               >
                 {label}
                 <Image src="/icons/chevron.svg" alt="" width={20} height={20} />

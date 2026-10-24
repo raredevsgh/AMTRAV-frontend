@@ -28,9 +28,9 @@ export default function PageHeader({
 }) {
   return (
     <section className="flex flex-col gap-5 px-2 pt-5 pb-3 xl:flex-row xl:items-center xl:gap-16 xl:px-14 xl:pt-10 xl:pb-12">
-      <div className="flex w-full flex-col items-start gap-3.5 xl:max-w-[560px] xl:min-w-0 xl:flex-1 xl:gap-5">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-caption-m whitespace-nowrap xl:text-caption">
-          <Link href="/" className="text-mid">
+      <div data-stagger className="flex w-full flex-col items-start gap-3.5 xl:max-w-[560px] xl:min-w-0 xl:flex-1 xl:gap-5">
+        <nav data-enter aria-label="Breadcrumb" className="flex items-center gap-2 text-caption-m whitespace-nowrap xl:text-caption">
+          <Link href="/" className="rounded-sm text-mid transition-colors duration-200 hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
             Home
           </Link>
           <span className="text-light-white" aria-hidden>
@@ -40,21 +40,31 @@ export default function PageHeader({
             {page}
           </span>
         </nav>
-        <h1 className="text-h1-m font-bold text-navy xl:text-h1">{title}</h1>
-        <p className="text-small text-mid xl:hidden">{introMobile}</p>
-        <p className="hidden text-body text-mid xl:block">{intro}</p>
+        {/* The heading and photo are this page's largest content: they settle without fading (see globals.css). */}
+        <h1 data-enter="settle" className="text-h1-m font-bold text-navy xl:text-h1">
+          {title}
+        </h1>
+        <p data-enter className="text-small text-mid xl:hidden">
+          {introMobile}
+        </p>
+        <p data-enter className="hidden text-body text-mid xl:block">
+          {intro}
+        </p>
         {action && (
           <>
-            <div className="xl:hidden">
+            <div data-enter className="xl:hidden">
               <Button href={action.href} label={action.label} size="s" />
             </div>
-            <div className="hidden xl:block">
+            <div data-enter className="hidden xl:block">
               <Button href={action.href} label={action.label} />
             </div>
           </>
         )}
       </div>
-      <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-[20px] xl:h-80 xl:w-[560px] xl:rounded-[28px]">
+      <div
+        data-enter="settle"
+        className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-[20px] [--motion-delay:160ms] xl:h-80 xl:w-[560px] xl:rounded-[28px]"
+      >
         {crop ? (
           <Image
             src={media}

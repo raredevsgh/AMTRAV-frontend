@@ -19,11 +19,11 @@ export default function ClaimPanel() {
         type="button"
         aria-pressed={claimed}
         onClick={() => setClaimed(!claimed)}
-        className={`flex h-11 w-full items-center justify-center gap-2 rounded-full text-caption-m whitespace-nowrap text-white xl:h-12 xl:text-caption ${
-          claimed ? "bg-navy" : "bg-brand"
+        className={`flex h-11 w-full items-center justify-center gap-2 rounded-full text-caption-m whitespace-nowrap text-white transition-[background-color,scale] duration-200 ease-out-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-safe:active:scale-[0.98] xl:h-12 xl:text-caption ${
+          claimed ? "bg-navy" : "bg-brand hover:bg-navy"
         }`}
       >
-        {claimed && <Image src="/icons/check.svg" alt="" width={18} height={18} />}
+        {claimed && <Image data-enter src="/icons/check.svg" alt="" width={18} height={18} className="[--motion-rise:4px]" />}
         {claimed ? "Claimed" : "Claim this bag"}
       </button>
     </div>

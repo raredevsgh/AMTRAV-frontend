@@ -16,7 +16,7 @@ export default function SiteNav() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`rounded-full p-2 text-btn font-bold transition-colors ${
+            className={`rounded-full p-2 text-btn font-bold transition-colors duration-200 ease-out-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
               active ? "bg-blue-pale text-brand" : "text-ink hover:text-brand"
             }`}
           >
