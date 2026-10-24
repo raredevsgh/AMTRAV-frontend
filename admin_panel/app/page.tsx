@@ -1,69 +1,112 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { adminSections } from "@/lib/admin-sections";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Staff Portal",
+  description: "AMTRAV administrative and manufacturer portal.",
+};
+
+export default function HomePage() {
+  const sections = [
+    {
+      ...adminSections.devices,
+      badge: "Administrator & Manufacturer",
+    },
+    {
+      ...adminSections.users,
+      badge: "Administrator",
+    },
+    {
+      ...adminSections.files,
+      badge: "Administrator & Manufacturer",
+    },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main
+      id="main-content"
+      className="flex w-full max-w-5xl flex-col gap-8 px-6 py-10 sm:px-10"
+    >
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+              AMTRAV Staff Portal
+            </h1>
+            <p className="mt-1 text-base text-zinc-600 dark:text-zinc-400">
+              Administrative controls, device registry and system assets.
+            </p>
+          </div>
+          <Link
+            href="/login"
+            className="inline-flex items-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 dark:focus-visible:outline-zinc-50"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Staff Sign In →
+          </Link>
         </div>
-      </main>
-    </div>
+      </header>
+
+      <div className="rounded-lg border border-dashed border-zinc-300 p-6 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
+        <p className="font-medium text-zinc-900 dark:text-zinc-100">
+          Sprint F0 Foundation &amp; Route Hub
+        </p>
+        <p className="mt-1">
+          In Sprint F0, all five core routes are wired as route skeletons. In
+          Sprint F1, server-side session cookies (HttpOnly) will determine
+          authentication state: unauthenticated visitors will be redirected to{" "}
+          <Link
+            href="/login"
+            className="font-medium underline text-zinc-900 dark:text-zinc-100"
+          >
+            /login
+          </Link>
+          , and authenticated staff will be routed directly to{" "}
+          <Link
+            href="/devices"
+            className="font-medium underline text-zinc-900 dark:text-zinc-100"
+          >
+            /devices
+          </Link>
+          .
+        </p>
+      </div>
+
+      <section
+        aria-labelledby="portal-sections-heading"
+        className="flex flex-col gap-4"
+      >
+        <h2
+          id="portal-sections-heading"
+          className="text-lg font-medium text-zinc-950 dark:text-zinc-50"
+        >
+          Application Sections
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {sections.map((section) => (
+            <Link
+              key={section.href}
+              href={section.href}
+              className="flex flex-col justify-between rounded-lg border border-zinc-200 p-5 transition hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 dark:border-zinc-800 dark:hover:border-zinc-600 dark:hover:bg-zinc-900 dark:focus-visible:outline-zinc-50"
+            >
+              <div>
+                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                  {section.badge}
+                </span>
+                <h3 className="mt-1 text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {section.label}
+                </h3>
+                <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                  {section.description}
+                </p>
+              </div>
+              <span className="mt-4 text-xs font-medium text-zinc-900 underline dark:text-zinc-100">
+                Open {section.label} →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
