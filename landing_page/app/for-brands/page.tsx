@@ -208,15 +208,18 @@ export default function ForBrandsPage() {
                 style={{ "--r": "3deg", animationDelay: "-2.8s" } as CSSProperties}
               >
                 <div className="flex items-center justify-between">
-                  <svg viewBox="0 0 28 28" className="size-6 sm:size-7" aria-hidden="true">
-                    <path d="M3 24 L14 4 L25 24 H19 L14 14 L9 24 Z" fill="#FFFFFF" />
-                    <circle cx="21.5" cy="6.5" r="2.5" fill="#B9CBFF" />
-                  </svg>
+                  <Image
+                    src="/img/cta-mark.png"
+                    alt="AMORTRAV"
+                    width={28}
+                    height={23}
+                    className="brightness-0 invert object-contain"
+                  />
                   <span className="text-xs font-medium text-[#A9B6D3]">Setup card</span>
                 </div>
                 <div className="mt-auto flex flex-col">
                   <span className="text-[10px] uppercase tracking-wider text-[#A9B6D3]">Bag number</span>
-                  <span className="font-mono text-sm font-medium tracking-wider sm:text-base">
+                  <span className="text-sm font-semibold tracking-wide sm:text-base tabular-nums">
                     AMT-CI70-0012B7
                   </span>
                 </div>
