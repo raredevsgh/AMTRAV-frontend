@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import AppSignup from "./_components/AppSignup";
 import Footer from "./_components/Footer";
 import Header from "./_components/Header";
 import RevealObserver from "./_components/RevealObserver";
 import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -106,7 +112,11 @@ const organizationSchema = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // data-scroll-behavior lets Next.js turn smooth scrolling off during route changes.
-    <html lang="en" data-scroll-behavior="smooth" className={`${jetbrainsMono.variable} antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+    >
       <head>
         <script
           type="application/ld+json"
