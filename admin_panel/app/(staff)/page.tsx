@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { adminSections } from "@/lib/admin-sections";
+import { adminSections, type AdminSection } from "@/lib/admin-sections";
+import { mockAdminSession } from "@/lib/mock-session";
 
 export const metadata: Metadata = {
   title: "Staff Portal",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  const sections = [
+  const allSections: Array<AdminSection & { badge: string }> = [
     {
       ...adminSections.devices,
       badge: "Administrator & Manufacturer",
@@ -22,10 +23,10 @@ export default function HomePage() {
       badge: "Administrator & Manufacturer",
     },
   ];
+  const sections = allSections.filter((section) => section.roles?.includes(mockAdminSession.role));
 
   return (
-    <main
-      id="main-content"
+    <section
       className="flex w-full max-w-5xl flex-col gap-8 px-6 py-10 sm:px-10"
     >
       <header className="flex flex-col gap-3">
@@ -107,6 +108,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-    </main>
+    </section>
   );
 }

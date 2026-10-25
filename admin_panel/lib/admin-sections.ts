@@ -1,9 +1,11 @@
 export type AdminRole = "administrator" | "manufacturer";
+export type AdminSectionIcon = "devices" | "users" | "files";
 
 export type AdminSection = {
   href: string;
   label: string;
   description: string;
+  icon?: AdminSectionIcon;
   roles?: readonly AdminRole[];
 };
 
@@ -16,18 +18,21 @@ export const adminSections = {
     href: "/devices",
     label: "Devices",
     description: "Manage registered AMTRAV devices, claim codes and audit logs.",
+    icon: "devices",
     roles: ["administrator", "manufacturer"],
   },
   users: {
     href: "/users",
     label: "Users",
     description: "Manage user accounts, staff roles and administrative access.",
+    icon: "users",
     roles: ["administrator"],
   },
   files: {
     href: "/files",
     label: "Files",
     description: "Access and upload private files, firmware bundles and exports.",
+    icon: "files",
     roles: ["administrator", "manufacturer"],
   },
   login: {

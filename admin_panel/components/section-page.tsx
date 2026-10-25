@@ -5,7 +5,7 @@ export function SectionPage({
   section,
   breadcrumbs,
   children,
-  as: Component = "main",
+  as: Component = "section",
 }: {
   section: AdminSection;
   breadcrumbs?: readonly BreadcrumbItem[];
@@ -19,7 +19,6 @@ export function SectionPage({
 
   return (
     <Component
-      id="main-content"
       className="flex w-full max-w-5xl flex-col gap-6 px-6 py-8 sm:px-10"
     >
       <Breadcrumbs items={breadcrumbs ?? defaultCrumbs} />
