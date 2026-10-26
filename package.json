@@ -13,7 +13,8 @@
     "lint:admin": "pnpm --filter admin_panel lint",
     "sprint": "node --experimental-strip-types scripts/sprint-automation/src/main.ts",
     "sprint:test": "node --test --experimental-strip-types scripts/sprint-automation/tests/*.test.ts",
-    "autoclose": "node --experimental-strip-types scripts/autoclose-tasks.ts"
+    "autoclose": "node --experimental-strip-types scripts/autoclose-tasks.ts",
+    "test:admin": "node --import ./scripts/register-typescript.mjs --test admin_panel/lib/api/*.test.ts"
   },
   "engines": {
     "node": ">=24 <25"
