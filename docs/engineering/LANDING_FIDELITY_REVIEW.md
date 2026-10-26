@@ -72,6 +72,7 @@ All application checks used Node 24.22.0 and pnpm 11.20.0:
 | `pnpm sprint:test` | 15/15 passed; dry-run adapter, no issue writes |
 | `pnpm sprint validate` | Six sprint definitions validated |
 | `git diff --check` | Passed |
+| `git merge-tree --write-tree HEAD origin/feat/frontend-f0-consolidated` | Clean merge tree with pending PR #50; neither branch/worktree was merged or modified |
 | Final production Chrome regression matrix | 321 checks passed; four routes at 375/390/430/768/1024/1280/1440/1920px |
 | Focused final interaction regression | 33 checks passed, including pointer pause and history after the fixes |
 | Axe-core 4.10.3 WCAG A/AA audit | Zero violations across eight route/viewport combinations and the open mobile menu |
@@ -110,8 +111,8 @@ Single local production samples (unthrottled; mixed cold/warm cache, so not a co
 
 | View | Before LCP / CLS | After LCP / CLS | Decoded JS resource bytes before / after |
 | --- | --- | --- | --- |
-| Home 390px | 1072ms / 0 | 44ms / 0 | 500,309 / 502,840 |
-| Home 1440px | 140ms / 0 | 48ms / 0 | 522,334 / 525,765 |
+| Home 390px | 1072ms / 0 | 44ms / 0 | 500,309 / 502,940 |
+| Home 1440px | 140ms / 0 | 56ms / 0 | 522,334 / 525,865 |
 
 No performance improvement, field INP, mobile hardware score, or 60fps guarantee is claimed from these samples. The hero heading no longer fades from zero opacity; the native motion architecture is retained, and the small JS increase supports modal/carousel accessibility. No new application dependency was added.
 
