@@ -20,3 +20,5 @@ Applies to every change, by any agent or contributor.
 - Review the final diff and run relevant checks before declaring work complete.
 
 The full procedure, including the final bloat review, is in `.claude/skills/codebase-discipline/SKILL.md`. Claude Code loads it as a skill; other agents should read it before declaring work complete.
+
+For UI changes, follow [Frontend UI standards](docs/engineering/FRONTEND_UI_STANDARDS.md), including Figma evidence, modal/carousel accessibility, responsive browser QA and the PR evidence checklist.

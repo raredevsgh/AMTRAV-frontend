@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import AppSignup from "./_components/AppSignup";
 import Footer from "./_components/Footer";
 import Header from "./_components/Header";
 import RevealObserver from "./_components/RevealObserver";
 import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
@@ -106,7 +112,11 @@ const organizationSchema = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // data-scroll-behavior lets Next.js turn smooth scrolling off during route changes.
-    <html lang="en" data-scroll-behavior="smooth" className={`${jetbrainsMono.variable} antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+    >
       <head>
         <script
           type="application/ld+json"
@@ -115,8 +125,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="font-sans">
         <Header />
-        <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[76px] pb-3 xl:gap-5 xl:px-5 xl:pt-[84px] xl:pb-5">
-          <main className="flex flex-col gap-4 xl:gap-5">{children}</main>
+        <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[88px] pb-3 xl:gap-5 xl:px-5 xl:pt-[108px] xl:pb-5">
+          <main id="main-content" className="flex flex-col gap-4 xl:gap-5">{children}</main>
           <AppSignup />
           <Footer />
         </div>

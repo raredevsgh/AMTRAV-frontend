@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 function FeatureCard({ title, text, children }: { title: string; text: string; children: React.ReactNode }) {
   return (
-    <div className="flex h-[354px] w-[296px] shrink-0 flex-col gap-3.5 overflow-clip rounded-3xl bg-white p-6 shadow-card transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1 xl:h-[363px] xl:w-auto xl:flex-1 xl:rounded-[28px] xl:p-7"
+    <div className="flex min-h-[354px] w-[296px] shrink-0 flex-col gap-3.5 overflow-clip rounded-3xl bg-white p-6 shadow-card transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1 xl:min-h-[363px] xl:min-w-0 xl:w-auto xl:flex-1 xl:rounded-[28px] xl:p-7"
     >
       <div className="flex min-h-14 w-full items-start gap-2">
         <h3 className="flex-1 text-h3-m font-semibold text-navy xl:text-h4">{title}</h3>
@@ -49,7 +49,7 @@ function Features() {
         <div className="flex flex-col items-center gap-5 rounded-3xl bg-blue-pale px-4 pt-6 pb-4 xl:h-[300px] xl:flex-row xl:gap-8 xl:rounded-[28px] xl:p-8">
           <div className="flex w-full flex-col gap-3.5 px-2 xl:w-[596px] xl:shrink-0 xl:px-0">
             <h3 className="text-h2-m font-semibold text-navy xl:text-h3">Pair your bag in seconds</h3>
-            <p className="text-body-m text-mid xl:text-body">
+            <p className="text-body-m text-ink xl:text-body">
               Type the serial and the one-time code from the box. The bag is yours, and that code never works again.
             </p>
           </div>
@@ -62,7 +62,7 @@ function Features() {
           <FeatureCard title="Know where it is" text="Last known spot, and how fresh that fix is.">
             <div className="flex h-[156px] w-full shrink-0 items-center justify-center rounded-[20px] bg-surface">
               <Image src="/img/location-map-m.svg" alt="" width={240} height={120} className="h-[119.94px] w-[239.88px] xl:hidden" />
-              <Image src="/img/location-map.svg" alt="" width={253} height={126} className="hidden h-[126.25px] w-[252.5px] xl:block" />
+              <Image src="/img/location-map.svg" alt="" width={253} height={126} className="hidden h-[126.25px] w-[252.5px] max-w-full object-contain xl:block" />
             </div>
           </FeatureCard>
           <FeatureCard title="Opens for you only" text="Biometric unlock. Your fingerprint stays on the bag, never in the cloud.">
@@ -75,14 +75,14 @@ function Features() {
           </FeatureCard>
           <FeatureCard title="Gets better over time" text="Over-the-air updates, with rollback if anything looks off.">
             <div className="flex h-[156px] w-full shrink-0 flex-col justify-center gap-2.5 rounded-[20px] bg-surface p-5">
-              <div className="flex items-start justify-between whitespace-nowrap">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <span className="text-caption-m text-navy xl:text-caption">Firmware update</span>
                 <span className="font-mono text-mono-m font-medium text-mid xl:text-mono">[VERSION]</span>
               </div>
               <div className="h-2.5 w-full overflow-clip rounded-full bg-blue-pale">
                 <div data-reveal="grow" className="h-2.5 w-[62%] rounded-full bg-brand [--motion-delay:300ms]" />
               </div>
-              <span className="text-caption-m whitespace-nowrap text-mid xl:text-caption">Signed and verified before install</span>
+              <span className="text-caption-m text-mid xl:text-caption">Signed and verified before install</span>
             </div>
           </FeatureCard>
         </div>
