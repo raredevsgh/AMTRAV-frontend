@@ -20,8 +20,9 @@
   --color-critical: #e23a3f;
   --color-divider: #e4e5e9;
 
-  /* SF Pro is not licensed for web embedding: Apple devices render it natively. */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Inter is self-hosted by next/font in the root layout. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* JetBrains Mono is reserved for serials, claim codes and other fixed-width data. */
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-weight-semibold: 590;
 
@@ -113,9 +114,14 @@ html, body {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  background: rgb(255 255 255 / 0.6);
-  -webkit-backdrop-filter: blur(50px) saturate(180%);
-  backdrop-filter: blur(50px) saturate(180%);
+  background: rgb(255 255 255 / 0.94);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass::before {
+    background: rgb(255 255 255 / 0.6);
+    -webkit-backdrop-filter: blur(50px) saturate(180%);
+    backdrop-filter: blur(50px) saturate(180%);
+  }
 }
 @supports (animation-timeline: scroll()) {
   /* The header gains depth over the first 120px of scrolling, without a scroll listener. */
@@ -206,6 +212,17 @@ html, body {
 @keyframes ticker {
   to {
     translate: -50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .glass {
+    animation: none;
+  }
+
+  svg :has(> animateMotion) {
+    display: none;
   }
 }
 

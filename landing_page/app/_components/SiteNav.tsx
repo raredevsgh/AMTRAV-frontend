@@ -8,7 +8,7 @@ import { NAV_LINKS } from "./nav";
 export default function SiteNav() {
   const pathname = usePathname();
   return (
-    <nav className="flex h-11 items-center gap-7 px-2">
+    <nav aria-label="Main navigation" className="flex h-11 items-center gap-7 px-2">
       {NAV_LINKS.map(({ href, label }) => {
         const active = pathname === href;
         return (

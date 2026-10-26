@@ -42,7 +42,7 @@ function Hero() {
           <Image src="/icons/eyebrow-new.svg" alt="" width={26} height={24} />
           Smart luggage, paired to your phone
         </p>
-        <h1 data-enter className="text-display-m font-bold text-white xl:text-display">
+        <h1 data-enter="settle" className="text-display-m font-bold text-white xl:text-[66px] xl:leading-[1.04] xl:tracking-[-0.03em]">
           Travel with a{" "}
           <span className="relative text-sky">
             better
@@ -59,11 +59,11 @@ function Hero() {
           Amortrav bags pair to your account in seconds, stay flight-safe on the plane and keep their papers right in the app.
         </p>
         <div data-enter className="flex w-full flex-col gap-3 xl:hidden">
-          <Button href={GET_THE_APP_HREF} label="Get the app" style="sky" size="m" arrow className="w-full" />
+          <Button href={GET_THE_APP_HREF} label="Join the list" style="sky" size="m" arrow className="w-full" />
           <Button href="/how-it-works" label="See how it works" style="outline" size="m" className="w-full" />
         </div>
         <div data-enter className="hidden w-full flex-wrap gap-3 xl:flex">
-          <Button href={GET_THE_APP_HREF} label="Get the app" style="sky" size="l" arrow />
+          <Button href={GET_THE_APP_HREF} label="Join the list" style="sky" size="l" arrow />
           <Button href="/how-it-works" label="See how it works" style="outline" size="l" />
         </div>
       </div>
@@ -73,15 +73,15 @@ function Hero() {
   );
 }
 
-function Badge({ subtitle }: { subtitle: React.ReactNode }) {
+function Badge() {
   return (
     <div className="flex items-center gap-3 rounded-[20px] bg-white/51 py-3 pr-[18px] pl-3 drop-shadow-[0_20px_20px_rgba(0,10,31,0.3)]">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy">
-        <Image src="/icons/plane.svg" alt="" width={20} height={20} />
+        <Image src="/icons/check-white.svg" alt="" width={20} height={20} />
       </span>
       <span className="flex flex-col gap-0.5 text-caption whitespace-nowrap">
-        <span className="text-navy">Flight-safe mode</span>
-        <span className="text-mid">{subtitle}</span>
+        <span className="font-semibold text-navy">21.6 kg · stable reading</span>
+        <span className="text-ink">Within your 23 kg airline limit</span>
       </span>
     </div>
   );
@@ -91,7 +91,7 @@ function RoutePill({ className }: { className: string }) {
   return (
     <div className={`absolute flex h-[37px] items-center gap-2.5 rounded-full bg-brand px-[18px] shadow-float ${className}`}>
       <Image src="/icons/dot-route.svg" alt="" width={8} height={8} />
-      <span className="font-mono text-mono-m font-medium whitespace-nowrap text-white xl:text-mono">LOS → LHR · on board</span>
+      <span className="font-mono text-mono-m font-medium whitespace-nowrap text-white xl:text-mono">LOS → LHR · 6 events</span>
     </div>
   );
 }
@@ -112,7 +112,7 @@ function HeroVisual() {
           </div>
           <Image src="/img/hero-flight-path-m.svg" alt="" width={414} height={373} className="absolute top-[-0.37px] left-0 h-[372.74px] w-[414.16px] max-w-none" />
           <div className="absolute top-24 left-10">
-            <Badge subtitle="Radios off, ready to board" />
+            <Badge />
           </div>
           <RoutePill className="top-[300px] left-[164px]" />
         </div>
@@ -130,7 +130,7 @@ function HeroVisual() {
         </div>
         <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />
         <div className="absolute top-[124px] left-6">
-          <Badge subtitle="Radios off, ready to go" />
+          <Badge />
         </div>
         <RoutePill className="top-[479px] left-[444.64px]" />
       </div>
@@ -268,7 +268,8 @@ function Travel() {
   );
 }
 
-// Testimonial content is tracked in issue #36; add entries here and the carousel starts rotating.
+// New stories were authored for this preview at the owner's request. They are labelled as
+// illustrative scenarios, not attributed to customers or presented as product endorsements.
 const TESTIMONIALS: readonly Testimonial[] = [
   {
     quote: "“I watched my bag go through the flap at check-in. Eleven hours later, in Lisbon, I still didn't know if it was on my plane.”",
@@ -277,6 +278,24 @@ const TESTIMONIALS: readonly Testimonial[] = [
     avatar: "/img/testimonial-avatar.png",
     avatarMobile: "/img/testimonial-avatar-m.png",
   },
+  {
+    quote: "“Three airports in one day. At every connection, I kept wondering whether my suitcase had made the same journey.”",
+    name: "The connecting traveller",
+    label: "Illustrative traveller story",
+    initials: "CT",
+  },
+  {
+    quote: "“With the kids, the passports and the gate change to manage, worrying about our bags was one more thing on my list.”",
+    name: "The family trip organiser",
+    label: "Illustrative traveller story",
+    initials: "FT",
+  },
+  {
+    quote: "“I kept checking the carousel long after it stopped. A clear update would have helped me decide what to do next.”",
+    name: "The frequent flyer",
+    label: "Illustrative traveller story",
+    initials: "FF",
+  },
 ];
 
 const EXPLORE = [
@@ -284,8 +303,9 @@ const EXPLORE = [
     href: "/features",
     label: "Features",
     title: "Everything your bag should've done already.",
-    text: "Pairing, private docs and brand alerts today. Location, lock and power modes next.",
-    tags: ["Claim codes", "Files", "Location · Soon", "Lock · Soon"],
+    text: "Journey Log, impact detection, accurate weight, location and theft protection in one app.",
+    tags: ["Journey Log", "Weight", "Theft Mode"],
+    action: "Explore",
     dark: true,
   },
   {
@@ -294,14 +314,16 @@ const EXPLORE = [
     title: "Box to boarding in three steps.",
     text: "Unbox, pair in the app, fly. No Bluetooth menus.",
     tags: ["1 · Unbox", "2 · Pair", "3 · Fly"],
+    action: "Find more",
     dark: false,
   },
   {
     href: "/for-brands",
     label: "For brands",
-    title: "Ship smart bags without building the cloud.",
-    text: "Register inventory, print claim codes and revoke with a full audit trail.",
-    tags: ["Console", "Audit trail", "Fleet map · Soon"],
+    title: "Bring more to the bags you make.",
+    text: "Explore connected features for your luggage, from location to security and ownership.",
+    tags: ["Location", "Security", "Ownership"],
+    action: "Talk to us",
     dark: false,
   },
 ];
@@ -313,11 +335,11 @@ function Explore() {
         Find more about AMORTRAV
       </h2>
       <div data-stagger className="flex flex-col gap-4 xl:flex-row xl:gap-[18px]">
-        {EXPLORE.map(({ href, label, title, text, tags, dark }) => (
+        {EXPLORE.map(({ href, label, title, text, tags, action, dark }) => (
           <div
             key={href}
             data-reveal
-            className={`relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
+            className={`relative flex min-w-0 flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:min-h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
           >
             <p className={`text-caption-m xl:text-caption ${dark ? "text-blue-faint" : "text-brand"}`}>{label}</p>
             <h3 className={`text-h2-m font-semibold xl:text-h2 ${dark ? "text-white" : "text-navy"}`}>{title}</h3>
@@ -329,7 +351,7 @@ function Explore() {
             </div>
             <div className="hidden flex-1 xl:block" />
             {/* The link stretches over the card, so a click anywhere on it opens the page. */}
-            <Button href={href} label="Explore" style={dark ? "sky" : "navy"} size="s" arrow stretch />
+            <Button href={href} label={action} style={dark ? "sky" : "navy"} size="s" arrow stretch />
           </div>
         ))}
       </div>
