@@ -111,10 +111,10 @@ function HeroVisual() {
             <div className="absolute inset-[-3.72px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
           </div>
           <Image src="/img/hero-flight-path-m.svg" alt="" width={414} height={373} className="absolute top-[-0.37px] left-0 h-[372.74px] w-[414.16px] max-w-none" />
-          <div className="absolute top-24 left-10">
+          <div className="absolute top-24 left-10 max-[375px]:left-16">
             <Badge />
           </div>
-          <RoutePill className="top-[300px] left-[164px]" />
+          <RoutePill className="top-[300px] left-[112px] min-[375px]:left-[124px]" />
         </div>
       </div>
 

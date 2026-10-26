@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
-import { GET_THE_APP_HREF, NAV_LINKS } from "./nav";
+import { GET_THE_APP_HREF, NAV_LINKS, SHOP_LINK } from "./nav";
 
-const ALL_LINKS = [{ href: "/", label: "Home" }, ...NAV_LINKS];
+const ALL_LINKS = [{ href: "/", label: "Home" }, ...NAV_LINKS, SHOP_LINK];
 
 export default function MobileMenu() {
   const pathname = usePathname();
@@ -33,7 +33,7 @@ function NavigationMenu({ pathname }: { pathname: string }) {
         onClick={() => setOpen(true)}
         className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface transition-colors hover:bg-stale/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       >
-        <Image src="/icons/menu.svg" alt="" width={20} height={20} />
+        <Image src="/icons/menu.svg" alt="" width={20} height={20} loading="eager" />
       </button>
       {open && createPortal(
         <NavigationDialog pathname={pathname} close={close} restoreFocus={() => trigger.current?.focus()} />,

@@ -1,5 +1,7 @@
 # Landing fidelity review
 
+The first sections record PR #51. The Shop follow-up at the end records the current branch and supersedes the initial cart and WebKit limitations.
+
 ## Scope and evidence
 
 Date: 26 October 2026. Base: `origin/main` at `e9f2153`.
@@ -126,3 +128,92 @@ No performance improvement, field INP, mobile hardware score, or 60fps guarantee
 ## Technical references
 
 [WAI modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), [WAI carousel pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/), [MDN backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/backdrop-filter), and [Web Vitals](https://web.dev/articles/vitals). The installed Next.js guides for fonts, images, Server/Client Components and accessibility were read before implementation.
+
+
+## Shop and product-film follow-up — 26 October 2026
+
+Branch `fix/landing-designer-fidelity` is stacked on PR #51 (`56c5019`), which remains open, so this PR targets `feat/landing-figma-fidelity`. PR #50 remains open and untouched. Review/merge #51 first, then retarget this PR to `main`; no branch was merged by this task. Admin/F0 implementation stays in its original PR.
+
+The owner approved `/shop` with a video hero and purchasing unavailable, and explicitly approved recreating the missing cart from the supplied screenshot. This supersedes the earlier cart blocker above. The recreated icon is local at `public/icons/shop-cart.svg`; it is **not** described as an exact Figma export. Header/mobile navigation and sitemap now connect all five screens. The supplied screenshot’s silver gradient sheen is restored in the existing glass pseudo-element with an opaque gradient fallback; these screenshot-derived values are not claimed as current Figma measurements. At narrow widths the cart/menu remain visible; Join the list remains in the drawer and appears in the header when there is room.
+
+### Reference matrix and traceability
+
+| Reference / element | Inspection and selected implementation | File / test |
+| --- | --- | --- |
+| Shop Figma `2181:1307` | Design context, screenshot and read-only Plugin API all return seat call-limit errors; browser returns CloudFront 403. Full geometry/mobile frame/prototype connections unverified. Supplied crop establishes shared header + rounded media surface only. | `/shop` is deliberately limited to the owner-approved preview; no invented storefront |
+| [Claude artifact](https://claude.ai/artifact/RNpk6Npjxjp7q9FdpaGre1#c610026b-7daa) | Web tool cannot access it; local Chrome renders a blank artifact page. No export/source found in the local reference search. Contents/interactions remain unknown. | No prototype-specific interaction fabricated |
+| Source MP4 / GIF | Both inspected; MP4 native frame extraction plus GIF decoding covers the product-film sequence. These contain no website header, navigation or page transition. Use as page media, not a UI recording. | `shop/ProductVideo.tsx`; timestamped contact sheets outside Git |
+| Header cart | Screenshot-authorized recreation on pale-blue circle, 44px target, visible on desktop/mobile. Active cart uses aria-current. | Header/SiteNav/nav/MobileMenu; nine-width overlap checks |
+| Shared screens | Existing marketing navigation preserved; header cart and drawer Shop item reach preview; Shop links back to all three marketing detail pages and logo returns Home. | Browser route/navigation and history checks |
+| Silent product film | H.264 MP4 + WebP poster; 16:9 reserved space, muted/loop/playsInline, no film request under reduced motion or Save-Data until explicit Play; pause offscreen/hidden; visible pause/play control; readable failure state. | ProductVideo; media/browser checks |
+| Narrow-screen callouts | Real 320px screenshot exposed clipped weight check/route text; move only mobile callouts inward. | Landing HeroVisual; 320/375/390 screenshots |
+| Existing accessibility/motion | Native dialog isolation/focus/scroll restoration and 4000ms carousel preserved. PR #48 native motion and glass-layering feedback rechecked; #49/#50/#51 have no submitted reviews at follow-up. | Existing interaction suite; React/codebase-discipline review |
+
+### Media inventory and motion
+
+| Asset | Technical result | Use |
+| --- | --- | --- |
+| `amortv.mp4` | 11,756,952 bytes; 1920×1080 landscape, 16:9, 11.7s, HEVC `hvc1`, 30fps / 351 video frames; AAC track has 1,032,192 decoded PCM samples with peak 0.0 | Original preserved in parent folder and original frontend checkout; SHA-256 `b05192625504bbcaea72bb7b1be0b78a0b8465b171b8f369743a9f26bf00a0f1` |
+| `amortv (1).gif` | 7,842,891 bytes; 540×304, 140 frames, decoded frame-duration sum 11.66s (about 12fps); no audio; same scene sequence at lower resolution / slightly different sample timing | Reference only; not shipped as a duplicate download |
+| `media/amortv-luggage.mp4` | 2,568,424 bytes; 1280×720 H.264, 30fps / 351 frames, silent; 78.2% smaller than source MP4 by file bytes | Runtime Shop hero; browser playback verified |
+| `media/amortv-luggage-poster.webp` | 22,216 bytes; 1280×720, actual opening source frame | Poster / reduced-motion / loading fallback |
+
+Original HEVC parsed metadata in Chrome but produced no decoded video dimensions; the H.264 derivative plays in Chrome and WebKit. Native AVFoundation supplied the permitted ffprobe/ffmpeg equivalent because the installed Playwright FFmpeg lacks these input decoders and a temporary standalone download was unreliable. No media tool became an application dependency. Encoding uses H.264 High profile, 1.8Mbps target, 1280×720, 60-frame maximum keyframe interval and network-optimized MP4; the confirmed silent audio track is omitted.
+
+The actual film cuts between a terminal suitcase (~0–2.4s), moving luggage (~2.4–5s), an airport trolley (~5–6s), a traveller with phone (~6–9.3s), and a hand lifting a handle (~9.3–11.7s). These are compressed-footage observations, not frame-perfect animation specifications. The camera/subjects move within the film; no website scroll/hover/header motion is demonstrated. Source extraction uses zero time tolerance and records actual frame times rather than nearest-keyframe estimates. Thirteen MP4 samples span opening to closing; all 140 GIF frames are decoded, with thirteen timestamped visual samples. Playback retains the original 30fps sequence and timing.
+
+External evidence: `/private/tmp/amtrav-designer-evidence/` contains source/GIF contact sheets, exact source frame timestamps, AVFoundation metadata, browser screenshots, media-frame comparisons and JSON results. Raw references and generated evidence are not application assets. Current Figma screenshot/overlay comparisons cannot be produced without access; browser-vs-source film comparisons are kept separate and are not claimed as Figma parity.
+
+### Follow-up validation
+
+Final results and curated screenshots are recorded below after the production checks. Browser tests cover 320/375/390/430/768/1024/1280/1440/1920px, all five routes, active cart/navigation, exact header hit-area containment, desktop/mobile initial/scrolled states, one-main/heading semantics, Inter, errors, images, drawer keyboard/history behavior and existing carousel/power modes. Media tests cover decoding, dimensions, muted inline looping, reduced motion, Save-Data, manual pause/resume, offscreen pause, network failure and source-frame capture. Source access limits remain open; pricing, purchase and checkout remain unavailable by owner instruction.
+
+
+| Final check | Result |
+| --- | --- |
+| Locked install, Node 24.22.0 / pnpm 11.20.0 | Passed; lockfile and app dependencies unchanged |
+| `pnpm lint:landing`, `pnpm lint:admin` | Passed |
+| `pnpm --filter landing_page exec tsc --noEmit`, `pnpm --filter admin_panel exec tsc --noEmit` | Passed |
+| `pnpm build:landing`, `pnpm build:admin` | Passed; `/shop` statically generated |
+| `pnpm sprint:test`, `pnpm sprint validate` | 15/15 tests passed using dry-run adapters; six definitions valid |
+| Production Chrome 155 | 541/541 checks passed; nine widths × five routes plus interaction/media checks |
+| Playwright WebKit | 344/344 checks passed; same route/width matrix plus drawer/media/reduced-motion interactions |
+| Axe-core 4.10.3 | Zero automated violations across 11 Chrome states before the final sheen adjustment and 11 final WebKit states |
+| Dark preference / no JavaScript | 11/11 WebKit checks passed; brand colors remain consistent, and Shop content/poster/navigation remain available without JS |
+| Slow-network / visibility handler | Five checks passed; 512kbps / 150ms latency retains media aspect ratio and content; synthetic hidden/visible events verify pause/resume handlers |
+| Frame comparison | 13 actual WebKit-decoded frames matched to native source timestamps; RGB MAE 0.97–1.95/255, PSNR 39.28–43.44dB against 720p-resized source; differences include scaling, browser color conversion and compression |
+| Actual recordings | Hero/header scroll, mobile open/close/navigation and full product playback captured as WebM outside Git |
+| Git and architecture | `git diff --check` passed; pre-commit secret scan required; Admin, workspace dependencies and CI files unchanged; both backend Git states preserved |
+
+Manual inspection includes the final Shop desktop/mobile screenshots, mobile dialog, reduced-motion poster, media-failure poster/status, 320px callout fix, source/GIF sheets and runtime film frames. Axe `incomplete` results require manual review for translucent/image backgrounds, conditional ARIA and video captions. The source has verified digital silence and the film has a text description, so it does not need dialogue captions. Automated results are not a full WCAG certification or a hardware frame-rate guarantee. Playwright WebKit is verified; a direct Safari/iPhone session is not claimed.
+
+Curated browser evidence:
+
+| View | Before | After |
+| --- | --- | --- |
+| Header / Home desktop 1440px | [Before](screenshots/header-before-desktop.png) | [After](screenshots/header-after-desktop.png) |
+| Header / Home mobile 390px | [Before](screenshots/header-before-mobile.png) | [After](screenshots/header-after-mobile.png) |
+| Shop desktop / mobile | New approved route | [Desktop](screenshots/shop-desktop.png), [Mobile](screenshots/shop-mobile.png) |
+| Shop mobile states | — | [Drawer](screenshots/shop-menu.png), [Reduced-motion poster](screenshots/shop-poster.png) |
+
+Single local Chrome samples, unthrottled and mixed cold/warm cache (not a controlled speed comparison):
+
+| Route / width | Before LCP / CLS | After LCP / CLS | Decoded JS before / after |
+| --- | --- | --- | --- |
+| Home 390 | 1292ms / 0 | 56ms / 0 | 502,940 / 506,038 bytes |
+| Home 1440 | 196ms / 0 | 64ms / 0 | 525,865 / 528,963 bytes |
+| New Shop 390 | N/A | 144ms / 0.000495 | 528,963 bytes |
+| New Shop 1440 | N/A | 80ms / 0.000095 | 528,963 bytes |
+
+The byte reduction is a measured file-size change, not a field-speed improvement. No field INP, device-specific FPS, current Figma pixel parity or successful waitlist/checkout claim is made. Essential cart/menu images load eagerly after throttled testing exposed a briefly blank menu icon. The source film is never fetched on the other marketing routes by the video component.
+
+Reproduce Chrome acceptance after building/starting on port 3140:
+
+```sh
+AMTRAV_QA_URL=http://localhost:3140 node scripts/landing-browser-qa.mjs
+AMTRAV_QA_URL=http://localhost:3140 node scripts/landing-browser-qa.mjs --interactions-only
+```
+
+The external WebKit scripts/results live under `/private/tmp/amtrav-designer-*.mjs` and `/private/tmp/amtrav-designer-evidence/`; they use the previously installed Playwright tooling, not a new project dependency. Source contact sheets are `source-contact-sheet.png` and `gif-contact-sheet.png`; `film-side-by-side.png`, `film-difference.json` and `diff-*.png` compare actual playback against the source at corresponding timestamps. `recordings/` holds the three browser recordings. Those temporary paths are local evidence, not permanent public links.
+
+Current remaining dependencies: full current Figma/Claude access and Shop mobile/export comparisons; approved pricing/inventory/checkout if purchasing is later desired; existing footer/social/app-store URLs, waitlist endpoint, firmware version and production console URL. Backend and Admin contracts/authentication remain outside this task.

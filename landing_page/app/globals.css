@@ -98,7 +98,8 @@ html, body {
   overflow-x: clip;
 }
 
-/* Header liquid glass (Figma: White 60% fill, 50px background blur). The blur lives on a
+/* Header glass: silver sheen follows the supplied designer screenshot; retain the existing
+   50px background blur. The blur lives on a
    pseudo-element: backdrop-filter on the header itself would become the containing block of
    the mobile menu's fixed overlay. */
 .glass {
@@ -114,11 +115,11 @@ html, body {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  background: rgb(255 255 255 / 0.94);
+  background: linear-gradient(180deg, #edf0f4 0%, #d9dde3 42%, #b7bec9 100%);
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass::before {
-    background: rgb(255 255 255 / 0.6);
+    background: linear-gradient(180deg, rgb(239 242 246 / 0.82) 0%, rgb(216 221 228 / 0.72) 42%, rgb(161 171 185 / 0.72) 100%);
     -webkit-backdrop-filter: blur(50px) saturate(180%);
     backdrop-filter: blur(50px) saturate(180%);
   }

@@ -49,6 +49,7 @@ async function screenshot(name) {
   writeFileSync(join(output, `${name}.png`), Buffer.from(image.data, "base64"));
 }
 async function navigate(route) {
+  await call("Page.bringToFront");
   events.length = 0;
   const { loaderId } = await call("Page.navigate", { url: `${base}${route}` });
   for (let count = 0; count < 100; count++) {
@@ -88,9 +89,9 @@ try {
   await call("Page.addScriptToEvaluateOnNewDocument", { source: `window.qaMetrics={lcp:0,cls:0};new PerformanceObserver(l=>{for(const e of l.getEntries())window.qaMetrics.lcp=e.startTime}).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.qaMetrics.cls+=e.value}).observe({type:'layout-shift',buffered:true});` });
 
   if (!process.argv.includes("--interactions-only")) {
-  for (const width of [375, 390, 430, 768, 1024, 1280, 1440, 1920]) {
+  for (const width of [320, 375, 390, 430, 768, 1024, 1280, 1440, 1920]) {
     await viewport(width);
-    for (const route of ["/", "/features", "/how-it-works", "/for-brands"]) {
+    for (const route of ["/", "/features", "/how-it-works", "/for-brands", "/shop"]) {
       await navigate(route);
       const name = `${width}-${route.slice(1) || "home"}`;
       const snapshot = await evaluate(`(() => ({
@@ -106,7 +107,9 @@ try {
       check(`${name}: no overflow`, snapshot.scrollWidth === width, snapshot.scrollWidth);
       check(`${name}: one main and h1`, snapshot.mainCount === 1 && snapshot.h1Count === 1);
       check(`${name}: inset header`, snapshot.header.left >= 11 && snapshot.header.right <= width - 11, snapshot.header);
-      check(`${name}: active route`, await evaluate(`(() => { const active=document.querySelector('nav[aria-label="Main navigation"] [aria-current="page"]'); return ${JSON.stringify(route)} === '/' ? !active : active?.getAttribute('href')===${JSON.stringify(route)}; })()`));
+      check(`${name}: active route`, await evaluate(`(() => { const active=${JSON.stringify(route)}==='/shop' ? [...document.querySelectorAll('header a[aria-label="Shop"]')].find(e=>e.getBoundingClientRect().width) : document.querySelector('nav[aria-label="Main navigation"] [aria-current="page"]'); return ${JSON.stringify(route)} === '/' ? !active : active?.getAttribute('href')===${JSON.stringify(route)}; })()`));
+      check(`${name}: visible connected cart`, await evaluate("[...document.querySelectorAll('header a[aria-label=Shop]')].filter(e=>e.getBoundingClientRect().width>0).length===1"));
+      check(`${name}: header controls fit`, await evaluate("(() => {const h=document.querySelector('header').getBoundingClientRect();const a=[...document.querySelectorAll('header a,header button')].filter(e=>e.getBoundingClientRect().width>0).map(e=>e.getBoundingClientRect());return a.every(r=>r.left>=h.left&&r.right<=h.right)&&a.every((r,i)=>a.every((b,j)=>i===j||r.right<=b.left+1||b.right<=r.left+1))})()"));
       results.push({ name: `${name}: local measurements`, ...snapshot.metrics, jsBytes: snapshot.jsBytes });
       await screenshot(`${name}-top`);
       await evaluate("scrollTo({top:600,behavior:'instant'})");
@@ -256,6 +259,64 @@ try {
   check("reduced motion: dashboard tour stopped", tour === await evaluate("document.querySelector('[aria-label=\"Amortrav brand dashboard preview\"] button[aria-pressed=true]').textContent"));
   await call("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: "dark" }] });
   await screenshot("1440-brands-dark-reduced-motion");
+
+  await viewport(390);
+  await call("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+  await navigate("/shop");
+  check("shop: reduced motion leaves poster without fetching film", await evaluate("document.querySelector('video').paused && !document.querySelector('video').getAttribute('src')") && !events.some(e=>e.method==='Network.requestWillBeSent'&&e.params.request.url.endsWith('.mp4')));
+  await screenshot("390-shop-reduced-motion");
+  await click('button[aria-label="Play product video"]');
+  await wait(1000);
+  check("shop: reduced-motion explicit playback", await evaluate("document.querySelector('video').videoWidth===1280 && !document.querySelector('video').paused"));
+  await click('button[aria-label="Pause product video"]');
+  const pausedTime = await evaluate("document.querySelector('video').currentTime");
+  await wait(350);
+  check("shop: pause control holds frame", await evaluate("document.querySelector('video').paused") && Math.abs(await evaluate("document.querySelector('video').currentTime")-pausedTime)<0.1);
+  await call("Emulation.setEmulatedMedia", { features: [] });
+  await navigate("/shop");
+  await wait(1000);
+  check("shop: compatible inline muted loop", await evaluate("(() => {const v=document.querySelector('video');return v.videoWidth===1280&&v.videoHeight===720&&!v.paused&&v.muted&&v.loop&&v.playsInline&&!v.error})()"));
+  await evaluate("scrollTo({top:document.body.scrollHeight,behavior:'instant'})");
+  await wait(350);
+  check("shop: offscreen pause", await evaluate("document.querySelector('video').paused"));
+  await evaluate("scrollTo({top:0,behavior:'instant'})");
+  await wait(350);
+  check("shop: resumes when visible", await evaluate("!document.querySelector('video').paused"));
+  await click('button[aria-label="Pause product video"]');
+  await evaluate("scrollTo({top:document.body.scrollHeight,behavior:'instant'})");
+  await wait(150);
+  await evaluate("scrollTo({top:0,behavior:'instant'})");
+  await wait(350);
+  check("shop: manual pause survives scrolling", await evaluate("document.querySelector('video').paused"));
+  await click('button[aria-label="Play product video"]');
+  await wait(200);
+  check("shop: explicit resume", await evaluate("!document.querySelector('video').paused"));
+  await click('button[aria-label="Pause product video"]');
+  for (const time of [0, 3, 5.5, 7.5, 10.5]) {
+    const png = await evaluate(`new Promise(resolve=>{const v=document.querySelector('video');v.onseeked=()=>{const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);resolve(c.toDataURL('image/png').split(',')[1])};v.currentTime=${time+0.001}})`);
+    writeFileSync(join(output, `product-frame-${time}.png`), Buffer.from(png, "base64"));
+  }
+  check("shop: no checkout or invented prices", await evaluate("!document.querySelector('a[href*=checkout],form[action*=checkout]') && document.querySelector('main').textContent.includes('Purchasing is not available yet.')"));
+  await click('button[aria-label="Open menu"]');
+  check("shop: mobile active route", await evaluate("document.querySelector('dialog a[href=\"/shop\"]').getAttribute('aria-current')==='page'"));
+  await click('dialog a[href="/features"]');
+  await wait(400);
+  await click('header a[aria-label="Shop"]');
+  await wait(500);
+  check("shop: cart returns from another screen", await evaluate("location.pathname==='/shop'&&!document.querySelector('dialog')"));
+  const saveData = await call("Page.addScriptToEvaluateOnNewDocument", { source: "Object.defineProperty(navigator,'connection',{value:{saveData:true},configurable:true})" });
+  await navigate("/shop");
+  check("shop: Save-Data avoids film request", await evaluate("!document.querySelector('video').getAttribute('src')") && !events.some(e=>e.method==='Network.requestWillBeSent'&&e.params.request.url.endsWith('.mp4')));
+  await call("Page.removeScriptToEvaluateOnNewDocument", { identifier: saveData.identifier });
+  await call("Network.setCacheDisabled", { cacheDisabled: true });
+  await call("Network.setBlockedURLs", { urls: ["*amortv-luggage.mp4"] });
+  await navigate("/shop");
+  await wait(500);
+  check("shop: failed film leaves poster and status", await evaluate("document.querySelector('main [role=status]')?.textContent.includes('film could not load') && Boolean(document.querySelector('video').poster)"));
+  await screenshot("390-shop-media-unavailable");
+  await call("Network.setBlockedURLs", { urls: [] });
+  await call("Network.setCacheDisabled", { cacheDisabled: false });
+
 } finally {
   const failures = results.filter((result) => result.passed === false);
   writeFileSync(join(output, "results.json"), JSON.stringify({ browser: browser.Browser, base, results }, null, 2));
