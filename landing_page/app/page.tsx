@@ -2,6 +2,7 @@ import Image from "next/image";
 import Button from "./_components/Button";
 import FaqList from "./_components/FaqList";
 import PhotoTile from "./_components/PhotoTile";
+import ProductVideo from "./_components/ProductVideo";
 import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import { GET_THE_APP_HREF } from "./_components/nav";
@@ -34,7 +35,7 @@ const FAQ = [
 function Hero() {
   return (
     <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 pt-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:pt-16">
-      <Image src="/img/hero-bg.jpg" alt="" fill sizes="(min-width: 1280px) 1400px, 100vw" className="pointer-events-none object-cover" preload />
+      <ProductVideo />
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(0,31,77,0.94)] via-[rgba(0,31,77,0.82)] via-45% to-[rgba(0,31,77,0.55)]" />
 
       <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px] xl:pb-16">
