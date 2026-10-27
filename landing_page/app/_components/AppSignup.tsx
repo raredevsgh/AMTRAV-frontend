@@ -9,6 +9,7 @@ import { GET_THE_APP_HREF } from "./nav";
 // pages. There is no waitlist endpoint yet, so a valid submission only shows a notice and sends nothing.
 export default function AppSignup() {
   const pathname = usePathname();
+  const shop = pathname === "/shop";
   const [submitted, setSubmitted] = useState(false);
   const email = useRef<HTMLInputElement>(null);
 
@@ -22,9 +23,6 @@ export default function AppSignup() {
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, []);
-
-  // If on /for-brands, the page has its dedicated brand CTA section
-  if (pathname === "/for-brands") return null;
 
   return (
     <section
@@ -119,11 +117,10 @@ export default function AppSignup() {
 
       <div data-reveal className="relative flex w-full flex-col items-center gap-3 text-center [--motion-delay:80ms] xl:w-auto xl:gap-2">
         <h2 className="text-h1-m font-bold text-white xl:min-w-[512px] xl:text-h1 xl:whitespace-nowrap">
-          Ready when <br className="xl:hidden" />
-          your flight is.
+          {shop ? "Not ready to pre-order?" : <>Ready when <br className="xl:hidden" />your flight is.</>}
         </h2>
         <p className="text-small text-stale xl:w-[520px] xl:text-lead">
-          AMORTRAV is in development. Leave your email and we will write when it is ready to order.
+          {shop ? "Join the Founding Traveller List and we’ll email you when TRACE ships, so you can order then." : "AMORTRAV is in development. Leave your email and we will write when it is ready to order."}
         </p>
       </div>
 
@@ -152,7 +149,7 @@ export default function AppSignup() {
           type="submit"
           className="w-full rounded-2xl bg-brand px-5 py-4 text-btn-sm font-bold whitespace-nowrap text-surface transition-[background-color,color,scale] duration-200 ease-out-soft hover:bg-sky hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky motion-safe:active:scale-[0.97] xl:w-auto xl:text-btn"
         >
-          Join the Experience
+          Join the list
         </button>
       </form>
 

@@ -1,52 +1,55 @@
+import type { Role } from "./api/types";
 export type AdminRole = "administrator" | "manufacturer";
-
+export type AdminSectionIcon = "devices" | "users" | "files" | "register";
 export type AdminSection = {
   href: string;
   label: string;
   description: string;
+  icon?: AdminSectionIcon;
   roles?: readonly AdminRole[];
 };
-
-// Section navigation configuration matching the OpenAPI contract and Sprint F0 roadmap.
-// In F0-3, the App Shell will filter navigation items based on the signed-in user's role:
-// - administrator: Devices, Users, Files
-// - manufacturer: Devices, Files
 export const adminSections = {
   devices: {
     href: "/devices",
     label: "Devices",
-    description: "Manage registered AMTRAV devices, claim codes and audit logs.",
+    description: "Registry records across your accessible inventory.",
+    icon: "devices",
+    roles: ["administrator", "manufacturer"],
+  },
+  register: {
+    href: "/devices/new",
+    label: "Register device",
+    description: "Add a registry record and receive its one-time claim code.",
+    icon: "register",
     roles: ["administrator", "manufacturer"],
   },
   users: {
     href: "/users",
-    label: "Users",
-    description: "Manage user accounts, staff roles and administrative access.",
+    label: "Accounts",
+    description: "Create manufacturer accounts and manage staff roles.",
+    icon: "users",
     roles: ["administrator"],
   },
   files: {
     href: "/files",
     label: "Files",
-    description: "Access and upload private files, firmware bundles and exports.",
+    description: "Private files. Owners and administrators only.",
+    icon: "files",
     roles: ["administrator", "manufacturer"],
   },
-  login: {
-    href: "/login",
-    label: "Sign In",
-    description: "Staff portal authentication for administrators and manufacturers.",
-  },
+  login: { href: "/login", label: "Sign in", description: "Staff access" },
 } as const satisfies Record<string, AdminSection>;
-
 export type AdminSectionKey = keyof typeof adminSections;
-
-/**
- * Safely sanitizes dynamic route parameters before rendering or metadata generation.
- * Handles URL decoding, whitespace trimming, and bounds checking to prevent UI truncation.
- */
-export function sanitizeIdentifier(rawId: string): string {
+export function toAdminRole(role: Role): AdminRole | null {
+  return role === "admin"
+    ? "administrator"
+    : role === "manufacturer"
+      ? "manufacturer"
+      : null;
+}
+export function sanitizeIdentifier(rawId: string) {
   try {
-    const decoded = decodeURIComponent(rawId);
-    return decoded.trim().slice(0, 100);
+    return decodeURIComponent(rawId).trim().slice(0, 100);
   } catch {
     return rawId.trim().slice(0, 100);
   }
