@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
-import { GET_THE_APP_HREF, NAV_LINKS } from "./nav";
+import { GET_THE_APP_HREF, NAV_LINKS, SHOP_LINK } from "./nav";
 
-const ALL_LINKS = [{ href: "/", label: "Home" }, ...NAV_LINKS];
+const ALL_LINKS = [{ href: "/", label: "Home" }, ...NAV_LINKS, SHOP_LINK];
 const emptySubscribe = () => () => {};
 
 function useMounted() {
