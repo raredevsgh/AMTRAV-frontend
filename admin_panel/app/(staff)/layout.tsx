@@ -1,17 +1,29 @@
-import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { AppShell } from "@/components/app-shell";
-
-export default function StaffLayout({ children }: { children: ReactNode }) {
+import { ConsoleProvider } from "@/features/console-context";
+import { requireConsoleSession } from "@/lib/console-session";
+async function StaffBoundary({ children }: { children: React.ReactNode }) {
+  const user = await requireConsoleSession();
+  return (
+    <ConsoleProvider key={user.id} user={user}>
+      <AppShell user={user}>{children}</AppShell>
+    </ConsoleProvider>
+  );
+}
+export default function StaffLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-          <div className="min-h-screen" />
-        </div>
+        <main className="page-content" role="status">
+          Loading workspace…
+        </main>
       }
     >
-      <AppShell>{children}</AppShell>
+      <StaffBoundary>{children}</StaffBoundary>
     </Suspense>
   );
 }

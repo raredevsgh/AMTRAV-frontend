@@ -42,6 +42,25 @@ pnpm build:landing
 pnpm build:admin
 ```
 
+## Admin Console review workspace
+
+The Admin registry screens use an **explicit fictional demo**, not live authentication or a connected backend. The default staff routes fail closed. Production auth/proxy decisions remain in F1.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev:admin:demo  # Local preview: http://localhost:3151/login
+# Or serve an optimized build:
+pnpm build:admin
+AMTRAV_CONSOLE_DEMO=1 pnpm --filter admin_panel start --port 3151
+# Default closed instance for comparison, in another terminal:
+pnpm --filter admin_panel start --port 3152
+pnpm test:admin
+```
+
+At `/login`, enter `ops@amortrav.example.invalid` and any sample password, then click **Enter demo workspace**. Administrator is the default. Expand **Demo access & preview states** below the form to select Manufacturer or a sign-in error scenario. Inputs are checked locally; only the role selector reaches the demo server action. The HttpOnly cookie selects fictional data and is not an authentication credential. Preview changes reset on refresh/sign-out; no tokens, claim codes or private job receipts go into browser storage. Do not enable demo mode for a production service. `VERCEL_ENV=production` disables it even if the flag is set; use `AMTRAV_DEMO_HTTPS=1` for a preview served over HTTPS.
+
+See [Admin Console implementation review](docs/engineering/ADMIN_CONSOLE_REVIEW.md) for architecture, source contract limits, screenshots, acceptance evidence and the external Playwright/axe replay command. No new application dependencies are required.
+
 ## License
 
 Copyright (c) 2026 raredevsgh. All rights reserved. The source is publicly visible for reference only; see [LICENSE](LICENSE).

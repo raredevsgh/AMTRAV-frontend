@@ -1,20 +1,11 @@
 import type { AdminRole } from "@/lib/admin-sections";
-
-const roleLabels: Record<AdminRole, string> = {
-  administrator: "Administrator",
+const roleLabels: Record<AdminRole | "user", string> = {
+  administrator: "Admin",
   manufacturer: "Manufacturer",
+  user: "User",
 };
-
-export function RoleBadge({ role }: { role: AdminRole }) {
+export function RoleBadge({ role }: { role: AdminRole | "user" }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
-        role === "administrator"
-          ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-200"
-          : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200"
-      }`}
-    >
-      {roleLabels[role]}
-    </span>
+    <span className="status-badge status-registered">{roleLabels[role]}</span>
   );
 }

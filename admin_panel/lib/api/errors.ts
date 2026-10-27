@@ -5,6 +5,8 @@ export type MockErrorStatus =
   | 401
   | 403
   | 404
+  | 410
+  | 413
   | 409
   | 422
   | 429
@@ -29,8 +31,7 @@ export class MockApiError extends Error {
 }
 
 export const mockError = {
-  badRequest: (message = "invalid request") =>
-    new MockApiError(400, message),
+  badRequest: (message = "invalid request") => new MockApiError(400, message),
   unauthorized: (message = "invalid credentials or expired session") =>
     new MockApiError(401, message),
   forbidden: (message = "required role is missing") =>
