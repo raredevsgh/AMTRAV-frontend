@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { ConsoleBrand } from "./console-brand";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { NavIcon } from "./nav-icon";
@@ -17,7 +18,7 @@ import { leaveDemo } from "@/app/login/actions";
 export function Brand() {
   return (
     <Link className="brand" href="/devices">
-      AMORTRAV
+      <ConsoleBrand />
     </Link>
   );
 }

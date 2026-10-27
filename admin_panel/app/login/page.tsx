@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { ConsoleBrand } from "@/components/console-brand";
+import { LoginFlight } from "@/components/login-flight";
 import { LoginForm } from "@/features/login-form";
 import { demoEnabled } from "@/lib/console-session";
 export const metadata = { title: "Sign in" };
@@ -20,23 +22,9 @@ export default function LoginPage({
     <main id="main-content" className="login-layout">
       <section className="login-brand" aria-label="Amortrav Console">
         <div className="brand">
-          AMORTRAV <small>Console</small>
+          <ConsoleBrand light consoleLabel />
         </div>
-        <svg
-          aria-hidden="true"
-          className="login-route"
-          viewBox="0 0 720 900"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M 40 810 C 190 650 300 590 455 540 S 640 440 735 260"
-            fill="none"
-            stroke="#536b9d"
-            strokeWidth="2"
-            strokeDasharray="2 10"
-            strokeLinecap="round"
-          />
-        </svg>
+        <LoginFlight />
         <div className="login-hero">
           <h2>
             The registry

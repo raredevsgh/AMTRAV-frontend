@@ -160,7 +160,11 @@ for (const engine of engines) {
               state.main === 1 && state.h1 === 1,
               state,
             );
-            check(name + ": Inter", state.font.startsWith("Inter"), state.font);
+            check(
+              name + ": Manrope",
+              state.font.startsWith("Manrope"),
+              state.font,
+            );
             if (route !== "/login") {
               check(
                 name + ": demo labeled",
@@ -248,6 +252,9 @@ for (const engine of engines) {
             "true",
           );
           await p.locator("#email").fill("ops@amortrav.example.invalid");
+          await p
+            .getByText("Demo access & preview states", { exact: true })
+            .click();
           for (const [value, text] of [
             ["invalid", "Email or password is incorrect"],
             ["rate", "Too many sign-in attempts"],
@@ -869,6 +876,116 @@ for (const engine of engines) {
         assert.equal(state.background, "rgb(245, 246, 248)");
         await shot(p, engine + "-reduced-motion-dark-preference");
       }),
+    );
+    await test(
+      engine + ": brand assets, favicon and one complete plane loop",
+      async () => {
+        const c = await browser.newContext({
+          viewport: { width: 1440, height: 900 },
+        });
+        try {
+          const p = await c.newPage();
+          await ready(p, "/login");
+          await p
+            .getByRole("button", { name: "Pause plane animation" })
+            .waitFor();
+          assert.ok(
+            await p
+              .locator(".console-brand-mark")
+              .evaluate((e) => e.complete && e.naturalWidth > 0),
+          );
+          assert.equal(
+            await p.locator(".console-brand-mark").getAttribute("src"),
+            "/brand/mark-white.svg",
+          );
+          const icon = await p
+            .locator('link[rel="icon"][href^="/icon.svg"]')
+            .getAttribute("href");
+          assert.equal((await p.request.get(base + icon)).status(), 200);
+          const ico = await p.request.get(base + "/favicon.ico");
+          assert.deepEqual(
+            [...(await ico.body()).subarray(0, 6)],
+            [0, 0, 1, 0, 3, 0],
+          );
+          assert.ok(await p.locator(".demo-access").evaluate((e) => !e.open));
+          const sample = () =>
+            p.evaluate(() => {
+              const svg = document.querySelector(".login-route"),
+                plane = svg.querySelector("[data-flight-plane]"),
+                route = svg.querySelector("[data-flight-route]");
+              const center = new DOMPoint(0, 0).matrixTransform(plane.getCTM());
+              let distance = Infinity;
+              const length = route.getTotalLength();
+              for (let i = 0; i <= 1000; i++) {
+                const point = route
+                  .getPointAtLength((length * i) / 1000)
+                  .matrixTransform(route.getCTM());
+                distance = Math.min(
+                  distance,
+                  Math.hypot(point.x - center.x, point.y - center.y),
+                );
+              }
+              return {
+                x: center.x,
+                y: center.y,
+                distance,
+                time: svg.getCurrentTime(),
+              };
+            });
+          await p
+            .getByRole("button", { name: "Pause plane animation" })
+            .click();
+          const paused = await sample();
+          await p.waitForTimeout(400);
+          assert.ok(Math.abs((await sample()).time - paused.time) < 0.02);
+          await p.getByRole("button", { name: "Play plane animation" }).click();
+          const samples = [await sample()];
+          for (let i = 0; i < 6; i++) {
+            await p.waitForTimeout(2100);
+            samples.push(await sample());
+            if (i === 2) await shot(p, engine + "-login-plane-midflight");
+          }
+          assert.ok(
+            samples.every((s) => s.distance < 2),
+            JSON.stringify(samples),
+          );
+          assert.ok(samples.at(-1).time - samples[0].time > 12);
+          assert.ok(
+            Math.max(...samples.map((s) => s.x)) -
+              Math.min(...samples.map((s) => s.x)) >
+              300,
+          );
+          await p.emulateMedia({ reducedMotion: "reduce" });
+          await p
+            .getByRole("button", { name: "Pause plane animation" })
+            .waitFor({ state: "detached" });
+          const reduced = await sample();
+          await p.waitForTimeout(400);
+          assert.ok(Math.abs((await sample()).time - reduced.time) < 0.02);
+          await shot(p, engine + "-login-reduced-motion");
+          measurements.push({ name: engine + " plane loop", samples });
+          await c.addCookies([
+            {
+              name: "amtrav_console_demo",
+              value: "admin",
+              url: base,
+              httpOnly: true,
+            },
+          ]);
+          await ready(p, "/devices");
+          assert.equal(
+            await p.locator(".sidebar .console-brand-mark").getAttribute("src"),
+            "/brand/mark-navy.svg",
+          );
+          assert.ok(
+            await p
+              .locator(".sidebar .console-brand-mark")
+              .evaluate((e) => e.complete && e.naturalWidth > 0),
+          );
+        } finally {
+          await c.close();
+        }
+      },
     );
     await test(engine + ": sign out clears preview session", () =>
       withDemo(browser, "admin", async (p, c) => {

@@ -19,6 +19,11 @@ export function LoginForm({
     <div className="login-form">
       <h1>Sign in</h1>
       <p>Use your staff email and password to access the console.</p>
+      {enabled && (
+        <p className="demo-access-hint">
+          Preview only. Use a fictional .invalid email and any sample password.
+        </p>
+      )}
       {reason === "session" && (
         <Notice title="Sign in to continue">
           Your session is missing or expired.
@@ -103,7 +108,27 @@ export function LoginForm({
             disabled={pending}
           />
         </Field>
-        {enabled && (
+        <button className="btn" disabled={pending} type="submit">
+          {pending
+            ? "Signing in…"
+            : enabled
+              ? "Enter demo workspace"
+              : "Sign in"}
+        </button>
+        {pending && (
+          <p role="status" className="small muted">
+            Opening the fictional workspace. Please wait.
+          </p>
+        )}
+      </form>
+      <div className="login-help">
+        Need access? Contact an administrator. Travellers sign in from the
+        Amortrav mobile app, not here. Your administrator can help with password
+        recovery.
+      </div>
+      {enabled && (
+        <details className="demo-access">
+          <summary>Demo access &amp; preview states</summary>
           <div className="demo-controls stack">
             <strong>Fictional demo only · No real credentials</strong>
             <p>
@@ -135,25 +160,8 @@ export function LoginForm({
               </select>
             </label>
           </div>
-        )}
-        <button className="btn" disabled={pending} type="submit">
-          {pending
-            ? "Signing in…"
-            : enabled
-              ? "Enter demo workspace"
-              : "Sign in"}
-        </button>
-        {pending && (
-          <p role="status" className="small muted">
-            Opening the fictional workspace. Please wait.
-          </p>
-        )}
-      </form>
-      <div className="login-help">
-        Need access? Contact an administrator. Travellers sign in from the
-        Amortrav mobile app, not here. Your administrator can help with password
-        recovery.
-      </div>
+        </details>
+      )}
     </div>
   );
 }

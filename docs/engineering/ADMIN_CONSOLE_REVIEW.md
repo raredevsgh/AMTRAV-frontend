@@ -1,6 +1,6 @@
 # Admin Console implementation review
 
-26 October 2026. Branch `feat/admin-console-mvp`, stacked on PR #50 (`21b2133`). Both marketing PRs and all source worktrees stay untouched. Both Rust checkouts are read-only.
+Updated 27 October 2026 (initial implementation 26 October). Branch `feat/admin-console-mvp`, stacked on PR #50 (`21b2133`). Both marketing PRs and all source worktrees stay untouched. Both Rust checkouts are read-only.
 
 ## Reference and scope inventory — before implementation
 
@@ -67,13 +67,13 @@ No real credentials, tokens or claim codes were used. No access/refresh token is
 
 ## Visual audit and exact browser captures
 
-Source access is incomplete: Figma metadata/context/screenshot calls hit the seat limit; the read-only browser fallback returned CloudFront 403. No source hierarchy, token values, current node-to-screen mapping or pixel geometry was fabricated. Supplied current MVP/state-sheet screenshots were inspected alongside actual browser renders. Older dashboard/chart/calendar/map/OTA screens were excluded. The existing marketing logo has a different badge/wordmark treatment, so the console retains its text wordmark pending the approved console asset; exact new logo/icon parity is not claimed.
+Source access is incomplete: Figma metadata/context/screenshot calls hit the seat limit; the read-only browser fallback returned CloudFront 403. No source hierarchy, token values, current node-to-screen mapping or pixel geometry was fabricated. Supplied current MVP/state-sheet screenshots were inspected alongside actual browser renders. Older dashboard/chart/calendar/map/OTA screens were excluded. On 27 October, the original white/navy monogram SVGs and primary icon were found in the local `Logo Files` folder and reused without redrawing. These A-and-plane brand assets differ from the simpler A-and-dot variant visible in the supplied console reference; exact console-variant parity still needs the Figma export.
 
 The desktop split sign-in, navy/blue palette, light surfaces, approximately 248px sidebar, active route treatment, registry tables, two-column forms and explanatory cards follow the supplied current MVP reference. Deliberate differences are conspicuous preview labels, harmless example files, accessible controls and explicit source constraints. The handoff's “any type” file wording is narrowed to the real handler allowlist. Only the approved light palette is implemented; system dark preference keeps that palette. Skeleton animation respects reduced motion.
 
 Screenshot inspection found and fixed mobile serial fragmentation, a truncated manufacturer role option, absolute screen-reader headers escaping table scrollers, an oversized visually hidden file input, WebKit drawer focus restoration, and the drawer-to-handoff-confirmation scroll-lock race. Loading moved to the page-content boundary to avoid pushing already-visible guidance as data arrives. Tables scroll within labeled focusable regions instead of overflowing the document. No global overflow clipping was used to conceal defects.
 
-All links below are **actual browser screenshots**, not generated mockups. Desktop captures are 1440px, mobile captures 390px; the drawer is WebKit. Sixteen curated PNGs total about 1.7 MB; bulk screenshots, traces and raw JSON stay outside Git.
+All links below are **actual browser screenshots**, not generated mockups. Desktop captures are 1440px, mobile captures 390px; the drawer is WebKit. Eighteen curated PNGs include the updated login artwork and mobile access; bulk screenshots, traces and raw JSON stay outside Git.
 
 | Comparison / screen | Evidence |
 | --- | --- |
@@ -88,7 +88,7 @@ There is no numeric Figma pixel-diff score: without an accessible original frame
 
 ## Executed verification
 
-All commands used Node 24.22.0 and pnpm 11.20.0 on 26 October 2026.
+Commands used Node 24.22.0 and pnpm 11.20.0. The original 26 October acceptance was rerun for the 27 October font/branding update; the final browser results below supersede the earlier 818-check runs.
 
 | Check | Actual result |
 | --- | --- |
@@ -100,14 +100,14 @@ All commands used Node 24.22.0 and pnpm 11.20.0 on 26 October 2026.
 | `pnpm test:admin` | 16/16: existing eight F0 tests plus eight source-validation, ownership, mutation/audit, role, job and file-byte regressions |
 | `pnpm sprint:test` | 15/15; dry-run automation only, no issue changes |
 | `pnpm sprint validate` | Six sprint definitions valid |
-| Browser acceptance, Chrome | 818 checks, zero failures; 108 route/role/viewport cases plus 12 interaction groups and 14 axe audits |
-| Browser acceptance, WebKit | 818 checks, zero failures; same matrix and interactions |
+| Browser acceptance, Chrome | 819 checks, zero failures; 108 route/role/viewport cases plus 13 interaction groups and 14 axe audits |
+| Browser acceptance, WebKit | 819 checks, zero failures; same matrix and interactions |
 | axe WCAG A/AA tags including 2.2 | 28 state audits, zero violations; incomplete/manual items remain review responsibilities |
 | `git diff --check` | Pass |
 
-Widths: **320, 375, 390, 430, 768, 1024, 1280, 1440, 1920**. Each engine visits Login, Devices, Register, Details, Accounts and Files for administrator and manufacturer. Checks cover loaded Inter, one main/h1, document overflow, route highlighting, role navigation, direct denial, sticky header reachability, console/hydration/network errors and screenshots. Inter remains the computed UI font; identifiers/code keep JetBrains Mono. No font implementation change was needed.
+Widths: **320, 375, 390, 430, 768, 1024, 1280, 1440, 1920**. Each engine visits Login, Devices, Register, Details, Accounts and Files for administrator and manufacturer. Checks cover loaded Manrope, one main/h1, document overflow, route highlighting, role navigation, direct denial, sticky header reachability, console/hydration/network errors and screenshots. The owner’s 27 October correction changes the Admin UI font from Inter to Manrope through next/font; identifiers/code keep JetBrains Mono. Landing typography is unchanged.
 
-Interaction groups cover sign-in validation/errors/pending without transmitting passwords; closed-default forged cookie; list/filter/page boundaries and edit/revoke; registration/duplicate/copy/replacement/history; confirmed roles and queued manufacturer jobs including duplicate failure; file validation/upload/download bytes; manufacturer scope; shared empty/service/429; drawer keyboard/Escape/backdrop/resize/history; mobile unsaved-code drawer transition; reduced motion/system dark preference; sign-out. Screens and service checks are mock acceptance, not live API integration.
+Interaction groups cover sign-in validation/errors/pending without transmitting passwords; closed-default forged cookie; list/filter/page boundaries and edit/revoke; registration/duplicate/copy/replacement/history; confirmed roles and queued manufacturer jobs including duplicate failure; file validation/upload/download bytes; manufacturer scope; shared empty/service/429; drawer keyboard/Escape/backdrop/resize/history; mobile unsaved-code drawer transition; reduced motion/system dark preference; sign-out; byte-identical brand SVGs, favicon responses, a complete 12-second flight loop, route alignment, pause/resume and reduced-motion stopping. Screens and service checks are mock acceptance, not live API integration.
 
 Replay (external Playwright package and axe path required; no app dependencies installed):
 
@@ -120,9 +120,9 @@ node scripts/console-browser-qa.mjs
 # Optional: AMTRAV_CONSOLE_ENGINES=chromium or webkit; --flows-only for focused replay.
 ```
 
-Tested versions: Chrome 155.0.8059.86 and Playwright WebKit 27.2. The harness uses the installed Chrome channel and Playwright WebKit. Raw terminal evidence: `/private/tmp/amtrav-console-evidence/accepted-chromium/results.json` and `accepted-webkit/results.json` in the same directory. Earlier failed runs were diagnostic, not acceptance: they exposed overflow/focus, then the added mobile transition exposed scroll locking. Terminal results above include the fixes.
+Tested versions: Chrome 155.0.8059.86 and Playwright WebKit 27.2. The harness uses the installed Chrome channel and Playwright WebKit. Raw terminal evidence: `/private/tmp/amtrav-console-manrope/final-chromium/results.json` and `final-webkit/results.json` in the same directory. Earlier failed runs were diagnostic, not acceptance: they exposed overflow/focus, then the added mobile transition exposed scroll locking. Terminal results above include the fixes.
 
-## Performance measurements and tradeoffs
+## Performance measurements and tradeoffs — 26 October baseline
 
 Production localhost, 900px viewport height, headless browsers, no CPU/network throttling. These are local navigation observations, **not Lighthouse, INP, field Core Web Vitals or production-service benchmarks**. Baseline was the F0 skeleton; implemented screens perform additional client work and wait on a deliberate 120ms mock latency. Browser resource bytes are decoded JS observed on that navigation, not compressed transfer or a precise tree-shaken bundle report. Cache/prefetch and concurrent QA affect timing.
 
@@ -141,7 +141,7 @@ The expanded interactive workspace costs roughly 37–44 KB more decoded JS on t
 - [x] Original source worktrees and both backends preserved. `back/AMTRAV` source revision `2dc198d21f19366cb4ce4131e3f8675e8b14a122`; modular rewrite `0f27fd27b88b34a2c891c4da0dcee0abfcf1278e`. No backend build/run/migration/modification.
 - [x] Marketing source and lockfile untouched; no new application dependencies, secrets, build output or bulk QA dumps in the review diff.
 - [x] Source-shaped DTOs, ownership constraints, typed validation, native accessible dialogs and required local gates verified.
-- [ ] Obtain accessible current Figma hierarchy/exports and the console logo/icon assets; finish exact geometry/token review. No exact parity claim.
+- [ ] Obtain accessible current Figma hierarchy/exports and the exact A-and-dot console logo variant; finish exact geometry/token review. No exact parity claim.
 - [ ] Resolve F1 production session/cookie/refresh/CSRF/proxy decisions, connect real transport and verify generated/live OpenAPI. Contracts remain source-derived.
 - [ ] Verify live authorization, role-change token invalidation, job receipt lifecycle, private downloads and claim-code lifecycle against a running backend. Mock tests cannot establish these guarantees.
 - [ ] Confirm manufacturer discovery beyond the first 50 accounts; current selector discloses its scope. No total-count/search endpoint was invented.
@@ -149,3 +149,17 @@ The expanded interactive workspace costs roughly 37–44 KB more decoded JS on t
 - [ ] Review the stacked diff against `feat/frontend-f0-consolidated`. PR #50 remains open/unmerged; retarget this branch to `main` only after #50 lands. No force-push, direct main push, merge, deployment or manual issue closure.
 
 Git handoff: isolated worktree `AMTRAV-frontend-console`, branch `feat/admin-console-mvp`, base `21b213328a447c36c8bf29175371afe0b80cb779`. The PR records the exact commit and remote check results; this report intentionally does not embed its own self-referential commit hash. Related foundation issues #19, #20, #21 and font decision #38 remain governed by PR #50. This work does not mark production F1/F3/F4 acceptance complete.
+
+
+## 27 October follow-up — access, font and flight artwork
+
+The owner corrected Admin typography to **Manrope**, superseding the earlier Inter decision for this app. The same next/font self-hosting pattern is retained, with JetBrains Mono for code/identifiers. Two authentic local SVGs from `Logo Files` now serve the white login and navy sidebar/mobile logo; the primary badge SVG supplies `app/icon.svg`. The default Next.js favicon was replaced with 16/32/48px ICO exports of the original primary PNG, using already-installed Sharp tooling. No logo was redrawn and no dependency was added. The exact simpler console mark remains a source-access limitation.
+
+The login route reuses the landing AppSignup footer’s plane silhouette and native 12-second SVG animation. The moving origin and dotted route share the same path, with automatic tangent rotation. A visible pause/play control and reduced-motion preference stop animation. There is no animation library or per-frame React state. White/navy surfaces, the split ratio and form width were adjusted against the supplied screen. The demo role/state picker is collapsed below the form; a visible preview hint and demo-entry label preserve the distinction from real sign-in.
+
+**Access:** in this worktree, run `pnpm dev:admin:demo`, open `http://localhost:3151/login`, use `ops@amortrav.example.invalid` and any sample password, then choose **Enter demo workspace**. Expand **Demo access & preview states** to select Manufacturer. A normal process without `AMTRAV_CONSOLE_DEMO=1` still fails closed; Gmail/production credentials do not grant access. No backend authentication change is part of this update.
+
+
+27 October acceptance: **819/819 checks per engine**, 28 axe audits with zero violations, Manrope computed across all nine widths, no page overflow or console/hydration/network errors. The plane's moving origin remains within 2px of the shared route in sampled browser geometry throughout a full loop; pause and reduced-motion checks confirm its SVG clock stops. Both sidebar and login logos load, `/icon.svg` returns 200, and the ICO contains 16/32/48px entries. The original SVGs were verified byte-identical to the local supplied brand files. Admin lint, explicit TypeScript, optimized build, 16 API tests and frozen install passed after the update.
+
+Additional current captures: [Plane on its route](admin-console-screenshots/login-plane.png) · [Mobile sign-in](admin-console-screenshots/login-mobile.png). The desktop/login/sidebar captures above now show Manrope and the real brand mark; the two original before captures remain unchanged. The performance table above is explicitly the 26 October measurement set, not a new-font benchmark.
