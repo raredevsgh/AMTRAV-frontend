@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import useReducedMotion from "./useReducedMotion";
 
 type TabKey = "bags" | "updates" | "batch" | "files";
 
@@ -43,22 +44,25 @@ export default function BrandDashboardInteractive() {
   const [stepIndex, setStepIndex] = useState(0);
   const [isClicking, setIsClicking] = useState(false);
   const [isRealUserHovering, setIsRealUserHovering] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const reducedMotion = useReducedMotion();
   const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentStep = TOUR_STEPS[stepIndex];
 
   // Autonomous walkthrough loop: glides the virtual cursor and clicks tabs
   useEffect(() => {
-    if (isRealUserHovering) return;
+    if (isRealUserHovering || focused || reducedMotion) return;
 
     let clickTimeout: NodeJS.Timeout | null = null;
     let nextTimeout: NodeJS.Timeout | null = null;
+    let releaseTimeout: NodeJS.Timeout | null = null;
 
     if (currentStep.action === "click") {
       clickTimeout = setTimeout(() => {
         setIsClicking(true);
         setActiveTab(currentStep.tab);
-        setTimeout(() => setIsClicking(false), 240);
+        releaseTimeout = setTimeout(() => setIsClicking(false), 240);
       }, 500);
     }
 
@@ -69,8 +73,13 @@ export default function BrandDashboardInteractive() {
     return () => {
       if (clickTimeout) clearTimeout(clickTimeout);
       if (nextTimeout) clearTimeout(nextTimeout);
+      if (releaseTimeout) clearTimeout(releaseTimeout);
     };
-  }, [stepIndex, isRealUserHovering, currentStep]);
+  }, [stepIndex, isRealUserHovering, currentStep, focused, reducedMotion]);
+
+  useEffect(() => () => {
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+  }, []);
 
   // When real user interacts, smoothly hide virtual cursor and yield control
   const handleUserSelect = (tab: TabKey) => {
@@ -86,12 +95,14 @@ export default function BrandDashboardInteractive() {
     }, 6000);
   };
 
-  const isVirtualHovering = !isRealUserHovering && currentStep.action === "hover";
+  const isVirtualHovering = !isRealUserHovering && !focused && !reducedMotion && currentStep.action === "hover";
 
   return (
     <div
       role="region"
       aria-label="Amortrav brand dashboard preview"
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}
       className="relative w-full max-w-[560px] justify-self-center font-sans xl:justify-self-end select-none"
       onMouseEnter={() => {
         if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
@@ -110,12 +121,12 @@ export default function BrandDashboardInteractive() {
           style={{
             left: `${currentStep.x}%`,
             top: `${currentStep.y}%`,
-            opacity: isRealUserHovering ? 0 : 1,
+            opacity: isRealUserHovering || focused || reducedMotion ? 0 : 1,
             transform: `translate(-3px, -2px) scale(${isClicking ? 0.86 : 1})`,
           }}
         >
           {/* Subtle Click Ripple */}
-          {isClicking && (
+          {isClicking && !reducedMotion && !focused && (
             <span className="absolute -left-2.5 -top-2.5 size-7 rounded-full bg-[#0B1B3D]/25 animate-ping" />
           )}
 
@@ -159,6 +170,7 @@ export default function BrandDashboardInteractive() {
                 <button
                   key={tab.id}
                   type="button"
+                  aria-pressed={active}
                   onClick={() => handleUserSelect(tab.id)}
                   className={`flex h-8 w-full items-center rounded-lg px-3 text-left text-xs transition-colors duration-200 cursor-pointer ${
                     active
@@ -173,7 +185,7 @@ export default function BrandDashboardInteractive() {
           </aside>
 
           {/* Main Dashboard Content */}
-          <main className="flex flex-1 flex-col gap-3.5 bg-[#F6F7F9] p-3.5 sm:gap-4 sm:p-5">
+          <div className="flex min-w-0 flex-1 flex-col gap-3.5 bg-[#F6F7F9] p-3.5 sm:gap-4 sm:p-5">
             {/* ── TAB 1: BAGS ── */}
             {activeTab === "bags" && (
               <div className="flex flex-1 flex-col gap-3.5 sm:gap-4 motion-safe:animate-[fade-in_250ms_ease-out]">
@@ -572,7 +584,7 @@ export default function BrandDashboardInteractive() {
                 </div>
               </div>
             )}
-          </main>
+          </div>
         </div>
       </div>
     </div>

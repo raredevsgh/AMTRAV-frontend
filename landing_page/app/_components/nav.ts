@@ -6,3 +6,6 @@ export const NAV_LINKS = [
 
 // "Get the app" has no store link yet; it scrolls to the email signup on every page.
 export const GET_THE_APP_HREF = "#signup";
+
+// Product preview only; purchasing is not available.
+export const SHOP_LINK = { href: "/shop", label: "Shop" } as const;

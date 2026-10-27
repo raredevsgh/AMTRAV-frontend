@@ -64,3 +64,8 @@ See [Admin Console implementation review](docs/engineering/ADMIN_CONSOLE_REVIEW.
 ## License
 
 Copyright (c) 2026 raredevsgh. All rights reserved. The source is publicly visible for reference only; see [LICENSE](LICENSE).
+
+
+## Combined local development branch
+
+`feat/frontend-latest-local` combines the current completed F0, landing fidelity/Shop and Admin Console work from PRs #50–#53 for local development in this single checkout. Original PR branches and `main` remain unchanged; this integration branch is local-only. Use `pnpm dev:landing` for the updated public site and `pnpm dev:admin:demo` for the fictional Admin preview. Stop servers before switching branches. Recovery branches and stashes remain available for the earlier WIP snapshots.
