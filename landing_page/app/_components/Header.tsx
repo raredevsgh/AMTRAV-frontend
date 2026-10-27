@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
-import SiteNav from "./SiteNav";
+import SiteNav, { ShopLink } from "./SiteNav";
 
 // Fixed navbar pinned to the top edge so scrolling content slides underneath cleanly.
 export default function Header() {
@@ -15,11 +15,13 @@ export default function Header() {
           <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="150px" className="object-cover" preload />
         </Link>
 
-        <div className="hidden xl:block">
+        <div className="hidden xl:flex xl:items-center xl:gap-5">
           <SiteNav />
+          <ShopLink />
         </div>
 
-        <div className="flex items-center xl:hidden">
+        <div className="flex items-center gap-2.5 xl:hidden">
+          <ShopLink />
           <MobileMenu />
         </div>
       </div>

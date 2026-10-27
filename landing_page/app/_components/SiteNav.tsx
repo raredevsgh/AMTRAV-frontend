@@ -1,14 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS } from "./nav";
+import { NAV_LINKS, SHOP_LINK } from "./nav";
 
-// Figma "Nav link" (2018:537): State=Active marks the current page, Hover turns the label blue.
+// Clean navigation with underline active indicator
 export default function SiteNav() {
   const pathname = usePathname();
   return (
-    <nav className="flex h-11 items-center gap-7 px-2">
+    <nav aria-label="Main navigation" className="flex h-11 items-center gap-7 px-2">
       {NAV_LINKS.map(({ href, label }) => {
         const active = pathname === href;
         return (
@@ -33,3 +34,27 @@ export default function SiteNav() {
     </nav>
   );
 }
+
+// Shop cart button for desktop and mobile navigation
+export function ShopLink() {
+  const active = usePathname() === SHOP_LINK.href;
+  return (
+    <Link
+      href={SHOP_LINK.href}
+      aria-label={SHOP_LINK.label}
+      aria-current={active ? "page" : undefined}
+      className={`group flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-[#EEF1F7] focus-visible:outline-2 focus-visible:outline-brand ${
+        active ? "bg-blue-pale" : "border border-navy/15 hover:border-navy/35"
+      }`}
+    >
+      <Image
+        src="/icons/shop-cart.svg"
+        alt=""
+        width={18}
+        height={18}
+        className={`${active ? "opacity-100" : "opacity-75"} group-hover:opacity-100`}
+      />
+    </Link>
+  );
+}
+

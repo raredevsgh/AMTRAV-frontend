@@ -268,7 +268,8 @@ function Travel() {
   );
 }
 
-// Testimonial content is tracked in issue #36; add entries here and the carousel starts rotating.
+// New stories were authored for this preview at the owner's request. They are labelled as
+// illustrative scenarios, not attributed to customers or presented as product endorsements.
 const TESTIMONIALS: readonly Testimonial[] = [
   {
     quote: "“I watched my bag go through the flap at check-in. Eleven hours later, in Lisbon, I still didn't know if it was on my plane.”",
@@ -276,6 +277,24 @@ const TESTIMONIALS: readonly Testimonial[] = [
     label: "An overwhelmed traveller",
     avatar: "/img/testimonial-avatar.png",
     avatarMobile: "/img/testimonial-avatar-m.png",
+  },
+  {
+    quote: "“Three airports in one day. At every connection, I kept wondering whether my suitcase had made the same journey.”",
+    name: "The connecting traveller",
+    label: "Illustrative traveller story",
+    avatar: "/img/traveller-connecting.webp",
+  },
+  {
+    quote: "“With the kids, the passports and the gate change to manage, worrying about our bags was one more thing on my list.”",
+    name: "The family trip organiser",
+    label: "Illustrative traveller story",
+    avatar: "/img/traveller-family.webp",
+  },
+  {
+    quote: "“I kept checking the carousel long after it stopped. A clear update would have helped me decide what to do next.”",
+    name: "The frequent flyer",
+    label: "Illustrative traveller story",
+    avatar: "/img/traveller-frequent.webp",
   },
 ];
 
