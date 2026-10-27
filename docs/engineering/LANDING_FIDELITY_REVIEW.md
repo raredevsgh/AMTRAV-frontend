@@ -1,6 +1,6 @@
 # Landing fidelity review
 
-The first sections record PR #51. The Shop follow-up at the end records the current branch and supersedes the initial cart and WebKit limitations.
+The first sections record earlier PR work. The [27 October current-design review](#current-design-home-shop-and-footer--27-october-2026) supersedes earlier Figma-access, Shop, avatar and WebKit limitations.
 
 ## Scope and evidence
 
@@ -217,3 +217,59 @@ AMTRAV_QA_URL=http://localhost:3140 node scripts/landing-browser-qa.mjs --intera
 The external WebKit scripts/results live under `/private/tmp/amtrav-designer-*.mjs` and `/private/tmp/amtrav-designer-evidence/`; they use the previously installed Playwright tooling, not a new project dependency. Source contact sheets are `source-contact-sheet.png` and `gif-contact-sheet.png`; `film-side-by-side.png`, `film-difference.json` and `diff-*.png` compare actual playback against the source at corresponding timestamps. `recordings/` holds the three browser recordings. Those temporary paths are local evidence, not permanent public links.
 
 Current remaining dependencies: full current Figma/Claude access and Shop mobile/export comparisons; approved pricing/inventory/checkout if purchasing is later desired; existing footer/social/app-store URLs, waitlist endpoint, firmware version and production console URL. Backend and Admin contracts/authentication remain outside this task.
+
+
+## Current design: Home, Shop and footer — 27 October 2026
+
+Local branch: `feat/frontend-latest-local`, based on `6ededf94c31a208e91047f368368e8c17fc8d273`. Changes are uncommitted and local for owner review. The sole frontend checkout and original PR branches #50–#53 remain intact. Both backend repositories, original media and design folders were left untouched. No application dependency or lockfile changed.
+
+### Reference comparison and changes
+
+The authorized Edge session now renders the actual Figma canvas and prototype. Inspected the [Home desktop frame 120:126](https://www.figma.com/design/ATFfIHtQWHYG6S7rLRQCtG/AMORTRAV?node-id=120-126), Home mobile flow `2005:396`, and Shop desktop `2181:1307`, including its products, pre-order process, signup and footer. The current page layer tree also identifies separate Shop desktop/mobile frames. MCP design-context extraction remains blocked by the View-seat quota; exact property and asset extraction was unavailable. This is a visual prototype comparison, not a claim of pixel-perfect parity across the whole file.
+
+| Area | Implemented behavior |
+| --- | --- |
+| Home hero | Supplied luggage MP4 plays behind the existing traveller artwork, headline and actions; shared poster, accessible pause/play and media safeguards retained |
+| Home experience | Six current-design cards; desktop 3×2 grid, tablet two columns, phone scroll strip with keyboard access and a visible next-card edge |
+| Shop | Video background with centered copy/CTAs and four-feature strip, four approved size/price cards, three pre-order steps, luggage collage and Shop-specific signup copy |
+| Cart | Owner-authorized recreated rounded basket; outlined Home state, pale-blue active Shop state and blue hover state; 44px target, accessible name and current-page semantics |
+| Footer | Four desktop groups, native phone/tablet accordions, exported social artwork, connected existing routes/email and owner-approved coming-soon notices for missing destinations |
+| Testimonials | Real image assets replace the three monograms; original approved B. Young quote/photo and four-second accessible carousel remain intact |
+
+Purchasing remains unavailable. Every pre-order action explains that no order has been placed and links to signup. The existing signup has no connected endpoint and still reports that it is unavailable rather than claiming a successful subscription. Product labels and prices come from the owner's supplied full Shop reference; these are design prices, not live inventory. The six feature descriptions are current-design marketing copy, not an assertion of a connected device service.
+
+### Asset provenance
+
+Existing product photography, collage, logo, social exports, video and poster are reused. Four simple feature glyphs and the cart are local SVG recreations from the viewed references, not Figma exports. The exact Check-in 76 landscape product photo was not available locally; its card currently reuses the existing suitcase/packaging image. The mobile header retains the accessible Shop entry; its narrow layout still differs from the prototype's Join-the-list/menu arrangement.
+
+The three new `public/img/traveller-*.webp` files are AI-generated fictional adults for explicitly labeled “Illustrative traveller story” cards, not customer portraits or verified endorsements. Built-in image generation produced each separately; runtime versions are 256×256 WebP, approximately 8/11/9 KB. Original generations remain outside the repo in Codex's generated-images directory.
+
+Prompt specification: natural photorealistic single square fictional traveller headshot, centered head and shoulders occupying about 65% of the frame, soft daylight, blurred airport, natural editorial texture; no text, logos or border. Variants: Ghanaian man in his thirties with a navy shirt (connecting traveller); Black woman in her thirties with a cream top (family organiser); East Asian woman in her forties with a blue top (frequent flyer). These are illustrative casting descriptions, not identities assigned to real people.
+
+### Current verification
+
+Node 24.22.0 / pnpm 11.20.0; production Next.js build served on localhost:3000.
+
+| Check | Actual result |
+| --- | --- |
+| `pnpm lint:landing` | Passed |
+| `pnpm --filter landing_page exec tsc --noEmit` | Passed |
+| `pnpm build:landing` | Passed; 11 static pages generated |
+| `pnpm sprint:test` | 15/15 passed using dry-run adapters |
+| Full production Chrome regression | 554/554 passed; five routes at 320/375/390/430/768/1024/1280/1440/1920px plus navigation, carousel, media and new footer/photo/pre-order checks |
+| Focused Chrome + WebKit matrix | 50 result records, zero failures; Home/Shop at 375/390/768/1024/1280/1440px, Inter, overflow, images, semantics, console errors and reduced-motion poster policy |
+| Focused interactions in both engines | Passed: footer keyboard accordion and FAQ destination, coming-soon notice, unavailable pre-order/signup link, all four circular photos, actual video decoding and manual pause on both routes |
+| Axe WCAG A/AA | 12 audits, zero automated violations, including expanded pre-order notices in both engines at 390/1440px |
+| Diff and architecture review | Passed: scoped Landing changes, small client boundaries, shared media controller, no new app dependency, no authentication/backend changes |
+
+Axe leaves manual review items for translucent/media contrast, silent-film caption applicability and conditional ARIA references. Screenshots and keyboard/media tests complement automated checks; this is not full WCAG certification. Native Safari/iOS hardware was not tested; WebKit automation was tested. The new CDP footer check originally missed the Enter key's character event; its input helper was corrected, with independent Playwright keyboard checks already passing in both engines.
+
+### Review screenshots
+
+Actual browser captures, not generated UI mockups. Stable full-page captures use reduced motion; the Home hero capture below shows the film playing. Curated copies only are stored here; raw result JSON, media contact sheets, temporary scripts and the broader capture matrix remain in `/private/tmp/amtrav-current-design-qa/`.
+
+- Home: [before](screenshots/20261027-current-design/before-home-1440.png), [after with film playing](screenshots/20261027-current-design/playing-home-1440.png), [six-card section](screenshots/20261027-current-design/feature-cards-1440.png).
+- Shop: [before](screenshots/20261027-current-design/before-shop-1440.png), [desktop after](screenshots/20261027-current-design/after-chrome-shop-1440.png), [phone after](screenshots/20261027-current-design/after-chrome-shop-390.png).
+- Details: [testimonial profile photo](screenshots/20261027-current-design/testimonial-photo-1440.png), [mobile footer open with coming-soon notice](screenshots/20261027-current-design/footer-company-open-390.png).
+
+Remaining visual gates: exact Figma glyph/photo exports, Shop mobile-frame comparison and a final owner review of all current frames. Shipping, legal, careers/blog and unprovided social destinations intentionally use coming-soon notices. Payment, reservations and waitlist service integration remain outside this work.

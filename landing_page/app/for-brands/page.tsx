@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import type { CSSProperties } from "react";
-import BrandSignupForm from "./BrandSignupForm";
-import BrandDashboardInteractive from "../_components/BrandDashboardInteractive";
+import Button from "../_components/Button";
+import PageHeader from "../_components/PageHeader";
+import StatusPill from "../_components/StatusPill";
+
+// Figma "For brands page — Desktop 1440" (124:1179) and "— Mobile 390" (124:1375).
 
 export const metadata: Metadata = {
   title: "For brands",
   description:
-    "Ship smart bags without building the cloud. We handle the phone app, bag tracking, customer setup, and lifetime audit trails so you can focus on making great luggage.",
+    "Ship smart bags without building the cloud. Manufacturer console, bag claims, and customer app out of the box.",
   alternates: {
     canonical: "/for-brands",
   },
@@ -20,335 +22,149 @@ export const metadata: Metadata = {
 };
 
 const POINTS = [
-  "Buyers connect their phone in seconds using a simple card in the box",
-  "Turn off lost or stolen bags in one click and see the full history",
-  "Store user guides, warranties, and papers right in the app",
+  "Register inventory and print one-time claim codes",
+  "Revoke a record in one click, with a full audit trail",
+  "Keep spec sheets and certificates in private storage",
 ];
+
+const CHIPS = {
+  Claimed: "bg-blue-pale text-brand",
+  Unclaimed: "bg-surface text-mid",
+  Revoked: "bg-warning-faint text-critical",
+} as const;
+
+const ROWS = [
+  { serial: "AMT-CO55-00F3A1", status: "Claimed" },
+  { serial: "AMT-CI70-0012B7", status: "Unclaimed" },
+  { serial: "AMT-WK40-1A09C3", status: "Revoked" },
+] as const;
+
+function ConsolePreview() {
+  return (
+    <div aria-hidden className="flex w-full justify-center p-6 xl:w-[670px] xl:shrink-0">
+      <div className="flex w-[278px] -rotate-2 flex-col gap-3.5 overflow-clip rounded-[28px] bg-white p-[22px] shadow-lifted xl:w-[622px]">
+        <div className="flex items-center justify-between">
+          <span className="text-h3-m font-semibold whitespace-nowrap text-navy xl:text-h4">Amortrav console</span>
+          <Image src="/icons/window-dots.svg" alt="" width={42} height={10} />
+        </div>
+        <div className="flex gap-2 xl:gap-2.5">
+          {[
+            { label: "Registered", value: "8", dark: false },
+            { label: "Claimed", value: "4", dark: false },
+            { label: "Unclaimed", value: "3", dark: true },
+          ].map(({ label, value, dark }) => (
+            <div key={label} className={`flex min-w-0 flex-1 flex-col rounded-2xl px-2.5 py-3.5 xl:p-3.5 ${dark ? "bg-navy" : "bg-surface"}`}>
+              <span className={`text-micro whitespace-nowrap xl:text-caption ${dark ? "text-blue-faint" : "text-mid"}`}>{label}</span>
+              <span className={`text-h2-m font-semibold xl:text-h3 ${dark ? "text-white" : "text-navy"}`}>{value}</span>
+            </div>
+          ))}
+        </div>
+        {ROWS.map(({ serial, status }) => (
+          <div key={serial} className="flex items-center justify-between rounded-[14px] bg-surface px-3.5 py-2.5">
+            <span className="font-mono text-mono-m font-medium whitespace-nowrap text-navy xl:text-mono">{serial}</span>
+            <span className={`flex h-6 items-center rounded-full px-2.5 text-caption-m whitespace-nowrap xl:text-caption ${CHIPS[status]}`}>{status}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ShipSmartBags() {
+  return (
+    <section className="flex flex-col items-center gap-7 overflow-clip px-5 py-10 xl:flex-row xl:gap-12 xl:rounded-[32px] xl:px-14 xl:py-16">
+      <div data-stagger className="flex w-full flex-col items-start gap-[22px] xl:w-[570px] xl:shrink-0">
+        <p data-enter className="flex h-8 items-center rounded-full bg-blue-pale px-3.5 text-caption-m whitespace-nowrap text-brand xl:text-caption">For luggage makers</p>
+        <h2 data-enter className="text-h1-m font-bold text-navy xl:text-h1">Ship smart bags without building the cloud.</h2>
+        <ul className="flex w-full flex-col gap-2.5">
+          {POINTS.map((point) => (
+            <li key={point} data-reveal className="flex items-center gap-3 rounded-[18px] bg-white px-4 py-3.5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-navy">
+                <Image src="/icons/check-white.svg" alt="" width={16} height={16} />
+              </span>
+              <span className="flex-1 text-caption-m text-navy xl:text-caption">{point}</span>
+            </li>
+          ))}
+        </ul>
+        <div data-reveal>
+          <Button href="#signup" label="Open the console" size="l" />
+        </div>
+      </div>
+      <ConsolePreview />
+    </section>
+  );
+}
 
 const TOOLS = [
-  {
-    name: "Add new bags",
-    desc: "Enter bag serial numbers one by one or upload a whole batch at once.",
-    status: "In progress",
-    tag: "bg-[#EAF0FF] text-[#1F3FBF]",
-    icon: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v8M8 12h8",
-  },
-  {
-    name: "Cards in the box",
-    desc: "Create the one-time setup codes printed inside each bag's packaging.",
-    status: "In progress",
-    tag: "bg-[#EAF0FF] text-[#1F3FBF]",
-    icon: "M4 7h16v10H4zM8 11h5M8 14h3",
-  },
-  {
-    name: "Turn off lost bags",
-    desc: "Deactivate any bag that gets lost, stolen, or taken out of service.",
-    status: "In progress",
-    tag: "bg-[#EAF0FF] text-[#1F3FBF]",
-    icon: "M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01",
-  },
-  {
-    name: "Manuals and papers",
-    desc: "Keep user guides, test papers, and warranty files safe in one spot.",
-    status: "In progress",
-    tag: "bg-[#EAF0FF] text-[#1F3FBF]",
-    icon: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5",
-  },
-  {
-    name: "Live map and battery",
-    desc: "See where your bags are around the world and check their battery levels.",
-    status: "Planned",
-    tag: "bg-[#F1F2F5] text-[#4A5266]",
-    icon: "M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21zM12 7v5",
-  },
-  {
-    name: "Customer help",
-    desc: "Help buyers with pairing questions and handle device issues quickly.",
-    status: "Planned",
-    tag: "bg-[#F1F2F5] text-[#4A5266]",
-    icon: "M6 9a6 6 0 1 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9M10 20a2 2 0 0 0 4 0",
-  },
+  { title: "Register devices", text: "Add serials one by one, with model and batch info.", live: true },
+  { title: "One-time claim codes", text: "Generate and rotate codes for the card in the box.", live: true },
+  { title: "Revoke and audit", text: "Pull a bag from service. Every action is logged.", live: true },
+  { title: "Private files", text: "Spec sheets, certificates and manuals in one place.", live: true },
+  { title: "Fleet map", text: "See where your bags are, with battery and fix age.", live: false },
+  { title: "Complaints and alerts", text: "Customer issues and device alerts in one inbox.", live: false },
 ];
+
+function ConsoleTools() {
+  return (
+    <section className="flex flex-col gap-8 overflow-clip rounded-3xl bg-white px-5 py-8 xl:rounded-[32px] xl:p-14">
+      <div data-reveal className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
+        <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">What&apos;s in the console</h2>
+        <p className="text-small text-mid xl:w-[380px] xl:shrink-0 xl:text-body">
+          A web console for your ops team. Fleet tools turn on as your bags start reporting in.
+        </p>
+      </div>
+      <div data-stagger className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 xl:items-start">
+        {TOOLS.map(({ title, text, live }) => (
+          <div key={title} data-reveal className="flex flex-col gap-3.5 overflow-clip rounded-[28px] bg-white p-7 shadow-card xl:min-h-[164px]">
+            <div className="flex items-center gap-2.5">
+              <h3 className="flex-1 text-h3-m font-semibold text-navy xl:text-h4">{title}</h3>
+              <StatusPill live={live} />
+            </div>
+            <p className="text-body-m text-mid xl:text-body">{text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 const ONBOARDING = [
-  {
-    num: "01",
-    title: "Create your account",
-    desc: "We set up your brand account and send you sample test parts.",
-    circleBg: "bg-white text-[#0B1B3D]",
-  },
-  {
-    num: "02",
-    title: "Test with your phone",
-    desc: "Connect a sample bag with our app and see how easy it is.",
-    circleBg: "bg-white text-[#0B1B3D]",
-  },
-  {
-    num: "03",
-    title: "Start selling",
-    desc: "Put the card in the box and ship smart luggage to your buyers.",
-    circleBg: "bg-[#B9CBFF] text-[#0B1B3D]",
-  },
+  { title: "Get your account", text: "The Amortrav team sets up your manufacturer login." },
+  { title: "Register your serials", text: "Add each bag and print its claim card." },
+  { title: "Ship it", text: "Customers pair in the app. You see claims land live." },
 ];
 
-const CONSOLE_URL = "http://localhost:3001";
+function Onboarding() {
+  return (
+    <section className="flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:rounded-[32px] xl:p-14">
+      <h2 data-reveal className="text-h1-m font-bold text-white xl:text-h1">Live in a week, not a quarter</h2>
+      <ol data-stagger className="flex flex-col gap-4 xl:flex-row">
+        {ONBOARDING.map(({ title, text }, i) => (
+          <li key={title} data-reveal className="flex flex-col items-start gap-3 overflow-clip rounded-3xl bg-navy-deep p-6 xl:flex-1">
+            <span className="flex size-12 items-center justify-center rounded-full bg-blue-faint text-h3-m font-semibold text-navy xl:text-h4">{i + 1}</span>
+            <h3 className="text-h3-m font-semibold text-white xl:text-h4">{title}</h3>
+            <p className="text-body-m text-blue-pale xl:text-body">{text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
 
 export default function ForBrandsPage() {
   return (
-    <div id="brands-page" className="flex flex-col font-sans -mt-4 xl:-mt-5">
-      {/* ── Section 1: Hero (Light Gray #F6F7F9) ── */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 border-b border-[#E4E7EE] bg-[#F6F7F9] py-16 sm:py-20 xl:py-24">
-        <div className="mx-auto max-w-[1200px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 items-center gap-12 xl:grid-cols-2 xl:gap-14">
-            {/* Left */}
-            <div className="flex flex-col items-start gap-6">
-              <span className="flex items-center gap-3 text-xs font-semibold tracking-wider text-[#2A4BD7] uppercase">
-                <span aria-hidden="true" className="h-[2px] w-6 bg-[#2A4BD7]" />
-                For luggage makers
-              </span>
-              <h1 className="text-4xl font-semibold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[56px] xl:leading-[1.08]">
-                Your bags, smart.<br />Your team, in control.
-              </h1>
-              <p className="max-w-lg text-base font-normal leading-relaxed text-[#4A5266] sm:text-lg">
-                We handle the phone app, bag tracking, and customer setup. You focus on making great luggage.
-              </p>
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <a
-                  href="#signup"
-                  className="inline-flex h-12 items-center justify-center rounded-xl bg-[#0B1B3D] px-6 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-navy-deep sm:h-[50px] sm:px-7 sm:text-base"
-                >
-                  Join waitlist
-                </a>
-                <a
-                  href={CONSOLE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center gap-2 text-[15px] font-semibold text-[#0B1B3D] transition-colors duration-200 hover:text-[#2A4BD7] sm:h-[50px] sm:text-base"
-                >
-                  See the dashboard
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Right: Interactive Console Window Mockup */}
-            <BrandDashboardInteractive />
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 2: Ship Smart Bags (White #FFFFFF) ── */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 border-b border-[#E4E7EE] bg-white py-16 sm:py-20 xl:py-24">
-        <div className="mx-auto max-w-[1200px] px-6 xl:px-10">
-          <div className="grid grid-cols-1 items-center gap-12 xl:grid-cols-2 xl:gap-16">
-            {/* Left */}
-            <div className="flex flex-col items-start gap-6">
-              <h2 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-4xl xl:text-[42px] xl:leading-[1.1]">
-                Sell smart luggage without the tech headaches.
-              </h2>
-              <ul className="w-full border-t border-[#E4E7EE]">
-                {POINTS.map((point) => (
-                  <li
-                    key={point}
-                    className="flex items-center gap-3.5 border-b border-[#E4E7EE] py-4 text-sm font-normal text-[#0B1B3D] sm:text-base"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#2A4BD7"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                      className="shrink-0"
-                    >
-                      <path d="M5 12.5l4.5 4.5L19 7.5" />
-                    </svg>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-              <a
-                href="#signup"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-[#0B1B3D] px-6 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-navy-deep sm:h-[50px] sm:px-7 sm:text-base"
-              >
-                Join waitlist
-              </a>
-            </div>
-
-            {/* Right: Floating Claim Cards */}
-            <div
-              aria-hidden="true"
-              className="relative flex aspect-[5/4] w-full items-center justify-center overflow-hidden rounded-2xl bg-[#EEF1F7] p-6"
-            >
-              <div
-                className="animate-float absolute aspect-[1.586] w-[60%] rounded-2xl bg-[#22366A]"
-                style={{ "--r": "-10deg" } as CSSProperties}
-              />
-              <div
-                className="animate-float absolute aspect-[1.586] w-[60%] rounded-2xl bg-[#16295A]"
-                style={{ "--r": "-4deg", animationDelay: "-1.4s" } as CSSProperties}
-              />
-              <div
-                className="animate-float relative flex aspect-[1.586] w-[60%] flex-col justify-between rounded-2xl bg-[#0B1B3D] p-5 text-white shadow-2xl"
-                style={{ "--r": "3deg", animationDelay: "-2.8s" } as CSSProperties}
-              >
-                <div className="flex items-center justify-between">
-                  <Image
-                    src="/img/cta-mark.png"
-                    alt="AMORTRAV"
-                    width={28}
-                    height={23}
-                    className="brightness-0 invert object-contain"
-                  />
-                  <span className="text-xs font-medium text-[#A9B6D3]">Setup card</span>
-                </div>
-                <div className="mt-auto flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider text-[#A9B6D3]">Bag number</span>
-                  <span className="text-sm font-semibold tracking-wide sm:text-base tabular-nums">
-                    AMT-CI70-0012B7
-                  </span>
-                </div>
-                <span
-                  className="mt-2 h-3.5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)]"
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 3: What's in the console (White #FFFFFF) ── */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 border-b border-[#E4E7EE] bg-white py-16 sm:py-20 xl:py-24">
-        <div className="mx-auto max-w-[1200px] px-6 xl:px-10">
-          <div className="flex flex-col gap-10 xl:gap-12">
-            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <h2 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-4xl xl:text-[42px]">
-                What your team can do inside
-              </h2>
-              <p className="max-w-md text-base font-normal leading-relaxed text-[#4A5266]">
-                A simple dashboard for your team to manage every bag you make.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 border-t border-l border-[#DCE1EA] md:grid-cols-2 xl:grid-cols-3">
-              {TOOLS.map((t) => (
-                <div
-                  key={t.name}
-                  className="flex flex-col gap-3 border-r border-b border-[#DCE1EA] p-8 transition-colors duration-200 hover:bg-[#F9FAFC]"
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      aria-hidden="true"
-                      className="flex size-10 items-center justify-center rounded-xl bg-[#EEF1F7] text-[#0B1B3D]"
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d={t.icon} />
-                      </svg>
-                    </span>
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${t.tag}`}>
-                      {t.status}
-                    </span>
-                  </div>
-                  <h3 className="mt-1 text-lg font-semibold text-[#0B1B3D]">{t.name}</h3>
-                  <p className="text-sm font-normal leading-relaxed text-[#4A5266]">{t.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 4: Timeline (Deep Navy #0B1B3D) ── */}
-      <section className="relative left-1/2 w-screen -translate-x-1/2 bg-[#0B1B3D] py-20 text-white sm:py-24 xl:py-28">
-        <div className="mx-auto max-w-[1200px] px-6 xl:px-10">
-          <div className="flex flex-col gap-12 xl:gap-16">
-            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl xl:text-[42px]">
-              From your workshop to the airport.
-            </h2>
-            <div className="relative">
-              <div
-                className="absolute top-5 right-10 left-10 hidden h-[2px] border-t-2 border-dashed border-[#B9CBFF]/30 xl:block"
-                aria-hidden="true"
-              />
-              <div
-                className="absolute top-6 bottom-6 left-5 block w-[2px] border-l-2 border-dashed border-[#B9CBFF]/30 xl:hidden"
-                aria-hidden="true"
-              />
-              <ol className="relative flex flex-col gap-8 xl:grid xl:grid-cols-3 xl:gap-10">
-                {ONBOARDING.map((step) => (
-                  <li key={step.num} className="relative flex items-start gap-4 xl:flex-col xl:gap-5">
-                    <span
-                      aria-hidden="true"
-                      className={`flex size-11 shrink-0 items-center justify-center rounded-full font-semibold shadow-[0_0_0_8px_#0B1B3D] ${step.circleBg}`}
-                    >
-                      {step.num}
-                    </span>
-                    <div className="flex flex-col gap-2 pt-1 xl:pt-0">
-                      <h3 className="text-xl font-semibold text-white">{step.title}</h3>
-                      <p className="text-base font-normal leading-relaxed text-[#B8C4E0]">{step.desc}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 5: Brand CTA (White #FFFFFF) ── */}
-      <section
-        id="signup"
-        className="relative left-1/2 w-screen -translate-x-1/2 border-b border-[#E4E7EE] bg-white py-20 text-center sm:py-28"
-      >
-        <div className="mx-auto max-w-[1200px] px-6 xl:px-10">
-          <div className="flex flex-col items-center gap-5">
-            {/* Logo on top, like in the CTA */}
-            <div className="flex justify-center pb-1">
-              <Image
-                src="/img/cta-mark-navy.png"
-                alt="AMORTRAV"
-                width={56}
-                height={45}
-                className="h-11 w-auto object-contain"
-              />
-            </div>
-
-            <h2 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-4xl xl:text-[44px]">
-              Ready when your flight is.
-            </h2>
-            <p className="max-w-lg text-base font-normal text-[#4A5266] sm:text-lg">
-              AMORTRAV is in development. Leave your email and we will write when it is ready to order.
-            </p>
-
-            {/* Email form (Image 3) instead of buttons (Image 4) */}
-            <BrandSignupForm />
-          </div>
-        </div>
-      </section>
-    </div>
+    <>
+      <PageHeader
+        page="For brands"
+        title="Your bags, smart. Your team, in control."
+        intro="Amortrav handles pairing, ownership and the cloud so you can focus on building great luggage."
+        media="/img/brands-header.jpg"
+        mediaAlt="Travellers in a busy airport terminal"
+        action={{ label: "Talk to us", href: "#signup" }}
+      />
+      <ShipSmartBags />
+      <ConsoleTools />
+      <Onboarding />
+    </>
   );
 }

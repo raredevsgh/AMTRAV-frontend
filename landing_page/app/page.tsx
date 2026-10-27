@@ -2,6 +2,7 @@ import Image from "next/image";
 import Button from "./_components/Button";
 import FaqList from "./_components/FaqList";
 import PhotoTile from "./_components/PhotoTile";
+import ProductVideo from "./_components/ProductVideo";
 import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import { GET_THE_APP_HREF } from "./_components/nav";
@@ -34,7 +35,7 @@ const FAQ = [
 function Hero() {
   return (
     <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 pt-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:pt-16">
-      <Image src="/img/hero-bg.jpg" alt="" fill sizes="(min-width: 1280px) 1400px, 100vw" className="pointer-events-none object-cover" preload />
+      <ProductVideo />
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(0,31,77,0.94)] via-[rgba(0,31,77,0.82)] via-45% to-[rgba(0,31,77,0.55)]" />
 
       <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px] xl:pb-16">
@@ -166,65 +167,199 @@ function RouteTicker() {
 const CARD_HOVER =
   "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1";
 
-// Experience card icons: a light-blue tile sits behind the icon, offset down and to the right.
-function CardIcon({ kind }: { kind: "location" | "status" | "security" }) {
+// Reuse exported location/security artwork; the remaining simple glyphs follow
+// the current prototype. They are local recreations, not Figma exports.
+function CardIcon({
+  kind,
+}: {
+  kind: "journey" | "impact" | "weight" | "location" | "security" | "connected";
+}) {
   return (
-    <div className="relative h-[89px] w-[68.74px] shrink-0">
+    <div aria-hidden="true" className="relative h-[89px] w-[68.74px] shrink-0">
       <div className="absolute top-10 left-[18.74px] h-[49px] w-[50px] rounded-[10px_5px_18px_5px] bg-blue-faint" />
-      {kind === "location" && (
+      {kind === "location" ? (
         <>
-          <Image src="/icons/card-location-pin.svg" alt="" width={46} height={65} className="absolute top-1.5 left-[7px]" />
-          <Image src="/icons/card-location-dot.svg" alt="" width={19} height={18} className="absolute top-[18px] left-[21px]" />
+          <Image
+            src="/icons/card-location-pin.svg"
+            alt=""
+            width={46}
+            height={65}
+            className="absolute top-1.5 left-[7px]"
+          />
+          <Image
+            src="/icons/card-location-dot.svg"
+            alt=""
+            width={19}
+            height={18}
+            className="absolute top-[18px] left-[21px]"
+          />
         </>
+      ) : kind === "security" ? (
+        <Image
+          src="/icons/card-security.svg"
+          alt=""
+          width={61}
+          height={72}
+          className="absolute top-0 left-0"
+        />
+      ) : (
+        <svg
+          className="absolute top-0 left-0 text-brand"
+          width="61"
+          height="72"
+          viewBox="0 0 64 76"
+          fill="none"
+        >
+          {kind === "journey" && (
+            <>
+              <rect width="62" height="76" rx="16" fill="currentColor" />
+              <path
+                d="M18 19v38M34 19h13M34 38h9M34 57h13"
+                stroke="#F4F4F5"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+              <circle cx="18" cy="19" r="6" fill="#F4F4F5" />
+              <circle cx="18" cy="38" r="6" fill="#F4F4F5" />
+              <circle cx="18" cy="57" r="6" fill="#F4F4F5" />
+            </>
+          )}
+          {kind === "impact" && (
+            <>
+              <path
+                d="m32 2 7 9 10-4 1 11 11 1-4 10 9 8-9 7 4 11-11 1-1 10-10-4-7 9-8-9-10 4-1-10-11-1 4-11-9-7 9-8-4-10 11-1 1-11 10 4Z"
+                fill="currentColor"
+              />
+              <path
+                d="M32 22v16"
+                stroke="#F4F4F5"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+              <circle cx="32" cy="50" r="3.5" fill="#F4F4F5" />
+            </>
+          )}
+          {kind === "weight" && (
+            <>
+              <circle
+                cx="32"
+                cy="15"
+                r="11"
+                stroke="currentColor"
+                strokeWidth="6"
+              />
+              <path
+                d="M15 22h34a6 6 0 0 1 6 5l8 41a6 6 0 0 1-6 8H7a6 6 0 0 1-6-8l8-41a6 6 0 0 1 6-5"
+                fill="currentColor"
+              />
+              <rect
+                x="16"
+                y="39"
+                width="32"
+                height="19"
+                rx="5"
+                fill="#F4F4F5"
+              />
+              <path
+                d="M24 48h16"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+            </>
+          )}
+          {kind === "connected" && (
+            <>
+              <rect width="62" height="76" rx="16" fill="currentColor" />
+              <path
+                d="M15 61v-9M31 61V44M47 61V36M13 39c15-5 25-12 34-25M37 14h11v11"
+                stroke="#F4F4F5"
+                strokeWidth="4.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
+          )}
+        </svg>
       )}
-      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
-      {kind === "security" && <Image src="/icons/card-security.svg" alt="" width={45} height={54} className="absolute top-0 left-2" />}
     </div>
   );
 }
 
 const EXPERIENCE = [
   {
-    kind: "location",
-    title: "Location",
-    text: "See the latest reported location of your connected luggage, with an indication of when that information was recorded.",
+    kind: "journey",
+    title: "Journey Log",
+    text: "Follow your luggage journey through a clear timeline of location, separation, impact, weight and security events.",
   },
   {
-    kind: "status",
-    title: "Device Status",
-    text: "Check available battery and connection information so you can better understand your luggage's current status.",
+    kind: "impact",
+    title: "Impact Detection",
+    text: "Get a time-stamped record when your luggage takes a significant handling impact during travel.",
+  },
+  {
+    kind: "weight",
+    title: "Accurate Weight",
+    text: "Lift, check and travel with confidence. See your luggage weight on the case and inside the app.",
+  },
+  {
+    kind: "location",
+    title: "TRACE Location",
+    text: "Nearby Bluetooth, GNSS and cellular positioning combine for live and last-known luggage visibility.",
   },
   {
     kind: "security",
-    title: "Security Events",
-    text: "Review relevant movement and security events when supported by the device, with information to help you decide what to do next.",
+    title: "Theft & Tamper",
+    text: "Activate Theft Mode, monitor unexpected movement and keep a record of important security events.",
+  },
+  {
+    kind: "connected",
+    title: "One Connected View",
+    text: "Location, weight, impact history, lock status, battery and alerts, all managed from one app.",
   },
 ] as const;
 
 function Experience() {
   return (
-    <section className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
-      <div className="flex w-full flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
-        <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
-          <p className="text-caption-m text-mid xl:text-small">THE EXPERIENCE</p>
-          <h2 className="text-h1-m font-bold text-navy xl:text-h1">
+    <section
+      aria-labelledby="experience-heading"
+      className="flex min-w-0 flex-col items-center py-8 xl:px-[140px] xl:py-2.5"
+    >
+      <div className="flex w-full min-w-0 flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
+        <div
+          data-reveal
+          className="flex w-full flex-col items-center gap-2 px-5 text-center xl:gap-5"
+        >
+          <p className="text-caption-m text-mid xl:text-small">
+            THE EXPERIENCE
+          </p>
+          <h2
+            id="experience-heading"
+            className="text-h1-m font-bold text-navy xl:text-h1"
+          >
             Know where <br className="xl:hidden" />
             things stand
           </h2>
         </div>
-        <div data-stagger className="flex w-full flex-col gap-4 xl:flex-row xl:gap-6">
+        <div
+          role="region"
+          aria-label="TRACE features; scroll to explore"
+          tabIndex={0}
+          className="flex w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-5 pt-2 pb-8 focus-visible:outline-2 focus-visible:outline-brand md:grid md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:overflow-visible xl:px-0 xl:pb-0"
+        >
           {EXPERIENCE.map(({ kind, title, text }) => (
-            <div
+            <article
               key={kind}
-              data-reveal
-              className={`flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:flex-1 xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
+              className={`flex w-[min(280px,85%)] shrink-0 snap-start flex-col items-center justify-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card md:w-auto xl:min-h-[359px] xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
             >
               <CardIcon kind={kind} />
               <div className="flex flex-col gap-2">
-                <h3 className="text-h3-m font-semibold text-brand xl:text-h3">{title}</h3>
+                <h3 className="text-h3-m font-semibold text-brand xl:text-[24px]">
+                  {title}
+                </h3>
                 <p className="text-body-m text-mid xl:text-body">{text}</p>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>
@@ -282,19 +417,19 @@ const TESTIMONIALS: readonly Testimonial[] = [
     quote: "“Three airports in one day. At every connection, I kept wondering whether my suitcase had made the same journey.”",
     name: "The connecting traveller",
     label: "Illustrative traveller story",
-    initials: "CT",
+    avatar: "/img/traveller-connecting.webp",
   },
   {
     quote: "“With the kids, the passports and the gate change to manage, worrying about our bags was one more thing on my list.”",
     name: "The family trip organiser",
     label: "Illustrative traveller story",
-    initials: "FT",
+    avatar: "/img/traveller-family.webp",
   },
   {
     quote: "“I kept checking the carousel long after it stopped. A clear update would have helped me decide what to do next.”",
     name: "The frequent flyer",
     label: "Illustrative traveller story",
-    initials: "FF",
+    avatar: "/img/traveller-frequent.webp",
   },
 ];
 
@@ -361,7 +496,7 @@ function Explore() {
 
 function Faq() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-[34px] xl:px-10 xl:py-12">
+    <section id="faq" className="flex scroll-mt-28 flex-col gap-6 overflow-clip px-5 py-8 xl:gap-[34px] xl:px-10 xl:py-12">
       <h2 data-reveal className="text-h2-m font-semibold text-navy xl:text-h2">
         Frequently Asked Questions
       </h2>

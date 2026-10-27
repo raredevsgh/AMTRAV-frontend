@@ -98,46 +98,44 @@ html, body {
   overflow-x: clip;
 }
 
-/* Header glass: silver sheen follows the supplied designer screenshot; retain the existing
-   50px background blur. The blur lives on a
-   pseudo-element: backdrop-filter on the header itself would become the containing block of
-   the mobile menu's fixed overlay. */
+/* Header glass: genuine transparent liquid glass matching the Figma prototype.
+   Translucent specular gradient, soft crystalline border, and high-transmission backdrop blur. */
 .glass {
-  isolation: isolate;
+  background: rgba(255, 255, 255, 0.85); /* fallback for browsers without backdrop-filter */
+  border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow:
-    inset 0 1px 0 0 rgb(255 255 255 / 0.85),
-    inset 0 -1px 0 0 rgb(255 255 255 / 0.3),
-    var(--shadow-hairline);
+    0 8px 32px 0 rgba(0, 10, 31, 0.12),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.15);
 }
-.glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(180deg, #edf0f4 0%, #d9dde3 42%, #b7bec9 100%);
-}
+
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass::before {
-    background: linear-gradient(180deg, rgb(239 242 246 / 0.82) 0%, rgb(216 221 228 / 0.72) 42%, rgb(161 171 185 / 0.72) 100%);
-    -webkit-backdrop-filter: blur(50px) saturate(180%);
-    backdrop-filter: blur(50px) saturate(180%);
+  .glass {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    -webkit-backdrop-filter: blur(20px) saturate(190%) contrast(105%);
+    backdrop-filter: blur(20px) saturate(190%) contrast(105%);
   }
 }
+
 @supports (animation-timeline: scroll()) {
-  /* The header gains depth over the first 120px of scrolling, without a scroll listener. */
+  /* The header gains subtle depth over the first 120px of scrolling, without a scroll listener. */
   .glass {
     animation: glass-lift linear both;
     animation-timeline: scroll(root);
     animation-range: 0 120px;
   }
 }
+
 @keyframes glass-lift {
   to {
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.85),
-      inset 0 -1px 0 0 rgb(255 255 255 / 0.3),
-      0 12px 32px 0 rgb(0 31 77 / 0.12);
+      0 14px 40px 0 rgba(0, 31, 77, 0.16),
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 1px 0 rgba(255, 255, 255, 0.2);
   }
 }
 

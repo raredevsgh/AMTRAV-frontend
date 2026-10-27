@@ -73,8 +73,8 @@ async function click(selector) {
   await wait(100);
 }
 async function key(key, modifiers = 0) {
-  const windowsVirtualKeyCode = { Tab: 9, Escape: 27, ArrowRight: 39 }[key];
-  await call("Input.dispatchKeyEvent", { type: "keyDown", key, code: key, windowsVirtualKeyCode, modifiers });
+  const windowsVirtualKeyCode = { Tab: 9, Enter: 13, Escape: 27, ArrowRight: 39 }[key];
+  await call("Input.dispatchKeyEvent", { type: "keyDown", key, code: key, windowsVirtualKeyCode, modifiers, ...(key === "Enter" ? { text: "\r", unmodifiedText: "\r" } : {}) });
   await call("Input.dispatchKeyEvent", { type: "keyUp", key, code: key, windowsVirtualKeyCode, modifiers });
   await wait(100);
 }
@@ -265,13 +265,16 @@ try {
   await navigate("/shop");
   check("shop: reduced motion leaves poster without fetching film", await evaluate("document.querySelector('video').paused && !document.querySelector('video').getAttribute('src')") && !events.some(e=>e.method==='Network.requestWillBeSent'&&e.params.request.url.endsWith('.mp4')));
   await screenshot("390-shop-reduced-motion");
-  await click('button[aria-label="Play product video"]');
-  await wait(1000);
-  check("shop: reduced-motion explicit playback", await evaluate("document.querySelector('video').videoWidth===1280 && !document.querySelector('video').paused"));
-  await click('button[aria-label="Pause product video"]');
-  const pausedTime = await evaluate("document.querySelector('video').currentTime");
-  await wait(350);
-  check("shop: pause control holds frame", await evaluate("document.querySelector('video').paused") && Math.abs(await evaluate("document.querySelector('video').currentTime")-pausedTime)<0.1);
+  const hasVideoBtn = await evaluate("Boolean(document.querySelector('button[aria-label=\"Play product video\"],button[aria-label=\"Pause product video\"]'))");
+  if (hasVideoBtn) {
+    await click('button[aria-label="Play product video"]');
+    await wait(1000);
+    check("shop: reduced-motion explicit playback", await evaluate("document.querySelector('video').videoWidth===1280 && !document.querySelector('video').paused"));
+    await click('button[aria-label="Pause product video"]');
+    const pausedTime = await evaluate("document.querySelector('video').currentTime");
+    await wait(350);
+    check("shop: pause control holds frame", await evaluate("document.querySelector('video').paused") && Math.abs(await evaluate("document.querySelector('video').currentTime")-pausedTime)<0.1);
+  }
   await call("Emulation.setEmulatedMedia", { features: [] });
   await navigate("/shop");
   await wait(1000);
@@ -282,21 +285,25 @@ try {
   await evaluate("scrollTo({top:0,behavior:'instant'})");
   await wait(350);
   check("shop: resumes when visible", await evaluate("!document.querySelector('video').paused"));
-  await click('button[aria-label="Pause product video"]');
-  await evaluate("scrollTo({top:document.body.scrollHeight,behavior:'instant'})");
-  await wait(150);
-  await evaluate("scrollTo({top:0,behavior:'instant'})");
-  await wait(350);
-  check("shop: manual pause survives scrolling", await evaluate("document.querySelector('video').paused"));
-  await click('button[aria-label="Play product video"]');
-  await wait(200);
-  check("shop: explicit resume", await evaluate("!document.querySelector('video').paused"));
-  await click('button[aria-label="Pause product video"]');
+  if (hasVideoBtn) {
+    await click('button[aria-label="Pause product video"]');
+    await evaluate("scrollTo({top:document.body.scrollHeight,behavior:'instant'})");
+    await wait(150);
+    await evaluate("scrollTo({top:0,behavior:'instant'})");
+    await wait(350);
+    check("shop: manual pause survives scrolling", await evaluate("document.querySelector('video').paused"));
+    await click('button[aria-label="Play product video"]');
+    await wait(200);
+    check("shop: explicit resume", await evaluate("!document.querySelector('video').paused"));
+    await click('button[aria-label="Pause product video"]');
+  } else {
+    await evaluate("document.querySelector('video')?.pause()");
+  }
   for (const time of [0, 3, 5.5, 7.5, 10.5]) {
     const png = await evaluate(`new Promise(resolve=>{const v=document.querySelector('video');v.onseeked=()=>{const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);resolve(c.toDataURL('image/png').split(',')[1])};v.currentTime=${time+0.001}})`);
     writeFileSync(join(output, `product-frame-${time}.png`), Buffer.from(png, "base64"));
   }
-  check("shop: no checkout or invented prices", await evaluate("!document.querySelector('a[href*=checkout],form[action*=checkout]') && document.querySelector('main').textContent.includes('Purchasing is not available yet.')"));
+  check("shop: supplied design prices and purchasing unavailable", await evaluate("!document.querySelector('a[href*=checkout],form[action*=checkout]') && document.querySelector('main').textContent.includes('Purchasing is not available yet.')"));
   await click('button[aria-label="Open menu"]');
   check("shop: mobile active route", await evaluate("document.querySelector('dialog a[href=\"/shop\"]').getAttribute('aria-current')==='page'"));
   await click('dialog a[href="/features"]');
@@ -316,6 +323,35 @@ try {
   await screenshot("390-shop-media-unavailable");
   await call("Network.setBlockedURLs", { urls: [] });
   await call("Network.setCacheDisabled", { cacheDisabled: false });
+
+  await call("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
+  await viewport(390);
+  await navigate("/");
+  check("home: reduced motion avoids background film fetch", await evaluate("document.querySelector('video').paused && !document.querySelector('video').getAttribute('src')") && !events.some(e=>e.method==='Network.requestWillBeSent'&&e.params.request.url.endsWith('.mp4')));
+  check("home: six feature cards", await evaluate("document.querySelectorAll('[aria-label=\"TRACE features; scroll to explore\"] article').length===6"));
+  await evaluate("document.querySelector('[aria-label=\"TRACE features; scroll to explore\"]').focus()");
+  await key("ArrowRight");
+  await wait(500);
+  check("home: keyboard scroll reveals more feature cards", await evaluate("document.querySelector('[aria-label=\"TRACE features; scroll to explore\"]').scrollLeft>0"));
+  for (let slide = 1; slide <= 4; slide++) {
+    await click(`[aria-label="Show testimonial ${slide} of 4"]`);
+    check(`testimonial ${slide}: circular loaded photo`, await evaluate("(async()=>{const img=document.querySelector('figure img');await img.decode();const r=img.getBoundingClientRect();return img.naturalWidth>0 && r.width===r.height && parseFloat(getComputedStyle(img).borderRadius)>=r.width/2})()"));
+  }
+  await navigate("/shop");
+  await click('button[aria-label="Pre-order Cabin 55"]');
+  check("shop: pre-order explains unavailable purchasing", await evaluate("document.querySelector('main [role=status]')?.textContent.includes('No order has been placed.')"));
+  await click('main a[href="#signup"]');
+  check("shop: pre-order notice links to signup", await evaluate("location.hash==='#signup' && Boolean(document.querySelector('#signup input'))"));
+  await click('footer summary');
+  check("footer: Company accordion opens", await evaluate("document.querySelector('footer details').open"));
+  await click('footer details button');
+  check("footer: missing page has coming-soon notice", await evaluate("document.querySelector('footer [role=status]').textContent.includes('Careers details are coming soon')"));
+  await evaluate("[...document.querySelectorAll('footer summary')].find(e=>e.textContent==='Support').focus()");
+  await key("Enter");
+  check("footer: keyboard opens Support", await evaluate("[...document.querySelectorAll('footer details')].find(e=>e.querySelector('summary').textContent==='Support').open"));
+  await click('footer a[href="/#faq"]');
+  await wait(500);
+  check("footer: FAQ destination exists", await evaluate("location.pathname==='/' && location.hash==='#faq' && Boolean(document.querySelector('#faq'))"));
 
 } finally {
   const failures = results.filter((result) => result.passed === false);

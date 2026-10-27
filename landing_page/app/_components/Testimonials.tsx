@@ -166,7 +166,7 @@ function Avatar({ item, mobile = false }: { item: Testimonial; mobile?: boolean 
   const size = mobile ? 56 : 72;
   const source = mobile ? item.avatarMobile ?? item.avatar : item.avatar;
   return source ? (
-    <Image src={source} alt="" width={size} height={size} className="shrink-0 rounded-full" />
+    <Image src={source} alt="" width={size} height={size} className={`shrink-0 rounded-full object-cover ${mobile ? "size-14" : "size-[72px]"}`} />
   ) : (
     <span aria-hidden="true" className={`flex shrink-0 items-center justify-center rounded-full bg-blue-pale font-semibold text-navy ${mobile ? "size-14 text-body" : "size-[72px] text-h4"}`}>
       {item.initials}
