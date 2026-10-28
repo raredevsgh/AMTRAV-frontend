@@ -122,7 +122,7 @@ export default function AppSignup() {
           Ready when <br className="xl:hidden" />
           your flight is.
         </h2>
-        <p className="text-small text-stale xl:w-[520px] xl:text-lead">
+        <p className="text-small text-stale xl:w-130 xl:text-lead">
           AMORTRAV is in development. Leave your email and we will write when it is ready to order.
         </p>
       </div>

@@ -3,6 +3,7 @@ import { JetBrains_Mono } from "next/font/google";
 import AppSignup from "./_components/AppSignup";
 import Footer from "./_components/Footer";
 import Header from "./_components/Header";
+import Preloader from "./_components/Preloader";
 import RevealObserver from "./_components/RevealObserver";
 import "./globals.css";
 
@@ -102,18 +103,25 @@ const organizationSchema = {
   ],
 };
 
+// sessionStorage key for the first-visit preloader; the inline script below reads it.
+const PRELOADER_KEY = "amortrav-preloaded";
+const preloaderScript = `try{if(sessionStorage.getItem("${PRELOADER_KEY}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-preloaded","")}catch(e){document.documentElement.setAttribute("data-preloaded","")}`;
+
 // Every page shares the header, the app signup and the footer (Figma "Page sections", 2020:497).
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // data-scroll-behavior lets Next.js turn smooth scrolling off during route changes.
-    <html lang="en" data-scroll-behavior="smooth" className={`${jetbrainsMono.variable} antialiased`}>
+    // suppressHydrationWarning: the preloader script sets data-preloaded before hydration.
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={`${jetbrainsMono.variable} antialiased`}>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: preloaderScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
       <body className="font-sans">
+        <Preloader storageKey={PRELOADER_KEY} />
         <Header />
         <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[76px] pb-3 xl:gap-5 xl:px-5 xl:pt-[84px] xl:pb-5">
           <main className="flex flex-col gap-4 xl:gap-5">{children}</main>

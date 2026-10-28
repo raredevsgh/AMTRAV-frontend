@@ -254,3 +254,9 @@ html, body {
     animation-play-state: paused;
   }
 }
+
+/* Preloader: the inline script in layout.tsx sets data-preloaded on repeat visits and for
+   reduced motion, before first paint. */
+html[data-preloaded] .preloader {
+  display: none;
+}
