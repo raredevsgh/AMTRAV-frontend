@@ -35,11 +35,11 @@ const FAQ = [
 
 function Hero() {
   return (
-    <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 pt-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:pt-16">
+    <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <ProductVideo />
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(0,31,77,0.94)] via-[rgba(0,31,77,0.82)] via-45% to-[rgba(0,31,77,0.55)]" />
 
-      <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px] xl:pb-16">
+      <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px]">
         <p data-enter className="flex h-9 items-center gap-2.5 rounded-full bg-navy-deep pr-4 pl-2 text-caption-m whitespace-nowrap text-blue-pale xl:text-caption">
           <Image src="/icons/eyebrow-new.svg" alt="" width={26} height={24} />
           Smart luggage, paired to your phone
@@ -75,68 +75,19 @@ function Hero() {
   );
 }
 
-function Badge({ subtitle }: { subtitle: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3 rounded-[20px] bg-white/51 py-3 pr-[18px] pl-3 drop-shadow-[0_20px_20px_rgba(0,10,31,0.3)]">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy">
-        <Image src="/icons/plane.svg" alt="" width={20} height={20} />
-      </span>
-      <span className="flex flex-col gap-0.5 text-caption whitespace-nowrap">
-        <span className="text-navy">Flight-safe mode</span>
-        <span className="text-mid">{subtitle}</span>
-      </span>
-    </div>
-  );
-}
-
-function RoutePill({ className }: { className: string }) {
-  return (
-    <div className={`absolute flex h-[37px] items-center gap-2.5 rounded-full bg-brand px-[18px] shadow-float ${className}`}>
-      <Image src="/icons/dot-route.svg" alt="" width={8} height={8} />
-      <span className="font-mono text-mono-m font-medium whitespace-nowrap text-white xl:text-mono">LOS → LHR · on board</span>
-    </div>
-  );
-}
-
 function HeroVisual() {
   return (
-    <>
-      {/* Mobile art: a 414 × 372 composition centred on the hero. */}
-      <div data-enter className="relative h-[372px] w-full [--motion-delay:240ms] xl:hidden">
-        <div className="absolute top-0 left-1/2 h-[372px] w-[414.16px] -translate-x-1/2">
-          <Image src="/img/hero-glow-m.svg" alt="" width={322} height={322} className="absolute top-[12.4px] left-[45.88px] size-[322.4px] max-w-none" />
-          <Image src="/img/hero-orbit-m.png" alt="" width={372} height={372} className="absolute top-[-12.4px] left-[21.08px] max-w-none" />
-          <div className="absolute top-[-23.77px] left-[79.36px] h-[361.05px] w-[255.44px] overflow-clip rounded-[19.84px] border-[3.72px] border-white bg-navy-deep shadow-hero">
-            <div className="absolute inset-[-3.51px_-32.24px_-48.36px_-7.44px] bg-[#bcd5fa]">
-              <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="300px" className="object-cover" />
-            </div>
-            <div className="absolute inset-[-3.72px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
-          </div>
-          <Image src="/img/hero-flight-path-m.svg" alt="" width={414} height={373} className="absolute top-[-0.37px] left-0 h-[372.74px] w-[414.16px] max-w-none" />
-          <div className="absolute top-24 left-10">
-            <Badge subtitle="Radios off, ready to board" />
-          </div>
-          <RoutePill className="top-[300px] left-[164px]" />
+    <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
+      <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none" />
+      <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none" />
+      <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero">
+        <div className="absolute inset-[-3.66px_-50px_-76px_-10px] bg-[#bcd5fa]">
+          <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="480px" className="object-cover" preload />
         </div>
+        <div className="absolute inset-[-4px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
       </div>
-
-      {/* Desktop art: 668 × 600. */}
-      <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
-        <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none" />
-        <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none" />
-        <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero">
-          <div className="absolute inset-[-3.66px_-50px_-76px_-10px] bg-[#bcd5fa]">
-            <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="480px" className="object-cover" preload />
-          </div>
-          <div className="absolute inset-[-4px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
-        </div>
-        <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />
-        <div className="absolute top-[124px] left-6">
-          <Badge subtitle="Radios off, ready to go" />
-        </div>
-        <RoutePill className="top-[479px] left-[444.64px]" />
-      </div>
-    </>
+      <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />
+    </div>
   );
 }
 
