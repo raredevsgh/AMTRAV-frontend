@@ -4,12 +4,10 @@ import { gsap } from "gsap";
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 
-// First-visit preloader: a fast, elegant LOS → LHR flight, then the AMORTRAV lockup
+// AMORTRAV Preloader: a fast, elegant LOS → LHR flight, then the AMORTRAV lockup
 // with the tagline "Travel with love, travel with a better sense of control.",
-// then a two-layer curtain that lifts off the hero. Shown once per tab session
-// (`storageKey` in sessionStorage). The inline script in layout.tsx sets
-// `html[data-preloaded]` before first paint on repeat visits and for reduced motion,
-// and globals.css immediately hides the preloader for it.
+// then a two-layer curtain that lifts off the hero.
+// Plays on page load / refresh and smoothly completes in ~2 seconds.
 
 const ROUTE = "M60 200 C 300 10, 700 10, 940 200";
 const WORDMARK = "AMORTRAV".split("");
@@ -20,26 +18,16 @@ const HERO_ENTRANCES = "main > :first-child [data-enter]";
 const CLOSED = "inset(0% 0% 0% 0%)";
 const LIFTED = "inset(0% 0% 100% 0%)";
 
-export default function Preloader({ storageKey }: { storageKey: string }) {
+export default function Preloader({ storageKey }: { storageKey?: string } = {}) {
   const root = useRef<HTMLDivElement>(null);
-  const [done, setDone] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return Boolean(
-        document.documentElement.hasAttribute("data-preloaded") ||
-        sessionStorage.getItem(storageKey)
-      );
-    } catch {
-      return false;
-    }
-  });
+  const [done, setDone] = useState(false);
 
   useLayoutEffect(() => {
     const html = document.documentElement;
     const el = root.current;
 
-    // If already preloaded or reduced-motion, skip timeline execution.
-    if (html.hasAttribute("data-preloaded")) {
+    // Skip only if the user explicitly prefers reduced motion
+    if (html.hasAttribute("data-preloaded") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
     if (!el) return;
@@ -54,12 +42,8 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
 
     html.style.overflow = "hidden";
 
-    // Fallback safety timer: ensures the preloader never gets stuck on screen
+    // Fallback safety timer: ensures the preloader never gets stuck on screen under any circumstance
     const safetyTimer = window.setTimeout(() => {
-      try {
-        sessionStorage.setItem(storageKey, "1");
-      } catch {}
-      html.setAttribute("data-preloaded", "");
       html.style.overflow = "";
       setDone(true);
     }, 2800);
@@ -105,10 +89,6 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
         defaults: { ease: "power3.out" },
         onComplete() {
           window.clearTimeout(safetyTimer);
-          try {
-            sessionStorage.setItem(storageKey, "1");
-          } catch {}
-          html.setAttribute("data-preloaded", "");
           html.style.overflow = "";
           setDone(true);
         },
