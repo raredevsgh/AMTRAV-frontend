@@ -3,126 +3,122 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Button from "./Button";
 import { GET_THE_APP_HREF, NAV_LINKS, SHOP_LINK } from "./nav";
 
 const ALL_LINKS = [{ href: "/", label: "Home" }, ...NAV_LINKS, SHOP_LINK];
-const emptySubscribe = () => () => {};
 
-function useMounted() {
-  return useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
+export default function MobileMenu() {
+  const pathname = usePathname();
+  return <NavigationMenu key={pathname} pathname={pathname} />;
 }
 
-// Top slide-down sheet menu matching the reference design concept
-export default function MobileMenu() {
+// A route change resets local menu state, including browser back/forward navigation.
+function NavigationMenu({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false);
-  const mounted = useMounted();
-  const pathname = usePathname();
-  const close = () => setOpen(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    // Prevent background scrolling while menu is open
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
-  const slideDownMenu = (
-    <div
-      id="mobile-menu"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Navigation menu"
-      className="fixed inset-0 z-[100]"
-    >
-      {/* Semi-transparent backdrop overlay without blur - clicking closes the menu */}
-      <div
-        onClick={close}
-        aria-hidden="true"
-        className="fixed inset-0 bg-navy/40 transition-opacity motion-safe:animate-[fade-in_200ms_ease-out]"
-      />
-
-      {/* Top slide-down menu sheet - covers top portion only, page content stays visible below */}
-      <div className="fixed inset-x-0 top-0 z-10 flex max-h-[85vh] flex-col overflow-y-auto rounded-b-[28px] border-b border-navy/10 bg-white px-5 pt-4 pb-6 shadow-2xl motion-safe:animate-[slide-down_280ms_cubic-bezier(0.16,1,0.3,1)]">
-        {/* Header row with logo and close button */}
-        <div className="flex items-center justify-between pb-3">
-          <Link href="/" onClick={close} className="relative h-6 w-[116px] shrink-0">
-            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="116px" className="object-cover" />
-          </Link>
-          <button
-            type="button"
-            aria-label="Close menu"
-            onClick={close}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface text-navy transition-colors hover:bg-stale/40 focus-visible:outline-2 focus-visible:outline-brand"
-          >
-            <Image src="/icons/close.svg" alt="" width={18} height={18} />
-          </button>
-        </div>
-
-        {/* Navigation list */}
-        <nav className="flex flex-col gap-1 pt-2">
-          {ALL_LINKS.map(({ href, label }) => {
-            const isActive = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={close}
-                className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-base font-semibold transition-colors ${
-                  isActive
-                    ? "bg-navy/5 font-bold text-navy"
-                    : "text-navy/80 hover:bg-surface hover:text-navy active:text-brand"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  {isActive && <span className="size-2 rounded-full bg-brand" />}
-                  <span>{label}</span>
-                </div>
-                <Image
-                  src="/icons/chevron.svg"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className={isActive ? "opacity-90" : "opacity-45"}
-                />
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* CTA Button at bottom of dropdown panel */}
-        <div className="mt-4 border-t border-divider/60 pt-4">
-          <Button href={GET_THE_APP_HREF} label="Get the app" arrow onClick={close} className="w-full justify-center" />
-        </div>
-      </div>
-    </div>
-  );
+  const trigger = useRef<HTMLButtonElement>(null);
+  const close = useCallback(() => setOpen(false), []);
 
   return (
     <>
       <button
+        ref={trigger}
         type="button"
         aria-label="Open menu"
+        aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen(true)}
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface transition-colors hover:bg-stale/40"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface transition-colors hover:bg-stale/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
       >
-        <Image src="/icons/menu.svg" alt="" width={20} height={20} />
+        <Image src="/icons/menu.svg" alt="" width={20} height={20} loading="eager" />
       </button>
-
-      {open && mounted && createPortal(slideDownMenu, document.body)}
+      {open && createPortal(
+        <NavigationDialog pathname={pathname} close={close} restoreFocus={() => trigger.current?.focus()} />,
+        document.body,
+      )}
     </>
+  );
+}
+
+function NavigationDialog({ pathname, close, restoreFocus }: {
+  pathname: string;
+  close: () => void;
+  restoreFocus: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const focusReturn = useRef(restoreFocus);
+
+  useEffect(() => {
+    const element = dialog.current;
+    const returnFocus = focusReturn.current;
+    const overflow = document.body.style.overflow;
+    const desktop = matchMedia("(min-width: 1280px)");
+    if (desktop.matches) {
+      close();
+      return;
+    }
+    // Native modal dialogs provide top-layer stacking, background inertness and tab containment.
+    element?.showModal();
+    closeButton.current?.focus();
+    document.body.style.overflow = "hidden";
+    const onResize = () => { if (desktop.matches) close(); };
+    desktop.addEventListener("change", onResize);
+    return () => {
+      desktop.removeEventListener("change", onResize);
+      element?.close();
+      document.body.style.overflow = overflow;
+      returnFocus();
+    };
+  }, [close]);
+
+  return (
+    <dialog
+      ref={dialog}
+      id="mobile-menu"
+      aria-labelledby="mobile-menu-title"
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+        const controls = event.currentTarget.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }}
+      onCancel={(event) => { event.preventDefault(); close(); }}
+      onClick={(event) => { if (event.target === event.currentTarget) close(); }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-transparent p-0 text-navy backdrop:bg-navy/40 open:flex open:justify-end"
+    >
+      <div className="flex h-full w-[min(22rem,90vw)] flex-col gap-4 overflow-y-auto rounded-l-[28px] bg-white px-5 pt-[max(20px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] shadow-2xl motion-safe:animate-[slide-drawer-in_280ms_var(--ease-out-soft)]">
+        <div className="flex items-center justify-between gap-4">
+          <p id="mobile-menu-title" className="sr-only">Navigation menu</p>
+          <Link href="/" onClick={close} className="relative h-6 w-[116px] shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="116px" className="object-cover" />
+          </Link>
+          <button ref={closeButton} type="button" aria-label="Close menu" onClick={close} className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface hover:bg-blue-pale focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+            <Image src="/icons/close.svg" alt="" width={18} height={18} />
+          </button>
+        </div>
+        <nav aria-label="Mobile navigation" className="flex flex-col gap-1 py-4">
+          {ALL_LINKS.map(({ href, label }) => (
+            <Link key={href} href={href} onClick={close} aria-current={pathname === href ? "page" : undefined} className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-base font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-brand ${pathname === href ? "bg-blue-pale text-brand" : "text-navy hover:bg-surface"}`}>
+              {label}
+              <Image src="/icons/chevron.svg" alt="" width={16} height={16} />
+            </Link>
+          ))}
+        </nav>
+        <div className="mt-auto border-t border-divider pt-5">
+          <Button href={GET_THE_APP_HREF} label="Join the list" arrow onClick={close} className="w-full" />
+        </div>
+      </div>
+    </dialog>
   );
 }
