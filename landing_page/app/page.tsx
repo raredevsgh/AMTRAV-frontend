@@ -169,44 +169,62 @@ const CARD_HOVER =
   "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1";
 
 // Experience card icons: a light-blue tile sits behind the icon, offset down and to the right.
-function CardIcon({ kind }: { kind: "location" | "status" | "security" }) {
+function CardIcon({ kind }: { kind: "journey" | "impact" | "weight" | "location" | "security" | "status" }) {
   return (
     <div className="relative h-[89px] w-[68.74px] shrink-0">
       <div className="absolute top-10 left-[18.74px] h-[49px] w-[50px] rounded-[10px_5px_18px_5px] bg-blue-faint" />
+      {kind === "journey" && <Image src="/icons/card-journey.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
+      {kind === "impact" && <Image src="/icons/card-impact.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
+      {kind === "weight" && <Image src="/icons/card-weight.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
       {kind === "location" && (
         <>
           <Image src="/icons/card-location-pin.svg" alt="" width={46} height={65} className="absolute top-1.5 left-[7px]" />
           <Image src="/icons/card-location-dot.svg" alt="" width={19} height={18} className="absolute top-[18px] left-[21px]" />
         </>
       )}
-      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
       {kind === "security" && <Image src="/icons/card-security.svg" alt="" width={45} height={54} className="absolute top-0 left-2" />}
+      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
     </div>
   );
 }
 
 const EXPERIENCE = [
   {
-    kind: "location",
-    title: "Location",
-    text: "See the latest reported location of your connected luggage, with an indication of when that information was recorded.",
+    kind: "journey",
+    title: "Journey Log",
+    text: "Follow your luggage journey through a clear timeline of location, separation, impact, weight and security events.",
   },
   {
-    kind: "status",
-    title: "Device Status",
-    text: "Check available battery and connection information so you can better understand your luggage's current status.",
+    kind: "impact",
+    title: "Impact Detection",
+    text: "Get a time-stamped record when your luggage takes a significant handling impact during travel.",
+  },
+  {
+    kind: "weight",
+    title: "Accurate Weight",
+    text: "Lift, check and travel with confidence. See your luggage weight on the case and inside the app.",
+  },
+  {
+    kind: "location",
+    title: "TRACE Location",
+    text: "Nearby Bluetooth, GNSS and cellular positioning combine for live and last-known luggage visibility.",
   },
   {
     kind: "security",
-    title: "Security Events",
-    text: "Review relevant movement and security events when supported by the device, with information to help you decide what to do next.",
+    title: "Theft & Tamper",
+    text: "Activate Theft Mode, monitor unexpected movement and keep a record of important security events.",
+  },
+  {
+    kind: "status",
+    title: "One Connected View",
+    text: "Location, weight, impact history, lock status, battery and alerts, all managed from one app.",
   },
 ] as const;
 
 function Experience() {
   return (
     <section data-backdrop="blue-pale" className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
-      <div className="flex w-full flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
+      <div className="flex w-full flex-col items-center gap-6 xl:gap-8 xl:py-[66px]">
         <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
           <p className="text-caption-m text-mid xl:text-small">THE EXPERIENCE</p>
           <h2 className="text-h1-m font-bold text-navy xl:text-h1">
@@ -214,12 +232,12 @@ function Experience() {
             things stand
           </h2>
         </div>
-        <div data-stagger className="flex w-full flex-col gap-4 xl:flex-row xl:gap-6">
+        <div data-stagger className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-6">
           {EXPERIENCE.map(({ kind, title, text }) => (
             <div
               key={kind}
               data-reveal
-              className={`flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:flex-1 xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
+              className={`flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
             >
               <CardIcon kind={kind} />
               <div className="flex flex-col gap-2">
