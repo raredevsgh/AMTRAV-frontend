@@ -46,7 +46,7 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
     const safetyTimer = window.setTimeout(() => {
       html.style.overflow = "";
       setDone(true);
-    }, 2800);
+    }, 6000);
 
     // Progress 0 → 1 drives the plane, the drawn route, the counter and the step labels.
     const flight = { p: 0 };
@@ -124,14 +124,14 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
           "-=0.1",
         )
         .fromTo("[data-letter]", { yPercent: 115 }, { yPercent: 0, duration: 0.5, stagger: 0.025, ease: "expo.out" }, "<0.05")
-        .fromTo("[data-tagline]", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4 }, "<0.2")
+        .fromTo("[data-tagline]", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4 }, "<0.15")
 
-        // 5. Lift-off: curtains wipe up while the hero plays its entrance.
-        .addLabel("exit", "+=0.35")
-        .to("[data-lockup]", { yPercent: -30, opacity: 0, duration: 0.45, ease: "power3.in" }, "exit")
-        .to("[data-meta-bar]", { opacity: 0, duration: 0.25 }, "exit")
-        .to("[data-curtain='navy']", { clipPath: LIFTED, duration: 0.65, ease: "expo.inOut" }, "exit+=0.05")
-        .to("[data-curtain='sky']", { clipPath: LIFTED, duration: 0.65, ease: "expo.inOut" }, "exit+=0.12")
+        // 5. Generous dwell time (1.6s) so users comfortably read the brand tagline before curtain lift
+        .addLabel("exit", "+=1.6")
+        .to("[data-lockup]", { yPercent: -30, opacity: 0, duration: 0.5, ease: "power3.in" }, "exit")
+        .to("[data-meta-bar]", { opacity: 0, duration: 0.3 }, "exit")
+        .to("[data-curtain='navy']", { clipPath: LIFTED, duration: 0.75, ease: "expo.inOut" }, "exit+=0.05")
+        .to("[data-curtain='sky']", { clipPath: LIFTED, duration: 0.75, ease: "expo.inOut" }, "exit+=0.15")
         .call(
           () => {
             for (const node of document.querySelectorAll(HERO_ENTRANCES)) {
@@ -142,7 +142,7 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
             }
           },
           undefined,
-          "exit+=0.25",
+          "exit+=0.3",
         );
     }, el);
 
