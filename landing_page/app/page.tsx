@@ -304,8 +304,9 @@ const EXPLORE = [
     href: "/features",
     label: "Features",
     title: "Everything your bag should've done already.",
-    text: "Pairing, private docs and brand alerts today. Location, lock and power modes next.",
-    tags: ["Claim codes", "Files", "Location · Soon", "Lock · Soon"],
+    text: "Journey Log, impact detection, accurate weight, location and theft protection in one app.",
+    tags: ["Journey Log", "Weight", "Theft Mode"],
+    buttonLabel: "Explore",
     dark: true,
   },
   {
@@ -314,14 +315,16 @@ const EXPLORE = [
     title: "Box to boarding in three steps.",
     text: "Unbox, pair in the app, fly. No Bluetooth menus.",
     tags: ["1 · Unbox", "2 · Pair", "3 · Fly"],
+    buttonLabel: "Find more",
     dark: false,
   },
   {
     href: "/for-brands",
     label: "For brands",
-    title: "Ship smart bags without building the cloud.",
-    text: "Register inventory, print claim codes and revoke with a full audit trail.",
-    tags: ["Console", "Audit trail", "Fleet map · Soon"],
+    title: "Bring more to the bags you make.",
+    text: "Explore connected features for your luggage, from location to security and ownership.",
+    tags: ["Location", "Security", "Ownership"],
+    buttonLabel: "Talk to us",
     dark: false,
   },
 ];
@@ -333,7 +336,7 @@ function Explore() {
         Find more about AMORTRAV
       </h2>
       <div data-stagger className="flex flex-col gap-4 xl:flex-row xl:gap-[18px]">
-        {EXPLORE.map(({ href, label, title, text, tags, dark }) => (
+        {EXPLORE.map(({ href, label, title, text, tags, buttonLabel, dark }) => (
           <div
             key={href}
             data-reveal
@@ -349,7 +352,7 @@ function Explore() {
             </div>
             <div className="hidden flex-1 xl:block" />
             {/* The link stretches over the card, so a click anywhere on it opens the page. */}
-            <Button href={href} label="Explore" style={dark ? "sky" : "navy"} size="s" arrow stretch />
+            <Button href={href} label={buttonLabel} style={dark ? "sky" : "navy"} size="s" arrow stretch />
           </div>
         ))}
       </div>

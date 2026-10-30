@@ -97,6 +97,17 @@ html, body {
   overflow-x: clip;
 }
 
+/* First-visit preloader: hidden when already preloaded or for reduced-motion */
+html[data-preloaded] .preloader {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader {
+    display: none !important;
+  }
+}
+
 /* Header glass: genuine transparent liquid glass matching the Figma prototype.
    Translucent specular gradient, soft crystalline border, and high-transmission backdrop blur. */
 .glass {
@@ -257,21 +268,4 @@ html, body {
   .ticker:hover .ticker-track {
     animation-play-state: paused;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-float,
-  .glass {
-    animation: none;
-  }
-
-  svg :has(> animateMotion) {
-    display: none;
-  }
-}
-
-/* Preloader: the inline script in layout.tsx sets data-preloaded on repeat visits and for
-   reduced motion, before first paint. */
-html[data-preloaded] .preloader {
-  display: none;
 }
