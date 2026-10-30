@@ -5,11 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS, SHOP_LINK } from "./nav";
 
-// Clean navigation with underline active indicator
+// Figma "Nav link" (2018:537, 124:776): State=Active marks current page with rounded-full light-blue pill badge.
 export default function SiteNav() {
   const pathname = usePathname();
   return (
-    <nav aria-label="Main navigation" className="flex h-11 items-center gap-7 px-2">
+    <nav aria-label="Main navigation" className="flex h-11 items-center gap-2 xl:gap-3 px-1">
       {NAV_LINKS.map(({ href, label }) => {
         const active = pathname === href;
         return (
@@ -17,17 +17,13 @@ export default function SiteNav() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`relative py-1 text-btn font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4 rounded-sm ${
-              active ? "text-brand" : "text-ink hover:text-brand"
+            className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-btn font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+              active
+                ? "bg-blue-pale text-brand shadow-xs"
+                : "text-ink hover:text-brand hover:bg-white/30"
             }`}
           >
-            <span>{label}</span>
-            {active && (
-              <span
-                aria-hidden="true"
-                className="absolute inset-x-0 -bottom-1 h-[2.5px] rounded-full bg-brand"
-              />
-            )}
+            {label}
           </Link>
         );
       })}
@@ -35,7 +31,7 @@ export default function SiteNav() {
   );
 }
 
-// Shop cart button for desktop and mobile navigation
+// Recreated from the supplied header screenshot with the owner's approval; not a Figma export.
 export function ShopLink() {
   const active = usePathname() === SHOP_LINK.href;
   return (
@@ -43,18 +39,9 @@ export function ShopLink() {
       href={SHOP_LINK.href}
       aria-label={SHOP_LINK.label}
       aria-current={active ? "page" : undefined}
-      className={`group flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-[#EEF1F7] focus-visible:outline-2 focus-visible:outline-brand ${
-        active ? "bg-blue-pale" : "border border-navy/15 hover:border-navy/35"
-      }`}
+      className={`group flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-sky focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${active ? "bg-blue-pale" : "border-[1.5px] border-ink"}`}
     >
-      <Image
-        src="/icons/shop-cart.svg"
-        alt=""
-        width={18}
-        height={18}
-        className={`${active ? "opacity-100" : "opacity-75"} group-hover:opacity-100`}
-      />
+      <Image src="/icons/shop-cart.svg" alt="" width={24} height={24} loading="eager" className={`${active ? "" : "brightness-50"} group-hover:brightness-0 group-hover:invert`} />
     </Link>
   );
 }
-
