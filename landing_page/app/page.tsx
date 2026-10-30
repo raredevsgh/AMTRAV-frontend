@@ -3,6 +3,7 @@ import Button from "./_components/Button";
 import FaqList from "./_components/FaqList";
 import PhotoTile from "./_components/PhotoTile";
 import ProductVideo from "./_components/ProductVideo";
+import ScrollBackdrop from "./_components/ScrollBackdrop";
 import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import { GET_THE_APP_HREF } from "./_components/nav";
@@ -204,7 +205,7 @@ const EXPERIENCE = [
 
 function Experience() {
   return (
-    <section className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
+    <section data-backdrop="blue-pale" className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
       <div className="flex w-full flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
         <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
           <p className="text-caption-m text-mid xl:text-small">THE EXPERIENCE</p>
@@ -235,7 +236,7 @@ function Experience() {
 
 function Travel() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="navy" className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <div data-reveal className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">
           Built for the walk <br className="xl:hidden" />
@@ -331,7 +332,7 @@ const EXPLORE = [
 
 function Explore() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="surface" className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <h2 data-reveal className="text-h1-m font-bold text-navy xl:text-h1">
         Find more about AMORTRAV
       </h2>
@@ -381,6 +382,7 @@ export default function Home() {
       <Testimonials items={TESTIMONIALS} />
       <Explore />
       <Faq />
+      <ScrollBackdrop />
     </>
   );
 }
