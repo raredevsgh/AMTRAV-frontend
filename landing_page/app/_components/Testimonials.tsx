@@ -72,6 +72,7 @@ export default function Testimonials({ items }: { items: readonly Testimonial[] 
   return (
     <section
       ref={section}
+      data-backdrop="blue-faint"
       aria-labelledby="testimonials-heading"
       aria-roledescription="carousel"
       onMouseEnter={() => setHovered(true)}

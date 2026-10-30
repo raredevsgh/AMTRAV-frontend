@@ -3,6 +3,7 @@ import Button from "./_components/Button";
 import FaqList from "./_components/FaqList";
 import PhotoTile from "./_components/PhotoTile";
 import ProductVideo from "./_components/ProductVideo";
+import ScrollBackdrop from "./_components/ScrollBackdrop";
 import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import { GET_THE_APP_HREF } from "./_components/nav";
@@ -74,35 +75,12 @@ function Hero() {
   );
 }
 
-function Badge({ subtitle }: { subtitle: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3 rounded-[20px] bg-white/51 py-3 pr-[18px] pl-3 drop-shadow-[0_20px_20px_rgba(0,10,31,0.3)]">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy">
-        <Image src="/icons/plane.svg" alt="" width={20} height={20} />
-      </span>
-      <span className="flex flex-col gap-0.5 text-caption whitespace-nowrap">
-        <span className="text-navy">Flight-safe mode</span>
-        <span className="text-mid">{subtitle}</span>
-      </span>
-    </div>
-  );
-}
-
-function RoutePill({ className }: { className: string }) {
-  return (
-    <div className={`absolute flex h-[37px] items-center gap-2.5 rounded-full bg-brand px-[18px] shadow-float ${className}`}>
-      <Image src="/icons/dot-route.svg" alt="" width={8} height={8} />
-      <span className="font-mono text-mono-m font-medium whitespace-nowrap text-white xl:text-mono">LOS → LHR · on board</span>
-    </div>
-  );
-}
-
 function HeroVisual() {
   return (
     <>
       {/* Mobile art: a 414 × 372 composition centred on the hero. */}
-      <div data-enter className="relative h-[372px] w-full [--motion-delay:240ms] xl:hidden">
-        <div className="absolute top-0 left-1/2 h-[372px] w-[414.16px] -translate-x-1/2">
+      <div data-enter className="relative h-93 w-full [--motion-delay:240ms] xl:hidden">
+        <div className="absolute top-0 left-1/2 h-93 w-[414.16px] -translate-x-1/2">
           <Image src="/img/hero-glow-m.svg" alt="" width={322} height={322} className="absolute top-[12.4px] left-[45.88px] size-[322.4px] max-w-none" />
           <Image src="/img/hero-orbit-m.png" alt="" width={372} height={372} className="absolute top-[-12.4px] left-[21.08px] max-w-none" />
           <div className="absolute top-[-23.77px] left-[79.36px] h-[361.05px] w-[255.44px] overflow-clip rounded-[19.84px] border-[3.72px] border-white bg-navy-deep shadow-hero">
@@ -111,30 +89,20 @@ function HeroVisual() {
             </div>
             <div className="absolute inset-[-3.72px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
           </div>
-          <Image src="/img/hero-flight-path-m.svg" alt="" width={414} height={373} className="absolute top-[-0.37px] left-0 h-[372.74px] w-[414.16px] max-w-none" />
-          <div className="absolute top-24 left-10">
-            <Badge subtitle="Radios off, ready to board" />
-          </div>
-          <RoutePill className="top-[300px] left-[164px]" />
-        </div>
+          <Image src="/img/hero-flight-path-m.svg" alt="" width={414} height={373} className="absolute top-[-0.37px] left-0 h-[372.74px] w-[414.16px] max-w-none" />        </div>
       </div>
 
       {/* Desktop art: 668 × 600. */}
-      <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
-        <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none" />
-        <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none" />
-        <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero">
+      <div data-enter className="relative hidden h-150 w-167 shrink-0 [--motion-delay:240ms] xl:block">
+        <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-18.5 max-w-none" />
+        <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute -top-5 left-8.5 max-w-none" />
+        <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-4xl border-4 border-white bg-navy-deep shadow-hero">
           <div className="absolute inset-[-3.66px_-50px_-76px_-10px] bg-[#bcd5fa]">
             <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="480px" className="object-cover" preload />
           </div>
-          <div className="absolute inset-[-4px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
+          <div className="absolute -inset-1 bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
         </div>
-        <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />
-        <div className="absolute top-[124px] left-6">
-          <Badge subtitle="Radios off, ready to go" />
-        </div>
-        <RoutePill className="top-[479px] left-[444.64px]" />
-      </div>
+        <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />      </div>
     </>
   );
 }
@@ -204,10 +172,10 @@ const EXPERIENCE = [
 
 function Experience() {
   return (
-    <section className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
+    <section data-backdrop="blue-pale" className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
       <div className="flex w-full flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
         <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
-          <p className="text-caption-m text-mid xl:text-small">THE EXPERIENCE</p>
+          <p className="text-caption-m text-brand xl:text-small">THE EXPERIENCE</p>
           <h2 className="text-h1-m font-bold text-navy xl:text-h1">
             Know where <br className="xl:hidden" />
             things stand
@@ -235,7 +203,7 @@ function Experience() {
 
 function Travel() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="navy" className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <div data-reveal className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">
           Built for the walk <br className="xl:hidden" />
@@ -328,7 +296,7 @@ const EXPLORE = [
 
 function Explore() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="surface" className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <h2 data-reveal className="text-h1-m font-bold text-navy xl:text-h1">
         Find more about AMORTRAV
       </h2>
@@ -378,6 +346,7 @@ export default function Home() {
       <Testimonials items={TESTIMONIALS} />
       <Explore />
       <Faq />
+      <ScrollBackdrop />
     </>
   );
 }
