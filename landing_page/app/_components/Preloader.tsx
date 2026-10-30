@@ -4,11 +4,12 @@ import { gsap } from "gsap";
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 
-// First-visit preloader: a LOS → LHR flight whose progress is the page load, then the
-// AMORTRAV lockup, then a two-layer curtain that lifts off the hero. Shown once per tab
-// session (`storageKey` in sessionStorage). The inline script in layout.tsx sets
-// `html[data-preloaded]` before first paint on repeat visits and for reduced motion, and
-// globals.css hides the preloader for it.
+// First-visit preloader: a fast, elegant LOS → LHR flight, then the AMORTRAV lockup
+// with the tagline "Travel with love, travel with a better sense of control.",
+// then a two-layer curtain that lifts off the hero. Shown once per tab session
+// (`storageKey` in sessionStorage). The inline script in layout.tsx sets
+// `html[data-preloaded]` before first paint on repeat visits and for reduced motion,
+// and globals.css immediately hides the preloader for it.
 
 const ROUTE = "M60 200 C 300 10, 700 10, 940 200";
 const WORDMARK = "AMORTRAV".split("");
@@ -21,13 +22,27 @@ const LIFTED = "inset(0% 0% 100% 0%)";
 
 export default function Preloader({ storageKey }: { storageKey: string }) {
   const root = useRef<HTMLDivElement>(null);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return Boolean(
+        document.documentElement.hasAttribute("data-preloaded") ||
+        sessionStorage.getItem(storageKey)
+      );
+    } catch {
+      return false;
+    }
+  });
 
   useLayoutEffect(() => {
     const html = document.documentElement;
     const el = root.current;
-    // Skipped: globals.css already hides it, and it stays inert.
-    if (!el || html.hasAttribute("data-preloaded")) return;
+
+    // If already preloaded or reduced-motion, skip timeline execution.
+    if (html.hasAttribute("data-preloaded")) {
+      return;
+    }
+    if (!el) return;
 
     const path = el.querySelector<SVGPathElement>("[data-flight-path]")!;
     const plane = el.querySelector<SVGGElement>("[data-plane]")!;
@@ -39,15 +54,15 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
 
     html.style.overflow = "hidden";
 
-    // Window load gates the last 10% of the flight, so a slow connection holds on approach.
-    let loaded = document.readyState === "complete";
-    let waiting = false;
-    let tl: gsap.core.Timeline | undefined;
-    const onLoad = () => {
-      loaded = true;
-      if (waiting) tl?.play();
-    };
-    window.addEventListener("load", onLoad, { once: true });
+    // Fallback safety timer: ensures the preloader never gets stuck on screen
+    const safetyTimer = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem(storageKey, "1");
+      } catch {}
+      html.setAttribute("data-preloaded", "");
+      html.style.overflow = "";
+      setDone(true);
+    }, 2800);
 
     // Progress 0 → 1 drives the plane, the drawn route, the counter and the step labels.
     const flight = { p: 0 };
@@ -86,62 +101,57 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
       renderFlight();
       gsap.set("[data-curtain]", { clipPath: CLOSED });
 
-      tl = gsap.timeline({
+      const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
         onComplete() {
+          window.clearTimeout(safetyTimer);
           try {
             sessionStorage.setItem(storageKey, "1");
           } catch {}
+          html.setAttribute("data-preloaded", "");
           html.style.overflow = "";
           setDone(true);
         },
       });
 
       // 1. Boarding: meta lines rise, the dashed route fades in, the airport codes flip.
-      tl.from("[data-meta]", { yPercent: 120, opacity: 0, duration: 0.7, stagger: 0.06 })
-        .from("[data-route-base]", { opacity: 0, duration: 0.6 }, "<")
-        .add(flap(from, "LOS", 0.7), "<0.1")
-        .add(flap(to, "LHR", 0.9), "<0.15")
-        .from("[data-step], [data-counter-wrap]", { opacity: 0, y: 16, duration: 0.6, stagger: 0.05 }, "<")
+      tl.from("[data-meta]", { yPercent: 120, opacity: 0, duration: 0.35, stagger: 0.04 })
+        .from("[data-route-base]", { opacity: 0, duration: 0.3 }, "<")
+        .add(flap(from, "LOS", 0.4), "<0.05")
+        .add(flap(to, "LHR", 0.45), "<0.08")
+        .from("[data-step], [data-counter-wrap]", { opacity: 0, y: 12, duration: 0.35, stagger: 0.03 }, "<")
 
-        // 2. Flight: 0 → 90% on a fixed clock, the rest once the page has loaded.
-        .to(flight, { p: 0.9, duration: 1.7, ease: "power2.inOut", onUpdate: renderFlight }, "-=0.3")
-        .call(() => {
-          if (!loaded) {
-            waiting = true;
-            tl?.pause();
-          }
-        })
-        .to(flight, { p: 1, duration: 0.55, onUpdate: renderFlight })
+        // 2. Flight: fast, snappy, smooth progression from 0 to 100% (takes ~0.85s).
+        .to(flight, { p: 1, duration: 0.85, ease: "power2.inOut", onUpdate: renderFlight }, "-=0.15")
 
         // 3. Touchdown: the plane settles at LHR and a ring pulses out.
-        .to("[data-plane-glyph]", { scale: 0, svgOrigin: "0 0", duration: 0.35, ease: "back.in(2)" })
+        .to("[data-plane-glyph]", { scale: 0, svgOrigin: "0 0", duration: 0.2, ease: "back.in(2)" })
         .fromTo(
           "[data-landing-ring]",
           { scale: 0.2, opacity: 0.9, transformOrigin: "50% 50%" },
-          { scale: 2.6, opacity: 0, duration: 0.8, ease: "expo.out" },
-          "<0.15",
+          { scale: 2.4, opacity: 0, duration: 0.5, ease: "expo.out" },
+          "<0.05",
         )
-        .to(to, { color: "#4a91f2", duration: 0.3 }, "<")
+        .to(to, { color: "#4a91f2", duration: 0.2 }, "<")
 
-        // 4. Brand: the route clears and the lockup rises letter by letter.
-        .to("[data-stage]", { yPercent: -12, opacity: 0, duration: 0.6, ease: "power3.in" }, "+=0.15")
+        // 4. Brand: the route clears and the lockup rises with updated tagline.
+        .to("[data-stage]", { yPercent: -10, opacity: 0, duration: 0.35, ease: "power2.in" }, "+=0.05")
         .set("[data-lockup]", { opacity: 1 })
         .fromTo(
           "[data-mark]",
-          { clipPath: "inset(100% 0% 0% 0%)", yPercent: 30 },
-          { clipPath: CLOSED, yPercent: 0, duration: 0.9, ease: "expo.out" },
+          { clipPath: "inset(100% 0% 0% 0%)", yPercent: 25 },
+          { clipPath: CLOSED, yPercent: 0, duration: 0.5, ease: "expo.out" },
           "-=0.1",
         )
-        .fromTo("[data-letter]", { yPercent: 115 }, { yPercent: 0, duration: 0.9, stagger: 0.045, ease: "expo.out" }, "<0.08")
-        .fromTo("[data-tagline]", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7 }, "<0.35")
+        .fromTo("[data-letter]", { yPercent: 115 }, { yPercent: 0, duration: 0.5, stagger: 0.025, ease: "expo.out" }, "<0.05")
+        .fromTo("[data-tagline]", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4 }, "<0.2")
 
-        // 5. Lift-off: navy then sky curtains wipe up while the hero plays its entrance.
-        .addLabel("exit", "+=0.45")
-        .to("[data-lockup]", { yPercent: -40, opacity: 0, duration: 0.8, ease: "power3.in" }, "exit")
-        .to("[data-meta-bar]", { opacity: 0, duration: 0.4 }, "exit")
-        .to("[data-curtain='navy']", { clipPath: LIFTED, duration: 1.15, ease: "expo.inOut" }, "exit+=0.1")
-        .to("[data-curtain='sky']", { clipPath: LIFTED, duration: 1.15, ease: "expo.inOut" }, "exit+=0.22")
+        // 5. Lift-off: curtains wipe up while the hero plays its entrance.
+        .addLabel("exit", "+=0.35")
+        .to("[data-lockup]", { yPercent: -30, opacity: 0, duration: 0.45, ease: "power3.in" }, "exit")
+        .to("[data-meta-bar]", { opacity: 0, duration: 0.25 }, "exit")
+        .to("[data-curtain='navy']", { clipPath: LIFTED, duration: 0.65, ease: "expo.inOut" }, "exit+=0.05")
+        .to("[data-curtain='sky']", { clipPath: LIFTED, duration: 0.65, ease: "expo.inOut" }, "exit+=0.12")
         .call(
           () => {
             for (const node of document.querySelectorAll(HERO_ENTRANCES)) {
@@ -152,12 +162,12 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
             }
           },
           undefined,
-          "exit+=0.45",
+          "exit+=0.25",
         );
     }, el);
 
     return () => {
-      window.removeEventListener("load", onLoad);
+      window.clearTimeout(safetyTimer);
       ctx.revert();
       html.style.overflow = "";
     };
@@ -270,7 +280,7 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
           </div>
         </div>
 
-        {/* Lockup: mark, wordmark and the hero line. Hidden until step 4. */}
+        {/* Lockup: mark, wordmark and tagline. Hidden until step 4. */}
         <div data-lockup className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-6 px-5 text-center opacity-0">
           <div data-mark>
             <Image src="/img/cta-mark.png" alt="" width={92} height={74} preload />
@@ -283,7 +293,7 @@ export default function Preloader({ storageKey }: { storageKey: string }) {
             ))}
           </p>
           <p data-tagline className="text-body-m text-light-white xl:text-lead">
-            Travel with a better sense of control
+            Travel with love, travel with a better sense of control.
           </p>
         </div>
       </div>
