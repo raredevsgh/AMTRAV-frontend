@@ -39,9 +39,16 @@ export function ShopLink() {
       href={SHOP_LINK.href}
       aria-label={SHOP_LINK.label}
       aria-current={active ? "page" : undefined}
-      className={`group flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-sky focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${active ? "bg-blue-pale" : "border-[1.5px] border-ink"}`}
+      className={`group flex size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${active ? "bg-blue-pale" : "border-[1.5px] border-ink"}`}
     >
-      <Image src="/icons/shop-cart.svg" alt="" width={24} height={24} loading="eager" className={`${active ? "" : "brightness-50"} group-hover:brightness-0 group-hover:invert`} />
+      <Image
+        src="/icons/shop-cart.svg"
+        alt=""
+        width={24}
+        height={24}
+        loading="eager"
+        className={`transition-transform duration-300 ease-out-soft group-hover:scale-110 group-hover:-rotate-6 ${active ? "" : "brightness-50"} group-hover:brightness-0 group-hover:invert`}
+      />
     </Link>
   );
 }

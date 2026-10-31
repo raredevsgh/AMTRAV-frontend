@@ -78,9 +78,9 @@ function Hero() {
 function HeroVisual() {
   return (
     <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
-      <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none" />
-      <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none" />
-      <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero">
+      <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none animate-pulse-subtle" />
+      <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none animate-float-slow" />
+      <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero transition-transform duration-500 ease-out-soft hover:scale-[1.015]">
         <div className="absolute inset-[-3.66px_-50px_-76px_-10px] bg-[#bcd5fa]">
           <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="480px" className="object-cover" preload />
         </div>
@@ -117,24 +117,24 @@ function RouteTicker() {
 // Hover lift for content cards (hover-capable pointers only; Tailwind's hover variant
 // already excludes touch screens).
 const CARD_HOVER =
-  "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1";
+  "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1.5";
 
 // Experience card icons: a light-blue tile sits behind the icon, offset down and to the right.
 function CardIcon({ kind }: { kind: "journey" | "impact" | "weight" | "location" | "security" | "status" }) {
   return (
-    <div className="relative h-[89px] w-[68.74px] shrink-0">
-      <div className="absolute top-10 left-[18.74px] h-[49px] w-[50px] rounded-[10px_5px_18px_5px] bg-blue-faint" />
-      {kind === "journey" && <Image src="/icons/card-journey.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
-      {kind === "impact" && <Image src="/icons/card-impact.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
-      {kind === "weight" && <Image src="/icons/card-weight.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
+    <div className="relative h-[89px] w-[68.74px] shrink-0 transition-transform duration-300 ease-out-soft group-hover:scale-105 group-hover:-translate-y-1">
+      <div className="absolute top-10 left-[18.74px] h-[49px] w-[50px] rounded-[10px_5px_18px_5px] bg-blue-faint transition-all duration-300 ease-out-soft group-hover:bg-sky/35 group-hover:rotate-3" />
+      {kind === "journey" && <Image src="/icons/card-journey.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
+      {kind === "impact" && <Image src="/icons/card-impact.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
+      {kind === "weight" && <Image src="/icons/card-weight.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
       {kind === "location" && (
         <>
-          <Image src="/icons/card-location-pin.svg" alt="" width={46} height={65} className="absolute top-1.5 left-[7px]" />
-          <Image src="/icons/card-location-dot.svg" alt="" width={19} height={18} className="absolute top-[18px] left-[21px]" />
+          <Image src="/icons/card-location-pin.svg" alt="" width={46} height={65} className="absolute top-1.5 left-[7px] transition-transform duration-300 ease-out-soft group-hover:-translate-y-0.5" />
+          <Image src="/icons/card-location-dot.svg" alt="" width={19} height={18} className="absolute top-[18px] left-[21px] transition-transform duration-300 ease-out-soft group-hover:scale-125" />
         </>
       )}
-      {kind === "security" && <Image src="/icons/card-security.svg" alt="" width={45} height={54} className="absolute top-0 left-2" />}
-      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
+      {kind === "security" && <Image src="/icons/card-security.svg" alt="" width={45} height={54} className="absolute top-0 left-2 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
+      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
     </div>
   );
 }
@@ -188,11 +188,11 @@ function Experience() {
             <div
               key={kind}
               data-reveal
-              className={`w-[280px] shrink-0 snap-center md:w-auto md:shrink flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
+              className={`group w-[280px] shrink-0 snap-center md:w-auto md:shrink flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
             >
               <CardIcon kind={kind} />
               <div className="flex flex-col gap-2">
-                <h3 className="text-h3-m font-semibold text-brand xl:text-h3">{title}</h3>
+                <h3 className="text-h3-m font-semibold text-brand transition-colors duration-200 group-hover:text-navy xl:text-h3">{title}</h3>
                 <p className="text-body-m text-mid xl:text-body">{text}</p>
               </div>
             </div>
@@ -310,7 +310,7 @@ function Explore() {
           <div
             key={href}
             data-reveal
-            className={`relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
+            className={`group relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
           >
             <p className={`text-caption-m xl:text-caption ${dark ? "text-blue-faint" : "text-brand"}`}>{label}</p>
             <h3 className={`text-h2-m font-semibold xl:text-h2 ${dark ? "text-white" : "text-navy"}`}>{title}</h3>
