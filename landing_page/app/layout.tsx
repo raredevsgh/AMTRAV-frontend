@@ -5,6 +5,7 @@ import Footer from "./_components/Footer";
 import Header from "./_components/Header";
 import Preloader from "./_components/Preloader";
 import RevealObserver from "./_components/RevealObserver";
+import ScrollProgressBar from "./_components/ScrollProgressBar";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -103,9 +104,8 @@ const organizationSchema = {
   ],
 };
 
-// sessionStorage key for the first-visit preloader; the inline script below reads it.
-const PRELOADER_KEY = "amortrav-preloaded";
-const preloaderScript = `try{if(sessionStorage.getItem("${PRELOADER_KEY}")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-preloaded","")}catch(e){document.documentElement.setAttribute("data-preloaded","")}`;
+// Only gate preloader for reduced motion; cleans any legacy session storage key
+const preloaderScript = `try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-preloaded","");else sessionStorage.removeItem("amortrav-preloaded");}catch(e){}`;
 
 // Every page shares the header, the app signup and the footer (Figma "Page sections", 2020:497).
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -121,7 +121,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="font-sans">
-        <Preloader storageKey={PRELOADER_KEY} />
+        <ScrollProgressBar />
+        <Preloader />
         <Header />
         <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[88px] pb-3 xl:gap-5 xl:px-5 xl:pt-[108px] xl:pb-5">
           <main id="main-content" className="flex flex-col gap-4 xl:gap-5">{children}</main>

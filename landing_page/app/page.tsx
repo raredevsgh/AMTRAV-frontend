@@ -3,6 +3,7 @@ import Button from "./_components/Button";
 import FaqList from "./_components/FaqList";
 import PhotoTile from "./_components/PhotoTile";
 import ProductVideo from "./_components/ProductVideo";
+import ScrollBackdrop from "./_components/ScrollBackdrop";
 import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import { GET_THE_APP_HREF } from "./_components/nav";
@@ -34,11 +35,11 @@ const FAQ = [
 
 function Hero() {
   return (
-    <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 pt-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:pt-16">
+    <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <ProductVideo />
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(0,31,77,0.94)] via-[rgba(0,31,77,0.82)] via-45% to-[rgba(0,31,77,0.55)]" />
 
-      <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px] xl:pb-16">
+      <div data-stagger className="relative flex w-full flex-col items-start gap-5 xl:max-w-[588px] xl:min-w-0 xl:flex-1 xl:gap-[26px]">
         <p data-enter className="flex h-9 items-center gap-2.5 rounded-full bg-navy-deep pr-4 pl-2 text-caption-m whitespace-nowrap text-blue-pale xl:text-caption">
           <Image src="/icons/eyebrow-new.svg" alt="" width={26} height={24} />
           Smart luggage, paired to your phone
@@ -74,68 +75,19 @@ function Hero() {
   );
 }
 
-function Badge({ subtitle }: { subtitle: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-3 rounded-[20px] bg-white/51 py-3 pr-[18px] pl-3 drop-shadow-[0_20px_20px_rgba(0,10,31,0.3)]">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy">
-        <Image src="/icons/plane.svg" alt="" width={20} height={20} />
-      </span>
-      <span className="flex flex-col gap-0.5 text-caption whitespace-nowrap">
-        <span className="text-navy">Flight-safe mode</span>
-        <span className="text-mid">{subtitle}</span>
-      </span>
-    </div>
-  );
-}
-
-function RoutePill({ className }: { className: string }) {
-  return (
-    <div className={`absolute flex h-[37px] items-center gap-2.5 rounded-full bg-brand px-[18px] shadow-float ${className}`}>
-      <Image src="/icons/dot-route.svg" alt="" width={8} height={8} />
-      <span className="font-mono text-mono-m font-medium whitespace-nowrap text-white xl:text-mono">LOS → LHR · on board</span>
-    </div>
-  );
-}
-
 function HeroVisual() {
   return (
-    <>
-      {/* Mobile art: a 414 × 372 composition centred on the hero. */}
-      <div data-enter className="relative h-[372px] w-full [--motion-delay:240ms] xl:hidden">
-        <div className="absolute top-0 left-1/2 h-[372px] w-[414.16px] -translate-x-1/2">
-          <Image src="/img/hero-glow-m.svg" alt="" width={322} height={322} className="absolute top-[12.4px] left-[45.88px] size-[322.4px] max-w-none" />
-          <Image src="/img/hero-orbit-m.png" alt="" width={372} height={372} className="absolute top-[-12.4px] left-[21.08px] max-w-none" />
-          <div className="absolute top-[-23.77px] left-[79.36px] h-[361.05px] w-[255.44px] overflow-clip rounded-[19.84px] border-[3.72px] border-white bg-navy-deep shadow-hero">
-            <div className="absolute inset-[-3.51px_-32.24px_-48.36px_-7.44px] bg-[#bcd5fa]">
-              <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="300px" className="object-cover" />
-            </div>
-            <div className="absolute inset-[-3.72px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
-          </div>
-          <Image src="/img/hero-flight-path-m.svg" alt="" width={414} height={373} className="absolute top-[-0.37px] left-0 h-[372.74px] w-[414.16px] max-w-none" />
-          <div className="absolute top-24 left-10">
-            <Badge subtitle="Radios off, ready to board" />
-          </div>
-          <RoutePill className="top-[300px] left-[164px]" />
+    <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
+      <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none animate-pulse-subtle" />
+      <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none animate-float-slow" />
+      <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero transition-transform duration-500 ease-out-soft hover:scale-[1.015]">
+        <div className="absolute inset-[-3.66px_-50px_-76px_-10px] bg-[#bcd5fa]">
+          <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="480px" className="object-cover" preload />
         </div>
+        <div className="absolute inset-[-4px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
       </div>
-
-      {/* Desktop art: 668 × 600. */}
-      <div data-enter className="relative hidden h-[600px] w-[668px] shrink-0 [--motion-delay:240ms] xl:block">
-        <Image src="/img/hero-glow.svg" alt="" width={520} height={520} className="absolute top-5 left-[74px] max-w-none" />
-        <Image src="/img/hero-orbit.png" alt="" width={600} height={600} className="absolute top-[-20px] left-[34px] max-w-none" />
-        <div className="absolute top-[-22.34px] left-32 h-[582.34px] w-[412px] overflow-clip rounded-[32px] border-4 border-white bg-navy-deep shadow-hero">
-          <div className="absolute inset-[-3.66px_-50px_-76px_-10px] bg-[#bcd5fa]">
-            <Image src="/img/hero-photo.png" alt="A traveller sitting on his AMORTRAV suitcase" fill sizes="480px" className="object-cover" preload />
-          </div>
-          <div className="absolute inset-[-4px] bg-linear-to-b from-[rgba(0,31,77,0)] from-60% to-[rgba(0,31,77,0.55)]" />
-        </div>
-        <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />
-        <div className="absolute top-[124px] left-6">
-          <Badge subtitle="Radios off, ready to go" />
-        </div>
-        <RoutePill className="top-[479px] left-[444.64px]" />
-      </div>
-    </>
+      <Image src="/img/hero-flight-path.svg" alt="" width={668} height={601} className="absolute top-[-0.6px] left-0 h-[601.2px] w-[668px] max-w-none" />
+    </div>
   );
 }
 
@@ -165,47 +117,65 @@ function RouteTicker() {
 // Hover lift for content cards (hover-capable pointers only; Tailwind's hover variant
 // already excludes touch screens).
 const CARD_HOVER =
-  "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1";
+  "transition-[translate,box-shadow] duration-300 ease-out-soft hover:shadow-card-hover motion-safe:hover:-translate-y-1.5";
 
 // Experience card icons: a light-blue tile sits behind the icon, offset down and to the right.
-function CardIcon({ kind }: { kind: "location" | "status" | "security" }) {
+function CardIcon({ kind }: { kind: "journey" | "impact" | "weight" | "location" | "security" | "status" }) {
   return (
-    <div className="relative h-[89px] w-[68.74px] shrink-0">
-      <div className="absolute top-10 left-[18.74px] h-[49px] w-[50px] rounded-[10px_5px_18px_5px] bg-blue-faint" />
+    <div className="relative h-[89px] w-[68.74px] shrink-0 transition-transform duration-300 ease-out-soft group-hover:scale-105 group-hover:-translate-y-1">
+      <div className="absolute top-10 left-[18.74px] h-[49px] w-[50px] rounded-[10px_5px_18px_5px] bg-blue-faint transition-all duration-300 ease-out-soft group-hover:bg-sky/35 group-hover:rotate-3" />
+      {kind === "journey" && <Image src="/icons/card-journey.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
+      {kind === "impact" && <Image src="/icons/card-impact.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
+      {kind === "weight" && <Image src="/icons/card-weight.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
       {kind === "location" && (
         <>
-          <Image src="/icons/card-location-pin.svg" alt="" width={46} height={65} className="absolute top-1.5 left-[7px]" />
-          <Image src="/icons/card-location-dot.svg" alt="" width={19} height={18} className="absolute top-[18px] left-[21px]" />
+          <Image src="/icons/card-location-pin.svg" alt="" width={46} height={65} className="absolute top-1.5 left-[7px] transition-transform duration-300 ease-out-soft group-hover:-translate-y-0.5" />
+          <Image src="/icons/card-location-dot.svg" alt="" width={19} height={18} className="absolute top-[18px] left-[21px] transition-transform duration-300 ease-out-soft group-hover:scale-125" />
         </>
       )}
-      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0" />}
-      {kind === "security" && <Image src="/icons/card-security.svg" alt="" width={45} height={54} className="absolute top-0 left-2" />}
+      {kind === "security" && <Image src="/icons/card-security.svg" alt="" width={45} height={54} className="absolute top-0 left-2 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
+      {kind === "status" && <Image src="/icons/card-status.svg" alt="" width={61} height={61} className="absolute top-0 left-0 transition-transform duration-300 ease-out-soft group-hover:scale-105" />}
     </div>
   );
 }
 
 const EXPERIENCE = [
   {
-    kind: "location",
-    title: "Location",
-    text: "See the latest reported location of your connected luggage, with an indication of when that information was recorded.",
+    kind: "journey",
+    title: "Journey Log",
+    text: "Follow your luggage journey through a clear timeline of location, separation, impact, weight and security events.",
   },
   {
-    kind: "status",
-    title: "Device Status",
-    text: "Check available battery and connection information so you can better understand your luggage's current status.",
+    kind: "impact",
+    title: "Impact Detection",
+    text: "Get a time-stamped record when your luggage takes a significant handling impact during travel.",
+  },
+  {
+    kind: "weight",
+    title: "Accurate Weight",
+    text: "Lift, check and travel with confidence. See your luggage weight on the case and inside the app.",
+  },
+  {
+    kind: "location",
+    title: "TRACE Location",
+    text: "Nearby Bluetooth, GNSS and cellular positioning combine for live and last-known luggage visibility.",
   },
   {
     kind: "security",
-    title: "Security Events",
-    text: "Review relevant movement and security events when supported by the device, with information to help you decide what to do next.",
+    title: "Theft & Tamper",
+    text: "Activate Theft Mode, monitor unexpected movement and keep a record of important security events.",
+  },
+  {
+    kind: "status",
+    title: "One Connected View",
+    text: "Location, weight, impact history, lock status, battery and alerts, all managed from one app.",
   },
 ] as const;
 
 function Experience() {
   return (
-    <section className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
-      <div className="flex w-full flex-col items-center gap-6 xl:max-w-[972px] xl:gap-8 xl:py-[66px]">
+    <section data-backdrop="blue-pale" className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
+      <div className="flex w-full flex-col items-center gap-6 xl:gap-8 xl:py-[66px]">
         <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
           <p className="text-caption-m text-mid xl:text-small">THE EXPERIENCE</p>
           <h2 className="text-h1-m font-bold text-navy xl:text-h1">
@@ -213,16 +183,16 @@ function Experience() {
             things stand
           </h2>
         </div>
-        <div data-stagger className="flex w-full flex-col gap-4 xl:flex-row xl:gap-6">
+        <div data-stagger className="-mx-5 flex w-[calc(100%+40px)] gap-4 overflow-x-auto px-5 pb-4 pt-1 snap-x snap-mandatory [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:mx-0 md:w-full md:grid md:grid-cols-2 xl:grid-cols-3 xl:gap-6 xl:overflow-visible xl:p-0">
           {EXPERIENCE.map(({ kind, title, text }) => (
             <div
               key={kind}
               data-reveal
-              className={`flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:flex-1 xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
+              className={`group w-[280px] shrink-0 snap-center md:w-auto md:shrink flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
             >
               <CardIcon kind={kind} />
               <div className="flex flex-col gap-2">
-                <h3 className="text-h3-m font-semibold text-brand xl:text-h3">{title}</h3>
+                <h3 className="text-h3-m font-semibold text-brand transition-colors duration-200 group-hover:text-navy xl:text-h3">{title}</h3>
                 <p className="text-body-m text-mid xl:text-body">{text}</p>
               </div>
             </div>
@@ -235,7 +205,7 @@ function Experience() {
 
 function Travel() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="navy" className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <div data-reveal className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">
           Built for the walk <br className="xl:hidden" />
@@ -304,8 +274,9 @@ const EXPLORE = [
     href: "/features",
     label: "Features",
     title: "Everything your bag should've done already.",
-    text: "Pairing, private docs and brand alerts today. Location, lock and power modes next.",
-    tags: ["Claim codes", "Files", "Location · Soon", "Lock · Soon"],
+    text: "Journey Log, impact detection, accurate weight, location and theft protection in one app.",
+    tags: ["Journey Log", "Weight", "Theft Mode"],
+    buttonLabel: "Explore",
     dark: true,
   },
   {
@@ -314,30 +285,32 @@ const EXPLORE = [
     title: "Box to boarding in three steps.",
     text: "Unbox, pair in the app, fly. No Bluetooth menus.",
     tags: ["1 · Unbox", "2 · Pair", "3 · Fly"],
+    buttonLabel: "Find more",
     dark: false,
   },
   {
     href: "/for-brands",
     label: "For brands",
-    title: "Ship smart bags without building the cloud.",
-    text: "Register inventory, print claim codes and revoke with a full audit trail.",
-    tags: ["Console", "Audit trail", "Fleet map · Soon"],
+    title: "Bring more to the bags you make.",
+    text: "Explore connected features for your luggage, from location to security and ownership.",
+    tags: ["Location", "Security", "Ownership"],
+    buttonLabel: "Talk to us",
     dark: false,
   },
 ];
 
 function Explore() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="surface" className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <h2 data-reveal className="text-h1-m font-bold text-navy xl:text-h1">
         Find more about AMORTRAV
       </h2>
       <div data-stagger className="flex flex-col gap-4 xl:flex-row xl:gap-[18px]">
-        {EXPLORE.map(({ href, label, title, text, tags, dark }) => (
+        {EXPLORE.map(({ href, label, title, text, tags, buttonLabel, dark }) => (
           <div
             key={href}
             data-reveal
-            className={`relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
+            className={`group relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
           >
             <p className={`text-caption-m xl:text-caption ${dark ? "text-blue-faint" : "text-brand"}`}>{label}</p>
             <h3 className={`text-h2-m font-semibold xl:text-h2 ${dark ? "text-white" : "text-navy"}`}>{title}</h3>
@@ -349,7 +322,7 @@ function Explore() {
             </div>
             <div className="hidden flex-1 xl:block" />
             {/* The link stretches over the card, so a click anywhere on it opens the page. */}
-            <Button href={href} label="Explore" style={dark ? "sky" : "navy"} size="s" arrow stretch />
+            <Button href={href} label={buttonLabel} style={dark ? "sky" : "navy"} size="s" arrow stretch />
           </div>
         ))}
       </div>
@@ -378,6 +351,7 @@ export default function Home() {
       <Testimonials items={TESTIMONIALS} />
       <Explore />
       <Faq />
+      <ScrollBackdrop />
     </>
   );
 }
