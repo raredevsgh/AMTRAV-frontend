@@ -183,12 +183,12 @@ function Experience() {
             things stand
           </h2>
         </div>
-        <div data-stagger className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 xl:gap-6">
+        <div data-stagger className="-mx-5 flex w-[calc(100%+40px)] gap-4 overflow-x-auto px-5 pb-4 pt-1 snap-x snap-mandatory [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:mx-0 md:w-full md:grid md:grid-cols-2 xl:grid-cols-3 xl:gap-6 xl:overflow-visible xl:p-0">
           {EXPERIENCE.map(({ kind, title, text }) => (
             <div
               key={kind}
               data-reveal
-              className={`flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
+              className={`w-[280px] shrink-0 snap-center md:w-auto md:shrink flex flex-col items-center gap-5 rounded-3xl bg-white px-6 py-8 text-center shadow-card xl:h-[359px] xl:justify-center xl:gap-3 xl:rounded-[32px] xl:px-8 xl:py-11 ${CARD_HOVER}`}
             >
               <CardIcon kind={kind} />
               <div className="flex flex-col gap-2">
