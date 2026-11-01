@@ -20,18 +20,16 @@ export default function Testimonials({ items }: { items: readonly Testimonial[] 
   const [index, setIndex] = useState(0);
   // 1 = moving to a later slide (content rises), -1 = earlier (content drops), 0 = first render.
   const [direction, setDirection] = useState(0);
-  const [rotationEnabled, setRotationEnabled] = useState(true);
   const [focusPaused, setFocusPaused] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [visible, setVisible] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const section = useRef<HTMLElement>(null);
-  const rotationOnPointerDown = useRef<boolean | null>(null);
   const reducedMotion = useReducedMotion();
   const swipeStart = useRef<{ x: number; y: number } | null>(null);
   const item = items[index];
   const last = items.length - 1;
-  const rotating = rotationEnabled && !focusPaused && !reducedMotion;
+  const rotating = !focusPaused && !reducedMotion;
 
   useEffect(() => {
     const element = section.current;
@@ -77,6 +75,7 @@ export default function Testimonials({ items }: { items: readonly Testimonial[] 
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocusCapture={() => setFocusPaused(true)}
+      onBlurCapture={() => setFocusPaused(false)}
       onKeyDown={(e) => {
         const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
         if (!step || !(e.target instanceof HTMLButtonElement)) return;
@@ -89,22 +88,6 @@ export default function Testimonials({ items }: { items: readonly Testimonial[] 
       <p aria-live={rotating ? "off" : "polite"} aria-atomic="true" className="sr-only">
         {direction === 0 ? "" : `Testimonial ${index + 1} of ${items.length}: ${item.quote} ${item.name}`}
       </p>
-
-      {items.length > 1 && !reducedMotion && (
-        <button
-          type="button"
-          onPointerDown={() => { rotationOnPointerDown.current = rotating; }}
-          onClick={(event) => {
-            const wasRotating = event.detail > 0 ? rotationOnPointerDown.current ?? rotating : rotating;
-            setRotationEnabled(!wasRotating);
-            setFocusPaused(false);
-            rotationOnPointerDown.current = null;
-          }}
-          className="self-end rounded-full px-3 py-2 text-caption-m text-navy hover:bg-blue-pale focus-visible:outline-2 focus-visible:outline-brand xl:absolute xl:top-2 xl:right-10"
-        >
-          {rotating ? "Pause autoplay" : "Resume autoplay"}
-        </button>
-      )}
 
       {/* Mobile */}
       <h2 id="testimonials-heading" data-reveal className="text-h1-m font-bold text-mid xl:hidden">

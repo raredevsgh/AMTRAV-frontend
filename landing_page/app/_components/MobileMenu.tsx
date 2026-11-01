@@ -5,10 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Button from "./Button";
 import { GET_THE_APP_HREF, NAV_LINKS, SHOP_LINK } from "./nav";
 
-const ALL_LINKS = [{ href: "/", label: "Home" }, ...NAV_LINKS, SHOP_LINK];
+const ALL_LINKS = [
+  { href: "/", label: "Home" },
+  ...NAV_LINKS,
+  { href: SHOP_LINK.href, label: "Shop now" },
+];
 
 export default function MobileMenu() {
   const pathname = usePathname();
@@ -95,28 +98,60 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
       }}
       onCancel={(event) => { event.preventDefault(); close(); }}
       onClick={(event) => { if (event.target === event.currentTarget) close(); }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-transparent p-0 text-navy backdrop:bg-navy/40 open:flex open:justify-end"
+      className="fixed inset-0 m-0 z-50 h-dvh max-h-none w-screen max-w-none border-0 bg-[#F4F6F8] p-0 text-navy backdrop:bg-transparent open:flex open:flex-col overflow-y-auto"
     >
-      <div className="flex h-full w-[min(22rem,90vw)] flex-col gap-4 overflow-y-auto rounded-l-[28px] bg-white px-5 pt-[max(20px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] shadow-2xl motion-safe:animate-[slide-drawer-in_280ms_var(--ease-out-soft)]">
-        <div className="flex items-center justify-between gap-4">
+      <div className="flex min-h-dvh w-full flex-col justify-between px-5 pt-[max(16px,env(safe-area-inset-top))] pb-[max(20px,env(safe-area-inset-bottom))]">
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between rounded-full bg-white px-5 py-3 shadow-xs border border-gray-100">
           <p id="mobile-menu-title" className="sr-only">Navigation menu</p>
           <Link href="/" onClick={close} className="relative h-6 w-[116px] shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
             <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="116px" className="object-cover" />
           </Link>
-          <button ref={closeButton} type="button" aria-label="Close menu" onClick={close} className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface hover:bg-blue-pale focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
-            <Image src="/icons/close.svg" alt="" width={18} height={18} />
+          <button
+            ref={closeButton}
+            type="button"
+            aria-label="Close menu"
+            onClick={close}
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface hover:bg-slate-200 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          >
+            <Image src="/icons/close.svg" alt="" width={16} height={16} />
           </button>
         </div>
-        <nav aria-label="Mobile navigation" className="flex flex-col gap-1 py-4">
-          {ALL_LINKS.map(({ href, label }) => (
-            <Link key={href} href={href} onClick={close} aria-current={pathname === href ? "page" : undefined} className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-base font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-brand ${pathname === href ? "bg-blue-pale text-brand" : "text-navy hover:bg-surface"}`}>
-              {label}
-              <Image src="/icons/chevron.svg" alt="" width={16} height={16} />
-            </Link>
-          ))}
+
+        {/* Links List */}
+        <nav aria-label="Mobile navigation" className="my-auto flex flex-col py-6">
+          {ALL_LINKS.map(({ href, label }) => {
+            const isShop = href === "/shop";
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={close}
+                aria-current={pathname === href ? "page" : undefined}
+                className="flex items-center justify-between border-b border-[#E2E8F0] py-5 text-[22px] font-bold text-navy transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
+              >
+                <span>{label}</span>
+                {isShop ? (
+                  <Image src="/icons/shop-cart.svg" alt="" width={22} height={22} className="opacity-80" />
+                ) : (
+                  <Image src="/icons/chevron.svg" alt="" width={16} height={16} className="opacity-60" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
-        <div className="mt-auto border-t border-divider pt-5">
-          <Button href={GET_THE_APP_HREF} label="Join the list" arrow onClick={close} className="w-full" />
+
+        {/* Bottom CTA & Footer */}
+        <div className="flex flex-col items-center gap-3 pt-4">
+          <Link
+            href={GET_THE_APP_HREF}
+            onClick={close}
+            className="flex h-13 w-full items-center justify-center gap-2 rounded-full bg-brand text-base font-semibold text-white shadow-sm transition-opacity hover:opacity-95 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          >
+            <span>Join the list</span>
+            <Image src="/icons/arrow-white.svg" alt="" width={16} height={16} />
+          </Link>
+          <p className="text-caption text-mid">©2026 Amortrav</p>
         </div>
       </div>
     </dialog>
