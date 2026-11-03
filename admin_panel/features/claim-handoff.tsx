@@ -82,9 +82,7 @@ export function ClaimHandoff({
           </p>
         </div>
         <Notice title="Save it securely now" tone="warning">
-          Only the code hash is stored by the real backend. The code cannot be
-          retrieved if lost. Replace it only while the device remains eligible
-          and unclaimed. This demo never stores it in browser storage.
+          The code cannot be retrieved if lost. Replace it only while the device remains eligible and unclaimed.
         </Notice>
         <label className="row">
           <input
@@ -126,8 +124,7 @@ export function ClaimHandoff({
           </li>
         </ol>
         <p className="small muted">
-          A claim code is not a hardware credential. No buyer claiming or
-          physical device action is performed by this demo.
+          A claim code verifies ownership. Keep it separate from hardware credentials.
         </p>
       </aside>
       {leaving && (

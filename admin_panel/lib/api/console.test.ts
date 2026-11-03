@@ -82,6 +82,44 @@ test("console fixture counts are deterministic while manufacturer visibility is 
   await status(() => m.downloadFile(consoleFiles[3].id), 404);
 });
 
+test("overview counts reconcile with scoped fixture journeys and incident resolution", async () => {
+  const api = apiFor();
+  const before = await api.getOverviewKpis();
+  assert.equal(before.activeJourneys, 4);
+  assert.equal(before.tamperAlerts, 1);
+  const tamper = (await api.listAlerts({ category: "tamper", status: "active" })).items[0];
+  await api.resolveAlert(tamper.id, { resolutionAction: "inspected_safe", notes: "Fictional inspection completed." });
+  assert.equal((await api.getOverviewKpis()).tamperAlerts, 0);
+  assert.equal((await apiFor("manufacturer").getOverviewKpis()).activeJourneys, 3);
+  const empty = createMockApi({ devices: [] });
+  assert.equal((await empty.getOverviewKpis()).activeJourneys, 0);
+  assert.equal((await empty.getOverviewKpis()).tamperAlerts, 0);
+});
+
+test("demo reset restores the supplied baseline and clears mutations across features", async () => {
+  const api = apiFor();
+  const [devices, telemetry, settings, alerts, customers, files] = await Promise.all([
+    api.listDevices(), api.listTelemetry(), api.getSettings(), api.listAlerts(), api.listCustomers(), api.listFiles(),
+  ]);
+  const customer = await api.getCustomerById(customers.items[0].id);
+  await api.registerDevice({ ...input, serial_number: "AMT-RESET-EXAMPLE" });
+  await api.toggleRemoteLock(consoleDevices[0].id, false);
+  await api.acknowledgeAlert(alerts.items[0].id);
+  await api.updateCustomerNotes(customer.id, "Temporary demo note");
+  await api.updateSettings({ telemetryIntervalSec: 30 });
+  await api.resetDemoData({ resetAuditLogs: true });
+  assert.deepEqual((await api.listDevices()).items, devices.items);
+  assert.deepEqual(await api.listTelemetry(), telemetry);
+  assert.deepEqual(await api.getSettings(), settings);
+  assert.deepEqual((await api.listAlerts()).items, alerts.items);
+  assert.deepEqual(await api.getCustomerById(customer.id), customer);
+  assert.deepEqual((await api.listFiles()).items, files.items);
+  const kept = await api.registerDevice({ ...input, serial_number: "AMT-RESET-KEEP" });
+  await api.resetDemoData({ preserveRegisteredSerials: true });
+  assert.equal((await api.getDevice(kept.device.id)).serial_number, "AMT-RESET-KEEP");
+  assert.ok(await api.getDeviceTelemetry(kept.device.id));
+});
+
 test("registration verifies manufacturer identity, normalized duplicates and immutable scope", async () => {
   const a = apiFor(),
     m = apiFor("manufacturer");

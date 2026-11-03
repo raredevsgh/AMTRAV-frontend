@@ -173,7 +173,7 @@ export function DeviceRegistration() {
                   replacement.
                 </Notice>
                 <div className="form-actions">
-                  <button className="btn" type="submit" disabled={busy}>
+                  <button className="btn" type="submit" disabled={busy} aria-busy={busy}>
                     {busy ? "Registering…" : "Register device"}
                   </button>
                   <ButtonLink href="/devices" secondary>
@@ -194,8 +194,7 @@ export function DeviceRegistration() {
               </li>
             </ol>
             <p className="small muted">
-              Ownership proof, not hardware authentication. This workspace is a
-              local demonstration.
+              Share the serial number and claim code only with the intended buyer.
             </p>
           </aside>
         </div>

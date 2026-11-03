@@ -1,337 +1,97 @@
 "use client";
-import { useCallback, useState } from "react";
-import { useConsole, useResource } from "./console-context";
-import { ClaimHandoff } from "./claim-handoff";
-import {
-  SectionPage,
-  ButtonLink,
-  LoadingState,
-  ErrorState,
-  StatusBadge,
-  Notice,
-  Field,
-  ConfirmDialog,
-  Pagination,
-  formatDate,
-} from "@/components/console-ui";
-import { validMetadata } from "@/lib/api/validation";
-import type { ProvisionedDevice } from "@/lib/api/types";
-export function DeviceDetail({ id }: { id: string }) {
-  const api = useConsole();
-  const [offset, setOffset] = useState(0);
-  const load = useCallback(async () => {
-    const [device, audit] = await Promise.all([
-      api.getDevice(id),
-      api.listDeviceAudit(id, { limit: 5, offset }),
+import Link from "next/link";
+import {useCallback,useEffect,useState} from "react";
+import {useConsole,useResource,useConsoleState} from "./console-context";
+import {SectionPage,LoadingState,ErrorState,Notice} from "@/components/console-ui";
+import {RecordHeader,RecordToast} from "@/components/record-detail";
+import {ConsoleTabs} from "@/components/console-tabs";
+import {ConnectivityLabel} from "@/components/console-data";
+import {ClaimHandoff} from "./claim-handoff";
+import {DeviceSummary} from "./device-summary";
+import {DeviceAlerts,DeviceLocation,DeviceAuditHistory} from "./device-record-tables";
+import {DeviceJourneys} from "./device-journeys";
+import {DeviceDiagnostics} from "./device-diagnostics";
+import {DeviceActionsMenu,DeviceActionDialog,type DeviceActionKind,type DeviceActionResult} from "./device-detail-actions";
+import {designDeviceProfiles} from "@/lib/admin-design-fixtures";
+import {deviceSnapshots} from "@/lib/device-design-fixtures";
+import {loadConsolePages,relativeContact,maskedEmail} from "@/lib/console-presentation";
+import {useConsoleTab} from "@/lib/use-console-tab";
+import {MockApiError} from "@/lib/api";
+import type {ProvisionedDevice} from "@/lib/api/types";
+import type {DeviceDetailData,DeviceDetailView} from "./device-detail-model";
+
+const tabs=[{id:"summary",label:"Summary"},{id:"alerts",label:"Alerts"},{id:"journeys",label:"Journeys"},{id:"location",label:"Location"},{id:"diagnostics",label:"Diagnostics"},{id:"audit",label:"Audit"}] as const;
+type Tab=typeof tabs[number]["id"];
+export function DeviceDetail({id}:{id:string}) {
+  const api=useConsole();
+  const {notifyDataChanged}=useConsoleState();
+  const [handoff,setHandoff]=useState<{api:typeof api;id:string;result:ProvisionedDevice}|null>(null);
+  const load=useCallback(async ():Promise<DeviceDetailData> => {
+    const device=await api.getDevice(id);
+    const [alerts,journeys,telemetry,admin,revealUntil,customer]=await Promise.all([
+      loadConsolePages((page,pageSize) => api.listAlerts({page,pageSize})),
+      loadConsolePages((page,pageSize) => api.listJourneys({page,pageSize})),
+      api.getDeviceTelemetry(id),api.getDemoDeviceAdminState(id),
+      api.session.role === "admin" ? api.getDemoCustomerRevealUntil(id) : Promise.resolve(null),
+      device.owner_id && api.session.role === "admin" ? api.getCustomerById(device.owner_id).catch((error:unknown) => {if(error instanceof MockApiError && error.status === 404)return null;throw error;}) : Promise.resolve(null),
     ]);
-    return { device, audit };
-  }, [api, id, offset]);
-  const { data, error, loading, retry } = useResource(load);
-  const [editing, setEditing] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [failure, setFailure] = useState<unknown>(null);
-  const [message, setMessage] = useState("");
-  const [action, setAction] = useState<"revoke" | "rotate" | null>(null);
-  const [handoff, setHandoff] = useState<ProvisionedDevice | null>(null);
-  const d = data?.device;
-  return (
-    <SectionPage
-      title="Device details"
-      description={`Devices / ${d?.serial_number ?? "Selected record"}`}
-      actions={
-        <ButtonLink href="/devices" secondary>
-          Back to devices
-        </ButtonLink>
-      }
-    >
-      {handoff ? (
-        <ClaimHandoff
-          result={handoff}
-          secondaryLabel="Back to details"
-          onAnother={() => {
-            setHandoff(null);
-            retry();
-          }}
-        />
-      ) : loading ? (
-        <LoadingState label="Loading device details" />
-      ) : error ? (
-        <ErrorState error={error} retry={retry} />
-      ) : (
-        d && (
-          <>
-            {message && <Notice title={message} tone="success" />}
-            {failure != null && <ErrorState error={failure} />}
-            <div className="row">
-              <h2 className="grow mono">{d.serial_number}</h2>
-              <StatusBadge status={d.status} />
-              {d.status !== "revoked" && (
-                <button
-                  className="btn"
-                  onClick={() => {
-                    setEditing(true);
-                    setFailure(null);
-                  }}
-                >
-                  Edit metadata
-                </button>
-              )}
-            </div>
-            <p className="small muted mono">Device UUID · {d.id}</p>
-            <div className="detail-grid">
-              <section className="panel panel-body stack">
-                <h2>Identity &amp; ownership</h2>
-                <dl className="details">
-                  <div>
-                    <dt>Serial number · Immutable</dt>
-                    <dd className="mono">{d.serial_number}</dd>
-                  </div>
-                  <div>
-                    <dt>Nickname · Read-only</dt>
-                    <dd>{d.nickname ?? "Not set"}</dd>
-                  </div>
-                  <div>
-                    <dt>Manufacturer account</dt>
-                    <dd className="mono">{d.manufacturer_id}</dd>
-                  </div>
-                  <div>
-                    <dt>Owner ID</dt>
-                    <dd className="mono">
-                      {d.owner_id ?? "No owner assigned"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Claimed at</dt>
-                    <dd>
-                      {d.claimed_at ? formatDate(d.claimed_at) : "Not claimed"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Created at · UTC</dt>
-                    <dd>{formatDate(d.created_at)}</dd>
-                  </div>
-                  <div>
-                    <dt>Updated at · UTC</dt>
-                    <dd>{formatDate(d.updated_at)}</dd>
-                  </div>
-                </dl>
-              </section>
-              <section className="panel panel-body stack">
-                <h2>Editable registry metadata</h2>
-                {editing ? (
-                  <form
-                    className="form-grid"
-                    noValidate
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      const form = new FormData(e.currentTarget);
-                      const model = String(form.get("model") || "");
-                      const firmware_version = String(
-                        form.get("firmware_version") || "",
-                      );
-                      const next: Record<string, string> = {};
-                      if (!validMetadata(model, 128))
-                        next.model =
-                          "Enter a model of at most 128 UTF-8 bytes.";
-                      if (!validMetadata(firmware_version, 64))
-                        next.firmware_version =
-                          "Enter a declared version of at most 64 UTF-8 bytes.";
-                      setErrors(next);
-                      if (Object.keys(next).length) return;
-                      setBusy(true);
-                      try {
-                        await api.updateDevice(id, { model, firmware_version });
-                        setEditing(false);
-                        setMessage("Metadata saved in this demo.");
-                        retry();
-                      } catch (e) {
-                        setFailure(e);
-                      } finally {
-                        setBusy(false);
-                      }
-                    }}
-                  >
-                    <Field label="Model" name="model" error={errors.model}>
-                      <input
-                        id="model"
-                        name="model"
-                        defaultValue={d.model}
-                        disabled={busy}
-                        aria-invalid={Boolean(errors.model)}
-                        aria-describedby={
-                          errors.model ? "model-error" : undefined
-                        }
-                      />
-                    </Field>
-                    <Field
-                      label="Declared firmware version"
-                      name="firmware_version"
-                      error={errors.firmware_version}
-                    >
-                      <input
-                        id="firmware_version"
-                        name="firmware_version"
-                        defaultValue={d.firmware_version}
-                        disabled={busy}
-                        aria-invalid={Boolean(errors.firmware_version)}
-                        aria-describedby={
-                          errors.firmware_version
-                            ? "firmware_version-error"
-                            : undefined
-                        }
-                      />
-                    </Field>
-                    <div className="form-actions">
-                      <button className="btn" disabled={busy}>
-                        {busy ? "Saving…" : "Save metadata"}
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        disabled={busy}
-                        onClick={() => setEditing(false)}
-                      >
-                        Cancel editing
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <dl className="details">
-                    <div>
-                      <dt>Model</dt>
-                      <dd>{d.model}</dd>
-                    </div>
-                    <div>
-                      <dt>Declared firmware version</dt>
-                      <dd>{d.firmware_version}</dd>
-                    </div>
-                  </dl>
-                )}
-                <p className="small muted">
-                  A declared value, not a measured version. Serial,
-                  manufacturer, status, nickname and ownership are read-only
-                  here.
-                </p>
-              </section>
-            </div>
-            <section className="panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>Registry audit history</h2>
-                  <p className="small muted">
-                    Illustrative records · Action strings are shown as supplied
-                    · All times UTC
-                  </p>
-                </div>
-              </div>
-              <div
-                className="table-scroll"
-                tabIndex={0}
-                role="region"
-                aria-label="Device audit table"
-              >
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Action</th>
-                      <th scope="col">Actor ID</th>
-                      <th scope="col">Created at · UTC</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.audit.items.map((a) => (
-                      <tr key={a.id}>
-                        <td>{a.action}</td>
-                        <td className="mono">{a.actor_id}</td>
-                        <td>
-                          {new Date(a.created_at)
-                            .toISOString()
-                            .replace("T", " ")
-                            .replace(".000Z", " UTC")}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {!data.audit.items.length && (
-                  <p className="empty-state">No audit records on this page.</p>
-                )}
-              </div>
-              <Pagination
-                offset={offset}
-                limit={5}
-                count={data.audit.items.length}
-                onPage={setOffset}
-              />
-            </section>
-            <div className="detail-grid">
-              <section className="panel panel-body stack">
-                <h2>Claim-code handoff</h2>
-                <p className="small muted">
-                  The original code cannot be retrieved. Only an unclaimed,
-                  non-revoked registry record is eligible for a replacement.
-                </p>
-                <div>
-                  <button
-                    className="btn btn-secondary"
-                    disabled={d.status !== "registered" || Boolean(d.owner_id)}
-                    onClick={(e) => {
-                      e.currentTarget.focus();
-                      setAction("rotate");
-                    }}
-                  >
-                    Replace claim code
-                  </button>
-                </div>
-              </section>
-              <section className="panel panel-body stack">
-                <h2>Revoke registry record</h2>
-                <p className="small muted">
-                  Revocation disables claiming and further registry updates. It
-                  does not lock or wipe the bag.
-                </p>
-                <div>
-                  <button
-                    className="btn btn-danger"
-                    disabled={d.status === "revoked"}
-                    onClick={(e) => {
-                      e.currentTarget.focus();
-                      setAction("revoke");
-                    }}
-                  >
-                    Revoke device
-                  </button>
-                </div>
-              </section>
-            </div>
-          </>
-        )
-      )}
-      {action && (
-        <ConfirmDialog
-          title={
-            action === "revoke"
-              ? "Revoke this device?"
-              : "Replace the claim code?"
-          }
-          description={
-            action === "revoke"
-              ? "This disables claiming and registry edits. It does not physically lock or wipe hardware. The local demo does not contact a device."
-              : "The previous code becomes invalid. Save the new one-time code securely before leaving its result."
-          }
-          confirm={action === "revoke" ? "Revoke device" : "Replace code"}
-          danger={action === "revoke"}
-          onClose={() => setAction(null)}
-          onConfirm={async () => {
-            if (action === "revoke") {
-              await api.revokeDevice(id);
-              setMessage("Registry record revoked in this demo.");
-              retry();
-            } else setHandoff(await api.rotateClaimCode(id));
-          }}
-        />
-      )}
-    </SectionPage>
-  );
+    return {device,telemetry,admin,revealUntil,customer,customerMissing:Boolean(device.owner_id && api.session.role === "admin" && !customer),alerts:alerts.filter((alert) => alert.deviceId === id),journeys:journeys.filter((journey) => journey.deviceId === id)};
+  },[api,id]);
+  const {data,loading,error,retry,updateData}=useResource(load);
+  const success=(result:DeviceActionResult) => {
+    updateData((current) => {
+      const next={...current,admin:result.admin};
+      if(result.kind === "reveal")return {...next,revealUntil:result.visibleUntil};
+      if(result.kind === "rotate")return {...next,device:result.result.device};
+      return {...next,device:result.device};
+    });
+    if(result.kind === "rotate")setHandoff({api,id,result:result.result});
+    notifyDataChanged();
+  };
+  if(handoff?.api === api && handoff.id === id)return <SectionPage title="Claim code updated"><ClaimHandoff result={handoff.result} secondaryLabel="Back to details" onAnother={() => {setHandoff(null);retry();}} /></SectionPage>;
+  if(loading)return <SectionPage title="Device details"><LoadingState label="Loading device details" /></SectionPage>;
+  if(error)return <SectionPage title="Device details"><ErrorState error={error} retry={retry} /></SectionPage>;
+  return data ? <DeviceRecord data={data} onSuccess={success} /> : null;
+}
+
+function DeviceRecord({data,onSuccess}:{data:DeviceDetailData;onSuccess:(result:DeviceActionResult)=>void}) {
+  const api=useConsole();
+  const {presentation}=useConsoleState();
+  const [tab,setTab]=useConsoleTab<Tab>(tabs.map((tab) => tab.id),"summary");
+  const [action,setAction]=useState<DeviceActionKind|null>(null),[toast,setToast]=useState(""),[justRevoked,setJustRevoked]=useState(false);
+  const [revealUntil,setRevealUntil]=useState(() => data.revealUntil !== null && data.revealUntil > Date.now() ? data.revealUntil : null);
+  const visibleReveal=revealUntil !== null;
+  useEffect(() => {
+    if(revealUntil === null)return;
+    const expire=() => {if(Date.now() >= revealUntil)setRevealUntil(null);};
+    const timer=setTimeout(expire,Math.max(0,revealUntil-Date.now()));
+    document.addEventListener("visibilitychange",expire);
+    return () => {clearTimeout(timer);document.removeEventListener("visibilitychange",expire);};
+  },[revealUntil]);
+  useEffect(() => {if(!toast)return;const timer=setTimeout(() => setToast(""),5000);return () => clearTimeout(timer);},[toast]);
+  const profile=designDeviceProfiles.find((profile) => profile.deviceId === data.device.id && profile.serial === data.device.serial_number);
+  const snapshot=profile ? deviceSnapshots[data.device.serial_number] : undefined;
+  const customerVisible=api.session.role === "admin" && (presentation === "operations" || visibleReveal);
+  const view:DeviceDetailView={...data,profile,snapshot,customerVisible};
+  const contact=profile?.lastContactAt ?? data.telemetry?.lastPing;
+  const readOnly=presentation === "engineering";
+  const completed=(result:DeviceActionResult) => {
+    setAction(null);
+    if(result.kind === "reveal") {setRevealUntil(result.visibleUntil);setToast("Visible for 15 minutes");}
+    else if(result.kind !== "rotate") {setToast(result.message);if(result.kind === "revoke")setJustRevoked(true);}
+    onSuccess(result);
+  };
+  return <div className="record-page device-detail">
+    <RecordHeader back="/devices" backLabel="Devices" title={data.device.serial_number}
+      status={<><strong><ConnectivityLabel value={profile?.connectivity ?? (data.telemetry?.connectionType === "offline" ? "offline" : data.telemetry ? "online" : "unknown")} /></strong><span>{contact ? `Last contact ${relativeContact(contact).toLowerCase()}` : "No contact yet"}</span></>}
+      meta={<><span>{data.device.model}</span>{data.device.status === "revoked" && <strong className="record-state">Revoked</strong>}{data.device.owner_id ? data.customer && customerVisible ? <Link href={`/customers/${data.customer.id}`}>{data.customer.email}</Link> : <span>{data.customer ? maskedEmail(data.customer.email) : "Customer masked"}</span> : <span>Unclaimed</span>}{readOnly && api.session.role === "admin" && data.customer && !visibleReveal && <button className="detail-value-link" onClick={() => setAction("reveal")}>Reveal</button>}</>}
+      actions={!justRevoked ? <DeviceActionsMenu device={data.device} readOnly={readOnly} suspended={data.admin.suspended} onAction={setAction} /> : undefined} />
+    {data.customerMissing && <Notice title="The linked customer record is unavailable." tone="warning" />}
+    <div className="device-tabs"><ConsoleTabs label="Device details" idPrefix="device" items={tabs} value={tab} onChange={setTab} /></div>
+    <div role="tabpanel" id={`device-${tab}`} aria-labelledby={`device-tab-${tab}`}>
+      {tab === "summary" ? <DeviceSummary view={view} ownershipOpen={justRevoked} /> : tab === "alerts" ? <DeviceAlerts view={view} /> : tab === "journeys" ? <DeviceJourneys view={view} /> : tab === "location" ? <DeviceLocation view={view} /> : tab === "diagnostics" ? <DeviceDiagnostics view={view} /> : <DeviceAuditHistory view={view} />}
+    </div>
+    {action && <DeviceActionDialog key={action} kind={action} device={data.device} customerEmail={customerVisible ? data.customer?.email ?? null : null} onClose={() => setAction(null)} onSuccess={completed} />}
+    <RecordToast message={toast} />
+  </div>;
 }

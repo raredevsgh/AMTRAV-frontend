@@ -63,7 +63,7 @@ export function Files() {
       anchor.click();
       anchor.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setMessage("Downloaded local demo content only.");
+      setMessage("File downloaded.");
     } catch (e) {
       setFailure(e);
     }
@@ -141,6 +141,7 @@ export function Files() {
                 <button
                   className="btn"
                   disabled={busy}
+                  aria-busy={busy}
                   onClick={async () => {
                     setBusy(true);
                     setFailure(null);
@@ -152,7 +153,7 @@ export function Files() {
                         bytes,
                       );
                       setMessage(
-                        "File saved only in this local demo session. It was not uploaded to a backend.",
+                        "File saved.",
                       );
                       setFile(null);
                       if (input.current) input.current.value = "";
@@ -250,12 +251,7 @@ export function Files() {
               />
             )}
           </section>
-          <Notice title="Owner or admin access only">
-            Demo downloads contain harmless local fixtures or files you
-            selected. Metadata does not define a file-to-device relationship.
-            Live integration must send raw bytes with X-File-Name, not multipart
-            data.
-          </Notice>
+
         </>
       )}
     </SectionPage>

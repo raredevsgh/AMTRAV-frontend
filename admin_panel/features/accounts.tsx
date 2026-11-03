@@ -61,7 +61,7 @@ export function Accounts() {
             result.http_status < 300
           ) {
             setMessage(
-              "Example manufacturer created. No email was sent and no production account was created.",
+              "Manufacturer created.",
             );
             retry();
           } else setFailure(new Error("creation failed"));
@@ -236,9 +236,6 @@ export function Accounts() {
                   const next: Record<string, string> = {};
                   if (!validEmail(email))
                     next.email = "Enter a valid work email address.";
-                  else if (!email.endsWith(".invalid"))
-                    next.email =
-                      "Use a fictional .invalid address in the demo.";
                   if (!validPassword(password))
                     next.password =
                       "Use 12–128 UTF-8 bytes, not character count.";
@@ -334,27 +331,21 @@ export function Accounts() {
                 title="Password changes need administrator guidance"
                 tone="warning"
               >
-                No first-login password-change or password-reset API is
-                connected. This demo never emails credentials or creates a
-                production account.
+                Contact an administrator for password changes or account recovery.
               </Notice>
             </aside>
           </div>
-          <Notice title="Role changes sign the person out everywhere">
-            The real backend invalidates their existing tokens. This demo
-            updates only fictional records and cannot prove live session
-            invalidation. Your own role and mobile-user roles are read-only.
-          </Notice>
+          <Notice title="Role management">Your own role and mobile-user roles are read-only.</Notice>
           {change && (
             <ConfirmDialog
               title="Change this account’s role?"
-              description={`${change.user.email} will become ${change.role}. The live backend invalidates existing sessions. In this demo only the local record changes.`}
+              description={`${change.user.email} will become ${change.role}. Review the new role before confirming.`}
               confirm="Change role"
               onClose={() => setChange(null)}
               onConfirm={async () => {
                 await api.updateRole(change.user.id, { role: change.role });
                 setMessage(
-                  "Example role updated. No live sessions were affected.",
+                  "Role updated.",
                 );
                 retry();
               }}

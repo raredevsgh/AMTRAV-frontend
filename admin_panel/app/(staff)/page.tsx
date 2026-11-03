@@ -1,4 +1,10 @@
-import { redirect } from "next/navigation";
-export default function HomePage() {
-  redirect("/devices");
+import { Overview } from "@/features/overview";
+
+export const metadata = {
+  title: "Overview",
+  description: "Fleet performance, active operations, and recent activity.",
+};
+
+export default function OverviewPage() {
+  return <Overview />;
 }

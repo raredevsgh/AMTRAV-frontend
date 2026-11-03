@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { isValidElement, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MockApiError } from "@/lib/api";
 import type { DeviceStatus } from "@/lib/api/types";
+import {FigmaIcon} from "./figma-icon";
 
 export { SectionPage } from "./section-page";
 export function ButtonLink({
@@ -48,7 +49,7 @@ export function LoadingState({
   return (
     <div className="panel loading-state" role="status">
       <h2>{label}</h2>
-      <p>Fetching the fictional workspace records…</p>
+      <p>Loading workspace records…</p>
       <div className="skeleton" />
       <div className="skeleton" />
       <div className="skeleton" />
@@ -96,12 +97,16 @@ export function ErrorState({
     error instanceof MockApiError && error.status === 429
       ? error.retryAfterSeconds
       : null;
-  const [ready, setReady] = useState(false);
+  const [allowedError, setAllowedError] = useState<unknown>(null);
   useEffect(() => {
     if (delay == null) return;
-    const timer = setTimeout(() => setReady(true), Math.max(0, delay) * 1000);
+    const timer = setTimeout(
+      () => setAllowedError(error),
+      Math.max(0, delay) * 1000,
+    );
     return () => clearTimeout(timer);
-  }, [delay]);
+  }, [delay, error]);
+  const ready = allowedError === error;
   return (
     <Notice title={errorText(error)} tone="error">
       {retry && (
@@ -191,10 +196,10 @@ export function Field({
   return (
     <div className="field">
       <label htmlFor={name}>{label}</label>
-      {children}
+      {isValidElement(children) && children.type === "select" ? <span className="field-select">{children}<FigmaIcon name="chevronDown" className="field-select-icon" /></span> : children}
       {error && (
         <p id={`${name}-error`} className="field-error" role="alert">
-          {error}
+          <FigmaIcon name="info" />{error}
         </p>
       )}
       {hint && (
@@ -210,12 +215,18 @@ export function Modal({
   children,
   onClose,
   drawer = false,
+  side = "left",
+  showCloseButton = true,
+  className = "",
   restoreFocus,
 }: {
   title: string;
   children: React.ReactNode;
   onClose: () => void;
   drawer?: boolean;
+  side?: "left" | "right";
+  showCloseButton?: boolean;
+  className?: string;
   restoreFocus?: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -231,7 +242,7 @@ export function Modal({
     d?.showModal();
     (
       d?.querySelector<HTMLElement>("[data-autofocus]") ??
-      d?.querySelector<HTMLElement>("button,a[href],input")
+      d?.querySelector<HTMLElement>("button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled)")
     )?.focus();
     return () => {
       d?.close();
@@ -245,7 +256,7 @@ export function Modal({
     <dialog
       ref={ref}
       aria-labelledby={id}
-      className={`console-dialog ${drawer ? "drawer-dialog" : ""}`}
+      className={`console-dialog ${drawer ? "drawer-dialog" : ""} ${drawer && side === "right" ? "record-drawer" : ""} ${className}`}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -255,9 +266,9 @@ export function Modal({
       }}
       onKeyDown={(e) => {
         if (e.key !== "Tab") return;
-        const items = e.currentTarget.querySelectorAll<HTMLElement>(
-          'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),[tabindex="0"]',
-        );
+        const items = [...e.currentTarget.querySelectorAll<HTMLElement>(
+          'button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex="0"]',
+        )].filter((element) => element.getClientRects().length > 0);
         const first = items[0],
           last = items[items.length - 1];
         if (e.shiftKey && document.activeElement === first) {
@@ -272,13 +283,13 @@ export function Modal({
       <div className="dialog-surface">
         <div className="dialog-heading">
           <h2 id={id}>{title}</h2>
-          <button
+          {showCloseButton && <button
             className="icon-btn"
             aria-label="Close dialog"
             onClick={onClose}
           >
             ×
-          </button>
+          </button>}
         </div>
         {children}
       </div>
@@ -324,6 +335,7 @@ export function ConfirmDialog({
         <button
           className={`btn ${danger ? "btn-danger" : ""}`}
           disabled={busy}
+          aria-busy={busy}
           onClick={async () => {
             setBusy(true);
             try {
