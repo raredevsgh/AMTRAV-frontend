@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local visual review captures
+/artifacts/
+
+# Commit configuration guidance, never real credentials.
+!.env.example
+
+# Copied from @sqlite.org/sqlite-wasm by scripts/copy-sqlite.mjs
+/public/sqlite/

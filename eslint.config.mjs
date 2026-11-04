@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored SQLite build copied by scripts/copy-sqlite.mjs.
+    "public/sqlite/**",
   ]),
 ]);
 
