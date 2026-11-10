@@ -20,6 +20,9 @@ import { useSiteStore, type SiteDialog } from "@/stores/site-store";
 import { MotionProvider } from "./motion";
 import { FlightPath } from "./visuals";
 import { Suspense, type ReactNode } from "react";
+/** The staff and manufacturer console (the admin dashboard); it asks for sign-in itself. */
+const consoleUrl = process.env.NEXT_PUBLIC_CONSOLE_URL || "/console";
+
 const links = [
   { href: "/", label: "home" },
   { href: "/#features", label: "features" },
@@ -104,6 +107,13 @@ function HeaderBar({ path }: { path: string | null }) {
         </nav>
         <div className="header-actions">
           <LocaleMenu />
+          <Link
+            href={consoleUrl}
+            className="header-console"
+            aria-label={m.nav.consoleLabel}
+          >
+            {m.nav.console}
+          </Link>
           <Button asChild className="pill header-cta">
             <Link href={href("/#founding")}>
               <span className="desktop-label">{m.nav.join}</span>
@@ -122,6 +132,9 @@ function HeaderBar({ path }: { path: string | null }) {
             {m.nav[l.label]}
           </Link>
         ))}
+        <Link href={consoleUrl} aria-label={m.nav.consoleLabel}>
+          {m.nav.console}
+        </Link>
       </nav>
     </>
   );
@@ -159,7 +172,8 @@ type FooterKey = keyof Messages["footer"];
 
 const footerColumns: {
   title: FooterKey;
-  links: { label: FooterKey | "email"; href: string }[];
+  /** `direct`: the address is used as it is, not moved under the page's language. */
+  links: { label: FooterKey | "email"; href: string; direct?: boolean }[];
 }[] = [
   {
     title: "company",
@@ -169,6 +183,7 @@ const footerColumns: {
       { label: "app", href: "/app" },
       { label: "brands", href: "/for-brands" },
       { label: "shop", href: "/shop" },
+      { label: "console", href: consoleUrl, direct: true },
     ],
   },
   {
@@ -241,7 +256,7 @@ function Footer() {
               <ul>
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={href(link.href)}>
+                    <Link href={link.direct ? link.href : href(link.href)}>
                       {link.label === "email" ? brand.email : m.footer[link.label]}
                     </Link>
                   </li>

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { brand } from "@/lib/brand";
 import type { LegalDocument } from "@/lib/legal";
+import { Voices } from "./voices";
 import "@/app/trace.css";
 import "@/app/pages.css";
 
@@ -509,18 +510,7 @@ export function AboutPage() {
         about.
       </PageHero>
 
-      <section className="trace-panel night trace-quote">
-        <span className="trace-eyebrow">Why we’re obsessed with the problem</span>
-        <blockquote>
-          <p>
-            “I watched my bag go through the flap at check-in. Eleven hours later, in
-            Lisbon, I still didn’t know if it was on my plane.”
-          </p>
-          <footer>
-            <strong>B. Young</strong> · An overwhelmed traveller
-          </footer>
-        </blockquote>
-      </section>
+      <Voices />
 
       <section className="trace-panel">
         <Head eyebrow="What we believe" title="Built to be trusted with where you are." />

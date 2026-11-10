@@ -77,6 +77,21 @@ export const fr: Messages = {
       "Pour de l’aide sur un bagage ou une carte d’activation, écrivez à support@amortrav.com. Pour un partenariat, utilisez le formulaire de notre page d’accueil.",
     ok: "Compris",
   },
+  errors: {
+    notFoundCode: "404 · Page introuvable",
+    notFoundTitle: "Nous n’avons pas trouvé cette page.",
+    notFoundBody:
+      "Elle a peut-être été déplacée, ou le lien contient une faute. Tout le reste est à sa place.",
+    home: "Retour à l’accueil",
+    contact: "Nous contacter",
+    goTo: "Ou allez à",
+    errorCode: "Un problème est survenu",
+    errorTitle: "Cette page ne s’est pas chargée.",
+    errorBody:
+      "Le problème vient de nous, pas de vous. Réessayez et, si cela continue, prévenez-nous.",
+    retry: "Réessayer",
+    reference: "Référence {digest}",
+  },
   shop: {
     eyebrow: "Boutique",
     title: "Quatre bagages. Un {core}.",

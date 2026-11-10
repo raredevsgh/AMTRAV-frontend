@@ -77,6 +77,21 @@ export const es: Messages = {
       "Para ayuda con una maleta o una tarjeta de registro, escribe a support@amortrav.com. Para colaboraciones, usa el formulario de nuestra página de inicio.",
     ok: "Entendido",
   },
+  errors: {
+    notFoundCode: "404 · Página no encontrada",
+    notFoundTitle: "No encontramos esa página.",
+    notFoundBody:
+      "Puede que se haya movido o que el enlace tenga un error. Todo lo demás sigue donde lo dejaste.",
+    home: "Volver al inicio",
+    contact: "Contáctanos",
+    goTo: "O ve a",
+    errorCode: "Algo salió mal",
+    errorTitle: "Esta página no se cargó.",
+    errorBody:
+      "El problema es nuestro, no tuyo. Inténtalo de nuevo y, si sigue pasando, avísanos.",
+    retry: "Reintentar",
+    reference: "Referencia {digest}",
+  },
   shop: {
     eyebrow: "Tienda",
     title: "Cuatro maletas. Un {core}.",

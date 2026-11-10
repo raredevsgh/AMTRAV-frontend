@@ -2115,7 +2115,10 @@ h2 {
  * The app page's tour and pairing sections are all white; the last two lines follow the
  * white/soft alternation of plain TRACE panels (above).
  */
-.site-shell main :is(.trace-panel, .panel).night + :is(.trace-panel, .panel).night,
+.site-shell
+  main
+  :is(.trace-panel, .panel).night:not(.page-hero, .contact-hero)
+  + :is(.trace-panel, .panel).night,
 .site-shell main :is(.trace-panel, .panel).soft + :is(.trace-panel, .panel).soft,
 .site-shell main :is(.app-tour, .app-pair) + :is(.app-tour, .app-pair),
 .site-shell
@@ -2178,7 +2181,10 @@ h2 {
   }
 }
 
-/* Flat: no shadows, glows or lift on hover anywhere on the marketing site. */
+/*
+ * Flat base: the older glows, shadows and hover lifts are off. The design system below adds
+ * back only its own rings and shadows, marked !important to get past this.
+ */
 .site-shell *,
 .site-shell *::before,
 .site-shell *::after {
@@ -2190,19 +2196,749 @@ h2 {
 .site-shell .footer-social a:hover {
   transform: none;
 }
+
+/*
+ * Design system, after clerk.com (measured November 2026), in Amortrav's own colours and
+ * type: neutral grey canvas; controls with small 6px corners, never pills; cards with 16px
+ * corners, lifted by soft layered shadows on light sections and edged by a faint inner
+ * hairline on dark ones; glass for the header, menus and anything over a photo or film.
+ * Edges are half-pixel rings drawn with box-shadow, so nothing shifts the layout.
+ */
+.site-shell {
+  --ds-control: 6px;
+  --ds-card-radius: 16px;
+  --ds-ring: rgb(0 31 77 / 10%);
+  --ds-hover: rgb(0 31 77 / 5%);
+  --ds-field-ring: var(--c-border);
+  --ds-glass: rgb(255 255 255 / 76%);
+  --ds-card-shadow:
+    0 0 0 0.5px var(--ds-ring), 0 1px 1px rgb(0 0 0 / 4%), 0 2px 3px rgb(0 0 0 / 3%),
+    0 4px 6px rgb(34 42 53 / 4%), 0 24px 68px rgb(47 48 55 / 5%);
+  --ds-raised:
+    0 0 0 0.5px rgb(0 31 77 / 14%), 0 1px 1px rgb(0 0 0 / 4%), 0 2px 3px rgb(0 0 0 / 4%);
+  --ds-popover:
+    0 0 0 0.5px rgb(0 31 77 / 12%), 0 4px 6px rgb(34 42 53 / 4%),
+    0 24px 68px rgb(47 48 55 / 12%);
+}
+/* Light pages: Clerk's neutral greys in place of the blue-tinted ones. */
+html:not([data-theme="dark"]) .site-shell {
+  --c-soft: #f7f7f8;
+  --soft: #f7f7f8;
+  --c-border: #e4e4e8;
+  --c-muted: #5e5f6e;
+  --muted: #5e5f6e;
+}
+html:not([data-theme="dark"]) .site-shell .trace {
+  --trace-soft: #f7f7f8;
+  --trace-muted: #5e5f6e;
+}
+html[data-theme="dark"] .site-shell {
+  --ds-ring: rgb(255 255 255 / 9%);
+  --ds-hover: rgb(255 255 255 / 6%);
+  --ds-glass: rgb(15 20 29 / 76%);
+  --ds-card-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 4%), inset 0 0 0 1px rgb(255 255 255 / 6%);
+  --ds-raised:
+    inset 0 1px 0 rgb(255 255 255 / 6%), 0 0 0 0.5px rgb(0 0 0 / 60%),
+    0 1px 3px rgb(0 0 0 / 30%);
+  --ds-popover:
+    inset 0 0 0 0.5px rgb(255 255 255 / 10%), 0 0 0 0.5px rgb(0 0 0 / 60%),
+    0 24px 68px rgb(0 0 0 / 45%);
+}
+/* On dark sections, cards and fields are edged by an inner hairline instead of a shadow. */
+.site-shell :is(.night, .navy, .trace-hero, .trace-founding) {
+  --ds-ring: rgb(255 255 255 / 10%);
+  --ds-field-ring: rgb(255 255 255 / 16%);
+  --ds-card-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 5%), inset 0 0 0 1px rgb(255 255 255 / 7%);
+}
+
+/* Header: a full-width glass bar over a blurred backdrop, edged by a hairline. */
 .site-shell .site-header {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  background: var(--c-surface);
-  border-bottom: 1px solid var(--c-border);
+  background: var(--ds-glass);
+  backdrop-filter: saturate(1.8) blur(20px);
+  -webkit-backdrop-filter: saturate(1.8) blur(20px);
+  border-bottom: 0;
+  box-shadow:
+    0 0 0 0.5px var(--ds-ring),
+    0 4px 12px rgb(34 42 53 / 3%) !important;
 }
-.site-shell .trace-button.ghost {
-  border: 1px solid rgb(255 255 255 / 35%);
+.site-shell :is(.desktop-nav a, .nav-trigger, .locale-trigger) {
+  border-radius: var(--ds-control);
+  font-size: 14px;
+  font-weight: 500;
 }
-.site-shell .trace-button.ghost-ink,
-.site-shell .shop-quantity,
+.site-shell :is(.desktop-nav a, .nav-trigger):hover {
+  background: var(--ds-hover);
+}
+.site-shell .locale-trigger {
+  border-color: transparent;
+  box-shadow: var(--ds-raised) !important;
+}
+.site-shell :is(.nav-menu, .locale-menu) {
+  border-color: transparent;
+  border-radius: 12px;
+  background: var(--ds-glass);
+  backdrop-filter: saturate(1.8) blur(24px);
+  -webkit-backdrop-filter: saturate(1.8) blur(24px);
+  box-shadow: var(--ds-popover) !important;
+}
+.site-shell :is(.nav-menu-item, .locale-list button, .nav-menu-photo) {
+  border-radius: 8px;
+}
+
+/* The console (admin dashboard) link: quiet text beside the main button, as Clerk's "Sign in". */
+.site-shell .header-console {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ds-control);
+  color: var(--c-ink);
+  font-size: 14px;
+  font-weight: 500;
+}
+.site-shell .header-console:hover {
+  background: var(--ds-hover);
+}
+/* On narrow screens it moves into the row of links under the header. */
+@media (max-width: 760px) {
+  .site-shell .header-console {
+    display: none;
+  }
+}
+
+/* Buttons: 40px tall with 6px corners. */
+.site-shell :is(.pill, .trace-button) {
+  min-height: 40px;
+  gap: 8px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--ds-control);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  transition:
+    background-color 0.15s,
+    filter 0.15s;
+}
+.site-shell .trace-button.small {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+/* Filled: lit from the top, with a hairline ring, a light top edge and a soft drop. */
+.site-shell
+  :is(
+    .pill:not(.white, .console-link, .outline-light),
+    .trace-button.signal,
+    .trace-button.ink
+  ) {
+  background-image: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 12%),
+    rgb(255 255 255 / 0%)
+  );
+  box-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    0 1px 3px rgb(0 0 0 / 16%) !important;
+}
+/* Light: the surface colour, raised by a ring and a short shadow. */
+.site-shell
+  :is(.pill.white, .pill.console-link, .trace-button.ghost-ink, .shop-quantity) {
+  border-color: transparent;
+  box-shadow: var(--ds-raised) !important;
+}
+/* Over dark sections, photos and film: frosted glass. */
+.site-shell :is(.trace-button.ghost, .pill.outline-light) {
+  border-color: transparent;
+  background-color: rgb(255 255 255 / 8%);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  box-shadow:
+    inset 0 0 0 0.5px rgb(255 255 255 / 24%),
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 1px 3px rgb(0 0 0 / 24%) !important;
+}
+.site-shell :is(.pill, .trace-button):hover {
+  filter: brightness(1.06);
+}
+.site-shell :is(.pill.white, .pill.console-link, .trace-button.ghost-ink):hover {
+  filter: brightness(0.97);
+}
+
+/* Badges, labels, segmented controls and small chips: the same 6px corners, no pills. */
+.site-shell
+  :is(
+    .trace-number,
+    .section-label,
+    .modes > span,
+    .trace-kind,
+    .trace-kind > button,
+    .contact-languages > li,
+    .shop-quantity,
+    .language-switcher,
+    .footer-social a,
+    .chips span,
+    .status-badge,
+    .new-badge,
+    .new-badge b,
+    .trace-gate figcaption,
+    .mobile-nav a
+  ) {
+  border-radius: var(--ds-control);
+}
+/* In dark mode the ink fill turns light, so numbers and step icons flip to lime on dark. */
+html[data-theme="dark"]
+  .site-shell
+  :is(.trace-number, .trace-step-icon, .trace-voice-avatar) {
+  background: var(--trace-signal);
+  color: var(--trace-on-signal, #1b2200);
+}
 .site-shell .footer-social a {
-  border: 1px solid var(--c-border);
+  border-color: transparent;
+  box-shadow: var(--ds-raised) !important;
+}
+.site-shell .trace-gate figcaption {
+  background: rgb(255 255 255 / 72%);
+  backdrop-filter: saturate(1.6) blur(14px);
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  box-shadow: var(--ds-raised) !important;
+}
+
+/* Cards: 16px corners, lifted on light sections, hairline-edged on dark ones. */
+.site-shell
+  main
+  :is(
+    .trace-visual,
+    .trace-steps > li,
+    .trace-range-card,
+    .trace-points > article,
+    .trace-battery-facts > li,
+    .trace-founding-card,
+    .trace-notification,
+    .page-cards > article,
+    .page-steps > li,
+    .app-tour > article,
+    .app-extra-grid > article,
+    .contact-way,
+    .contact-form-panel,
+    .faq-list > div,
+    .under-hood article,
+    .claim-card,
+    .trace-voice
+  ) {
+  border-color: transparent;
+  border-radius: var(--ds-card-radius);
+  box-shadow: var(--ds-card-shadow) !important;
+}
+.site-shell main :is(.trace-gate > figure, .panel > figure) {
+  border-radius: var(--ds-card-radius);
+}
+/* The live card over the hero film is frosted glass. */
+.site-shell .trace-live-card {
+  border-radius: var(--ds-card-radius);
+  background: rgb(10 22 44 / 52%);
+  backdrop-filter: saturate(1.6) blur(20px);
+  -webkit-backdrop-filter: saturate(1.6) blur(20px);
+  box-shadow:
+    inset 0 0 0 0.5px rgb(255 255 255 / 16%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    0 12px 32px rgb(0 0 0 / 28%) !important;
+}
+
+/* Fields: 6px corners and a ring that turns to the accent on focus. */
+.site-shell
+  main
+  :is(
+    input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"]),
+    select,
+    textarea
+  ) {
+  border-color: transparent;
+  border-radius: var(--ds-control);
+  box-shadow:
+    0 0 0 1px var(--ds-field-ring),
+    0 1px 2px rgb(0 0 0 / 4%) !important;
+}
+.site-shell main :is(input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--c-accent),
+    0 0 0 4px color-mix(in srgb, var(--c-accent) 18%, transparent) !important;
+}
+
+/* Type: Clerk's scale and weights, set in Montserrat. */
+.site-shell main h1 {
+  font-size: clamp(40px, 4.8vw, 60px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+.site-shell main h2:not(.policy-body *) {
+  font-size: clamp(26px, 2.8vw, 36px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.site-shell main h3:not([class*="phone"] *) {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.site-shell :is(.trace-eyebrow, .eyebrow) {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.site-shell .trace-eyebrow::before {
+  display: none;
+}
+.site-shell main :is(.trace-head, .app-section-head, .section-heading) p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/*
+ * Clerk's layout and palette. Light pages use near-black ink and dark sections in place of
+ * the navy (the landing sets its ink and night inline from lib/brand.ts, hence !important);
+ * Amortrav's blue stays as the accent and lime as the signal.
+ */
+html:not([data-theme="dark"]) .site-shell {
+  --c-ink: #131316;
+  --navy: #131316;
+  --c-fill: #131316;
+  --c-fill-hover: #2f3037;
+}
+html:not([data-theme="dark"]) .site-shell .trace {
+  --trace-ink: #131316 !important;
+  --trace-night: #131316 !important;
+}
+.site-shell .pill:hover {
+  background-color: var(--navy);
+}
+.site-shell .pill.white:hover {
+  background-color: var(--c-surface);
+}
+.site-shell .pill.light {
+  background-color: var(--c-surface);
+  color: var(--c-ink);
+  box-shadow: var(--ds-raised) !important;
+}
+.site-shell .pill.light:hover {
+  background-color: var(--c-surface);
+}
+/* On dark sections the secondary button is glass. */
+.site-shell :is(.navy, .night) .pill.light {
+  background-color: rgb(255 255 255 / 8%);
+  color: #fff;
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  box-shadow:
+    inset 0 0 0 0.5px rgb(255 255 255 / 24%),
+    inset 0 1px 0 rgb(255 255 255 / 12%) !important;
+}
+.site-shell .trace-button.ghost-ink {
+  background-color: var(--c-surface);
+  color: var(--trace-ink, var(--c-ink));
+}
+
+/* Hero: the headline on the canvas, then the film in a framed stage with the live card. */
+.site-shell main .trace-hero {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 56px;
+  min-height: 0;
+  padding-top: calc(var(--section-head) + 24px);
+  padding-bottom: 72px;
+  overflow: visible;
+  background: var(--c-soft);
+  color: var(--trace-ink);
+}
+.site-shell .trace-hero-copy {
+  gap: 20px;
+  max-width: 1000px;
+}
+.site-shell main .trace-hero h1 {
+  font-size: clamp(40px, 4.4vw, 56px);
+}
+.site-shell .trace-hero .trace-eyebrow {
+  color: var(--trace-accent);
+}
+.site-shell .trace-hero h1 span {
+  color: var(--trace-accent);
+}
+.site-shell .trace-hero-copy > p {
+  max-width: 600px;
+  color: var(--c-muted);
+  font-size: 18px;
+}
+.site-shell .trace-hero-stage {
+  position: relative;
+  z-index: 0;
+  min-height: 360px;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  border-radius: var(--ds-card-radius);
+  background: var(--trace-night);
+  box-shadow: var(--ds-card-shadow) !important;
+}
+.site-shell .trace-hero-stage .trace-hero-media {
+  z-index: -2;
+  transform: none;
+}
+.site-shell .trace-hero-stage .trace-hero-shade {
+  background: linear-gradient(180deg, transparent 45%, rgb(0 0 0 / 45%));
+}
+.site-shell .trace-hero-stage .trace-live-card {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  color: #fff;
+}
+@media (max-width: 734px) {
+  .site-shell .trace-hero-stage {
+    aspect-ratio: 4 / 5;
+  }
+  .site-shell .trace-hero-stage .trace-live-card {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+  }
+}
+/* Under the hero, the routes run quietly on the canvas, like a row of logos. */
+.site-shell .trace-routes {
+  border: 0;
+  border-radius: 0;
+  background: var(--c-soft);
+}
+
+/* Feature cards: the illustration on top, then the title and a line of copy. */
+.site-shell main .trace-feature {
+  gap: 6px;
+  padding: 0 0 24px;
+  overflow: hidden;
+  border-radius: var(--ds-card-radius);
+  background: var(--c-surface);
+  box-shadow: var(--ds-card-shadow) !important;
+}
+.site-shell main .trace-feature .trace-number {
+  display: none;
+}
+.site-shell main .trace-feature .trace-visual {
+  order: -1;
+  min-height: 210px;
+  margin: 0 0 18px;
+  padding: 28px;
+  border-radius: 0;
+  background: linear-gradient(180deg, var(--c-soft), var(--c-surface));
+  box-shadow: none !important;
+}
+.site-shell main .trace-feature > :is(h3, p) {
+  padding-inline: 24px;
+}
+.site-shell main .trace-feature h3 {
+  font-size: 16px;
+}
+.site-shell main .trace-feature p {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Dark sections centre their header, as Clerk's do. */
+.site-shell main :is(.night, .navy) > .trace-head {
+  justify-items: center;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* The battery section sits on the canvas, with lime only in its icons. */
+html:not([data-theme="dark"]) .site-shell .trace-battery {
+  background: var(--c-soft);
+  color: var(--trace-ink);
+}
+html:not([data-theme="dark"]) .site-shell .trace-battery .trace-eyebrow {
+  color: var(--trace-accent);
+}
+html:not([data-theme="dark"]) .site-shell .trace-battery .trace-head p {
+  color: var(--c-muted);
+}
+html:not([data-theme="dark"]) .site-shell .trace-battery-facts li {
+  background: var(--c-surface);
+}
+
+/* With a mouse, the header floats as a contained glass bar over the page. */
+@media (min-width: 761px) {
+  .site-shell .site-header {
+    top: 10px;
+    min-height: 0;
+    margin: 10px var(--edge) 0;
+    padding: 6px 6px 6px 16px;
+    border-radius: var(--ds-control);
+  }
+}
+
+/*
+ * Subpage heroes are light too: white for the page and contact heroes (a grey section
+ * follows them), the canvas for How it works (a white one follows). Photos and the
+ * contact facts become cards.
+ */
+html:not([data-theme="dark"]) .site-shell main :is(.page-hero, .contact-hero, .sub-hero) {
+  --ds-ring: rgb(0 31 77 / 10%);
+  --ds-field-ring: var(--c-border);
+  --ds-card-shadow:
+    0 0 0 0.5px rgb(0 31 77 / 10%), 0 1px 1px rgb(0 0 0 / 4%),
+    0 4px 6px rgb(34 42 53 / 4%), 0 24px 68px rgb(47 48 55 / 8%);
+  background: var(--c-surface);
+  color: var(--c-ink);
+}
+html:not([data-theme="dark"]) .site-shell main .sub-hero {
+  background: var(--c-soft);
+}
+html:not([data-theme="dark"])
+  .site-shell
+  main
+  :is(.page-hero, .contact-hero, .sub-hero)
+  h1 {
+  color: var(--c-ink);
+}
+html:not([data-theme="dark"])
+  .site-shell
+  main
+  :is(.page-hero-copy p, .contact-hero-copy p, .sub-hero p) {
+  color: var(--c-muted);
+}
+html:not([data-theme="dark"])
+  .site-shell
+  main
+  :is(.page-hero, .contact-hero)
+  .trace-eyebrow,
+html:not([data-theme="dark"]) .site-shell main .sub-hero .section-label {
+  color: var(--trace-accent, var(--c-accent));
+}
+html:not([data-theme="dark"]) .site-shell main .sub-hero .section-label {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+html:not([data-theme="dark"])
+  .site-shell
+  main
+  :is(.page-hero, .contact-hero, .sub-hero)
+  .trace-button.signal {
+  background-color: var(--c-ink);
+  color: #fff;
+}
+html:not([data-theme="dark"]) .site-shell main :is(.page-hero-image, .sub-hero figure) {
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--ds-card-radius);
+  box-shadow: var(--ds-card-shadow) !important;
+}
+html:not([data-theme="dark"]) .site-shell .contact-facts {
+  border: 0;
+  border-radius: var(--ds-card-radius);
+  background: var(--c-surface);
+  box-shadow: var(--ds-card-shadow) !important;
+}
+html:not([data-theme="dark"]) .site-shell .contact-facts > div + div {
+  border-top-color: var(--c-border);
+}
+html:not([data-theme="dark"]) .site-shell .contact-languages li {
+  border-color: transparent;
+  background: var(--c-soft);
+  color: var(--c-ink);
+}
+
+/* Not found and error pages: the message on a dotted canvas, then the main pages as cards. */
+.site-shell .status-page {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 20px;
+  min-height: min(72vh, 760px);
+  background: var(--c-soft);
+}
+.site-shell .status-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(19 19 22 / 10%) 1px,
+    transparent 0
+  );
+  background-size: 18px 18px;
+  mask-image: radial-gradient(ellipse at 30% 50%, #000 20%, transparent 75%);
+  pointer-events: none;
+}
+html[data-theme="dark"] .site-shell .status-page::before {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(255 255 255 / 8%) 1px,
+    transparent 0
+  );
+}
+.site-shell .status-page > * {
+  position: relative;
+}
+.site-shell .status-page > p {
+  max-width: 560px;
+  color: var(--c-muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+.site-shell .status-page .status-reference {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 12px;
+}
+.site-shell .status-links {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 40px;
+}
+.site-shell .status-links > span {
+  color: var(--c-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.site-shell .status-links ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-shell .status-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-radius: var(--ds-card-radius);
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: var(--ds-card-shadow) !important;
+  transition: filter 0.15s;
+}
+.site-shell .status-links a:hover {
+  filter: brightness(0.98);
+}
+@media (max-width: 734px) {
+  .site-shell .status-links ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
+ * Background motion, after Clerk. Dark sections get a faint grid lit from the top, with radar
+ * rings pulsing out slowly, as a tracker's signal would; feature cards get a spotlight that
+ * fades in on hover. Both stop for reduced motion and the site's pause control.
+ */
+.site-shell main :is(.trace-core, .trace-demo, .download-section) {
+  isolation: isolate;
+  overflow: hidden;
+}
+.site-shell main :is(.trace-core, .trace-demo, .download-section)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 65% at 50% 0%, #000, transparent 75%);
+  pointer-events: none;
+}
+.site-shell main :is(.trace-core, .trace-demo, .download-section)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: min(1400px, 140vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle,
+    transparent 0 119px,
+    color-mix(in srgb, var(--trace-signal, #d5f45b) 14%, transparent) 120px 121px,
+    transparent 122px 180px
+  );
+  translate: -50% -50%;
+  animation: ds-radar 9s linear infinite;
+  pointer-events: none;
+}
+@keyframes ds-radar {
+  from {
+    scale: 0.55;
+    opacity: 0.9;
+  }
+  to {
+    scale: 1.2;
+    opacity: 0;
+  }
+}
+.site-shell main .trace-feature .trace-visual {
+  position: relative;
+  isolation: isolate;
+}
+.site-shell main .trace-feature .trace-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    60% 80% at 50% 0%,
+    color-mix(in srgb, var(--trace-accent, #0047ad) 14%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.site-shell main .trace-feature:hover .trace-visual::after {
+  opacity: 1;
+}
+.site-shell main .trace-feature .trace-visual > * {
+  transition: translate 0.4s;
+}
+.site-shell main .trace-feature:hover .trace-visual > * {
+  translate: 0 -3px;
+}
+.motion-paused main :is(.trace-core, .trace-demo, .download-section)::after {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-shell main :is(.trace-core, .trace-demo, .download-section)::after {
+    animation: none;
+    opacity: 0.4;
+  }
+  .site-shell main .trace-feature .trace-visual > * {
+    transition: none;
+  }
+}
+
+/* A quiet footer and closing call to action: no watermark, no drawn flight path. */
+.site-shell :is(.footer-watermark, .download-section .flight-path) {
+  display: none;
+}
+
+/* The battery section now shares the canvas with its neighbours: one padding between them. */
+html:not([data-theme="dark"])
+  .site-shell
+  :is(.soft + .trace-battery, .trace-battery + .trace-faq-section) {
+  padding-top: 0;
 }
 @media (max-width: 760px) {
   .site-shell .mobile-nav {

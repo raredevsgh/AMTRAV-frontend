@@ -77,6 +77,21 @@ export const de: Messages = {
       "Für Hilfe mit einem Gepäckstück oder einer Aktivierungskarte schreib an support@amortrav.com. Für Partnerschaften nutze das Formular auf unserer Startseite.",
     ok: "Verstanden",
   },
+  errors: {
+    notFoundCode: "404 · Seite nicht gefunden",
+    notFoundTitle: "Diese Seite haben wir nicht gefunden.",
+    notFoundBody:
+      "Vielleicht ist sie umgezogen oder der Link enthält einen Tippfehler. Alles andere ist da, wo du es gelassen hast.",
+    home: "Zur Startseite",
+    contact: "Kontakt",
+    goTo: "Oder weiter zu",
+    errorCode: "Etwas ist schiefgelaufen",
+    errorTitle: "Diese Seite wurde nicht geladen.",
+    errorBody:
+      "Das Problem liegt bei uns, nicht bei dir. Versuch es noch einmal, und sag uns Bescheid, wenn es wieder passiert.",
+    retry: "Erneut versuchen",
+    reference: "Referenz {digest}",
+  },
   shop: {
     eyebrow: "Shop",
     title: "Vier Gepäckstücke. Ein {core}.",

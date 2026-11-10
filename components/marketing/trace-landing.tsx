@@ -43,6 +43,7 @@ import { brand, type RangeItem } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
 import { fields, Honeypot, sendLead, type Status } from "./enquiry-form";
 import { Parallax, Stagger } from "./motion";
+import { Voices } from "./voices";
 import "@/app/trace.css";
 
 const T = brand.shortProduct;
@@ -69,45 +70,20 @@ function SectionHead({
   );
 }
 
-/** The film, muted and looping behind the hero; a still for people who prefer less motion. */
+/**
+ * The headline on the light canvas, then the film in a framed stage below it, muted and
+ * looping, with the live card over it; a still for people who prefer less motion.
+ */
 function Hero({ onWatch }: { onWatch: () => void }) {
   const reduce = useReducedMotion();
   return (
     <section className="trace-hero" aria-labelledby="trace-hero-title">
-      {reduce ? (
-        <Image
-          className="trace-hero-media"
-          src={brand.film.poster}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-        />
-      ) : (
-        <video
-          className="trace-hero-media"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={brand.film.poster}
-          aria-hidden
-        >
-          <source src={brand.film.webm} type="video/webm" />
-          <source src={brand.film.mp4} type="video/mp4" />
-        </video>
-      )}
-      <div className="trace-hero-shade" />
       <div className="trace-hero-copy">
         <Eyebrow>{brand.product}</Eyebrow>
         <h1 id="trace-hero-title">
-          Every journey.
+          Every journey. Every impact.
           <br />
-          Every impact.
-          <br />
-          Every kilogram.
-          <br />
-          <span>In one view.</span>
+          Every kilogram. <span>In one view.</span>
         </h1>
         <p>
           {T} is the {brand.core} inside every {brand.company} bag. It keeps a log of
@@ -115,15 +91,41 @@ function Hero({ onWatch }: { onWatch: () => void }) {
           moment something’s wrong.
         </p>
         <div className="trace-buttons">
-          <a className="trace-button signal" href="#founding">
-            Become a Founding Traveller <ArrowRight size={18} />
+          <a className="trace-button ink" href="#founding">
+            Become a Founding Traveller <ArrowRight size={16} />
           </a>
-          <button className="trace-button ghost" onClick={onWatch}>
-            <Play size={16} /> Watch the film
+          <button className="trace-button ghost-ink" onClick={onWatch}>
+            <Play size={14} /> Watch the film
           </button>
         </div>
       </div>
-      <LiveCard />
+      <div className="trace-hero-stage">
+        {reduce ? (
+          <Image
+            className="trace-hero-media"
+            src={brand.film.poster}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 1260px) 88vw, 1260px"
+          />
+        ) : (
+          <video
+            className="trace-hero-media"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={brand.film.poster}
+            aria-hidden
+          >
+            <source src={brand.film.webm} type="video/webm" />
+            <source src={brand.film.mp4} type="video/mp4" />
+          </video>
+        )}
+        <div className="trace-hero-shade" />
+        <LiveCard />
+      </div>
     </section>
   );
 }
@@ -917,25 +919,6 @@ function Gate() {
 }
 
 /** Why the company exists, in a traveller's words. */
-function Problem() {
-  return (
-    <section className="trace-panel night trace-quote" aria-labelledby="problem-title">
-      <span className="trace-eyebrow" id="problem-title">
-        Why we’re obsessed with the problem
-      </span>
-      <blockquote>
-        <p>
-          “I watched my bag go through the flap at check-in. Eleven hours later, in
-          Lisbon, I still didn’t know if it was on my plane.”
-        </p>
-        <footer>
-          <strong>B. Young</strong> · An overwhelmed traveller
-        </footer>
-      </blockquote>
-    </section>
-  );
-}
-
 /** One answer open at a time; the heading and a way to ask us stay beside the list. */
 function Faq() {
   const { m, href } = useI18n();
@@ -1102,7 +1085,7 @@ export function TraceLanding() {
       <Hero onWatch={() => setFilm(true)} />
       <Routes />
       <Features />
-      <Problem />
+      <Voices />
       <HowItWorks />
       <Gate />
       <SmartCore />

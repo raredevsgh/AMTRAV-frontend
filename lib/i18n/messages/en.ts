@@ -77,6 +77,21 @@ export const en = {
       "For help with a bag or claim card, write to support@amortrav.com. For partnerships, use the form on our home page.",
     ok: "Got it",
   },
+  errors: {
+    notFoundCode: "404 · Page not found",
+    notFoundTitle: "We couldn’t find that page.",
+    notFoundBody:
+      "It may have moved, or the link may have a typo. Everything else is right where you left it.",
+    home: "Back to home",
+    contact: "Contact us",
+    goTo: "Or go to",
+    errorCode: "Something went wrong",
+    errorTitle: "This page didn’t load.",
+    errorBody:
+      "The problem is on our side, not yours. Try again, and if it keeps happening, let us know.",
+    retry: "Try again",
+    reference: "Reference {digest}",
+  },
   shop: {
     eyebrow: "Shop",
     title: "Four bags. One {core}.",
