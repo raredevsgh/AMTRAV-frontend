@@ -2033,7 +2033,9 @@ h2 {
  * readable width through each section's side padding.
  */
 .site-shell {
-  --edge: max(24px, calc((100vw - 1240px) / 2));
+  /* Apple's column: 87.5% of the window (6.25% margins), never wider than 1260px. */
+  --content: 1260px;
+  --edge: max(6.25vw, calc((100vw - var(--content)) / 2));
   padding: 0;
   background: var(--c-surface);
 }
@@ -2076,9 +2078,103 @@ h2 {
   margin-top: 0;
   border-top: 1px solid var(--c-border);
 }
-@media (max-width: 700px) {
+
+/*
+ * Apple's spacing, measured on apple.com (the iPhone and AirPods Pro pages, November 2026):
+ * sections get 160px above and below their content, 128px at 1068px and narrower, 96px at
+ * 734px and narrower; a section's header sits 80/64/48px above what it introduces; cards sit
+ * 20px apart. The header is a slim 52px bar. Only spacing changes: type, colour and shape
+ * stay as they were.
+ */
+.site-shell {
+  --section: 160px;
+  --section-head: 80px;
+  --card-gap: 20px;
+}
+@media (max-width: 1068px) {
   .site-shell {
-    --edge: 18px;
+    --section: 128px;
+    --section-head: 64px;
+  }
+}
+@media (max-width: 734px) {
+  .site-shell {
+    --section: 96px;
+    --section-head: 48px;
+  }
+}
+.site-shell main .trace-panel,
+.site-shell main .panel,
+.site-shell main .trace-founding {
+  padding-top: var(--section);
+  padding-bottom: var(--section);
+}
+/*
+ * Like Apple's no-pad-top: a section that carries on the colour of the one before adds no
+ * top padding of its own, so related sections sit one section's padding apart, not two.
+ * The app page's tour and pairing sections are all white; the last two lines follow the
+ * white/soft alternation of plain TRACE panels (above).
+ */
+.site-shell main :is(.trace-panel, .panel).night + :is(.trace-panel, .panel).night,
+.site-shell main :is(.trace-panel, .panel).soft + :is(.trace-panel, .panel).soft,
+.site-shell main :is(.app-tour, .app-pair) + :is(.app-tour, .app-pair),
+.site-shell
+  .trace
+  > .trace-panel:not(.soft, .night):nth-of-type(even)
+  + .trace-panel.soft,
+.site-shell
+  .trace
+  > .trace-panel.soft
+  + .trace-panel:not(.soft, .night):nth-of-type(even) {
+  padding-top: 0;
+}
+.site-shell main .trace-head,
+.site-shell main .app-section-head {
+  margin-bottom: var(--section-head);
+}
+/* Cards in a grid sit 20px apart. */
+.site-shell
+  main
+  :is(
+    .trace-features,
+    .trace-steps,
+    .trace-gate,
+    .trace-range,
+    .trace-points,
+    .trace-battery-facts,
+    .trace-demo-side,
+    .page-cards,
+    .page-steps,
+    .app-extra-grid,
+    .contact-ways,
+    .under-hood > div
+  ) {
+  gap: var(--card-gap);
+}
+/* Beside the questions, the FAQ intro keeps its own short gap. */
+.site-shell main .trace-faq-intro .trace-head {
+  margin-bottom: 32px;
+}
+.site-shell main .trace-hero {
+  padding-top: var(--section-head);
+  padding-bottom: var(--section-head);
+}
+.site-shell .site-header {
+  min-height: 52px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+/* With a mouse, the bar's controls are 36px tall; touch screens keep 44px targets. */
+@media (hover: hover) and (pointer: fine) {
+  .site-shell .desktop-nav a,
+  .site-shell .nav-trigger,
+  .site-shell .locale-trigger {
+    min-height: 36px;
+  }
+  .site-shell .pill.header-cta {
+    min-height: 36px;
+    padding: 0 18px;
+    font-size: 14px;
   }
 }
 
