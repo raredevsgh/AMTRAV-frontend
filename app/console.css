@@ -3205,3 +3205,260 @@ html[data-theme="dark"] .product-drop.filled {
   gap: 24px;
   min-width: 0;
 }
+
+/*
+ * Design system for the console and sign-in, after Clerk's dashboard: neutral greys and
+ * near-black ink in light mode; controls with 6px corners, never pills; cards with 12px
+ * corners and a hairline ring; the same top-lit dark buttons as the website.
+ */
+:is(.console-page, .auth-page) {
+  --ds-control: 6px;
+  --ds-card-radius: 12px;
+  --ds-card-shadow:
+    0 0 0 1px rgb(19 19 22 / 6%), 0 1px 2px rgb(0 0 0 / 4%), 0 4px 12px rgb(34 42 53 / 4%);
+  --ds-raised:
+    0 0 0 0.5px rgb(19 19 22 / 18%), 0 1px 1px rgb(0 0 0 / 4%), 0 2px 3px rgb(0 0 0 / 4%);
+  --ds-dark: #131316;
+  --ds-hover: rgb(19 19 22 / 5%);
+}
+html:not([data-theme="dark"]) :is(.console-page, .auth-page) {
+  --c-ink: #131316;
+  --c-muted: #5e5f6e;
+  --c-soft: #f7f7f8;
+  --c-border: #e4e4e8;
+  --c-tint: #f2f2f4;
+  --c-fill: #131316;
+  --c-fill-hover: #2f3037;
+}
+html[data-theme="dark"] :is(.console-page, .auth-page) {
+  --ds-card-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+  --ds-raised: inset 0 0 0 1px rgb(255 255 255 / 9%), 0 1px 2px rgb(0 0 0 / 40%);
+  --ds-dark: #0a0e15;
+  --ds-hover: rgb(255 255 255 / 6%);
+}
+
+/* Buttons: 36px with 6px corners; the primary lit from the top with a hairline ring. */
+:is(.console-page, .auth-page) :is(.console-button, .console-secondary, .console-danger) {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--ds-control);
+  font-size: 13px;
+}
+:is(.console-page, .auth-page) .console-button:not(.console-secondary, .console-danger) {
+  background-image: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 12%),
+    rgb(255 255 255 / 0%)
+  );
+  box-shadow:
+    0 0 0 0.5px rgb(0 0 0 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 16%),
+    0 1px 3px rgb(0 0 0 / 16%);
+}
+:is(.console-page, .auth-page) .console-secondary {
+  border-color: transparent;
+  box-shadow: var(--ds-raised);
+}
+:is(.console-page, .auth-page) .auth-submit {
+  min-height: 40px;
+  font-size: 14px;
+}
+
+/* Cards: 12px corners and a hairline ring with a soft shadow. */
+:is(.console-page, .auth-page)
+  :is(
+    .console-card,
+    .stat-card,
+    .help-card,
+    .console-dialog,
+    .fleet-map-panel,
+    .claim-result,
+    .product-drop,
+    .telemetry-notice,
+    .owner-card,
+    .create-maker,
+    .maker-readiness,
+    .claims-calendar,
+    .mfa-panel
+  ) {
+  border-radius: var(--ds-card-radius);
+  box-shadow: var(--ds-card-shadow);
+}
+:is(.console-page, .auth-page)
+  :is(.console-alert, .preview-notice, .offline-banner, .map-error, .mfa-option) {
+  border-radius: 8px;
+}
+:is(.console-page, .auth-page) .preview-notice {
+  border-color: var(--c-border);
+}
+
+/* Navy surfaces turn Clerk's near-black, with translucent white in place of the lighter navy. */
+html:not([data-theme="dark"])
+  :is(.console-page, .auth-page)
+  :is(.auth-brand, .claims-calendar, .owner-card, .create-maker, .maker-readiness) {
+  background-color: var(--ds-dark);
+}
+html:not([data-theme="dark"])
+  :is(.console-page, .auth-page)
+  :is(.calendar-grid .has-claims, .create-maker .auth-lock, .create-maker .field input) {
+  background: rgb(255 255 255 / 10%);
+}
+:is(.console-page, .auth-page) .auth-audiences span {
+  border-radius: var(--ds-control);
+  background: rgb(255 255 255 / 8%);
+  color: #fff;
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 20%);
+}
+:is(.console-page, .auth-page) .auth-brand p {
+  color: rgb(255 255 255 / 72%);
+}
+
+/* Pills become 6px controls; the toggle switch, avatars and loading shimmer stay round. */
+:is(.console-page, .auth-page)
+  :is(
+    .field select,
+    .console-search,
+    .count-badge,
+    .subtle-pill,
+    .segmented-control,
+    .device-status,
+    .staff-list select,
+    .location-connection,
+    .console-input,
+    .staff-actions button,
+    .trace-badge,
+    .product-drop-change,
+    .product-currency select,
+    .profile-tag,
+    .console-account
+  ) {
+  border-radius: var(--ds-control);
+}
+:is(.console-page, .auth-page) .segmented-control button {
+  border-radius: 4px;
+}
+:is(.console-page, .auth-page) .console-search {
+  min-height: 36px;
+  padding: 0 12px;
+  box-shadow: var(--ds-raised);
+}
+
+/* Fields: 40px with 6px corners and a ring that turns to the accent on focus. */
+:is(.console-page, .auth-page) :is(.field input, .field select, .console-input) {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--ds-control);
+  background: var(--c-field, var(--c-surface));
+  box-shadow:
+    0 0 0 1px var(--c-border),
+    0 1px 2px rgb(0 0 0 / 4%);
+}
+:is(.console-page, .auth-page)
+  :is(.field input, .field select, .console-input):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--c-accent),
+    0 0 0 4px color-mix(in srgb, var(--c-accent) 18%, transparent);
+}
+:is(.console-page, .auth-page) .field input[aria-invalid="true"] {
+  box-shadow: 0 0 0 1px #b93c28;
+}
+:is(.console-page, .auth-page) .field label {
+  font-size: 13px;
+  font-weight: 500;
+}
+:is(.console-page, .auth-page) .password-input input {
+  padding-right: 44px;
+}
+:is(.console-page, .auth-page) .password-input button {
+  top: 0;
+  right: 2px;
+  height: 40px;
+}
+
+/* The rail: 36px squares; the current page is a raised white tile, as in Clerk's sidebar. */
+.console-page :is(.console-nav a, .console-account button) {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ds-control);
+}
+.console-page :is(.console-nav a, .console-account button):hover {
+  background: var(--ds-hover);
+  color: var(--c-ink);
+}
+.console-page .console-nav a[aria-current="page"] {
+  background: var(--c-surface);
+  color: var(--c-ink);
+  box-shadow: var(--ds-raised);
+}
+.console-page .console-nav {
+  border-radius: 10px;
+}
+.console-page .console-sidebar > a img {
+  border-radius: 8px;
+}
+
+/* Type: smaller, tighter headings, as in Clerk's dashboard. */
+.console-page :is(.console-view, .console-main) > header h1 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Sign-in: the form as a card on the grey canvas, beside the near-black brand panel. */
+html:not([data-theme="dark"]) .auth-page .auth-main {
+  background: var(--c-soft);
+}
+.auth-page .auth-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(19 19 22 / 9%) 1px,
+    transparent 0
+  );
+  background-size: 18px 18px;
+  mask-image: radial-gradient(ellipse at 50% 45%, #000 25%, transparent 75%);
+  pointer-events: none;
+}
+html[data-theme="dark"] .auth-page .auth-main::before {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(255 255 255 / 7%) 1px,
+    transparent 0
+  );
+}
+.auth-page .auth-main > * {
+  position: relative;
+}
+.auth-page .auth-form {
+  max-width: 400px;
+  gap: 18px;
+  padding: 32px;
+  border-radius: var(--ds-card-radius);
+  background: var(--c-surface);
+  box-shadow:
+    var(--ds-card-shadow),
+    0 24px 68px rgb(47 48 55 / 6%);
+}
+.auth-page .auth-heading h2 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.auth-page .auth-heading p {
+  font-size: 13px;
+}
+.auth-page .auth-lock {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+@media (max-width: 760px) {
+  .auth-page .auth-form {
+    padding: 24px;
+  }
+}
