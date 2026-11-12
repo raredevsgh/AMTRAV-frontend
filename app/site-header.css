@@ -1,0 +1,130 @@
+/*
+ * The site header, after clerk.com. Imported by components/marketing/site-shell.tsx; the
+ * tokens (--ds-*) and the glass bar itself are in globals.css. The Product and Company menus
+ * and the globe panel open inside .site-shell (see MenuContainer), so these rules and the
+ * tokens reach them.
+ */
+
+/*
+ * Links in grey that turn to ink; a bar that is clear at the top of the page and turns to
+ * glass with a hairline once the page scrolls under it; menus with a heading and an icon tile
+ * beside each entry; and a main button whose chevron grows a shaft on hover.
+ */
+.site-shell :is(.desktop-nav a, .nav-trigger) {
+  color: var(--c-muted);
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+.site-shell :is(.desktop-nav a, .nav-trigger):hover,
+.site-shell .nav-trigger:is([data-state="open"], [data-current]),
+.site-shell .desktop-nav a[aria-current="page"] {
+  color: var(--c-ink);
+}
+.site-shell .site-header {
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+}
+.site-shell .site-header:not([data-scrolled]) {
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none !important;
+}
+.site-shell .nav-menu {
+  width: 380px;
+  gap: 8px;
+  padding: 6px;
+}
+.site-shell .nav-menu.with-photo {
+  width: 620px;
+}
+.site-shell .nav-menu-list {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 0;
+}
+.site-shell .nav-menu-heading {
+  margin: 6px 10px 4px;
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.site-shell .nav-menu-item {
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 0;
+  transition: background-color 0.12s;
+}
+.site-shell .nav-menu-item:focus {
+  outline: none;
+}
+.site-shell .nav-menu-item:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: -2px;
+}
+.site-shell .nav-menu-item:is([data-highlighted], :hover) {
+  background: var(--ds-hover);
+}
+.site-shell .nav-menu .nav-menu-item strong {
+  color: var(--c-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.site-shell .nav-menu-item small {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.site-shell .nav-menu-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  /* !important: globals.css flattens every shadow inside .site-shell. */
+  box-shadow: var(--ds-raised) !important;
+}
+html[data-theme="dark"] .site-shell .nav-menu-icon {
+  background: rgb(255 255 255 / 6%);
+}
+.site-shell .nav-menu-item[aria-current="page"] .nav-menu-icon {
+  color: var(--c-accent);
+}
+.site-shell .nav-menu-photo {
+  width: 230px;
+}
+.growing-arrow {
+  flex: none;
+  overflow: visible;
+}
+.growing-arrow-shaft {
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: 2.5px 7px;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.growing-arrow-head {
+  transform: translateX(-2px);
+  transition: transform 0.15s;
+}
+:is(a, button):hover > .growing-arrow .growing-arrow-shaft {
+  opacity: 1;
+  transform: none;
+}
+:is(a, button):hover > .growing-arrow .growing-arrow-head {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-shell .site-header,
+  .growing-arrow :is(.growing-arrow-shaft, .growing-arrow-head) {
+    transition: none;
+  }
+}

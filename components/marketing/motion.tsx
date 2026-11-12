@@ -12,6 +12,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { createElement, useEffect, useRef, type ReactNode } from "react";
 import { useSiteStore } from "@/stores/site-store";
 
@@ -125,4 +126,92 @@ export function Parallax({
       {children}
     </motion.div>
   );
+}
+
+/** Lists and grids whose items arrive one after another rather than as one block. */
+const GROUPS =
+  ".page-ticks, .page-steps, .page-cards, .faq-list, .contact-ways, .trace-steps";
+/** Cards that a soft light follows the cursor across (app/motion.css). */
+const SPOTLIT =
+  ".trace-feature, .trace-range-card, .contact-way, .shop-card, .feature-card, .explore-card";
+
+/**
+ * The site's scripted motion, next to the CSS in app/motion.css. On the inner pages, what's
+ * below the fold when a page opens fades up as it scrolls into view; what's already on screen
+ * is left alone, so nothing flickers and the page reads fine before scripts run. Over cards,
+ * it moves the light that follows the cursor. Off for less motion, or while paused.
+ */
+export function SiteMotion() {
+  const pathname = usePathname();
+  const still = useStill();
+
+  useEffect(() => {
+    const page = document.querySelector<HTMLElement>(".site-shell .trace.page");
+    if (still || !page) return;
+    const targets: HTMLElement[] = [];
+    // Everything after the hero: each section's parts, and a list's items one by one.
+    for (const section of page.querySelectorAll<HTMLElement>(
+      ":scope > section:not(:first-child)",
+    )) {
+      for (const part of section.children) {
+        if (part.matches(GROUPS))
+          targets.push(...(Array.from(part.children) as HTMLElement[]));
+        else targets.push(part as HTMLElement);
+      }
+    }
+    const fold = window.innerHeight * 0.92;
+    const hidden = targets.filter((target) => target.getBoundingClientRect().top > fold);
+    for (const target of hidden) {
+      const order = Array.prototype.indexOf.call(
+        target.parentElement?.children ?? [],
+        target,
+      );
+      target.style.setProperty("--reveal-i", String(Math.min(order, 5)));
+      target.dataset.reveal = "hidden";
+    }
+    const watcher = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).dataset.reveal = "shown";
+          watcher.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+    );
+    hidden.forEach((target) => watcher.observe(target));
+    return () => {
+      watcher.disconnect();
+      // Leave everything visible if the page changes or motion stops midway.
+      for (const target of hidden) {
+        delete target.dataset.reveal;
+        target.style.removeProperty("--reveal-i");
+      }
+    };
+  }, [pathname, still]);
+
+  useEffect(() => {
+    if (still || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    let frame = 0;
+    let last: { card: HTMLElement; x: number; y: number } | null = null;
+    const move = (event: PointerEvent) => {
+      const card = (event.target as Element | null)?.closest?.<HTMLElement>(SPOTLIT);
+      if (!card) return;
+      const box = card.getBoundingClientRect();
+      last = { card, x: event.clientX - box.left, y: event.clientY - box.top };
+      // One style write per frame, however fast the pointer moves.
+      frame ||= requestAnimationFrame(() => {
+        frame = 0;
+        last?.card.style.setProperty("--spot-x", `${last.x}px`);
+        last?.card.style.setProperty("--spot-y", `${last.y}px`);
+      });
+    };
+    document.addEventListener("pointermove", move, { passive: true });
+    return () => {
+      document.removeEventListener("pointermove", move);
+      cancelAnimationFrame(frame);
+    };
+  }, [still]);
+
+  return null;
 }

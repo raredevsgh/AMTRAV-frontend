@@ -15,11 +15,13 @@ import { brand } from "@/lib/brand";
 import { format, type Messages } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/client";
 import { LanguageSwitcher } from "./language-switcher";
-import { LocaleMenu, menus, NavMenu } from "./header-menus";
+import { LocaleMenu, MenuContainer, menus, NavMenu } from "./header-menus";
 import { useSiteStore, type SiteDialog } from "@/stores/site-store";
-import { MotionProvider } from "./motion";
+import { MotionProvider, SiteMotion } from "./motion";
 import { FlightPath } from "./visuals";
-import { Suspense, type ReactNode } from "react";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
+import "@/app/site-header.css";
+import "@/app/motion.css";
 /** The staff and manufacturer console (the admin dashboard); it asks for sign-in itself. */
 const consoleUrl = process.env.NEXT_PUBLIC_CONSOLE_URL || "/console";
 
@@ -77,11 +79,54 @@ function CurrentHeader() {
   return <HeaderBar path={usePathname()} />;
 }
 
+/** Whether the page has scrolled under the header, which turns it from clear to glass. */
+function useScrolled() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 4);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+  return scrolled;
+}
+
+/** Clerk's button arrow: a chevron that grows a shaft when the button is hovered. */
+function GrowingArrow() {
+  return (
+    <svg
+      className="growing-arrow"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        className="growing-arrow-shaft"
+        d="M2.5 7h7"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        className="growing-arrow-head"
+        d="M6 3.5 9.5 7 6 10.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function HeaderBar({ path }: { path: string | null }) {
   const { m, href } = useI18n();
+  const scrolled = useScrolled();
   return (
     <>
-      <header className="site-header">
+      <header className="site-header" data-scrolled={scrolled || undefined}>
         <Link
           href={href("/")}
           aria-label={format(m.nav.homeLabel, { company: brand.company })}
@@ -118,6 +163,7 @@ function HeaderBar({ path }: { path: string | null }) {
             <Link href={href("/#founding")}>
               <span className="desktop-label">{m.nav.join}</span>
               <span className="mobile-label">{m.nav.joinShort}</span>
+              <GrowingArrow />
             </Link>
           </Button>
         </div>
@@ -338,22 +384,29 @@ function SiteDialogs() {
 export function SiteShell({ children }: { children: ReactNode }) {
   const paused = useSiteStore((s) => s.motionPaused);
   const { m } = useI18n();
+  const [shell, setShell] = useState<HTMLDivElement | null>(null);
   return (
     <MotionProvider>
-      <div className={`site-shell ${paused ? "motion-paused" : ""}`}>
-        <a className="skip-link" href="#main-content">
-          {m.nav.skip}
-        </a>
-        <div className="site-container">
-          <Header />
-          <main id="main-content" className="page-stack">
-            {children}
-            <DownloadSection />
-          </main>
-          <Footer />
+      <MenuContainer.Provider value={shell}>
+        <div ref={setShell} className={`site-shell ${paused ? "motion-paused" : ""}`}>
+          <a className="skip-link" href="#main-content">
+            {m.nav.skip}
+          </a>
+          <div className="site-container">
+            <Header />
+            <main id="main-content" className="page-stack">
+              {children}
+              <DownloadSection />
+            </main>
+            <Footer />
+          </div>
+          <SiteDialogs />
+          {/* It reads the URL, which a page built ahead of time only learns in the browser. */}
+          <Suspense fallback={null}>
+            <SiteMotion />
+          </Suspense>
         </div>
-        <SiteDialogs />
-      </div>
+      </MenuContainer.Provider>
     </MotionProvider>
   );
 }

@@ -4,9 +4,12 @@
 // together, and have counsel review before release.
 
 export const LEGAL_UPDATED = "25 October 2026";
-export const PRIVACY_CONTACT = "privacy@amortrav.com";
+/** Data requests and privacy questions. */
+export const PRIVACY_CONTACT = "compliance@amortrav.com";
 /** Where Support and warranty sends travellers. */
-export const SUPPORT_CONTACT = "support@amortrav.com";
+export const SUPPORT_CONTACT = "complaints@amortrav.com";
+/** Returns and order questions, handled by the team that ships orders. */
+export const RETURNS_CONTACT = "inventory@amortrav.com";
 
 export interface LegalSection {
   heading: string;

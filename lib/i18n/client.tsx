@@ -2,7 +2,7 @@
 
 // The current language for client components: its text, its BCP 47 tag for formatting, and
 // `href` to keep links in the same language.
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { localeTags, localize, type Locale } from "./config";
 import { messagesFor, type Messages } from "./index";
 
@@ -20,6 +20,13 @@ export function I18nProvider({
   locale: Locale;
   children: ReactNode;
 }) {
+  // The page's language on <html>, shared with the console: English again when it unmounts.
+  useEffect(() => {
+    document.documentElement.lang = localeTags[locale];
+    return () => {
+      document.documentElement.lang = "en";
+    };
+  }, [locale]);
   const value = useMemo(
     () => ({
       locale,

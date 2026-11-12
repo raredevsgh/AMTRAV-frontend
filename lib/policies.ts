@@ -1,7 +1,7 @@
 // The website's own policies: cookies, shipping and returns, and the warranty. The numbers
 // that matter (return window, warranty length) are set once here. Have them confirmed before
 // launch: they're promises to customers.
-import { SUPPORT_CONTACT, type LegalDocument } from "./legal";
+import { RETURNS_CONTACT, SUPPORT_CONTACT, type LegalDocument } from "./legal";
 
 export const POLICIES_UPDATED = "3 November 2026";
 /** Days after delivery in which an unused bag can be returned. */
@@ -72,7 +72,7 @@ export const shippingPolicy: LegalDocument = {
     },
     {
       heading: "Start a return",
-      paragraphs: [`Email ${SUPPORT_CONTACT} with your order number (it starts with AMT-) and we’ll send you a return label and instructions.`],
+      paragraphs: [`Email ${RETURNS_CONTACT} with your order number (it starts with AMT-) and we’ll send you a return label and instructions.`],
     },
   ],
 };

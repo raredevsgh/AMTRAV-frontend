@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   ArrowRight,
+  Ban,
   BatteryCharging,
   Bell,
   Check,
@@ -19,6 +20,7 @@ import {
   MapPin,
   MessageSquare,
   PackageCheck,
+  Plane,
   QrCode,
   Route,
   Scale,
@@ -29,6 +31,13 @@ import {
 } from "lucide-react";
 import { brand } from "@/lib/brand";
 import type { LegalDocument } from "@/lib/legal";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Float } from "./motion";
 import { Voices } from "./voices";
 import "@/app/trace.css";
 import "@/app/pages.css";
@@ -488,6 +497,264 @@ export function ForBrandsPage() {
       >
         <Link className="trace-button ink" href="/contact#enquiry">
           Talk to us <ArrowRight size={18} />
+        </Link>
+      </Cta>
+    </div>
+  );
+}
+
+// ---- How it works ----
+
+/** The card in the box: the serial printed, the one-time code under a scratch strip. */
+function ClaimCard() {
+  return (
+    <Float className="claim-card navy">
+      <div>
+        <Image src="/images/brand-mark.png" alt="" width={36} height={36} />
+        <span>Claim card</span>
+      </div>
+      <div>
+        <small>Serial</small>
+        <span className="mono">AMT-CO55-00F3A1</span>
+      </div>
+      <div>
+        <small>Claim code · scratch to reveal</small>
+        <span className="scratch-strip" />
+      </div>
+    </Float>
+  );
+}
+
+/** A screen from the app, in a phone frame (the same screenshots as the app page). */
+function AppScreen({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="app-phone">
+      <Image
+        src={src}
+        alt={alt}
+        width={780}
+        height={1688}
+        sizes="(max-width: 734px) 60vw, 260px"
+      />
+    </figure>
+  );
+}
+
+const howSteps = [
+  {
+    icon: <QrCode size={22} />,
+    title: "Pair it",
+    body: `Scan the QR code on the ${brand.core} in ${brand.app}. It’s yours in seconds.`,
+  },
+  {
+    icon: <Route size={22} />,
+    title: "Start a journey",
+    body: "Name the trip, set your airline’s limit, and lift the bag once to weigh it.",
+  },
+  {
+    icon: <Plane size={22} />,
+    title: "Travel",
+    body: "It reports as it goes, goes quiet in the air, and catches up after landing. Alerts reach you wherever you are.",
+  },
+  {
+    icon: <Check size={22} />,
+    title: "Arrive",
+    body: "End the journey for a summary: distance, impacts, weight and battery, in the app and by email.",
+  },
+];
+
+const howFaq = [
+  [
+    "I lost the claim card. Now what?",
+    "Contact the brand you bought from. They can issue a fresh claim code for your serial from their console.",
+  ],
+  [
+    "Can I pair one bag to two phones?",
+    "One owner per bag. Sign in to the same account on both phones and you’re set.",
+  ],
+  [
+    "I bought it secondhand.",
+    "Ask the previous owner to transfer it to you from the app. Its history and settings come with it.",
+  ],
+  [
+    "Does it work without the app?",
+    "It’s still a great bag. The app adds pairing, journeys and alerts.",
+  ],
+];
+
+export function HowItWorksPage() {
+  return (
+    <div className="trace page">
+      <PageHero
+        eyebrow="How it works"
+        title="From the box to the carousel."
+        image="/images/gate.jpg"
+        alt="A teal carry-on with a passport on top, waiting at gate 2"
+      >
+        Pair the bag once, start a journey before you fly, and {T} does the rest. Here’s
+        every step, and what happens behind it.
+      </PageHero>
+
+      <section className="trace-panel">
+        <Head eyebrow="Four steps" title="Pair, pack, fly, arrive." />
+        <ol className="trace-steps">
+          {howSteps.map((step, index) => (
+            <li key={step.title}>
+              <span className="trace-step-icon">{step.icon}</span>
+              <small>Step {index + 1}</small>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="trace-panel page-split">
+        <div>
+          <Head eyebrow="Pairing" title="One code, and the bag is yours.">
+            Every bag ships with a claim card: the serial is printed, and the one-time
+            code hides under a scratch strip, so nobody in the supply chain can use it.
+            Once you’ve claimed the bag, that code stops working for good.
+          </Head>
+          <ul className="page-ticks">
+            <li>
+              <QrCode size={18} /> Scan it in the app, or type the code instead
+            </li>
+            <li>
+              <Lock size={18} /> One owner per bag, from the moment you claim it
+            </li>
+          </ul>
+        </div>
+        <div className="how-visual">
+          <AppScreen
+            src="/images/app/bags.jpg"
+            alt="The Bags screen, where you add a bag by scanning its QR code"
+          />
+          <ClaimCard />
+        </div>
+      </section>
+
+      <section className="trace-panel page-split reverse">
+        <div className="how-visual">
+          <AppScreen
+            src="/images/app/weight.jpg"
+            alt="The Weight screen: lift to weigh, airline limits from 7 to 32 kg, kilograms or pounds"
+          />
+        </div>
+        <div>
+          <Head eyebrow="Before you fly" title="Weigh it before the check-in desk does.">
+            Lift the bag by its handle and it weighs itself. Set your airline’s allowance
+            when you start the journey, and you’ll know it’s over before you reach the
+            desk.
+          </Head>
+          <ul className="page-ticks">
+            <li>
+              <Scale size={18} /> Airline limits from 7 to 32 kg
+            </li>
+            <li>
+              <Route size={18} /> Set as you start each journey
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="trace-panel page-split">
+        <div>
+          <Head eyebrow="In the air" title="Quiet in the air. Awake on the ground.">
+            The {brand.core} notices take-off and turns its radios off for the flight,
+            then reports again after landing. Anything it records without signal is saved
+            and sent as soon as it can.
+          </Head>
+          <ul className="page-ticks">
+            <li>
+              <Plane size={18} /> Radios off in flight, automatically
+            </li>
+            <li>
+              <BatteryCharging size={18} /> Tells you before a trip when it needs charging
+            </li>
+          </ul>
+        </div>
+        <div className="how-visual">
+          <AppScreen
+            src="/images/app/bag.jpg"
+            alt="A bag’s screen: the suitcase, its last known address, battery and lock"
+          />
+        </div>
+      </section>
+
+      <section className="trace-panel page-split reverse">
+        <div className="how-visual">
+          <AppScreen
+            src="/images/app/activity.jpg"
+            alt="The Activity screen: journeys started and ended, Theft Mode switched on and off"
+          />
+        </div>
+        <div>
+          <Head eyebrow="When you land" title="A summary of the whole trip.">
+            End the journey for a summary: distance, impacts, weight and battery, in the
+            app and by email. Every move, impact and alert stays on the bag’s timeline.
+          </Head>
+          <ul className="page-ticks">
+            <li>
+              <Check size={18} /> Journeys with a summary when they end
+            </li>
+            <li>
+              <Lock size={18} /> Theft Mode on and off, recorded
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="trace-panel soft">
+        <Head eyebrow="Under the hood" title="Built so nobody else can claim your bag." />
+        <Cards
+          columns={2}
+          items={[
+            {
+              icon: <Lock size={20} />,
+              title: "One code, one owner",
+              body: "A claim code works exactly once. After that, nobody else can pair your bag.",
+            },
+            {
+              icon: <FileText size={20} />,
+              title: "Every change is logged",
+              body: "Registering, claiming, edits and revokes all land in an audit trail.",
+            },
+            {
+              icon: <ShieldCheck size={20} />,
+              title: "Files stay private",
+              body: "Your receipts are scoped to your account, not the brand’s.",
+            },
+            {
+              icon: <Ban size={20} />,
+              title: "Revoked means revoked",
+              body: "If a brand pulls a bag from service, it can’t be paired again.",
+            },
+          ]}
+        />
+      </section>
+
+      <section className="trace-panel how-faq">
+        <Head eyebrow="Questions" title="Questions people actually ask." />
+        <Accordion type="single" collapsible className="faq-list">
+          {howFaq.map(([question, answer], index) => (
+            <AccordionItem key={question} value={`question-${index}`}>
+              <AccordionTrigger>{question}</AccordionTrigger>
+              <AccordionContent>{answer}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
+
+      <Cta
+        title="Pick your bag."
+        body={`Every bag in the range carries the same ${brand.core}.`}
+      >
+        <Link className="trace-button ink" href="/shop">
+          Shop the range <ArrowRight size={16} />
+        </Link>
+        <Link className="trace-button ghost-ink" href="/features">
+          See every feature
         </Link>
       </Cta>
     </div>

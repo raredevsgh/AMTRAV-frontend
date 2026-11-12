@@ -74,7 +74,7 @@ export const fr: Messages = {
       "Les comptes fabricants sont créés par l’équipe Amortrav. Utilisez le lien de connexion fourni avec votre compte.",
     contactTitle: "Trouvons la bonne équipe pour vous.",
     contactBody:
-      "Pour de l’aide sur un bagage ou une carte d’activation, écrivez à support@amortrav.com. Pour un partenariat, utilisez le formulaire de notre page d’accueil.",
+      "Pour de l’aide sur un bagage ou une carte d’activation, écrivez à complaints@amortrav.com. Pour un partenariat, utilisez le formulaire de notre page d’accueil.",
     ok: "Compris",
   },
   errors: {

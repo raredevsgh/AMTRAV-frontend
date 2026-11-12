@@ -74,7 +74,7 @@ export const en = {
       "Manufacturer accounts are created by the Amortrav team. Use the sign-in link supplied with your account.",
     contactTitle: "Let’s get you to the right team.",
     contactBody:
-      "For help with a bag or claim card, write to support@amortrav.com. For partnerships, use the form on our home page.",
+      "For help with a bag or claim card, write to complaints@amortrav.com. For partnerships, use the form on our home page.",
     ok: "Got it",
   },
   errors: {

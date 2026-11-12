@@ -74,7 +74,7 @@ export const de: Messages = {
       "Herstellerkonten richtet das Amortrav-Team ein. Nutze den Anmeldelink, den du mit deinem Konto erhalten hast.",
     contactTitle: "Wir bringen dich zum richtigen Team.",
     contactBody:
-      "Für Hilfe mit einem Gepäckstück oder einer Aktivierungskarte schreib an support@amortrav.com. Für Partnerschaften nutze das Formular auf unserer Startseite.",
+      "Für Hilfe mit einem Gepäckstück oder einer Aktivierungskarte schreib an complaints@amortrav.com. Für Partnerschaften nutze das Formular auf unserer Startseite.",
     ok: "Verstanden",
   },
   errors: {

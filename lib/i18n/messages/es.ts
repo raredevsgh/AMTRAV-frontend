@@ -74,7 +74,7 @@ export const es: Messages = {
       "El equipo de Amortrav crea las cuentas de fabricante. Usa el enlace de acceso que recibiste con tu cuenta.",
     contactTitle: "Te ponemos en contacto con el equipo adecuado.",
     contactBody:
-      "Para ayuda con una maleta o una tarjeta de registro, escribe a support@amortrav.com. Para colaboraciones, usa el formulario de nuestra página de inicio.",
+      "Para ayuda con una maleta o una tarjeta de registro, escribe a complaints@amortrav.com. Para colaboraciones, usa el formulario de nuestra página de inicio.",
     ok: "Entendido",
   },
   errors: {

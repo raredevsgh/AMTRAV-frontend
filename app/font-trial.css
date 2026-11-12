@@ -1,0 +1,65 @@
+/*
+ * Typefaces under trial (components/font-trial.tsx), in development only. Everything on the
+ * site and in the console is set through --font-montserrat and --font-jetbrains, so pointing
+ * them at another face changes the whole interface. Remove this file once one is chosen.
+ */
+html[data-font="geist"] {
+  --font-montserrat: var(--font-geist);
+  --font-jetbrains: var(--font-geist-mono);
+}
+html[data-font="inter"] {
+  --font-montserrat: var(--font-inter);
+}
+html[data-font="manrope"] {
+  --font-montserrat: var(--font-manrope);
+}
+
+.font-trial {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgb(19 19 22 / 92%);
+  color: #fff;
+  font-size: 12px;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 10%),
+    0 8px 24px rgb(0 0 0 / 30%) !important;
+  backdrop-filter: blur(12px);
+}
+.font-trial span {
+  padding: 0 8px 0 6px;
+  color: rgb(255 255 255 / 55%);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+.font-trial button {
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: rgb(255 255 255 / 75%);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.font-trial button:hover {
+  color: #fff;
+}
+.font-trial button[aria-pressed="true"] {
+  background: rgb(255 255 255 / 14%);
+  color: #fff;
+}
+@media print {
+  .font-trial {
+    display: none;
+  }
+}

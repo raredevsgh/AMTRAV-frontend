@@ -26,7 +26,7 @@ export const brand = {
   tagline: "Every journey. Every impact. Every kilogram. In one view.",
   /** The footer's line under the logo. */
   footerLine: pick(process.env.NEXT_PUBLIC_BRAND_FOOTER_LINE, "Smart luggage, paired to your phone."),
-  email: pick(process.env.NEXT_PUBLIC_BRAND_EMAIL, "hello@amortrav.com"),
+  email: pick(process.env.NEXT_PUBLIC_BRAND_EMAIL, "executive@amortrav.com"),
   /** The copyright year in the footer; set here, not from the clock, so pages can be built ahead. */
   year: pick(process.env.NEXT_PUBLIC_BRAND_YEAR, "2026"),
   /** Social profiles for the footer; each icon shows only once its address is set. */

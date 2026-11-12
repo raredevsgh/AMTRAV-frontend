@@ -15,6 +15,7 @@ import {
   Newspaper,
 } from "lucide-react";
 import { brand } from "@/lib/brand";
+import { PRIVACY_CONTACT, SUPPORT_CONTACT } from "@/lib/legal";
 import { useI18n } from "@/lib/i18n/client";
 import { localeNames, locales } from "@/lib/i18n/config";
 import { EnquiryForm } from "./enquiry-form";
@@ -28,7 +29,7 @@ export function ContactPage() {
       icon: <LifeBuoy size={20} />,
       title: m.contact.supportTitle,
       body: m.contact.supportBody,
-      email: "support@amortrav.com",
+      email: SUPPORT_CONTACT,
     },
     {
       icon: <Handshake size={20} />,
@@ -40,13 +41,13 @@ export function ContactPage() {
       icon: <Newspaper size={20} />,
       title: m.contact.pressTitle,
       body: m.contact.pressBody,
-      email: "press@amortrav.com",
+      email: brand.email,
     },
     {
       icon: <Lock size={20} />,
       title: m.contact.privacyTitle,
       body: m.contact.privacyBody,
-      email: "privacy@amortrav.com",
+      email: PRIVACY_CONTACT,
     },
   ];
   const answers = [

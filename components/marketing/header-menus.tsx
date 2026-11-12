@@ -1,37 +1,56 @@
 "use client";
 
-// The header's grouped navigation (Product, Company) and the language-and-appearance panel
-// behind the globe: one control for where you are and how the site looks.
+// The header's grouped navigation (Product, Company), each entry with its icon as in Clerk's
+// menus, and the language-and-appearance panel behind the globe.
 import Image from "next/image";
 import Link from "next/link";
+import { createContext, useContext } from "react";
 import { DropdownMenu, Popover } from "radix-ui";
-import { ArrowRight, Check, ChevronDown, Globe } from "lucide-react";
+import {
+  Activity,
+  Building2,
+  Check,
+  ChevronDown,
+  Globe,
+  Luggage,
+  Mail,
+  Route,
+  Smartphone,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { localeNames, locales, localeTags, type Locale } from "@/lib/i18n/config";
 import { useI18n } from "@/lib/i18n/client";
 import type { Messages } from "@/lib/i18n";
 import { useChooseLocale } from "./language-switcher";
 import { themeIcons, themes, useTheme } from "./theme-switcher";
 
+/**
+ * The .site-shell element. The menus open inside it rather than at the end of <body>, so the
+ * site's design tokens and its header styles (app/site-header.css) reach them.
+ */
+export const MenuContainer = createContext<HTMLElement | null>(null);
+
 type NavKey = keyof Messages["nav"];
-type Entry = { href: string; label: NavKey; body: NavKey };
+type Entry = { href: string; label: NavKey; body: NavKey; icon: LucideIcon };
 
 export const menus: { label: NavKey; entries: Entry[]; photo?: boolean }[] = [
   {
     label: "product",
     photo: true,
     entries: [
-      { href: "/#features", label: "features", body: "featuresBody" },
-      { href: "/#how", label: "how", body: "howBody" },
-      { href: "/#range", label: "range", body: "rangeBody" },
-      { href: "/app", label: "app", body: "appBody" },
+      { href: "/#features", label: "features", body: "featuresBody", icon: Activity },
+      { href: "/#how", label: "how", body: "howBody", icon: Route },
+      { href: "/#range", label: "range", body: "rangeBody", icon: Luggage },
+      { href: "/app", label: "app", body: "appBody", icon: Smartphone },
     ],
   },
   {
     label: "company",
     entries: [
-      { href: "/for-brands", label: "brands", body: "brandsBody" },
-      { href: "/about", label: "about", body: "aboutBody" },
-      { href: "/contact", label: "contact", body: "contactBody" },
+      { href: "/for-brands", label: "brands", body: "brandsBody", icon: Building2 },
+      { href: "/about", label: "about", body: "aboutBody", icon: Users },
+      { href: "/contact", label: "contact", body: "contactBody", icon: Mail },
     ],
   },
 ];
@@ -49,31 +68,37 @@ export function NavMenu({
 }) {
   const { m, href } = useI18n();
   const current = entries.some((entry) => path === href(entry.href));
+  const container = useContext(MenuContainer);
   return (
     <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger className="nav-trigger" data-current={current || undefined}>
         {m.nav[label]}
         <ChevronDown size={15} aria-hidden="true" className="nav-chevron" />
       </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
+      <DropdownMenu.Portal container={container ?? undefined}>
         <DropdownMenu.Content
           className={`nav-menu${photo ? " with-photo" : ""}`}
           align="start"
           sideOffset={14}
         >
           <div className="nav-menu-list">
-            {entries.map(({ href: to, label: title, body }) => (
+            <p className="nav-menu-heading" aria-hidden="true">
+              {m.nav[label]}
+            </p>
+            {entries.map(({ href: to, label: title, body, icon: Icon }) => (
               <DropdownMenu.Item key={to} asChild>
                 <Link
                   href={href(to)}
                   className="nav-menu-item"
                   aria-current={path === href(to) ? "page" : undefined}
                 >
+                  <span className="nav-menu-icon" aria-hidden="true">
+                    <Icon size={16} />
+                  </span>
                   <span>
                     <strong>{m.nav[title]}</strong>
                     <small>{m.nav[body]}</small>
                   </span>
-                  <ArrowRight size={16} aria-hidden="true" className="nav-menu-arrow" />
                 </Link>
               </DropdownMenu.Item>
             ))}
@@ -115,6 +140,7 @@ export function LocaleMenu() {
   const { m, locale, tag } = useI18n();
   const chooseLocale = useChooseLocale();
   const [theme, chooseTheme] = useTheme();
+  const container = useContext(MenuContainer);
   const themeLabels = {
     system: m.theme.auto,
     light: m.theme.light,
@@ -130,7 +156,7 @@ export function LocaleMenu() {
         <span lang={locale}>{short[locale]}</span>
         <ChevronDown size={14} aria-hidden="true" className="nav-chevron" />
       </Popover.Trigger>
-      <Popover.Portal>
+      <Popover.Portal container={container ?? undefined}>
         <Popover.Content
           className="locale-menu"
           align="end"

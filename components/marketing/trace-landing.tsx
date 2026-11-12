@@ -17,17 +17,23 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   BatteryCharging,
+  BellRing,
   Bluetooth,
   Check,
+  CircleCheck,
   Cpu,
   Fingerprint,
+  Flag,
   KeyRound,
   Link2,
   Lock,
+  LockOpen,
   MapPin,
   Pause,
-  Play,
   Plane,
+  PlaneLanding,
+  PlaneTakeoff,
+  Play,
   Radio,
   Scale,
   ScanLine,
@@ -38,6 +44,7 @@ import {
   Waves,
   X,
   Zap,
+  type LucideIcon,
 } from "lucide-react";
 import { brand, type RangeItem } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
@@ -515,13 +522,28 @@ function AppPreview() {
   );
 }
 
-const demo = [
+/**
+ * The demo flight's log. `kind` colours its node: alerts amber, good news lime, the rest
+ * plain; `impact` counts towards the pass's impacts.
+ */
+const demo: {
+  time: string;
+  place: string;
+  event: string;
+  alert: string | null;
+  progress: number;
+  icon: LucideIcon;
+  kind: "plain" | "alert" | "good";
+  impact?: boolean;
+}[] = [
   {
     time: "07:12",
     place: "East Legon, Accra",
     event: "Journey started",
     alert: null,
     progress: 0,
+    icon: Flag,
+    kind: "plain",
   },
   {
     time: "07:14",
@@ -529,6 +551,8 @@ const demo = [
     event: "Weighed 21.4 kg, under your 23 kg limit",
     alert: null,
     progress: 4,
+    icon: Scale,
+    kind: "good",
   },
   {
     time: "08:31",
@@ -536,6 +560,8 @@ const demo = [
     event: "Left behind",
     alert: "You left Tahoe behind",
     progress: 14,
+    icon: BellRing,
+    kind: "alert",
   },
   {
     time: "09:58",
@@ -543,6 +569,9 @@ const demo = [
     event: "Dropped · 11.8 g, on its side",
     alert: "Tahoe took a hard hit",
     progress: 22,
+    icon: Zap,
+    kind: "alert",
+    impact: true,
   },
   {
     time: "10:40",
@@ -550,6 +579,8 @@ const demo = [
     event: "Take-off: radios off for the flight",
     alert: null,
     progress: 30,
+    icon: PlaneTakeoff,
+    kind: "plain",
   },
   {
     time: "16:55",
@@ -557,6 +588,8 @@ const demo = [
     event: "Landed: back in touch",
     alert: null,
     progress: 82,
+    icon: PlaneLanding,
+    kind: "plain",
   },
   {
     time: "17:21",
@@ -564,6 +597,8 @@ const demo = [
     event: "Zip opened",
     alert: "Tahoe’s zip was opened",
     progress: 88,
+    icon: LockOpen,
+    kind: "alert",
   },
   {
     time: "17:30",
@@ -571,6 +606,8 @@ const demo = [
     event: "Moving in Theft Mode",
     alert: "Tahoe is moving",
     progress: 92,
+    icon: Siren,
+    kind: "alert",
   },
   {
     time: "17:34",
@@ -578,6 +615,8 @@ const demo = [
     event: "Back with you",
     alert: "Tahoe is back with you",
     progress: 96,
+    icon: ShieldCheck,
+    kind: "good",
   },
   {
     time: "18:50",
@@ -585,6 +624,8 @@ const demo = [
     event: "Journey complete: 5,124 km, 2 impacts",
     alert: "Journey complete",
     progress: 100,
+    icon: CircleCheck,
+    kind: "good",
   },
 ];
 
@@ -603,7 +644,10 @@ function JourneyDemo() {
     return () => clearInterval(timer);
   }, [auto]);
   const current = demo[step];
-  const lastAlert = [...demo.slice(0, step + 1)].reverse().find((item) => item.alert);
+  const seen = demo.slice(0, step + 1);
+  const lastAlert = [...seen].reverse().find((item) => item.alert);
+  const alerts = seen.filter((item) => item.kind === "alert").length;
+  const impacts = seen.filter((item) => item.impact).length;
   return (
     <section className="trace-panel night trace-demo" aria-labelledby="demo-title">
       <SectionHead
@@ -613,39 +657,76 @@ function JourneyDemo() {
         A sample trip: one bag, one flight, and everything it noticed on the way.
       </SectionHead>
       <div className="trace-demo-grid">
-        <ol className="trace-demo-log">
-          {demo.map((item, index) => (
-            <li
-              key={item.event}
-              aria-current={index === step ? "step" : undefined}
-              className={index <= step ? "done" : ""}
-            >
-              <button
-                onClick={() => {
-                  setStep(index);
-                  setPlaying(false);
-                }}
+        <ol className="journey-log">
+          {demo.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <li
+                key={item.event}
+                aria-current={index === step ? "step" : undefined}
+                className={`journey-entry ${item.kind}${index <= step ? " done" : ""}`}
               >
-                <time>{item.time}</time>
-                <span>
-                  <strong>{item.event}</strong>
-                  <small>{item.place}</small>
-                </span>
-              </button>
-            </li>
-          ))}
+                <button
+                  onClick={() => {
+                    setStep(index);
+                    setPlaying(false);
+                  }}
+                >
+                  <span className="journey-node" aria-hidden="true">
+                    <Icon size={16} />
+                  </span>
+                  <span className="journey-text">
+                    <strong>{item.event}</strong>
+                    <small>{item.place}</small>
+                  </span>
+                  <time>{item.time}</time>
+                </button>
+              </li>
+            );
+          })}
         </ol>
         <div className="trace-demo-side">
-          <div
-            className="trace-route"
-            aria-label={`Journey ${current.progress}% complete`}
-          >
-            <span className="trace-route-from">ACC</span>
-            <div className="trace-route-track">
-              <span style={{ width: `${current.progress}%` }} />
-              <Plane size={18} style={{ left: `${current.progress}%` }} />
+          {/* The trip as a boarding pass: where it's got to, and what's happened so far. */}
+          <div className="journey-pass">
+            <div className="journey-pass-head">
+              <span>Tahoe · Journey Log</span>
+              <span className="journey-live">
+                <i aria-hidden="true" />
+                {current.progress === 100 ? "Arrived" : "Live"}
+              </span>
             </div>
-            <span className="trace-route-to">LHR</span>
+            <div
+              className="journey-pass-route"
+              role="img"
+              aria-label={`Journey ${current.progress}% complete`}
+            >
+              <span>
+                <strong>ACC</strong>
+                <small>Accra</small>
+              </span>
+              <span className="journey-pass-track">
+                <span style={{ width: `${current.progress}%` }} />
+                <Plane size={16} style={{ left: `${current.progress}%` }} />
+              </span>
+              <span className="journey-pass-to">
+                <strong>LHR</strong>
+                <small>London</small>
+              </span>
+            </div>
+            <dl className="journey-pass-stats">
+              <div>
+                <dt>Time</dt>
+                <dd>{current.time}</dd>
+              </div>
+              <div>
+                <dt>Impacts</dt>
+                <dd>{impacts}</dd>
+              </div>
+              <div>
+                <dt>Alerts</dt>
+                <dd>{alerts}</dd>
+              </div>
+            </dl>
           </div>
           <div className="trace-notification" aria-live="polite">
             <div className="trace-notification-top">

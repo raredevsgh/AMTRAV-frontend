@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
-import { Montserrat, JetBrains_Mono } from "next/font/google";
+import {
+  Montserrat,
+  JetBrains_Mono,
+  Geist,
+  Geist_Mono,
+  Inter,
+  Manrope,
+} from "next/font/google";
 import "./globals.css";
+import "./font-trial.css";
+import { FontTrial, fontTrialScript } from "@/components/font-trial";
+import { siteUrl } from "@/lib/i18n/seo";
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
@@ -12,7 +22,39 @@ const mono = JetBrains_Mono({
   weight: "500",
   display: "swap",
 });
+// Typefaces under trial (components/font-trial.tsx): downloaded only when picked.
+const trial = process.env.NODE_ENV === "development";
+const geist = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+const trialFonts = trial
+  ? ` ${geist.variable} ${geistMono.variable} ${inter.variable} ${manrope.variable}`
+  : "";
+
 export const metadata: Metadata = {
+  // Resolves relative addresses in canonical, hreflang and preview tags.
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Amortrav — luggage that keeps up with you",
     template: "%s · Amortrav",
@@ -32,14 +74,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       data-scroll-behavior="smooth"
       lang="en"
-      className={`${montserrat.variable} ${mono.variable}`}
+      className={`${montserrat.variable} ${mono.variable}${trialFonts}`}
       // Browser extensions add attributes here before React loads; this element only.
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {trial ? <script dangerouslySetInnerHTML={{ __html: fontTrialScript }} /> : null}
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {trial ? <FontTrial montserrat={montserrat.style.fontFamily} /> : null}
+      </body>
     </html>
   );
 }

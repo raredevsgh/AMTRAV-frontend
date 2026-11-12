@@ -72,7 +72,7 @@ export const zhHans: Messages = {
     consoleBody: "制造商账户由 Amortrav 团队创建。请使用账户随附的登录链接。",
     contactTitle: "我们帮你找到合适的团队。",
     contactBody:
-      "如需行李或认领卡方面的帮助，请发邮件至 support@amortrav.com。洽谈合作请使用首页上的表单。",
+      "如需行李或认领卡方面的帮助，请发邮件至 complaints@amortrav.com。洽谈合作请使用首页上的表单。",
     ok: "知道了",
   },
   errors: {
