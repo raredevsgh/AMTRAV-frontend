@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { useConsole, useDevices, useUsers } from "./provider";
 import { PageHeading, LoadingState, ErrorState, dateLabel, StatusBadge } from "./shared";
+import { ConsoleSelect } from "./select";
 
 type Credentials = { email: string; password: string };
 
@@ -154,21 +155,20 @@ export function ManufacturersPage() {
               {member.id === user.id ? (
                 <StatusBadge status="admin · you" />
               ) : (
-                <select
-                  aria-label={`Role for ${member.email}`}
+                <ConsoleSelect
+                  compact
+                  label={`Role for ${member.email}`}
                   value={member.role}
                   disabled={preview}
-                  onChange={(event) => {
+                  onValueChange={(role) => {
                     updateRole.reset();
-                    setRoleChange({
-                      user: member,
-                      role: event.target.value as StaffRole,
-                    });
+                    setRoleChange({ user: member, role: role as StaffRole });
                   }}
-                >
-                  <option value="manufacturer">Manufacturer</option>
-                  <option value="admin">Admin</option>
-                </select>
+                  options={[
+                    { value: "manufacturer", label: "Manufacturer" },
+                    { value: "admin", label: "Admin" },
+                  ]}
+                />
               )}
             </article>
           ))}

@@ -47,6 +47,7 @@ import type {
 } from "@/lib/console/types";
 import { useConsole } from "./provider";
 import { AdminOnly, dateLabel, ErrorState, LoadingState, PageHeading, Tabs, timeLabel } from "./shared";
+import { ConsoleSelect } from "./select";
 
 const PAGE = 50;
 
@@ -929,19 +930,16 @@ function ImpactReadings({ id }: { id: string }) {
         <h2>
           <Zap size={18} /> Raw impact data
         </h2>
-        <select
-          className="console-input compact"
-          aria-label="Outcome"
+        <ConsoleSelect
+          compact
+          label="Outcome"
           value={outcome}
-          onChange={(event) => setOutcome(event.target.value as ImpactOutcome | "all")}
-        >
-          <option value="all">Every reading</option>
-          {Object.entries(outcomeLabel).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+          onValueChange={(value) => setOutcome(value as ImpactOutcome | "all")}
+          options={[
+            { value: "all", label: "Every reading" },
+            ...Object.entries(outcomeLabel).map(([value, label]) => ({ value, label })),
+          ]}
+        />
       </div>
       <p className="cell-sub">
         What the accelerometer reported, before filtering and merging. Use it to tune the thresholds above or to

@@ -97,8 +97,9 @@ export function RegistrationChart({ devices, now }: { devices: Device[]; now: Da
               labelStyle={{ color: "var(--c-muted)", marginBottom: 6 }}
               cursor={{ stroke: "#a9ccff", strokeDasharray: "4 4" }}
             />
+            {/* Monotone curves: smooth between weeks, never dipping below zero or past a count. */}
             <Area
-              type="linear"
+              type="monotone"
               dataKey="registered"
               name="Registered"
               stroke="var(--c-accent)"
@@ -109,7 +110,7 @@ export function RegistrationChart({ devices, now }: { devices: Device[]; now: Da
               isAnimationActive={false}
             />
             <Line
-              type="linear"
+              type="monotone"
               dataKey="claimed"
               name="Claimed"
               stroke="#e07a2e"

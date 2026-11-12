@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useConsole, useUsers } from "./provider";
 import { useOnline } from "./offline";
 import { dateLabel, ErrorState, LoadingState, PageHeading } from "./shared";
+import { ConsoleSelect } from "./select";
 
 type Row = { serial_number: string; public_key?: string };
 
@@ -254,20 +255,13 @@ export function ProvisionPage() {
           {user.role === "admin" && (
             <div className="field">
               <label htmlFor="batch-maker">Manufacturer</label>
-              <select
+              <ConsoleSelect
                 id="batch-maker"
-                className="console-input"
                 value={manufacturer}
-                onChange={(event) => setManufacturer(event.target.value)}
-                required
-              >
-                <option value="">Choose a manufacturer</option>
-                {makers.map((maker) => (
-                  <option key={maker.id} value={maker.id}>
-                    {maker.email}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setManufacturer}
+                placeholder="Choose a manufacturer"
+                options={makers.map((maker) => ({ value: maker.id, label: maker.email }))}
+              />
             </div>
           )}
           <div className="field">

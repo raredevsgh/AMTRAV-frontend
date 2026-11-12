@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Check, Copy, KeyRound, LoaderCircle, Plus } from "lucide-react";
 import { api } from "@/lib/console/api";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useConsole, useUsers } from "./provider";
 import { PageHeading } from "./shared";
+import { ConsoleSelect } from "./select";
 
 const svgSource = (svg: string) => `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 
@@ -85,6 +86,7 @@ export function RegisterDevicePage() {
   const client = useQueryClient();
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<Fields>();
@@ -181,20 +183,25 @@ export function RegisterDevicePage() {
             {user.role === "admin" && (
               <div className="field">
                 <Label htmlFor="maker">Manufacturer</Label>
-                <select
-                  id="maker"
-                  {...register("manufacturer_id", { required: true })}
-                  aria-invalid={!!errors.manufacturer_id}
-                >
-                  <option value="">Choose a manufacturer</option>
-                  {users.data
-                    ?.filter((u) => u.role === "manufacturer")
-                    .map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.email}
-                      </option>
-                    ))}
-                </select>
+                <Controller
+                  name="manufacturer_id"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <ConsoleSelect
+                      id="maker"
+                      ref={field.ref}
+                      value={field.value ?? ""}
+                      onValueChange={field.onChange}
+                      onBlur={field.onBlur}
+                      placeholder="Choose a manufacturer"
+                      invalid={!!errors.manufacturer_id}
+                      options={(users.data ?? [])
+                        .filter((u) => u.role === "manufacturer")
+                        .map((u) => ({ value: u.id, label: u.email }))}
+                    />
+                  )}
+                />
                 <p>Registering on behalf of this manufacturer.</p>
                 {users.isError && (
                   <p className="field-error">

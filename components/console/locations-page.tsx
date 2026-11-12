@@ -61,7 +61,8 @@ function AdminLocations() {
   }[stream.status];
 
   return (
-    <>
+    // On wide screens the page fills the window, so the map and device list run to the bottom.
+    <div className="fleet-page">
       <PageHeading
         title="Fleet map"
         description="Last-known luggage positions, streamed to your workspace."
@@ -191,7 +192,7 @@ function AdminLocations() {
         stream does not mean every device is online. Positions older than five minutes are
         marked as last known.
       </p>
-    </>
+    </div>
   );
 }
 

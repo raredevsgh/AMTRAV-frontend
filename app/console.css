@@ -304,7 +304,7 @@
   align-items: center;
   gap: 22px;
 }
-.console-sidebar > a img {
+.console-brand-link img {
   width: 48px;
   height: 48px;
   border-radius: 14px;
@@ -320,7 +320,7 @@
   gap: 8px;
 }
 .console-nav a,
-.console-account button,
+.console-account > button,
 .console-account > span {
   width: 48px;
   height: 48px;
@@ -331,7 +331,7 @@
   color: var(--c-muted);
 }
 .console-nav a:hover,
-.console-account button:hover {
+.console-account > button:hover {
   background: var(--c-soft);
   color: var(--c-accent);
 }
@@ -1354,7 +1354,7 @@
     gap: 12px;
     flex-wrap: wrap;
   }
-  .console-sidebar > a img {
+  .console-brand-link img {
     width: 40px;
     height: 40px;
     border-radius: 12px;
@@ -1378,7 +1378,7 @@
     flex-direction: row;
     padding: 4px;
   }
-  .console-account button,
+  .console-account > button,
   .console-account > span {
     width: 36px;
     height: 36px;
@@ -2244,6 +2244,7 @@ img.traveller-initials {
   background: #d5f45b;
   color: #1b2200;
 }
+.device-status.sold_out,
 .device-status.suspended,
 .device-status.lost {
   background: #fce9df;
@@ -2795,9 +2796,6 @@ button.mfa-switch {
 }
 
 /* Dark theme: the tokens above do most of it; these are the pieces with their own colours. */
-html[data-theme="dark"] .console-nav a[aria-current="page"] {
-  color: var(--c-on-fill);
-}
 html[data-theme="dark"] .map-setup-state {
   background: radial-gradient(ellipse at center, var(--c-soft) 0%, var(--c-bg) 100%);
 }
@@ -3158,7 +3156,7 @@ html[data-theme="dark"] .product-drop.filled {
   .console-main {
     grid-column: 2;
   }
-  .console-sidebar > a img,
+  .console-brand-link img,
   .workspace-skeleton .sk-mark {
     width: 40px;
     height: 40px;
@@ -3172,14 +3170,14 @@ html[data-theme="dark"] .product-drop.filled {
     gap: 2px;
   }
   .console-nav a,
-  .console-account button,
+  .console-account > button,
   .console-avatar-link,
   .sk-dot {
     width: 40px;
     height: 40px;
   }
   .console-nav a svg,
-  .console-account button svg {
+  .console-account > button svg {
     width: 18px;
     height: 18px;
   }
@@ -3209,9 +3207,10 @@ html[data-theme="dark"] .product-drop.filled {
 /*
  * Design system for the console and sign-in, after Clerk's dashboard: neutral greys and
  * near-black ink in light mode; controls with 6px corners, never pills; cards with 12px
- * corners and a hairline ring; the same top-lit dark buttons as the website.
+ * corners and a hairline ring; the same top-lit dark buttons as the website. Dialogs open in a
+ * portal outside the page, so .console-dialog and .console-select-content are roots of their own.
  */
-:is(.console-page, .auth-page) {
+:is(.console-page, .auth-page, .console-dialog, .console-select-content) {
   --ds-control: 6px;
   --ds-card-radius: 12px;
   --ds-card-shadow:
@@ -3221,7 +3220,7 @@ html[data-theme="dark"] .product-drop.filled {
   --ds-dark: #131316;
   --ds-hover: rgb(19 19 22 / 5%);
 }
-html:not([data-theme="dark"]) :is(.console-page, .auth-page) {
+html:not([data-theme="dark"]) :is(.console-page, .auth-page, .console-dialog, .console-select-content) {
   --c-ink: #131316;
   --c-muted: #5e5f6e;
   --c-soft: #f7f7f8;
@@ -3230,21 +3229,21 @@ html:not([data-theme="dark"]) :is(.console-page, .auth-page) {
   --c-fill: #131316;
   --c-fill-hover: #2f3037;
 }
-html[data-theme="dark"] :is(.console-page, .auth-page) {
+html[data-theme="dark"] :is(.console-page, .auth-page, .console-dialog, .console-select-content) {
   --ds-card-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
   --ds-raised: inset 0 0 0 1px rgb(255 255 255 / 9%), 0 1px 2px rgb(0 0 0 / 40%);
-  --ds-dark: #0a0e15;
+  --ds-dark: #1c1c21;
   --ds-hover: rgb(255 255 255 / 6%);
 }
 
 /* Buttons: 36px with 6px corners; the primary lit from the top with a hairline ring. */
-:is(.console-page, .auth-page) :is(.console-button, .console-secondary, .console-danger) {
+:is(.console-page, .auth-page, .console-dialog) :is(.console-button, .console-secondary, .console-danger) {
   min-height: 36px;
   padding: 0 14px;
   border-radius: var(--ds-control);
   font-size: 13px;
 }
-:is(.console-page, .auth-page) .console-button:not(.console-secondary, .console-danger) {
+:is(.console-page, .auth-page, .console-dialog) .console-button:not(.console-secondary, .console-danger) {
   background-image: linear-gradient(
     180deg,
     rgb(255 255 255 / 12%),
@@ -3255,17 +3254,17 @@ html[data-theme="dark"] :is(.console-page, .auth-page) {
     inset 0 1px 0 rgb(255 255 255 / 16%),
     0 1px 3px rgb(0 0 0 / 16%);
 }
-:is(.console-page, .auth-page) .console-secondary {
+:is(.console-page, .auth-page, .console-dialog) .console-secondary {
   border-color: transparent;
   box-shadow: var(--ds-raised);
 }
-:is(.console-page, .auth-page) .auth-submit {
+:is(.console-page, .auth-page, .console-dialog) .auth-submit {
   min-height: 40px;
   font-size: 14px;
 }
 
 /* Cards: 12px corners and a hairline ring with a soft shadow. */
-:is(.console-page, .auth-page)
+:is(.console-page, .auth-page, .console-dialog)
   :is(
     .console-card,
     .stat-card,
@@ -3284,37 +3283,36 @@ html[data-theme="dark"] :is(.console-page, .auth-page) {
   border-radius: var(--ds-card-radius);
   box-shadow: var(--ds-card-shadow);
 }
-:is(.console-page, .auth-page)
+:is(.console-page, .auth-page, .console-dialog)
   :is(.console-alert, .preview-notice, .offline-banner, .map-error, .mfa-option) {
   border-radius: 8px;
 }
-:is(.console-page, .auth-page) .preview-notice {
+:is(.console-page, .auth-page, .console-dialog) .preview-notice {
   border-color: var(--c-border);
 }
 
 /* Navy surfaces turn Clerk's near-black, with translucent white in place of the lighter navy. */
-html:not([data-theme="dark"])
-  :is(.console-page, .auth-page)
+/* The dark panels are near-black in both modes, a step lighter than the page in dark mode. */
+:is(.console-page, .auth-page, .console-dialog)
   :is(.auth-brand, .claims-calendar, .owner-card, .create-maker, .maker-readiness) {
   background-color: var(--ds-dark);
 }
-html:not([data-theme="dark"])
-  :is(.console-page, .auth-page)
+:is(.console-page, .auth-page, .console-dialog)
   :is(.calendar-grid .has-claims, .create-maker .auth-lock, .create-maker .field input) {
   background: rgb(255 255 255 / 10%);
 }
-:is(.console-page, .auth-page) .auth-audiences span {
+:is(.console-page, .auth-page, .console-dialog) .auth-audiences span {
   border-radius: var(--ds-control);
   background: rgb(255 255 255 / 8%);
   color: #fff;
   box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 20%);
 }
-:is(.console-page, .auth-page) .auth-brand p {
+:is(.console-page, .auth-page, .console-dialog) .auth-brand p {
   color: rgb(255 255 255 / 72%);
 }
 
 /* Pills become 6px controls; the toggle switch, avatars and loading shimmer stay round. */
-:is(.console-page, .auth-page)
+:is(.console-page, .auth-page, .console-dialog)
   :is(
     .field select,
     .console-search,
@@ -3334,17 +3332,17 @@ html:not([data-theme="dark"])
   ) {
   border-radius: var(--ds-control);
 }
-:is(.console-page, .auth-page) .segmented-control button {
+:is(.console-page, .auth-page, .console-dialog) .segmented-control button {
   border-radius: 4px;
 }
-:is(.console-page, .auth-page) .console-search {
+:is(.console-page, .auth-page, .console-dialog) .console-search {
   min-height: 36px;
   padding: 0 12px;
   box-shadow: var(--ds-raised);
 }
 
 /* Fields: 40px with 6px corners and a ring that turns to the accent on focus. */
-:is(.console-page, .auth-page) :is(.field input, .field select, .console-input) {
+:is(.console-page, .auth-page, .console-dialog) :is(.field input, .field select, .console-input) {
   height: 40px;
   min-height: 40px;
   padding: 0 12px;
@@ -3355,36 +3353,451 @@ html:not([data-theme="dark"])
     0 0 0 1px var(--c-border),
     0 1px 2px rgb(0 0 0 / 4%);
 }
-:is(.console-page, .auth-page)
+:is(.console-page, .auth-page, .console-dialog)
   :is(.field input, .field select, .console-input):focus-visible {
   outline: none;
   box-shadow:
     0 0 0 1px var(--c-accent),
     0 0 0 4px color-mix(in srgb, var(--c-accent) 18%, transparent);
 }
-:is(.console-page, .auth-page) .field input[aria-invalid="true"] {
+:is(.console-page, .auth-page, .console-dialog) .field input[aria-invalid="true"] {
   box-shadow: 0 0 0 1px #b93c28;
 }
-:is(.console-page, .auth-page) .field label {
+:is(.console-page, .auth-page, .console-dialog) .field label {
   font-size: 13px;
   font-weight: 500;
 }
-:is(.console-page, .auth-page) .password-input input {
+:is(.console-page, .auth-page, .console-dialog) .password-input input {
   padding-right: 44px;
 }
-:is(.console-page, .auth-page) .password-input button {
+:is(.console-page, .auth-page, .console-dialog) .password-input button {
   top: 0;
   right: 2px;
   height: 40px;
 }
 
+/*
+ * Dialogs, as Clerk's modals: a 12px card with a hairline ring over a dimmed page, a compact
+ * header, and the close button as a quiet 28px square.
+ */
+[data-slot="dialog-overlay"]:has(+ .console-dialog) {
+  background: rgb(19 19 22 / 40%);
+}
+.console-dialog {
+  gap: 20px;
+  padding: 24px;
+  border: 0;
+  border-radius: var(--ds-card-radius);
+  box-shadow:
+    0 0 0 1px rgb(19 19 22 / 6%),
+    0 16px 40px -8px rgb(19 19 22 / 18%),
+    0 4px 12px rgb(19 19 22 / 6%);
+}
+html[data-theme="dark"] .console-dialog {
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 8%),
+    0 16px 40px -8px rgb(0 0 0 / 60%);
+}
+.console-dialog [data-slot="dialog-header"] {
+  gap: 4px;
+  padding-right: 32px;
+}
+.console-dialog [data-slot="dialog-title"] {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.console-dialog [data-slot="dialog-description"] {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.console-dialog > [data-slot="dialog-close"] {
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ds-control);
+  color: var(--c-muted);
+  opacity: 1;
+}
+.console-dialog > [data-slot="dialog-close"]:hover {
+  background: var(--ds-hover);
+  color: var(--c-ink);
+}
+.console-dialog > [data-slot="dialog-close"]:focus-visible {
+  box-shadow: 0 0 0 2px var(--c-accent);
+}
+
+/* A product with nothing to sell: the badge, then where to add stock. */
+.stock-empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.stock-empty a,
+.stock-warning a {
+  color: var(--c-accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.field-hint.stock-warning {
+  color: #9a3412;
+}
+html[data-theme="dark"] .field-hint.stock-warning {
+  color: #fdba74;
+}
+
+/* Confirmations end with their buttons on the right, the action last, as Clerk's modals. */
+.console-dialog > .console-actions {
+  justify-content: flex-end;
+  gap: 8px;
+}
+.sign-out-dialog {
+  width: min(440px, calc(100vw - 32px));
+}
+
+/* Add product: the photo beside the fields, then a grey footer band with the actions. */
+.console-dialog .product-drop:focus-within {
+  outline: none;
+}
+.console-dialog.product-dialog {
+  width: min(800px, calc(100vw - 32px));
+}
+.console-dialog .product-form {
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px 24px;
+}
+.console-dialog .product-drop {
+  gap: 6px;
+  padding: 20px;
+  border: 1px dashed color-mix(in srgb, var(--c-ink) 18%, transparent);
+  border-radius: 10px;
+  background: var(--c-soft);
+  box-shadow: none;
+}
+.console-dialog .product-drop:hover,
+.console-dialog .product-drop.dragging {
+  border-color: color-mix(in srgb, var(--c-ink) 40%, transparent);
+  background: var(--c-tint);
+}
+.console-dialog .product-drop:has(input:focus-visible) {
+  border-style: solid;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-accent) 18%, transparent);
+}
+.console-dialog .product-drop svg {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  box-shadow: var(--ds-raised);
+}
+.console-dialog .product-drop strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.console-dialog .product-drop span {
+  font-size: 12px;
+}
+.console-dialog .product-drop.filled {
+  padding: 12px;
+  border-style: solid;
+  border-color: var(--c-border);
+}
+html:not([data-theme="dark"]) .console-dialog .product-drop.filled {
+  background: radial-gradient(circle at 50% 40%, #fff 0%, #f2f2f4 80%);
+}
+.console-dialog .product-drop-change {
+  bottom: 10px;
+  padding: 5px 10px;
+  border: 0;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: var(--ds-raised);
+}
+.console-dialog .product-fields {
+  gap: 24px;
+}
+.console-dialog .product-fields fieldset {
+  gap: 14px;
+}
+.console-dialog .product-fields legend {
+  margin-bottom: 12px;
+  color: var(--c-ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.console-dialog .field {
+  gap: 6px;
+}
+.console-dialog .field-hint {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.console-dialog textarea.product-textarea {
+  height: auto;
+  min-height: 84px;
+  padding: 9px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.console-dialog textarea.product-textarea::placeholder {
+  color: var(--c-muted);
+  opacity: 1;
+}
+.console-dialog .product-row {
+  grid-template-columns: minmax(0, 1fr) 112px;
+}
+.console-dialog .product-footer {
+  /* Sticks to the dialog's edge, past its 24px padding, while the fields scroll. */
+  position: sticky;
+  bottom: -24px;
+  z-index: 1;
+  gap: 12px;
+  margin: 4px -24px -24px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--c-border);
+  border-radius: 0 0 var(--ds-card-radius) var(--ds-card-radius);
+  background: var(--c-soft);
+}
+.console-dialog .product-actions {
+  gap: 8px;
+}
+.console-dialog .product-switch {
+  gap: 10px;
+}
+.console-dialog .product-switch > span {
+  width: 32px;
+  height: 18px;
+  background: color-mix(in srgb, var(--c-ink) 18%, transparent);
+}
+.console-dialog .product-switch > span::after {
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+}
+.console-dialog .product-switch input:checked + span {
+  background: var(--c-fill);
+}
+.console-dialog .product-switch input:checked + span::after {
+  transform: translateX(14px);
+}
+.console-dialog .product-switch strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/*
+ * Selects (components/console/select.tsx): a trigger shaped like the 40px fields, and the
+ * options in a floating card with the chosen one ticked, as Clerk's dashboard menus.
+ */
+.console-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  padding: 0 10px 0 12px;
+  border: 0;
+  border-radius: var(--ds-control);
+  background: var(--c-field, var(--c-surface));
+  color: var(--c-ink);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px var(--c-border),
+    0 1px 2px rgb(0 0 0 / 4%);
+  transition: box-shadow 0.15s;
+}
+.console-select > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.console-select[data-placeholder] > span {
+  color: var(--c-muted);
+}
+.console-select > svg {
+  flex: none;
+  color: var(--c-muted);
+  transition: transform 0.15s;
+}
+.console-select[data-state="open"] > svg {
+  transform: rotate(180deg);
+}
+.console-select:hover:not(:disabled) {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--c-ink) 24%, transparent),
+    0 1px 2px rgb(0 0 0 / 4%);
+}
+.console-select:focus-visible,
+.console-select[data-state="open"] {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--c-accent),
+    0 0 0 4px color-mix(in srgb, var(--c-accent) 18%, transparent);
+}
+.console-select[aria-invalid="true"] {
+  box-shadow: 0 0 0 1px #b93c28;
+}
+.console-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.console-select.compact {
+  width: auto;
+  height: 32px;
+  padding: 0 8px 0 10px;
+  font-size: 13px;
+}
+.console-select-content {
+  z-index: 60;
+  min-width: var(--radix-select-trigger-width);
+  max-height: min(320px, var(--radix-select-content-available-height));
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font-family: inherit;
+  box-shadow:
+    0 0 0 1px rgb(19 19 22 / 8%),
+    0 12px 32px -6px rgb(19 19 22 / 18%),
+    0 2px 6px rgb(19 19 22 / 6%);
+  transform-origin: var(--radix-select-content-transform-origin);
+  animation: console-select-in 0.12s ease-out;
+}
+html[data-theme="dark"] .console-select-content {
+  background: var(--c-soft);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 9%),
+    0 12px 32px -6px rgb(0 0 0 / 60%);
+}
+.console-select-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 32px 0 8px;
+  border-radius: var(--ds-control);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+.console-select-item[data-highlighted] {
+  background: var(--ds-hover);
+}
+.console-select-item[data-state="checked"] {
+  font-weight: 500;
+}
+.console-select-item[data-disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.console-select-check {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  place-items: center;
+}
+@keyframes console-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-select-content {
+    animation: none;
+  }
+}
+
+/*
+ * Theme at the foot of the sidebar: System, Light and Dark as a segmented control of icons
+ * with the current one raised. A column on the closed rail; open, a row beside "Theme".
+ */
+.console-page .console-theme-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.console-page .console-theme {
+  display: grid;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--ds-hover);
+}
+.console-page .console-theme button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ds-control);
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.console-page .console-theme button:hover {
+  color: var(--c-ink);
+}
+.console-page .console-theme button[aria-pressed="true"] {
+  background: var(--c-surface);
+  color: var(--c-ink);
+  box-shadow: var(--ds-raised);
+}
+html[data-theme="dark"] .console-page .console-theme button[aria-pressed="true"] {
+  background: rgb(255 255 255 / 10%);
+}
+.console-page .console-theme button:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 1px;
+}
+@media (max-width: 760px) {
+  .console-page .console-theme {
+    grid-auto-flow: column;
+  }
+}
+@media (min-width: 761px) {
+  .console-page[data-sidebar="open"] .console-theme-row {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+    padding-left: 10px;
+  }
+  .console-page[data-sidebar="open"] .console-theme-row .nav-label {
+    color: var(--c-muted);
+  }
+  .console-page[data-sidebar="open"] .console-theme {
+    grid-auto-flow: column;
+  }
+}
+
 /* The rail: 36px squares; the current page is a raised white tile, as in Clerk's sidebar. */
-.console-page :is(.console-nav a, .console-account button) {
+.console-page :is(.console-nav a, .console-account > button) {
   width: 36px;
   height: 36px;
   border-radius: var(--ds-control);
 }
-.console-page :is(.console-nav a, .console-account button):hover {
+.console-page :is(.console-nav a, .console-account > button):hover {
   background: var(--ds-hover);
   color: var(--c-ink);
 }
@@ -3396,7 +3809,7 @@ html:not([data-theme="dark"])
 .console-page .console-nav {
   border-radius: 10px;
 }
-.console-page .console-sidebar > a img {
+.console-page .console-brand-link img {
   border-radius: 8px;
 }
 
@@ -3460,5 +3873,279 @@ html[data-theme="dark"] .auth-page .auth-main::before {
 @media (max-width: 760px) {
   .auth-page .auth-form {
     padding: 24px;
+  }
+}
+
+/*
+ * Expandable sidebar. Closed, it's the 72px rail and the labels are read out but hidden;
+ * open (the toggle under the logo, remembered on this computer), it's 232px with every
+ * label beside its icon, as Clerk's dashboard sidebar. Narrow screens keep the row of icons.
+ */
+.console-page .nav-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.console-page .sidebar-toggle {
+  display: none;
+}
+@media (min-width: 761px) {
+  .console-page .sidebar-toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ds-control);
+    color: var(--c-muted);
+  }
+  .console-page .sidebar-toggle:hover {
+    background: var(--ds-hover);
+    color: var(--c-ink);
+  }
+  .console-page .console-frame {
+    transition: grid-template-columns 0.2s ease;
+  }
+  .console-page .console-sidebar {
+    transition: width 0.2s ease;
+  }
+  .console-page[data-sidebar="open"] .console-frame {
+    grid-template-columns: 232px minmax(0, 1fr);
+  }
+  .console-page[data-sidebar="open"] .console-sidebar {
+    width: 232px;
+    align-items: stretch;
+    padding: 16px 12px;
+  }
+  .console-page[data-sidebar="open"]
+    :is(
+      .console-nav a,
+      .console-account > button,
+      .console-account .console-avatar-link
+    ) {
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+    border-radius: var(--ds-control);
+  }
+  .console-page[data-sidebar="open"] .console-account .console-avatar-link {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 4px;
+  }
+  .console-page[data-sidebar="open"] .nav-label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    clip-path: none;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .console-page :is(.console-frame, .console-sidebar) {
+    transition: none;
+  }
+}
+
+/*
+ * Sidebar details after Clerk's dashboard: the workspace at the top with its role, items on
+ * the sidebar itself rather than in a card, a small heading over each group (a thin rule on
+ * the closed rail), and the signed-in account as a two-line row at the foot.
+ */
+.console-page .console-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.console-page .console-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--c-ink);
+}
+.console-page .console-brand-text strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.console-page .console-brand-text small,
+.console-page .console-user-text small {
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+/* Preview, as Clerk's "Development" instance badge. */
+.console-page .console-env {
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #fff4e5;
+  color: #b45309;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 18px;
+  box-shadow: inset 0 0 0 1px rgb(180 83 9 / 18%);
+}
+html[data-theme="dark"] .console-page .console-env {
+  background: rgb(245 158 11 / 14%);
+  color: #fbbf24;
+  box-shadow: inset 0 0 0 1px rgb(251 191 36 / 22%);
+}
+.console-page .nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.console-page .nav-group-label {
+  display: none;
+}
+@media (max-width: 760px) {
+  .console-page .nav-group {
+    display: contents;
+  }
+}
+@media (min-width: 761px) {
+  .console-page .console-sidebar {
+    border-right: 1px solid var(--c-border);
+  }
+  .console-page :is(.console-nav, .console-account) {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .console-page .console-nav {
+    gap: 2px;
+  }
+  .console-page .nav-group + .nav-group::before {
+    content: "";
+    align-self: center;
+    width: 20px;
+    height: 1px;
+    margin: 6px 0;
+    background: var(--c-border);
+  }
+  html[data-theme="dark"] .console-page .console-nav a[aria-current="page"] {
+    background: rgb(255 255 255 / 8%);
+  }
+  .console-page .console-account {
+    gap: 4px;
+  }
+  /* 32px squares on the closed rail, as Clerk's, so every group fits a laptop's height. */
+  .console-page :is(.console-nav a, .console-account > button, .sidebar-toggle) {
+    width: 32px;
+    height: 32px;
+  }
+  .console-page .console-brand {
+    gap: 10px;
+  }
+
+  /* Open: the workspace as a row with the collapse button at its end. */
+  .console-page[data-sidebar="open"] .console-brand {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 0 4px 4px;
+  }
+  .console-page[data-sidebar="open"] .console-brand-link {
+    flex: 1;
+  }
+  .console-page[data-sidebar="open"] .console-brand-link img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .console-page[data-sidebar="open"] :is(.console-brand-text, .console-user-text) {
+    display: grid;
+    min-width: 0;
+  }
+  .console-page[data-sidebar="open"] :is(.console-brand-text, .console-user-text) > * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .console-page[data-sidebar="open"] .console-brand .sidebar-toggle {
+    width: 28px;
+    height: 28px;
+  }
+  .console-page[data-sidebar="open"] .nav-group + .nav-group::before {
+    display: none;
+  }
+  .console-page[data-sidebar="open"] .nav-group-label {
+    display: block;
+    margin: 14px 0 4px;
+    padding: 0 10px;
+    color: var(--c-muted);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .console-page[data-sidebar="open"] :is(.console-nav a, .console-account > button) {
+    height: 32px;
+  }
+  .console-page[data-sidebar="open"] :is(.console-nav a, .console-account > button) svg {
+    width: 16px;
+    height: 16px;
+  }
+  .console-page[data-sidebar="open"] .console-account {
+    padding-top: 10px;
+    border-top: 1px solid var(--c-border);
+  }
+  .console-page[data-sidebar="open"] .console-user-text strong {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+  .console-page[data-sidebar="open"] .console-account .console-avatar-link:hover {
+    background: var(--ds-hover);
+  }
+}
+
+/*
+ * Fleet map: on wide screens the page fills the window, so the map and the device list
+ * stretch to the bottom instead of stopping halfway; the device list scrolls inside.
+ */
+@media (min-width: 761px) {
+  .console-main:has(.fleet-page) {
+    height: 100dvh;
+  }
+  .console-main:has(.fleet-page) .console-view {
+    flex: 1;
+    min-height: 0;
+  }
+  .fleet-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 100%;
+    min-height: 640px;
+  }
+  .fleet-page .fleet-layout {
+    flex: 1;
+    min-height: 0;
+  }
+  .fleet-page .fleet-map-panel {
+    min-height: 0;
+  }
+  .fleet-page .fleet-device-panel {
+    min-height: 0;
+  }
+  .fleet-page .fleet-device-list {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
   }
 }
