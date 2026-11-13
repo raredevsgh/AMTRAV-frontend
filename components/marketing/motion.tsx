@@ -8,25 +8,76 @@ import {
   MotionConfig,
   stagger,
   useAnimate,
-  useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { createElement, useEffect, useRef, type ReactNode } from "react";
+import {
+  createElement,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { useSiteStore } from "@/stores/site-store";
+import { Pause, Play } from "lucide-react";
+import { useI18n } from "@/lib/i18n/client";
 
 /** The site's easing: quick out of the gate, soft landing. */
 export const ease = [0.22, 1, 0.36, 1] as const;
 
 export function MotionProvider({ children }: { children: ReactNode }) {
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  const paused = useSiteStore((s) => s.motionPaused);
+  return (
+    <MotionConfig reducedMotion={paused ? "always" : "user"}>{children}</MotionConfig>
+  );
 }
 
-function useStill() {
-  const reduce = useReducedMotion();
+const motionQuery = "(prefers-reduced-motion: reduce)";
+function subscribeMotion(change: () => void) {
+  const query = window.matchMedia(motionQuery);
+  query.addEventListener("change", change);
+  return () => query.removeEventListener("change", change);
+}
+const getMotionPreference = () => window.matchMedia(motionQuery).matches;
+const serverMotionPreference = () => false;
+
+/** Stable server snapshot prevents conditional SVG/video hydration mismatches. */
+export function useReducedMotionPreference() {
+  return useSyncExternalStore(
+    subscribeMotion,
+    getMotionPreference,
+    serverMotionPreference,
+  );
+}
+
+export function useMotionPaused() {
+  const reduce = useReducedMotionPreference();
   const paused = useSiteStore((s) => s.motionPaused);
-  return !!reduce || paused;
+  return reduce || paused;
+}
+
+export function MotionControl() {
+  const { m } = useI18n();
+  const reduced = useReducedMotionPreference();
+  const paused = useSiteStore((s) => s.motionPaused);
+  const setPaused = useSiteStore((s) => s.setMotionPaused);
+  return (
+    <button
+      type="button"
+      className="site-motion-toggle"
+      aria-pressed={reduced || paused}
+      disabled={reduced}
+      onClick={() => setPaused(!paused)}
+    >
+      {paused && !reduced ? (
+        <Play size={14} aria-hidden="true" />
+      ) : (
+        <Pause size={14} aria-hidden="true" />
+      )}
+      {reduced ? m.landing.reduced : paused ? m.landing.resume : m.landing.pause}
+    </button>
+  );
 }
 
 export function Float({
@@ -38,7 +89,7 @@ export function Float({
   className?: string;
   delay?: number;
 }) {
-  const still = useStill();
+  const still = useMotionPaused();
   return (
     <motion.div
       className={className}
@@ -54,7 +105,7 @@ export function Float({
   );
 }
 
-type StaggerTag = "div" | "header" | "ol" | "ul" | "section";
+type StaggerTag = "div" | "dl" | "header" | "ol" | "ul" | "section";
 
 /**
  * Its children rise and fade in, one after another, when it scrolls into view. Anything
@@ -75,7 +126,7 @@ export function Stagger({
   gap?: number;
 } & Partial<Record<`aria-${string}` | "id", string>>) {
   const [scope, animate] = useAnimate<HTMLElement>();
-  const still = useStill();
+  const still = useMotionPaused();
   useEffect(() => {
     const element = scope.current;
     if (!element || still) return;
@@ -88,7 +139,7 @@ export function Stagger({
         animate(
           items,
           { opacity: 1, y: 0 },
-          { duration: 0.6, ease, delay: stagger(gap) },
+          { duration: 0.48, ease, delay: stagger(Math.min(gap, 0.08)) },
         );
         stop();
       },
@@ -115,7 +166,7 @@ export function Parallax({
   distance?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const still = useStill();
+  const still = useMotionPaused();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -129,11 +180,10 @@ export function Parallax({
 }
 
 /** Lists and grids whose items arrive one after another rather than as one block. */
-const GROUPS =
-  ".page-ticks, .page-steps, .page-cards, .faq-list, .contact-ways, .trace-steps";
+const GROUPS = ".page-ticks, .page-cards, .faq-list, .contact-ways";
 /** Cards that a soft light follows the cursor across (app/motion.css). */
 const SPOTLIT =
-  ".trace-feature, .trace-range-card, .contact-way, .shop-card, .feature-card, .explore-card";
+  ".trace-feature, .trace-range-card, .contact-way, .feature-card, .explore-card";
 
 /**
  * The site's scripted motion, next to the CSS in app/motion.css. On the inner pages, what's
@@ -143,7 +193,7 @@ const SPOTLIT =
  */
 export function SiteMotion() {
   const pathname = usePathname();
-  const still = useStill();
+  const still = useMotionPaused();
 
   useEffect(() => {
     const page = document.querySelector<HTMLElement>(".site-shell .trace.page");

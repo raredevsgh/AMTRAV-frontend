@@ -2069,10 +2069,6 @@ h2 {
 .site-shell .trace > .trace-panel:not(.soft):not(.night):nth-of-type(even) {
   background: var(--trace-soft);
 }
-.site-shell .trace-routes {
-  border-radius: 0;
-  border-bottom: 1px solid var(--c-border);
-}
 .site-shell .site-footer {
   margin-top: 0;
   border-top: 1px solid var(--c-border);
@@ -2139,14 +2135,11 @@ h2 {
   main
   :is(
     .trace-features,
-    .trace-steps,
     .trace-gate,
     .trace-range,
-    .trace-points,
     .trace-battery-facts,
     .trace-demo-side,
     .page-cards,
-    .page-steps,
     .app-extra-grid,
     .contact-ways,
     .under-hood > div
@@ -2284,27 +2277,6 @@ html[data-theme="dark"] .site-shell {
   border-radius: 8px;
 }
 
-/* The console (admin dashboard) link: quiet text beside the main button, as Clerk's "Sign in". */
-.site-shell .header-console {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  padding: 0 12px;
-  border-radius: var(--ds-control);
-  color: var(--c-ink);
-  font-size: 14px;
-  font-weight: 500;
-}
-.site-shell .header-console:hover {
-  background: var(--ds-hover);
-}
-/* On narrow screens it moves into the row of links under the header. */
-@media (max-width: 760px) {
-  .site-shell .header-console {
-    display: none;
-  }
-}
-
 /* Buttons: 40px tall with 6px corners. */
 .site-shell :is(.pill, .trace-button) {
   min-height: 40px;
@@ -2342,8 +2314,7 @@ html[data-theme="dark"] .site-shell {
     0 1px 3px rgb(0 0 0 / 16%) !important;
 }
 /* Light: the surface colour, raised by a ring and a short shadow. */
-.site-shell
-  :is(.pill.white, .pill.console-link, .trace-button.ghost-ink, .shop-quantity) {
+.site-shell :is(.pill.white, .pill.console-link, .trace-button.ghost-ink) {
   border-color: transparent;
   box-shadow: var(--ds-raised) !important;
 }
@@ -2373,7 +2344,6 @@ html[data-theme="dark"] .site-shell {
     .trace-kind,
     .trace-kind > button,
     .contact-languages > li,
-    .shop-quantity,
     .language-switcher,
     .footer-social a,
     .chips span,
@@ -2385,10 +2355,8 @@ html[data-theme="dark"] .site-shell {
   ) {
   border-radius: var(--ds-control);
 }
-/* In dark mode the ink fill turns light, so numbers and step icons flip to lime on dark. */
-html[data-theme="dark"]
-  .site-shell
-  :is(.trace-number, .trace-step-icon, .trace-voice-avatar, .trace-points span) {
+/* In dark mode the ink fill turns light, so numbers and avatars flip to lime on dark. */
+html[data-theme="dark"] .site-shell :is(.trace-number, .trace-voice-avatar) {
   background: var(--trace-signal);
   color: var(--trace-on-signal, #1b2200);
 }
@@ -2407,14 +2375,11 @@ html[data-theme="dark"]
   main
   :is(
     .trace-visual,
-    .trace-steps > li,
     .trace-range-card,
-    .trace-points > article,
     .trace-battery-facts > li,
     .trace-founding-card,
     .trace-notification,
     .page-cards > article,
-    .page-steps > li,
     .app-tour > article,
     .app-extra-grid > article,
     .contact-way,
@@ -2601,13 +2566,6 @@ html:not([data-theme="dark"]) .site-shell .trace {
     width: auto;
   }
 }
-/* Under the hero, the routes run quietly on the canvas, like a row of logos. */
-.site-shell .trace-routes {
-  border: 0;
-  border-radius: 0;
-  background: var(--c-soft);
-}
-
 /* Feature cards: the illustration on top, then the title and a line of copy. */
 .site-shell main .trace-feature {
   gap: 6px;
@@ -3100,7 +3058,6 @@ html[data-theme="dark"]
 /* Ink-filled pieces turn light on dark pages, with dark text. */
 html[data-theme="dark"] .site-shell .trace-button.ink,
 html[data-theme="dark"] .site-shell .trace-kind button[aria-checked="true"],
-html[data-theme="dark"] .site-shell .page-steps span,
 html[data-theme="dark"] .site-shell .contact-next span {
   background: #ededf0;
   color: #0d0d10;
@@ -3136,12 +3093,6 @@ html[data-theme="dark"] .site-shell .language-switcher,
 html[data-theme="dark"] .site-shell .theme-switcher {
   background: var(--c-soft);
   color: var(--c-ink);
-}
-html[data-theme="dark"] .site-shell .shop-stock {
-  color: #7ee2a0;
-}
-html[data-theme="dark"] .site-shell .shop-stock.out {
-  color: #ff8a80;
 }
 
 /* Theme switcher: one button that steps through System, Light and Dark. */

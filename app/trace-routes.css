@@ -1,0 +1,115 @@
+/*
+ * The routes under the TRACE hero (components/marketing/trace-landing.tsx), as a row of a
+ * departure board: airport codes in ink over their cities, a dashed flight path between,
+ * hairlines between routes. It runs inside the content column, on the same soft canvas as the
+ * hero and the section after it, and fades out at both ends, drifting slowly; it stops under
+ * the pointer, for reduced motion and while motion is paused on the site.
+ */
+.site-shell .trace .trace-routes {
+  display: grid;
+  gap: 20px;
+  padding: 64px var(--edge) 8px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: var(--c-soft);
+  mask-image: none;
+}
+.trace-routes-label {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.trace-routes-window {
+  overflow: hidden;
+  padding-block: 2px 6px;
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+.site-shell .trace .trace-routes-track {
+  display: flex;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  list-style: none;
+  animation: trace-departures 70s linear infinite;
+}
+.trace-routes-window:hover .trace-routes-track {
+  animation-play-state: paused;
+}
+.trace-routes-track li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 32px;
+  border-left: 1px solid var(--c-border);
+}
+.trace-route-end {
+  display: grid;
+  gap: 3px;
+}
+.trace-route-end b {
+  color: var(--c-ink);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+.trace-route-end small {
+  color: var(--c-muted);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.trace-route-path {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+  color: var(--c-muted);
+}
+.trace-route-path::before,
+.trace-route-path::after {
+  flex: 1;
+  border-top: 1.5px dashed var(--c-border);
+  content: "";
+}
+/* Lucide's plane points up and to the right; turned a quarter, it flies left to right. */
+.trace-route-path svg {
+  flex: none;
+  rotate: 45deg;
+}
+@keyframes trace-departures {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 734px) {
+  .site-shell .trace .trace-routes {
+    gap: 16px;
+    padding-top: 48px;
+  }
+  .trace-routes-track li {
+    gap: 12px;
+    padding: 4px 22px;
+  }
+  .trace-route-end b {
+    font-size: 18px;
+  }
+  .trace-route-path {
+    width: 48px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-shell .trace .trace-routes-track {
+    animation: none;
+  }
+}
+.site-shell.motion-paused .trace .trace-routes-track {
+  animation: none;
+}

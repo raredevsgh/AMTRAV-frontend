@@ -4,7 +4,7 @@
 // lib/brand.ts, so the page can be rebranded without editing it.
 import Image from "next/image";
 import Link from "next/link";
-import { Accordion as AccordionPrimitive } from "radix-ui";
+import { Accordion as AccordionPrimitive, Dialog as DialogPrimitive } from "radix-ui";
 import {
   useEffect,
   useRef,
@@ -12,8 +12,9 @@ import {
   type CSSProperties,
   type FormEvent,
   type ReactNode,
+  type RefObject,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   BatteryCharging,
@@ -22,10 +23,8 @@ import {
   Check,
   CircleCheck,
   Cpu,
-  Fingerprint,
   Flag,
   KeyRound,
-  Link2,
   Lock,
   LockOpen,
   MapPin,
@@ -36,11 +35,8 @@ import {
   Play,
   Radio,
   Scale,
-  ScanLine,
   ShieldCheck,
   Siren,
-  Smartphone,
-  Trash2,
   Waves,
   X,
   Zap,
@@ -49,9 +45,19 @@ import {
 import { brand, type RangeItem } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
 import { fields, Honeypot, sendLead, type Status } from "./enquiry-form";
-import { Parallax, Stagger } from "./motion";
+import {
+  MotionControl,
+  Parallax,
+  Stagger,
+  useMotionPaused,
+  useReducedMotionPreference,
+} from "./motion";
+import { Itinerary } from "./itinerary";
 import { Voices } from "./voices";
 import "@/app/trace.css";
+import "@/app/film.css";
+import "@/app/trace-routes.css";
+import "@/app/trace-ledger.css";
 
 const T = brand.shortProduct;
 
@@ -81,130 +87,231 @@ function SectionHead({
  * The headline on the light canvas, then the film in a framed stage below it, muted and
  * looping, with the live card over it; a still for people who prefer less motion.
  */
-function Hero({ onWatch }: { onWatch: () => void }) {
-  const reduce = useReducedMotion();
+function Hero({
+  onWatch,
+  watchRef,
+  filmOpen,
+}: {
+  onWatch: () => void;
+  watchRef: RefObject<HTMLButtonElement | null>;
+  filmOpen: boolean;
+}) {
+  const { m, href } = useI18n();
+  const reduced = useReducedMotionPreference();
+  const still = useMotionPaused();
+  const video = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const element = video.current;
+    if (!element) return;
+    let visible = false;
+    const update = () => {
+      if (still || filmOpen || document.hidden || !visible) element.pause();
+      else element.play().catch(() => {});
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        update();
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(element);
+    document.addEventListener("visibilitychange", update);
+    update();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", update);
+      element.pause();
+    };
+  }, [still, filmOpen, reduced]);
+
   return (
     <section className="trace-hero" aria-labelledby="trace-hero-title">
       <div className="trace-hero-copy">
         <Eyebrow>{brand.product}</Eyebrow>
         <h1 id="trace-hero-title">
-          Every journey. Every impact.
+          {m.landing.title}
           <br />
-          Every kilogram. <span>In one view.</span>
+          <span>{m.landing.titleEnd}</span>
         </h1>
-        <p>
-          {T} is the {brand.core} inside every {brand.company} bag. It keeps a log of
-          where your bag goes, how it’s handled and what it weighs, and tells you the
-          moment something’s wrong.
-        </p>
+        <p>{m.landing.body}</p>
         <div className="trace-buttons">
           <a className="trace-button ink" href="#founding">
-            Become a Founding Traveller <ArrowRight size={16} />
+            {m.nav.join} <ArrowRight size={16} aria-hidden="true" />
           </a>
-          <button className="trace-button ghost-ink" onClick={onWatch}>
-            <Play size={14} /> Watch the film
+          <button
+            ref={watchRef}
+            type="button"
+            className="trace-button ghost-ink"
+            onClick={onWatch}
+            aria-haspopup="dialog"
+          >
+            <Play size={14} aria-hidden="true" /> {m.landing.watch}
           </button>
         </div>
+        <ul className="trace-hero-capabilities">
+          <li>
+            <MapPin size={14} aria-hidden="true" /> {m.landing.location}
+          </li>
+          <li>
+            <ShieldCheck size={14} aria-hidden="true" /> {m.landing.impacts}
+          </li>
+          <li>
+            <Scale size={14} aria-hidden="true" /> {m.landing.weighing}
+          </li>
+        </ul>
       </div>
-      <div className="trace-hero-stage">
-        {reduce ? (
-          <Image
-            className="trace-hero-media"
-            src={brand.film.poster}
-            alt=""
-            fill
-            priority
-            sizes="(max-width: 1260px) 88vw, 1260px"
-          />
-        ) : (
-          <video
-            className="trace-hero-media"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={brand.film.poster}
-            aria-hidden
-          >
-            <source src={brand.film.webm} type="video/webm" />
-            <source src={brand.film.mp4} type="video/mp4" />
-          </video>
-        )}
-        <div className="trace-hero-shade" />
-        <LiveCard />
+      <div className="trace-product-showcase">
+        <div className="trace-showcase-toolbar">
+          <span>
+            <span className="trace-showcase-dot" aria-hidden="true" />
+            {m.landing.filmTitle}
+          </span>
+          <MotionControl />
+        </div>
+        <div className="trace-hero-stage">
+          <div className="trace-hero-visual">
+            {reduced ? (
+              <Image
+                className="trace-hero-media"
+                src={brand.film.poster}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 1260px) 88vw, 1260px"
+              />
+            ) : (
+              <video
+                ref={video}
+                className="trace-hero-media"
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster={brand.film.poster}
+                aria-hidden="true"
+                tabIndex={-1}
+              >
+                <source src={brand.film.webm} type="video/webm" />
+                <source src={brand.film.mp4} type="video/mp4" />
+              </video>
+            )}
+            <div className="trace-hero-shade" />
+          </div>
+          <LiveCard />
+        </div>
+        <div className="trace-showcase-caption">
+          <span>{m.landing.example}</span>
+          <Link href={href("/#range")}>
+            {m.landing.range} <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
-/** A glimpse of the app's live view, floating over the film. */
+/** An explicitly labelled sample, formatted using the visitor's selected locale. */
 function LiveCard() {
-  const reduce = useReducedMotion();
+  const still = useMotionPaused();
+  const { m, tag } = useI18n();
+  const number = new Intl.NumberFormat(tag, { maximumFractionDigits: 1 });
   return (
     <motion.aside
       className="trace-live-card"
-      aria-label="Example: a bag on a journey"
-      animate={reduce ? undefined : { y: [0, -8, 0] }}
-      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      aria-label={m.landing.example}
+      animate={{ y: still ? 0 : [0, -4, 0] }}
+      transition={
+        still ? { duration: 0 } : { duration: 7, repeat: Infinity, ease: "easeInOut" }
+      }
     >
       <div className="trace-live-top">
-        <span className="trace-dot" /> On a journey
-        <b>ACC → LHR</b>
+        <span className="trace-dot" aria-hidden="true" />
+        {m.landing.travelling}
+        <b dir="ltr">ACC → LHR</b>
       </div>
       <strong>Tahoe</strong>
       <dl>
         <div>
-          <dt>Weight</dt>
-          <dd>21.4 kg</dd>
+          <dt>{m.landing.weight}</dt>
+          <dd>{number.format(21.4)} kg</dd>
         </div>
         <div>
-          <dt>Impacts</dt>
-          <dd>2</dd>
+          <dt>{m.landing.impactCount}</dt>
+          <dd>{number.format(2)}</dd>
         </div>
         <div>
-          <dt>Battery</dt>
-          <dd>78%</dd>
+          <dt>{m.landing.battery}</dt>
+          <dd>{new Intl.NumberFormat(tag, { style: "percent" }).format(0.78)}</dd>
         </div>
       </dl>
       <p className="trace-live-alert">
-        <Zap size={14} /> Dropped at baggage make-up · 11.8 g
+        <Zap size={14} aria-hidden="true" />
+        {m.landing.impactAlert} · {number.format(11.8)} g
       </p>
     </motion.aside>
   );
 }
 
-function FilmDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const video = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    video.current?.play().catch(() => {});
-    const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-  if (!open) return null;
+function FilmDialog({
+  open,
+  onClose,
+  trigger,
+}: {
+  open: boolean;
+  onClose: () => void;
+  trigger: RefObject<HTMLButtonElement | null>;
+}) {
+  const { m } = useI18n();
+  const close = useRef<HTMLButtonElement>(null);
   return (
-    <div
-      className="trace-film"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${brand.product} film`}
-      onClick={onClose}
-    >
-      <div className="trace-film-frame" onClick={(event) => event.stopPropagation()}>
-        <video ref={video} controls playsInline poster={brand.film.poster}>
-          <source src={brand.film.webm} type="video/webm" />
-          <source src={brand.film.mp4} type="video/mp4" />
-        </video>
-        <button
-          className="trace-film-close"
-          onClick={onClose}
-          aria-label="Close the film"
+    <DialogPrimitive.Root open={open} onOpenChange={(value) => !value && onClose()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="trace-film-overlay" />
+        <DialogPrimitive.Content
+          className="trace-film-dialog"
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            close.current?.focus();
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            trigger.current?.focus();
+          }}
         >
-          <X size={20} />
-        </button>
-      </div>
-    </div>
+          <div className="trace-film-heading">
+            <DialogPrimitive.Title>
+              {brand.product} · {m.landing.filmLabel}
+            </DialogPrimitive.Title>
+            <DialogPrimitive.Close asChild>
+              <button
+                ref={close}
+                type="button"
+                className="trace-film-dismiss"
+                aria-label={m.landing.close}
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </DialogPrimitive.Close>
+          </div>
+          <video
+            autoPlay
+            controls
+            playsInline
+            preload="metadata"
+            poster={brand.film.poster}
+            aria-label={m.landing.filmLabel}
+          >
+            <source src={brand.film.webm} type="video/webm" />
+            <source src={brand.film.mp4} type="video/mp4" />
+          </video>
+          <DialogPrimitive.Description className="trace-film-description">
+            {m.landing.filmDescription}
+          </DialogPrimitive.Description>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 
@@ -334,44 +441,13 @@ function Features() {
 }
 
 function HowItWorks() {
-  const steps = [
-    {
-      icon: <ScanLine size={22} />,
-      title: "Pair it",
-      body: `Scan the QR code on the ${brand.core} in ${brand.app}. It’s yours in seconds.`,
-    },
-    {
-      icon: <Play size={22} />,
-      title: "Start a journey",
-      body: "Name the trip, set your airline’s limit, and lift the bag once to weigh it.",
-    },
-    {
-      icon: <Plane size={22} />,
-      title: "Travel",
-      body: "It reports as it goes, goes quiet in the air, and catches up after landing. Alerts reach you wherever you are.",
-    },
-    {
-      icon: <Check size={22} />,
-      title: "Arrive",
-      body: "End the journey for a summary: distance, impacts, weight and battery, in the app and by email.",
-    },
-  ];
   return (
     <section className="trace-panel soft" id="how" aria-labelledby="how-title">
       <SectionHead
         eyebrow={`How ${T} works`}
         title={<span id="how-title">From your door to the carousel.</span>}
       />
-      <Stagger as="ol" className="trace-steps">
-        {steps.map((step, index) => (
-          <li key={step.title}>
-            <span className="trace-step-icon">{step.icon}</span>
-            <small>Step {index + 1}</small>
-            <h3>{step.title}</h3>
-            <p>{step.body}</p>
-          </li>
-        ))}
-      </Stagger>
+      <Itinerary />
     </section>
   );
 }
@@ -631,7 +707,7 @@ const demo: {
 
 /** The demo flight, step by step: what the log records and what your phone says. */
 function JourneyDemo() {
-  const reduce = useReducedMotion();
+  const reduce = useMotionPaused();
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
   const auto = playing && !reduce;
@@ -728,7 +804,7 @@ function JourneyDemo() {
               </div>
             </dl>
           </div>
-          <div className="trace-notification" aria-live="polite">
+          <div className="trace-notification" aria-live={auto ? "off" : "polite"}>
             <div className="trace-notification-top">
               <Image src={brand.logos.mark} alt="" width={22} height={18} />
               <span>{brand.company}</span>
@@ -790,37 +866,51 @@ function Range() {
   );
 }
 
+/**
+ * Security and privacy as a spec sheet rather than six cards: three rows (the bag, your
+ * account, who else sees it), each with its two promises, ruled off with hairlines
+ * (app/trace-ledger.css).
+ */
 function Security() {
-  const points = [
+  const rows = [
     {
-      icon: <Fingerprint size={20} />,
-      title: "Signed at the source",
-      body: "Every report is signed by a key in the bag’s secure element, and a replayed or forged one is refused.",
+      label: "The bag",
+      points: [
+        {
+          title: "Signed at the source",
+          body: "Every report is signed by a key in the bag’s secure element, and a replayed or forged one is refused.",
+        },
+        {
+          title: "Only you see your bag",
+          body: "Its position and history belong to your account. Remove the bag and they’re deleted.",
+        },
+      ],
     },
     {
-      icon: <ShieldCheck size={20} />,
-      title: "Your account, locked down",
-      body: "Two-step verification with an authenticator app or a passkey, and sign out of every device at once.",
+      label: "Your account",
+      points: [
+        {
+          title: "Locked down",
+          body: "Two-step verification with an authenticator app or a passkey, and sign out of every device at once.",
+        },
+        {
+          title: "Take it or delete it",
+          body: "Download everything we hold about you as a file, or delete your account from the app.",
+        },
+      ],
     },
     {
-      icon: <Link2 size={20} />,
-      title: "Sharing that expires",
-      body: "Share a live link for up to a week; turn it off any time. It never shows your contact details.",
-    },
-    {
-      icon: <Smartphone size={20} />,
-      title: "Only you see your bag",
-      body: "Its position and history belong to your account. Remove the bag and they’re deleted.",
-    },
-    {
-      icon: <Trash2 size={20} />,
-      title: "Take it or delete it",
-      body: "Download everything we hold about you as a file, or delete your account from the app.",
-    },
-    {
-      icon: <Siren size={20} />,
-      title: "Staff access is recorded",
-      body: "When our support team looks at an account, it’s written to an audit trail.",
+      label: "Who else sees it",
+      points: [
+        {
+          title: "Sharing that expires",
+          body: "Share a live link for up to a week; turn it off any time. It never shows your contact details.",
+        },
+        {
+          title: "Staff access is recorded",
+          body: "When our support team looks at an account, it’s written to an audit trail.",
+        },
+      ],
     },
   ];
   return (
@@ -829,15 +919,19 @@ function Security() {
         eyebrow="Security and privacy"
         title={<span id="security-title">Built to be trusted with where you are.</span>}
       />
-      <div className="trace-points">
-        {points.map((point) => (
-          <article key={point.title}>
-            <span>{point.icon}</span>
-            <h3>{point.title}</h3>
-            <p>{point.body}</p>
-          </article>
+      <Stagger as="dl" className="trace-ledger">
+        {rows.map((row) => (
+          <div key={row.label}>
+            <dt>{row.label}</dt>
+            {row.points.map((point) => (
+              <dd key={point.title}>
+                <h3>{point.title}</h3>
+                <p>{point.body}</p>
+              </dd>
+            ))}
+          </div>
         ))}
-      </div>
+      </Stagger>
     </section>
   );
 }
@@ -924,32 +1018,50 @@ const questions = [
   },
 ];
 
+/** From and to, as an airport code and its city. */
 const routes = [
-  "LOS → LHR",
-  "JFK → CDG",
-  "ACC → DXB",
-  "NRT → SFO",
-  "LHR → JNB",
-  "DXB → SIN",
-  "CDG → YYZ",
-  "SIN → SYD",
-  "ABV → IST",
-  "GRU → LIS",
-];
+  ["LOS", "Lagos", "LHR", "London"],
+  ["JFK", "New York", "CDG", "Paris"],
+  ["ACC", "Accra", "DXB", "Dubai"],
+  ["NRT", "Tokyo", "SFO", "San Francisco"],
+  ["LHR", "London", "JNB", "Johannesburg"],
+  ["DXB", "Dubai", "SIN", "Singapore"],
+  ["CDG", "Paris", "YYZ", "Toronto"],
+  ["SIN", "Singapore", "SYD", "Sydney"],
+  ["ABV", "Abuja", "IST", "Istanbul"],
+  ["GRU", "São Paulo", "LIS", "Lisbon"],
+] as const;
 
-/** Routes the range is made for, drifting past under the hero (still for reduced motion). */
+/**
+ * Routes the range is made for, under the hero, as a row of a departure board: each the two
+ * airports with their cities and a dashed flight path between, drifting slowly inside the
+ * content column (still for reduced motion, paused under the pointer).
+ */
 function Routes() {
   return (
-    <div
-      className="trace-routes"
-      aria-label={`Routes travelled with ${brand.company}: ${routes.join(", ")}`}
-    >
-      <div className="trace-routes-track" aria-hidden="true">
-        {[...routes, ...routes].map((route, index) => (
-          <span key={index}>
-            <Plane size={14} /> {route}
-          </span>
-        ))}
+    <div className="trace-routes">
+      <p className="trace-routes-label">Made for the routes you fly</p>
+      <p className="sr-only">
+        {routes.map(([, from, , to]) => `${from} to ${to}`).join(", ")}
+      </p>
+      <div className="trace-routes-window" aria-hidden="true">
+        <ul className="trace-routes-track">
+          {[...routes, ...routes].map(([from, fromCity, to, toCity], index) => (
+            <li key={index}>
+              <span className="trace-route-end">
+                <b>{from}</b>
+                <small>{fromCity}</small>
+              </span>
+              <span className="trace-route-path">
+                <Plane size={14} />
+              </span>
+              <span className="trace-route-end">
+                <b>{to}</b>
+                <small>{toCity}</small>
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -1155,6 +1267,7 @@ function Founding() {
 
 export function TraceLanding() {
   const [film, setFilm] = useState(false);
+  const watch = useRef<HTMLButtonElement>(null);
   const style = {
     "--trace-ink": brand.colors.ink,
     "--trace-night": brand.colors.night,
@@ -1163,7 +1276,7 @@ export function TraceLanding() {
   } as CSSProperties;
   return (
     <div className="trace" style={style}>
-      <Hero onWatch={() => setFilm(true)} />
+      <Hero onWatch={() => setFilm(true)} watchRef={watch} filmOpen={film} />
       <Routes />
       <Features />
       <Voices />
@@ -1177,7 +1290,7 @@ export function TraceLanding() {
       <Battery />
       <Faq />
       <Founding />
-      <FilmDialog open={film} onClose={() => setFilm(false)} />
+      <FilmDialog open={film} onClose={() => setFilm(false)} trigger={watch} />
     </div>
   );
 }

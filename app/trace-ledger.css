@@ -1,0 +1,63 @@
+/*
+ * Security and privacy on the TRACE page (components/marketing/trace-landing.tsx), set as a
+ * spec sheet: a row per subject, its label in small capitals on the left and its two
+ * promises side by side, rows ruled off with hairlines. No boxes, tiles or icons, so it reads
+ * as a statement rather than a feature grid.
+ */
+.trace-ledger {
+  margin: 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.trace-ledger > div {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(0, 2fr) minmax(0, 2fr);
+  gap: 0 48px;
+  padding: 32px 0 36px;
+  border-top: 1px solid var(--c-border);
+}
+.trace-ledger dt {
+  padding-top: 4px;
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.trace-ledger dd {
+  margin: 0;
+}
+.trace-ledger h3 {
+  margin: 0 0 8px;
+  color: var(--c-ink);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.trace-ledger p {
+  margin: 0;
+  max-width: 40ch;
+  color: var(--c-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Narrower: the label above, the two promises still side by side. */
+@media (max-width: 900px) {
+  .trace-ledger > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 32px;
+  }
+  .trace-ledger dt {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+}
+/* Phones: one column, the promises one under the other. */
+@media (max-width: 600px) {
+  .trace-ledger > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 26px 0 28px;
+  }
+}

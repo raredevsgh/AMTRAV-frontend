@@ -5,11 +5,11 @@
 // Coming back with "cancelled" closes the checkout so its bags go straight back on sale.
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CircleCheck, Clock, LoaderCircle, PackageCheck, Truck, XCircle } from "lucide-react";
+import { Check, CircleCheck, Clock, LoaderCircle, PackageCheck, Truck, XCircle } from "lucide-react";
 import { brand } from "@/lib/brand";
 import { format } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/client";
-import { money } from "./shop";
+import { money, settleOrder } from "@/lib/shop";
 import "@/app/trace.css";
 import "@/app/shop.css";
 
@@ -64,6 +64,11 @@ export function OrderStatus({ id, token, cancelled }: { id: string; token: strin
     };
   }, [id, token, cancelled, m]);
 
+  // Paid for: the cart that became this order starts empty again.
+  useEffect(() => {
+    if (order && ["paid", "review", "shipped"].includes(order.status)) settleOrder(order.id);
+  }, [order]);
+
   const look = order
     ? { title: m.order[`${order.status}Title`], body: m.order[`${order.status}Body`] }
     : null;
@@ -91,6 +96,20 @@ export function OrderStatus({ id, token, cancelled }: { id: string; token: strin
               <h1 className="shop-title">{look.title}</h1>
               <p>{look.body}</p>
             </header>
+            {order.status === "expired" || order.status === "failed" ? null : (
+              <ol className="checkout-steps order-steps">
+                {[m.order.stepPlaced, m.order.stepPaid, m.order.stepShipped].map((step, index) => {
+                  const reached = order.status === "shipped" ? 3 : order.status === "pending" ? 1 : 2;
+                  const state = index < reached ? "done" : index === reached ? "current" : undefined;
+                  return (
+                    <li key={step} data-state={state} aria-current={state === "current" ? "step" : undefined}>
+                      <span aria-hidden="true">{state === "done" ? <Check size={12} strokeWidth={3} /> : index + 1}</span>
+                      {step}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
             <ul className="shop-lines">
               {order.items.map((item) => (
                 <li key={item.name}>

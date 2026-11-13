@@ -1,0 +1,310 @@
+/*
+ * The cart (components/shop/cart.tsx): its button in the site header, beside the language
+ * menu and styled like it, and the panel that slides in from the right. The panel's lines,
+ * photos and steppers are shared with the checkout summary.
+ */
+.site-shell .cart-button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--ds-control, 8px);
+  background: var(--c-surface);
+  box-shadow: var(--ds-raised) !important;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.site-shell .cart-button:hover,
+.site-shell .cart-button[data-state="open"] {
+  background: var(--c-soft);
+}
+.site-shell .cart-button:focus-visible {
+  outline: 2px solid var(--marketing-focus, var(--c-accent));
+  outline-offset: 2px;
+}
+.cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--c-ink);
+  color: var(--c-surface);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme="dark"] .cart-count {
+  background: var(--trace-signal, #d5f45b);
+  color: #121212;
+}
+
+/* The panel */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgb(10 10 14 / 40%);
+  backdrop-filter: blur(2px);
+  animation: cart-fade 200ms ease;
+}
+.cart-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 81;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: min(420px, 100vw);
+  background: var(--c-surface);
+  box-shadow: var(--ds-popover) !important;
+  color: var(--c-ink);
+  animation: cart-in 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cart-panel:focus {
+  outline: none;
+}
+.cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px 24px;
+  border-bottom: 1px solid var(--c-border);
+}
+.cart-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+.cart-head h2 span {
+  color: var(--c-muted);
+  font-weight: 500;
+}
+.cart-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.cart-close:hover {
+  background: var(--c-soft);
+  color: var(--c-ink);
+}
+.cart-empty {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 40px 24px;
+  color: var(--c-muted);
+  text-align: center;
+}
+.cart-empty p {
+  margin: 0;
+}
+
+/* Lines, in the panel and the checkout summary */
+.cart-lines {
+  display: grid;
+  align-content: start;
+  margin: 0;
+  padding: 8px 24px;
+  overflow-y: auto;
+  list-style: none;
+}
+.cart-lines li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+  padding: 16px 0;
+}
+.cart-lines li + li {
+  border-top: 1px solid var(--c-border);
+}
+.cart-thumb {
+  position: relative;
+  display: block;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: radial-gradient(circle at 50% 40%, #fff 0%, #e8edf4 75%);
+}
+html[data-theme="dark"] .cart-thumb {
+  background: radial-gradient(circle at 50% 40%, #1c2433 0%, #121822 75%);
+}
+.cart-thumb img {
+  object-fit: contain;
+  padding: 4px;
+}
+.cart-line-main {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+}
+.cart-line-main > a,
+.cart-line-main > span {
+  color: var(--c-ink);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cart-line-main > a:hover {
+  text-decoration: underline;
+}
+.cart-line-main small {
+  margin-bottom: 8px;
+  color: var(--c-muted);
+  font-size: 13px;
+}
+.cart-line-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cart-lines strong {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cart-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+}
+.cart-stepper button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+.cart-stepper button:hover:not(:disabled) {
+  background: var(--c-soft);
+}
+.cart-stepper button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.cart-stepper span {
+  min-width: 22px;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.cart-remove {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+.cart-remove:hover {
+  background: var(--c-soft);
+  color: #c4372d;
+}
+
+/* The panel's foot: total, checkout */
+.cart-foot {
+  display: grid;
+  gap: 12px;
+  padding: 18px 24px 24px;
+  border-top: 1px solid var(--c-border);
+}
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  font-size: 16px;
+}
+.cart-total strong {
+  font-variant-numeric: tabular-nums;
+}
+.cart-foot > small {
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.site-shell .cart-foot .trace-button {
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+}
+.cart-continue {
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cart-continue:hover {
+  color: var(--c-ink);
+}
+.cart-warning {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgb(196 55 45 / 10%);
+  color: #b3261e;
+  font-size: 14px;
+  line-height: 1.45;
+}
+html[data-theme="dark"] .cart-warning {
+  color: #ff9a90;
+}
+
+@keyframes cart-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes cart-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-panel,
+  .cart-overlay {
+    animation: none;
+  }
+}
+@media (max-width: 760px) {
+  .site-shell .cart-button {
+    width: 40px;
+    height: 40px;
+  }
+}

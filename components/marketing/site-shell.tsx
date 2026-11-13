@@ -14,14 +14,16 @@ import {
 import { brand } from "@/lib/brand";
 import { format, type Messages } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/client";
+import { CartButton } from "@/components/shop/cart";
 import { LanguageSwitcher } from "./language-switcher";
 import { LocaleMenu, MenuContainer, menus, NavMenu } from "./header-menus";
 import { useSiteStore, type SiteDialog } from "@/stores/site-store";
-import { MotionProvider, SiteMotion } from "./motion";
+import { MotionControl, MotionProvider, SiteMotion } from "./motion";
 import { FlightPath } from "./visuals";
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import "@/app/site-header.css";
 import "@/app/motion.css";
+import "@/app/marketing-polish.css";
 /** The staff and manufacturer console (the admin dashboard); it asks for sign-in itself. */
 const consoleUrl = process.env.NEXT_PUBLIC_CONSOLE_URL || "/console";
 
@@ -151,14 +153,8 @@ function HeaderBar({ path }: { path: string | null }) {
           <NavMenu {...menus[1]} path={path} />
         </nav>
         <div className="header-actions">
+          <CartButton />
           <LocaleMenu />
-          <Link
-            href={consoleUrl}
-            className="header-console"
-            aria-label={m.nav.consoleLabel}
-          >
-            {m.nav.console}
-          </Link>
           <Button asChild className="pill header-cta">
             <Link href={href("/#founding")}>
               <span className="desktop-label">{m.nav.join}</span>
@@ -178,9 +174,6 @@ function HeaderBar({ path }: { path: string | null }) {
             {m.nav[l.label]}
           </Link>
         ))}
-        <Link href={consoleUrl} aria-label={m.nav.consoleLabel}>
-          {m.nav.console}
-        </Link>
       </nav>
     </>
   );
@@ -313,6 +306,7 @@ function Footer() {
         </nav>
       </div>
       <div className="footer-bottom">
+        <MotionControl />
         <span>
           {format(m.footer.rights, { year: brand.year, company: brand.company })}
         </span>

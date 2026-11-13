@@ -1,0 +1,326 @@
+/* Marketing presentation: neutral surfaces, precise borders and calm motion.
+   Shared controls use a 44px target; body text and focus rings stay theme-aware. */
+.site-shell {
+  --motion-fast: 160ms;
+  --motion-enter: 480ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --marketing-focus: #2563eb;
+  --marketing-line: #e4e4e8;
+  --marketing-muted: #595b68;
+}
+html[data-theme="dark"] .site-shell {
+  --marketing-focus: #93b4ff;
+  --marketing-line: #35363d;
+  --marketing-muted: #b3b4c0;
+}
+.site-shell :is(section[id], main[id], h2[id]) {
+  scroll-margin-block-start: 104px;
+}
+.site-shell :is(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--marketing-focus);
+  outline-offset: 4px;
+}
+.site-shell :is(.pill, .trace-button, .locale-trigger, .nav-trigger, .header-console) {
+  min-block-size: 44px;
+}
+.site-shell :is(.pill, .trace-button) {
+  border-radius: 8px;
+  font-weight: 600;
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast);
+}
+.site-shell :is(.pill, .trace-button):active {
+  translate: 0 1px;
+}
+.site-shell main .trace-hero {
+  gap: 36px;
+  padding-block: clamp(64px, 8vw, 112px) 56px;
+}
+.site-shell .trace-hero-copy {
+  max-inline-size: 840px;
+  gap: 22px;
+}
+.site-shell main .trace-hero h1 {
+  font-size: clamp(38px, 4.7vw, 64px);
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.site-shell .trace-hero-copy > p {
+  max-inline-size: 650px;
+  font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.7;
+  color: var(--marketing-muted);
+  text-wrap: pretty;
+}
+.site-shell .trace-hero-copy .trace-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  font-weight: 600;
+}
+.site-shell .trace-hero-capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  color: var(--marketing-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.trace-hero-capabilities li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.trace-hero-capabilities svg {
+  flex: none;
+}
+.site-shell .trace-product-showcase {
+  min-inline-size: 0;
+  padding: 6px;
+  border: 1px solid var(--marketing-line);
+  border-radius: 18px;
+  background: var(--c-surface);
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 2%),
+    0 20px 60px rgb(0 0 0 / 4%) !important;
+}
+.trace-showcase-toolbar,
+.trace-showcase-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 4px 14px;
+  color: var(--marketing-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.trace-showcase-toolbar > span,
+.trace-showcase-caption a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.trace-showcase-toolbar > span {
+  color: var(--c-ink);
+  font-weight: 600;
+}
+.trace-showcase-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+}
+.trace-showcase-caption a {
+  min-block-size: 44px;
+  font-weight: 500;
+  color: var(--c-ink);
+}
+.site-shell .site-motion-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+  min-block-size: 44px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  transition:
+    color var(--motion-fast),
+    background-color var(--motion-fast);
+}
+.site-shell .site-motion-toggle:hover:not(:disabled) {
+  background: var(--ds-hover);
+  color: var(--c-ink);
+}
+.site-shell .site-motion-toggle:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.site-shell main .trace-product-showcase .trace-hero-stage {
+  border-radius: 12px;
+  box-shadow: none !important;
+}
+.site-shell .trace-live-card {
+  font-variant-numeric: tabular-nums;
+}
+.site-shell .phone-sheet > small {
+  color: #535965;
+}
+.site-shell .phone-tiles span:not(.on) {
+  background: #fff;
+  color: #0e1014;
+}
+.site-shell .trace-live-card :is(dt, .trace-live-top b) {
+  color: #b7c2d2;
+}
+.site-shell .trace-head h2 {
+  font-weight: 600;
+  line-height: 1.16;
+  text-wrap: balance;
+}
+.site-shell .trace-head p {
+  line-height: 1.7;
+  max-inline-size: 62ch;
+}
+.site-shell :is(.trace-feature, .trace-range-card, .feature-card, .shop-card) {
+  border-radius: 12px;
+}
+.site-shell :is(.trace-feature, .trace-range-card) h3 {
+  letter-spacing: -0.02em;
+}
+.site-shell .footer-bottom {
+  flex-wrap: wrap;
+}
+
+/* Radix owns focus trapping, Escape, outside dismissal and scroll locking. */
+.trace-film-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgb(5 10 18 / 80%);
+  backdrop-filter: blur(8px);
+  animation: film-overlay-in 180ms ease-out;
+}
+.trace-film-dialog {
+  position: fixed;
+  z-index: 101;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1100px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border: 1px solid #383e49;
+  border-radius: 16px;
+  background: #101721;
+  color: #f5f7fa;
+  outline: none;
+  animation: film-dialog-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.trace-film-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+}
+.trace-film-heading h2 {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.trace-film-dismiss {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #414958;
+  border-radius: 8px;
+  color: #fff;
+  background: #1f2937;
+}
+.trace-film-dialog :is(button, video):focus-visible {
+  outline: 2px solid #b1caff;
+  outline-offset: 3px;
+}
+.trace-film-dialog video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #070d16;
+}
+.trace-film-description {
+  margin: 0;
+  padding: 16px 20px 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #c5cdd9;
+}
+@keyframes film-overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes film-dialog-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+@media (max-width: 734px) {
+  .site-shell main .trace-hero {
+    padding-block-start: 48px;
+    gap: 28px;
+  }
+  .site-shell .trace-hero-copy {
+    gap: 20px;
+  }
+  .site-shell .trace-buttons {
+    gap: 10px;
+  }
+  .site-shell .trace-buttons > * {
+    max-inline-size: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+  .trace-showcase-toolbar,
+  .trace-showcase-caption {
+    padding-inline: 8px;
+  }
+  .trace-showcase-toolbar {
+    gap: 0 8px;
+  }
+  .site-shell .trace-hero-capabilities {
+    gap: 10px 16px;
+  }
+  .site-shell .site-motion-toggle {
+    padding-inline: 6px;
+  }
+}
+
+/* Pause applies to every decorative CSS animation, including the routes and radar. */
+.site-shell.motion-paused *,
+.site-shell.motion-paused *::before,
+.site-shell.motion-paused *::after {
+  animation-play-state: paused !important;
+}
+.site-shell.motion-paused [data-reveal] {
+  opacity: 1;
+  translate: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .site-shell *,
+  .site-shell *::before,
+  .site-shell *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .site-shell [data-reveal] {
+    opacity: 1;
+    translate: none;
+  }
+  .trace-film-overlay,
+  .trace-film-dialog {
+    animation: none;
+  }
+}

@@ -1,0 +1,23 @@
+/* Keep the film and its reduced-motion poster in the same responsive frame. */
+.site-shell .trace-hero-stage .trace-hero-visual {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+}
+
+/* The status card belongs below the film on phones so it cannot hide the product. */
+@media (max-width: 734px) {
+  .site-shell main .trace-hero-stage {
+    aspect-ratio: auto;
+  }
+  .site-shell .trace-hero-stage .trace-hero-visual {
+    position: relative;
+    aspect-ratio: 1;
+  }
+  .site-shell main .trace-hero-stage .trace-live-card {
+    position: relative;
+    inset: auto;
+    margin: 0 12px 12px;
+    width: auto;
+  }
+}

@@ -37,6 +37,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Itinerary } from "./itinerary";
 import { Float } from "./motion";
 import { Voices } from "./voices";
 import "@/app/trace.css";
@@ -436,28 +437,25 @@ export function ForBrandsPage() {
 
       <section className="trace-panel soft">
         <Head eyebrow="Getting started" title="Live in a week, not a quarter." />
-        <ol className="page-steps">
-          {[
-            [
-              "Get your account",
-              "We set up your manufacturer login and two-step sign-in for your team.",
-            ],
-            [
-              "Register your bags",
-              `Add serials as they come off the line, with a claim code for each box and a ${brand.core} inside.`,
-            ],
-            [
-              "Ship it",
-              "Owners add the bag in the app with the code. You see claims, health and alerts as they happen.",
-            ],
-          ].map(([title, body], index) => (
-            <li key={title}>
-              <span>{index + 1}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-            </li>
-          ))}
-        </ol>
+        <Itinerary
+          stops={[
+            {
+              where: "Your team",
+              title: "Get your account",
+              body: "We set up your manufacturer login and two-step sign-in for your team.",
+            },
+            {
+              where: "On the line",
+              title: "Register your bags",
+              body: `Add serials as they come off the line, with a claim code for each box and a ${brand.core} inside.`,
+            },
+            {
+              where: "With your customers",
+              title: "Ship it",
+              body: "Owners add the bag in the app with the code. You see claims, health and alerts as they happen.",
+            },
+          ]}
+        />
       </section>
 
       <section className="trace-panel page-split">
@@ -540,29 +538,6 @@ function AppScreen({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-const howSteps = [
-  {
-    icon: <QrCode size={22} />,
-    title: "Pair it",
-    body: `Scan the QR code on the ${brand.core} in ${brand.app}. It’s yours in seconds.`,
-  },
-  {
-    icon: <Route size={22} />,
-    title: "Start a journey",
-    body: "Name the trip, set your airline’s limit, and lift the bag once to weigh it.",
-  },
-  {
-    icon: <Plane size={22} />,
-    title: "Travel",
-    body: "It reports as it goes, goes quiet in the air, and catches up after landing. Alerts reach you wherever you are.",
-  },
-  {
-    icon: <Check size={22} />,
-    title: "Arrive",
-    body: "End the journey for a summary: distance, impacts, weight and battery, in the app and by email.",
-  },
-];
-
 const howFaq = [
   [
     "I lost the claim card. Now what?",
@@ -597,16 +572,7 @@ export function HowItWorksPage() {
 
       <section className="trace-panel">
         <Head eyebrow="Four steps" title="Pair, pack, fly, arrive." />
-        <ol className="trace-steps">
-          {howSteps.map((step, index) => (
-            <li key={step.title}>
-              <span className="trace-step-icon">{step.icon}</span>
-              <small>Step {index + 1}</small>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </li>
-          ))}
-        </ol>
+        <Itinerary />
       </section>
 
       <section className="trace-panel page-split">

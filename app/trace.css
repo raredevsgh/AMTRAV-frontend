@@ -448,46 +448,6 @@
   color: var(--trace-signal);
 }
 
-/* How it works */
-.trace-steps {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.trace-steps li {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  padding: 24px;
-  border-radius: 24px;
-  background: var(--c-surface);
-}
-.trace-step-icon {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--trace-ink);
-  color: var(--trace-signal);
-}
-.trace-steps small {
-  color: var(--trace-accent);
-  font-weight: 700;
-}
-.trace-steps h3 {
-  font-size: 22px;
-  font-weight: 800;
-}
-.trace-steps p {
-  color: var(--trace-muted);
-  line-height: 1.6;
-}
-
 /* Smart Core */
 .trace-core {
   display: grid;
@@ -1004,37 +964,7 @@
   line-height: 1.55;
 }
 
-/* Security, battery and FAQ */
-.trace-points {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-.trace-points article {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  padding: 24px;
-  border-radius: 24px;
-  background: var(--c-surface);
-}
-.trace-points span {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--trace-ink);
-  color: var(--trace-signal);
-}
-.trace-points h3 {
-  font-size: 19px;
-  font-weight: 800;
-}
-.trace-points p {
-  color: var(--trace-muted);
-  line-height: 1.6;
-}
+/* Battery and FAQ */
 .trace-battery {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1394,11 +1324,9 @@
 }
 
 @media (max-width: 1100px) {
-  .trace-features,
-  .trace-points {
+  .trace-features {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .trace-steps,
   .trace-range {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1445,8 +1373,6 @@
     width: 100%;
   }
   .trace-features,
-  .trace-points,
-  .trace-steps,
   .trace-parts,
   .trace-battery-facts,
   .trace-form {
@@ -1487,39 +1413,6 @@
   }
   .journey-live i {
     animation: none;
-  }
-}
-
-/* Example routes, drifting under the hero */
-.trace-routes {
-  overflow: hidden;
-  padding: 14px 0;
-  border-radius: 999px;
-  background: var(--c-surface);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-.trace-routes-track {
-  display: flex;
-  gap: 28px;
-  width: max-content;
-  animation: trace-routes 48s linear infinite;
-}
-.trace-routes span {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--trace-muted);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-.trace-routes svg {
-  color: var(--trace-accent);
-}
-@keyframes trace-routes {
-  to {
-    transform: translateX(-50%);
   }
 }
 
@@ -1668,11 +1561,6 @@ html[data-theme="dark"] .trace-voices::before {
   }
   .trace-gate figure {
     aspect-ratio: 4 / 3;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .trace-routes-track {
-    animation: none;
   }
 }
 .trace-battery-photo {

@@ -30,6 +30,18 @@ Set `BACKEND_API_URL` to the backend's `/api/v1` address. The default matches th
 
 The landing page's company, product and range names, logos and colours live in `lib/brand.ts`. Override them at build time without editing code: `NEXT_PUBLIC_BRAND_COMPANY`, `_PRODUCT`, `_SHORT_PRODUCT`, `_CORE`, `_APP`, `_WORDMARK`, `_MARK`, `_INK`, `_NIGHT`, `_SIGNAL`, `_ACCENT`, and `_RANGE_ESSENTIAL` / `_FLAGSHIP` / `_PRO` / `_EXECUTIVE`. The film and product images in `public/video` and `public/images/trace` are rendered from the app's 3D models (`mobile-app/scripts/bag-models/render-media.mjs`).
 
+The landing film is an 18-second, silent 1080p loop with MP4 and WebM versions. The hero
+and “Watch the film” player use the same files; reduced-motion visitors see the matching
+poster. Regeneration instructions are in `../mobile-app/scripts/bag-models/README.md`.
+
+Marketing presentation rules live in `app/marketing-polish.css`: theme-aware contrast,
+44px primary controls, visible keyboard focus, responsive film framing, and restrained
+entrance motion. The hero and footer share a pause control. OS reduced-motion changes
+apply live; the background film also pauses offscreen, in hidden tabs, and while its
+dialog is open. The film dialog traps focus and restores it to its trigger on close.
+Hero text and media controls use the six typed locale dictionaries. These are
+WCAG 2.2-oriented improvements, not a claim of independently certified conformance.
+
 ## Account rules
 
 Administrators create manufacturer accounts. Mobile users sign up and log in with Google in the mobile app only. The console sends login requests directly; it polls private job receipts only for administrator-requested manufacturer creation.

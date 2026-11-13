@@ -1,6 +1,7 @@
 "use client";
 import { useId } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useReducedMotionPreference as useReducedMotion } from "./motion";
 import { Check, Fingerprint } from "lucide-react";
 import { useSiteStore } from "@/stores/site-store";
 export function FlightPath({ variant = "hero" }: { variant?: "hero" | "wide" }) {
