@@ -1775,14 +1775,18 @@
   letter-spacing: 0.2em;
   font-variant-numeric: tabular-nums;
 }
+/* Six boxes of up to 46px that narrow together where the card is narrower than them. */
 .otp-input {
   display: flex;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
 }
 .otp-input .otp-box {
   width: 46px;
+  min-width: 0;
   height: 54px;
-  flex: none;
+  flex: 0 1 46px;
   padding: 0;
   border: 1px solid var(--c-border);
   border-radius: 12px;
@@ -3037,10 +3041,15 @@ html[data-theme="dark"] .product-drop.filled {
 }
 @media (max-width: 640px) {
   .profile-identity {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     text-align: center;
     padding: 24px;
+  }
+  /* A long name, email or tag wraps inside the card instead of widening the page. */
+  .profile-who {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
   .profile-tags,
   .profile-facts {
@@ -3872,7 +3881,11 @@ html[data-theme="dark"] .auth-page .auth-main::before {
  * label beside its icon, as Clerk's dashboard sidebar. Narrow screens keep the row of icons.
  */
 .console-page .nav-label {
+  /* Pinned to the corner: left where the link puts it, the labels of icons scrolled out of
+     the phone's icon row escape the row and stretch the page, and Safari zooms out. */
   position: absolute;
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   overflow: hidden;
