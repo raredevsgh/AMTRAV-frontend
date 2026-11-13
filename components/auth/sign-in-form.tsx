@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OtpInput } from "@/components/console/otp-input";
-import { api } from "@/lib/console/api";
+import { api, ApiError } from "@/lib/console/api";
 import type { User } from "@/lib/console/types";
 import { getPasskey, usePasskeySupport } from "@/lib/console/webauthn";
 
@@ -58,6 +58,13 @@ export function SignInForm() {
         router.replace("/console");
       }
     } catch (error) {
+      // The second-factor challenge lasts five minutes; once it's gone, only signing in
+      // again helps, so go back to the password step instead of failing every code.
+      if (error instanceof ApiError && error.status === 410) {
+        setMethods(null);
+        setCode("");
+        setRecovery(false);
+      }
       setError(
         error instanceof Error ? error.message : "Could not sign in. Please try again.",
       );

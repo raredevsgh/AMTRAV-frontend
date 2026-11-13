@@ -191,7 +191,11 @@ async function handle(
       body = bytes.buffer;
       if (CHALLENGE_STEPS.has(path)) {
         if (!challenge) {
-          return json({ error: "Your verification expired. Sign in again." }, 401);
+          // 410, not 401: the sign-in form goes back to the password step on it.
+          return json(
+            { error: "That took more than five minutes, so enter your password again." },
+            410,
+          );
         }
         let fields: Record<string, unknown> = {};
         try {
