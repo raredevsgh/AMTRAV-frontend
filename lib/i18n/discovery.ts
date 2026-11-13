@@ -21,6 +21,10 @@ type DiscoveryCopy = {
   included: string;
   coreBody: string;
   airlineNote: string;
+  /** The hint under the 3D bag. */
+  turn: string;
+  /** Read out with the bag's name: what the 3D model is and how to turn it. */
+  model: string;
   finish: string;
   finishes: Record<"essential" | "flagship" | "pro" | "executive", string>;
   stories: Record<"essential" | "flagship" | "pro" | "executive", string>;
@@ -52,6 +56,8 @@ export const discovery: Record<Locale, DiscoveryCopy> = {
       "Location history, impact detection and built-in weighing, together in the Amortrav app.",
     airlineNote:
       "Cabin size and smart-luggage rules vary by airline. Check before you fly.",
+    turn: "Drag to turn",
+    model: "3D model. Drag, or use the arrow keys, to turn it.",
     finish: "Finish",
     finishes: {
       essential: "Graphite",
@@ -93,6 +99,9 @@ export const discovery: Record<Locale, DiscoveryCopy> = {
       "Historique des positions, détection des chocs et pesée intégrée, dans l’application Amortrav.",
     airlineNote:
       "Les dimensions cabine et les règles des bagages connectés varient selon la compagnie. Vérifiez avant le départ.",
+    turn: "Faites glisser pour tourner",
+    model:
+      "Modèle 3D. Faites-le glisser, ou utilisez les flèches du clavier, pour le tourner.",
     finish: "Finition",
     finishes: {
       essential: "Graphite",
@@ -134,6 +143,8 @@ export const discovery: Record<Locale, DiscoveryCopy> = {
       "Historial de ubicaciones, detección de impactos y pesaje integrado en la app Amortrav.",
     airlineNote:
       "El tamaño de cabina y las normas de equipaje inteligente varían según la aerolínea. Consulta antes de volar.",
+    turn: "Arrastra para girar",
+    model: "Modelo 3D. Arrástralo, o usa las flechas del teclado, para girarlo.",
     finish: "Acabado",
     finishes: {
       essential: "Grafito",
@@ -174,6 +185,8 @@ export const discovery: Record<Locale, DiscoveryCopy> = {
     coreBody: "Standortverlauf, Stoßerkennung und integrierte Waage in der Amortrav-App.",
     airlineNote:
       "Handgepäckmaße und Regeln für smartes Gepäck unterscheiden sich je nach Fluggesellschaft. Bitte vor dem Flug prüfen.",
+    turn: "Zum Drehen ziehen",
+    model: "3D-Modell. Zum Drehen ziehen oder die Pfeiltasten verwenden.",
     finish: "Oberfläche",
     finishes: {
       essential: "Graphit",
@@ -212,6 +225,8 @@ export const discovery: Record<Locale, DiscoveryCopy> = {
     included: "每款均配备",
     coreBody: "位置记录、碰撞检测与内置称重，尽在 Amortrav 应用中。",
     airlineNote: "各航空公司的登机尺寸及智能行李规定不同，请在出发前确认。",
+    turn: "拖动旋转",
+    model: "3D 模型。拖动或使用方向键即可旋转。",
     finish: "外观",
     finishes: {
       essential: "石墨灰",
@@ -247,6 +262,8 @@ export const discovery: Record<Locale, DiscoveryCopy> = {
     included: "每款均配備",
     coreBody: "位置紀錄、碰撞偵測與內建秤重，盡在 Amortrav 應用程式中。",
     airlineNote: "各航空公司的登機尺寸及智慧行李規定不同，請在出發前確認。",
+    turn: "拖曳旋轉",
+    model: "3D 模型。拖曳或使用方向鍵即可旋轉。",
     finish: "外觀",
     finishes: {
       essential: "石墨灰",

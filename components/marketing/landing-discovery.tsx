@@ -1,13 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Tabs } from "radix-ui";
 import { ArrowDown, ArrowRight, Cpu, Luggage, Route, ScanLine } from "lucide-react";
 import { useState } from "react";
-import { brand } from "@/lib/brand";
+import { brand, type RangeItem } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
 import { discovery } from "@/lib/i18n/discovery";
+import { BagViewer, type BagFinish, type BagModelName } from "./bag-viewer";
 import { Stagger } from "./motion";
 import "@/app/landing-discovery.css";
 
@@ -46,6 +46,29 @@ const finishes = {
   flagship: "#17314f",
   pro: "#a8afb9",
   executive: "#202124",
+};
+
+/**
+ * Which 3D model each bag uses and how its shell is finished. Flagship is the check-in
+ * model as rendered for the app; the others recolour its shell.
+ */
+const bags: Record<RangeItem["key"], { model: BagModelName; finish: BagFinish }> = {
+  essential: { model: "carry-on", finish: { color: "#3a3f47", roughness: 0.45 } },
+  flagship: { model: "check-in", finish: {} },
+  pro: {
+    model: "carry-on",
+    finish: { color: "#c4c9d0", metalness: 0.9, roughness: 0.3, clearcoat: 0.1 },
+  },
+  executive: {
+    model: "check-in",
+    finish: {
+      color: "#141518",
+      metalness: 0.05,
+      roughness: 0.2,
+      clearcoat: 1,
+      clearcoatRoughness: 0.05,
+    },
+  },
 };
 
 /** Manual selection keeps the product still until the visitor chooses to explore it. */
@@ -93,14 +116,15 @@ export function RangeExplorer() {
               <span className="ld-stageWord" aria-hidden="true">
                 {item.name}
               </span>
-              <div className="ld-productImage">
-                <Image
-                  src={item.image}
-                  alt={`${brand.company} ${item.name} · ${copy.finishes[item.key]}`}
-                  fill
-                  sizes="(max-width: 800px) 88vw, (max-width: 1440px) 48vw, 690px"
-                />
-              </div>
+              <BagViewer
+                className="ld-productImage"
+                model={bags[item.key].model}
+                finish={bags[item.key].finish}
+                label={`${brand.company} ${item.name} · ${copy.finishes[item.key]}`}
+                description={copy.model}
+                hint={copy.turn}
+                poster={item.image}
+              />
               <span className="ld-stageFoot">
                 <Cpu size={14} aria-hidden="true" /> {brand.core}
               </span>
