@@ -1,0 +1,10 @@
+/* Shop page actions (components/console/order-actions.tsx): a row's buttons side by side. */
+.console-table td.row-actions {
+  white-space: nowrap;
+}
+.row-actions {
+  text-align: right;
+}
+.row-actions > button + button {
+  margin-left: 6px;
+}

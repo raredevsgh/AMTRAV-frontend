@@ -17,13 +17,15 @@ export function validSection(section: string[]) {
       "alerts",
       "leads",
       "shop",
+      "support",
       "profile",
     ].includes(section[0]);
   return (
     section.length === 2 &&
     (section[0] === "devices" ||
       section[0] === "provision" ||
-      section[0] === "travellers") &&
+      section[0] === "travellers" ||
+      section[0] === "support") &&
     /^[0-9a-f-]{36}$/i.test(section[1])
   );
 }

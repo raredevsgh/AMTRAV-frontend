@@ -38,6 +38,7 @@ import type {
   BagStatus,
   Device,
   DeviceConfig,
+  IncidentDetail,
   FleetHealth,
   ImpactOutcome,
   ImpactReading,
@@ -48,6 +49,8 @@ import type {
 import { useConsole } from "./provider";
 import { AdminOnly, dateLabel, ErrorState, LoadingState, PageHeading, Tabs, timeLabel } from "./shared";
 import { ConsoleSelect } from "./select";
+import { IncidentDialog } from "./incidents";
+import { Button } from "@/components/ui/button";
 
 const PAGE = 50;
 
@@ -386,16 +389,30 @@ export function ImpactsPage() {
 const categories = Object.keys(categoryLabel) as AlertCategory[];
 
 /** What travellers were told about their bags, for support and investigation. */
+type AlertState = "open" | "new" | "escalated" | "resolved" | "all";
+
 export function AlertsPage() {
   const { user, base, preview } = useConsole();
+  const client = useQueryClient();
   const [category, setCategory] = useState<AlertCategory | "all">("all");
+  const [alertState, setAlertState] = useState<AlertState>("open");
+  const [incident, setIncident] = useState<string | null>(null);
+  const acknowledge = useMutation({
+    mutationFn: (alert: number) =>
+      api<IncidentDetail>(`admin/alerts/${alert}/incident`, { method: "POST", body: JSON.stringify({}) }),
+    onSuccess: (detail) => {
+      client.setQueryData(["incident", detail.incident.id], detail);
+      client.invalidateQueries({ queryKey: ["fleet-alerts"] });
+      setIncident(detail.incident.id);
+    },
+  });
   const alerts = useInfiniteQuery({
-    queryKey: ["fleet-alerts", category, preview],
+    queryKey: ["fleet-alerts", category, alertState, preview],
     initialPageParam: 0,
     queryFn: ({ pageParam, signal }) => {
       if (preview)
         return Promise.resolve(previewAlerts.filter((row) => category === "all" || row.category === category));
-      const params = new URLSearchParams({ limit: String(PAGE) });
+      const params = new URLSearchParams({ limit: String(PAGE), state: alertState });
       if (category !== "all") params.set("category", category);
       if (pageParam) params.set("before", String(pageParam));
       return api<AlertRecord[]>(`admin/alerts?${params}`, { signal });
@@ -409,11 +426,28 @@ export function AlertsPage() {
     <>
       <PageHeading
         title="Alerts"
-        description="Every alert travellers received about their bags, with whether they’ve seen it. Emails go out unless the traveller turned them off."
+        description="Every alert travellers received about their bags. Acknowledge one to take it on as an incident: assign it, escalate it and resolve it with what was done."
       />
+      {acknowledge.isError ? (
+        <p className="console-alert error" role="alert">
+          {acknowledge.error.message}
+        </p>
+      ) : null}
       <section className="console-card inventory-card">
         <div className="card-heading">
           <h2>Sent alerts</h2>
+          <Tabs
+            label="Filter by state"
+            value={alertState}
+            onChange={setAlertState}
+            options={[
+              { value: "open" as const, label: "Needs attention" },
+              { value: "new" as const, label: "New" },
+              { value: "escalated" as const, label: "Escalated" },
+              { value: "resolved" as const, label: "Resolved" },
+              { value: "all" as const, label: "All" },
+            ]}
+          />
           <Tabs
             label="Filter by kind"
             value={category}
@@ -452,7 +486,34 @@ export function AlertsPage() {
                     ) : null}
                   </small>
                 </div>
-                <span className={`read-state ${row.read_at ? "read" : ""}`}>{row.read_at ? "Seen" : "Unread"}</span>
+                <span className="alert-side">
+                  <span className={`read-state ${row.read_at ? "read" : ""}`}>{row.read_at ? "Seen" : "Unread"}</span>
+                  {row.incident_id ? (
+                    <button
+                      type="button"
+                      className={`incident-chip ${
+                        row.incident_status === "resolved" ? "resolved" : row.escalated ? "escalated" : "open"
+                      }`}
+                      onClick={() => setIncident(row.incident_id!)}
+                    >
+                      {row.incident_status === "resolved"
+                        ? "Resolved"
+                        : row.escalated
+                          ? "Escalated"
+                          : row.assignee_email
+                            ? `With ${row.assignee_email.split("@")[0]}`
+                            : "Unassigned"}
+                    </button>
+                  ) : preview ? null : (
+                    <Button
+                      className="console-secondary incident-ack"
+                      disabled={acknowledge.isPending}
+                      onClick={() => acknowledge.mutate(row.id)}
+                    >
+                      Acknowledge
+                    </Button>
+                  )}
+                </span>
               </li>
             ))}
           </ul>
@@ -465,6 +526,7 @@ export function AlertsPage() {
           noun="alerts"
         />
       </section>
+      <IncidentDialog id={incident} onClose={() => setIncident(null)} />
     </>
   );
 }

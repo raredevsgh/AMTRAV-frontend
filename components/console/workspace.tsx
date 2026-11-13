@@ -17,6 +17,7 @@ import { TravellerDetailPage, TravellersPage } from "./travellers";
 import { MessagesPage } from "./messages";
 import { AlertsPage, FleetHealthPage, ImpactsPage, LeadsPage } from "./trace";
 import { ShopPage } from "./shop";
+import { SupportPage } from "./support";
 import type { StaffRole } from "@/lib/console/types";
 
 export function Workspace({
@@ -40,6 +41,8 @@ export function Workspace({
       <LeadsPage />
     ) : page === "shop" ? (
       <ShopPage />
+    ) : page === "support" ? (
+      <SupportPage id={section[1]} />
     ) : page === "register" ? (
       <RegisterDevicePage />
     ) : page === "manufacturers" ? (

@@ -27,8 +27,9 @@ import {
   timeLabel,
 } from "./shared";
 import { ConsoleSelect } from "./select";
+import { RefundDialog, ResolveDialog, ReturnsCard, type OrderSummary } from "./order-actions";
 
-type OrderStatus = "pending" | "paid" | "shipped" | "expired" | "failed" | "review";
+type OrderStatus = "pending" | "paid" | "shipped" | "expired" | "failed" | "review" | "refunded";
 
 type ShopOrder = {
   id: string;
@@ -37,6 +38,7 @@ type ShopOrder = {
   email: string;
   items: { name: string; unit_minor: number; quantity: number }[];
   total_minor: number;
+  refunded_minor: number;
   currency: string;
   shipping: {
     name?: string;
@@ -81,6 +83,7 @@ const statusLabels: Record<OrderStatus, string> = {
   shipped: "Shipped",
   expired: "Expired",
   failed: "Failed",
+  refunded: "Refunded",
 };
 
 const reviewReasons: Record<string, string> = {
@@ -107,6 +110,8 @@ export function ShopPage() {
   const { user, preview } = useConsole();
   const [status, setStatus] = useState<OrderStatus | "all">("paid");
   const [shipping, setShipping] = useState<ShopOrder | null>(null);
+  const [refunding, setRefunding] = useState<OrderSummary | null>(null);
+  const [resolving, setResolving] = useState<OrderSummary | null>(null);
   const orders = useQuery({
     queryKey: ["shop-orders", status, preview],
     queryFn: ({ signal }) =>
@@ -183,7 +188,14 @@ export function ShopPage() {
                         .map((item) => `${item.name} × ${item.quantity}`)
                         .join(", ")}
                     </td>
-                    <td>{money(order.total_minor, order.currency)}</td>
+                    <td>
+                      {money(order.total_minor, order.currency)}
+                      {order.refunded_minor ? (
+                        <div className="field-hint">
+                          {money(order.refunded_minor, order.currency)} refunded
+                        </div>
+                      ) : null}
+                    </td>
                     <td className="message-cell" title={address(order)}>
                       {order.shipping?.name ? `${order.shipping.name}, ` : ""}
                       {address(order)}
@@ -206,13 +218,24 @@ export function ShopPage() {
                         <div className="field-hint">{order.tracking}</div>
                       ) : null}
                     </td>
-                    <td>
+                    <td className="row-actions">
+                      {order.status === "review" ? (
+                        <button className="console-secondary" onClick={() => setResolving(order)}>
+                          Resolve
+                        </button>
+                      ) : null}
                       {order.status === "paid" || order.status === "review" ? (
                         <button
                           className="console-secondary"
                           onClick={() => setShipping(order)}
                         >
                           <Truck size={16} /> Mark shipped
+                        </button>
+                      ) : null}
+                      {["paid", "shipped", "review"].includes(order.status) &&
+                      order.refunded_minor < order.total_minor ? (
+                        <button className="console-secondary" onClick={() => setRefunding(order)}>
+                          Refund
                         </button>
                       ) : null}
                     </td>
@@ -223,8 +246,11 @@ export function ShopPage() {
           </div>
         )}
       </section>
+      <ReturnsCard />
       <ProductsCard />
       <ShipDialog order={shipping} onClose={() => setShipping(null)} />
+      <RefundDialog order={refunding} onClose={() => setRefunding(null)} />
+      <ResolveDialog order={resolving} onClose={() => setResolving(null)} />
     </>
   );
 }

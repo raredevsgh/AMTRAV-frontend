@@ -1,0 +1,504 @@
+/*
+ * Console Support (components/console/support.tsx): the queue beside the conversation, like a
+ * mail client. Traveller messages sit left, staff replies right, internal notes in amber; the
+ * warranty claim's steps run above the conversation. On narrow screens one pane shows at a
+ * time.
+ */
+.support-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  min-height: calc(100dvh - 190px);
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  background: var(--c-surface);
+}
+.support-queue {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  border-right: 1px solid var(--c-border);
+}
+.support-filters {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 1px solid var(--c-border);
+}
+.support-filters .console-search {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  box-shadow: none;
+}
+.support-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.support-filter-row .segmented-control button {
+  padding: 6px 10px;
+}
+.support-list {
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.support-row {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-border);
+  color: inherit;
+  text-decoration: none;
+}
+.support-row:hover {
+  background: var(--c-tint);
+}
+.support-row[aria-current="page"] {
+  background: var(--c-tint);
+  box-shadow: inset 3px 0 0 var(--c-accent) !important;
+}
+.support-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.support-row-top strong {
+  flex: 1;
+  overflow: hidden;
+  color: var(--c-ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.support-row-top time {
+  flex: none;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+.support-unread {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-accent);
+}
+.support-row-meta,
+.support-row-preview {
+  overflow: hidden;
+  color: var(--c-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.support-row-preview {
+  color: color-mix(in srgb, var(--c-ink) 70%, transparent);
+}
+.support-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.support-tag {
+  padding: 2px 7px;
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  color: var(--c-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.support-tag.kind-warranty,
+.support-tag.kind-damage {
+  border-color: color-mix(in srgb, #8b5cf6 40%, transparent);
+  color: #8b5cf6;
+}
+.support-tag.kind-lost {
+  border-color: color-mix(in srgb, #e5484d 40%, transparent);
+  color: #e5484d;
+}
+.support-tag.priority-urgent {
+  border-color: transparent;
+  background: #e5484d;
+  color: #fff;
+}
+.support-tag.priority-high {
+  border-color: color-mix(in srgb, #d97706 45%, transparent);
+  color: #d97706;
+}
+.support-tag.status-waiting {
+  color: #3b82f6;
+}
+.support-tag.status-resolved,
+.support-tag.status-closed {
+  color: var(--c-muted);
+  opacity: 0.8;
+}
+.support-assignee {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--c-tint);
+  color: var(--c-ink);
+  font-size: 10px;
+  font-weight: 700;
+}
+.support-empty {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  color: var(--c-muted);
+  font-size: 14px;
+  text-align: center;
+}
+.support-empty p {
+  margin: 0;
+}
+.support-empty.pick {
+  height: 100%;
+}
+
+/* The conversation */
+.support-ticket {
+  min-width: 0;
+  min-height: 0;
+}
+.support-thread {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto auto;
+  height: 100%;
+  max-height: calc(100dvh - 190px);
+}
+.support-thread-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 22px 12px;
+}
+.support-thread-head h2 {
+  margin: 0 0 4px;
+  color: var(--c-ink);
+  font-size: 18px;
+  font-weight: 600;
+}
+.support-thread-head p {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.support-thread-head a {
+  color: var(--c-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.support-back {
+  display: none;
+  flex: none;
+  width: 36px;
+  padding: 0;
+}
+.support-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 22px 14px;
+  border-bottom: 1px solid var(--c-border);
+}
+.support-controls label {
+  display: grid;
+  gap: 4px;
+  min-width: 150px;
+}
+.support-controls label > span {
+  color: var(--c-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.support-messages {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  margin: 0;
+  padding: 20px 22px;
+  overflow-y: auto;
+  list-style: none;
+}
+.support-messages > li {
+  display: flex;
+}
+.support-messages > li.staff,
+.support-messages > li.internal {
+  justify-content: flex-end;
+}
+.support-bubble {
+  display: grid;
+  gap: 6px;
+  max-width: min(560px, 85%);
+  padding: 12px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: var(--c-surface);
+}
+.support-messages > li.staff .support-bubble {
+  border-color: transparent;
+  background: var(--c-tint);
+}
+.support-messages > li.internal .support-bubble {
+  border: 1px dashed color-mix(in srgb, #d97706 55%, transparent);
+  background: color-mix(in srgb, #f59e0b 9%, var(--c-surface));
+}
+.support-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.support-author time {
+  margin-left: auto;
+  padding-left: 12px;
+  font-weight: 400;
+}
+.support-bubble p {
+  margin: 0;
+  color: var(--c-ink);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.support-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.support-files button,
+.support-files.pending li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 260px;
+  padding: 6px 9px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.support-files button span,
+.support-files.pending li span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.support-files small {
+  color: var(--c-muted);
+}
+.support-files.pending button {
+  padding: 2px;
+  border: 0;
+  cursor: pointer;
+}
+.support-end {
+  height: 1px;
+}
+.support-closed {
+  margin: 0;
+  padding: 10px 22px;
+  border-top: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: 13px;
+}
+
+/* Writing a reply or a note */
+.support-composer {
+  display: grid;
+  gap: 10px;
+  padding: 14px 22px 18px;
+  border-top: 1px solid var(--c-border);
+}
+.support-composer .segmented-control {
+  justify-self: start;
+}
+.support-composer .segmented-control button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.support-composer textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 12px 14px;
+  resize: vertical;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.support-composer.internal textarea {
+  border-style: dashed;
+  border-color: color-mix(in srgb, #d97706 55%, transparent);
+  background: color-mix(in srgb, #f59e0b 6%, var(--c-surface));
+}
+.support-composer textarea:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 1px;
+}
+.support-composer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.support-hint {
+  margin-right: auto;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+/* The warranty claim */
+.support-claim {
+  display: grid;
+  gap: 12px;
+  margin: 14px 22px 0;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, #8b5cf6 35%, var(--c-border));
+  border-radius: 12px;
+  background: color-mix(in srgb, #8b5cf6 5%, var(--c-surface));
+}
+.support-claim-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.support-claim-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #8b5cf6 15%, transparent);
+  color: #8b5cf6;
+}
+.support-claim h3 {
+  margin: 0;
+  color: var(--c-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.support-claim-head p {
+  margin: 2px 0 0;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+.support-claim-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.support-claim-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.support-claim-steps li + li::before {
+  width: 18px;
+  border-top: 1.5px solid var(--c-border);
+  content: "";
+}
+.support-claim-steps li[data-state="done"],
+.support-claim-steps li[data-state="current"] {
+  color: var(--c-ink);
+  font-weight: 600;
+}
+.support-claim-steps li[data-state="current"] {
+  color: #8b5cf6;
+}
+.support-claim-note {
+  margin: 0;
+  color: var(--c-ink);
+  font-size: 13px;
+  font-style: italic;
+}
+.support-claim-actions {
+  display: grid;
+  gap: 10px;
+}
+.support-claim-actions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.support-claim-actions textarea,
+.support-serial input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font: inherit;
+  font-size: 13px;
+}
+.support-serial {
+  display: grid;
+  gap: 4px;
+  max-width: 280px;
+}
+.support-serial span,
+.support-claim-actions small {
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 960px) {
+  .support-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .support-layout.has-ticket .support-queue,
+  .support-layout:not(.has-ticket) .support-ticket {
+    display: none;
+  }
+  .support-queue {
+    border-right: 0;
+  }
+  .support-back {
+    display: inline-grid;
+    place-items: center;
+  }
+  .support-thread {
+    max-height: none;
+  }
+}

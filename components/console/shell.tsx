@@ -22,6 +22,7 @@ import {
   QrCode,
   ShieldCheck,
   Users,
+  LifeBuoy,
   Gauge,
   Zap,
   BellRing,
@@ -181,6 +182,7 @@ export function ConsoleShell({
           {
             label: "Customers",
             items: [
+              { label: "Support", path: "support", icon: LifeBuoy },
               { label: "Travellers", path: "travellers", icon: Users },
               { label: "Messages", path: "messages", icon: Megaphone },
               { label: "Leads", path: "leads", icon: Inbox },

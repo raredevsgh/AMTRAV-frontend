@@ -42,7 +42,9 @@ export function allowsEndpoint(path: string, method: string) {
     [/^admin\/(impacts|alerts|leads)$/, ["GET"]],
     [/^admin\/shop\/orders$/, ["GET"]],
     [/^admin\/shop\/products$/, ["GET", "POST"]],
-    [new RegExp(`^admin/shop/orders/${uuid}/ship$`), ["POST"]],
+    [new RegExp(`^admin/shop/orders/${uuid}/(ship|refund|resolve)$`), ["POST"]],
+    [/^admin\/shop\/returns$/, ["GET"]],
+    [new RegExp(`^admin/shop/returns/${uuid}$`), ["POST"]],
     [/^admin\/shop\/products\/[a-z0-9-]{2,40}$/, ["PATCH"]],
     [/^admin\/shop\/products\/[a-z0-9-]{2,40}\/image$/, ["POST"]],
     [/^admin\/fleet\/(health|firmware)$/, ["GET"]],
@@ -56,6 +58,17 @@ export function allowsEndpoint(path: string, method: string) {
     [new RegExp(`^devices/${uuid}/status$`), ["GET"]],
     [/^files$/, ["GET", "POST"]],
     [new RegExp(`^files/${uuid}/download$`), ["GET"]],
+    // Incidents: taking alerts on, and working them through to resolution.
+    [/^admin\/alerts\/\d{1,19}\/incident$/, ["POST"]],
+    [/^admin\/incidents$/, ["GET"]],
+    [new RegExp(`^admin/incidents/${uuid}$`), ["GET"]],
+    [new RegExp(`^admin/incidents/${uuid}/actions$`), ["POST"]],
+    // Support: the staff queue, conversations, warranty claims and their attachments.
+    [/^admin\/support\/tickets$/, ["GET"]],
+    [new RegExp(`^admin/support/tickets/${uuid}$`), ["GET", "PATCH"]],
+    [new RegExp(`^admin/support/tickets/${uuid}/messages$`), ["POST"]],
+    [new RegExp(`^admin/support/tickets/${uuid}/claim/(decision|progress)$`), ["POST"]],
+    [new RegExp(`^support/tickets/${uuid}/files/${uuid}$`), ["GET"]],
   ];
   return rules.some(
     ([pattern, methods]) => pattern.test(path) && methods.includes(method),

@@ -1,0 +1,388 @@
+/*
+ * Console Files (components/console/files.tsx): a file browser. Search and kind filters over
+ * a full-width table; drop files anywhere on it to upload. Each row opens the preview
+ * (file-preview.tsx), a wide dialog with the file itself between its name and its actions.
+ */
+.files-browser {
+  position: relative;
+  display: grid;
+  gap: 0;
+  padding: 8px 24px 20px;
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  background: var(--c-surface);
+}
+.files-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 12px 0 16px;
+}
+.files-toolbar .console-search {
+  flex: 0 1 300px;
+  min-height: 40px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  box-shadow: none;
+}
+.files-total {
+  margin-left: auto;
+  color: var(--c-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.files-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.files-table th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+}
+.files-table th:first-child,
+.files-table td:first-child {
+  width: 52%;
+  padding-left: 0;
+}
+.files-table th:last-child {
+  width: 96px;
+}
+.files-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.files-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--c-tint) 55%, transparent);
+}
+.files-type {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.files-size,
+.files-date {
+  font-variant-numeric: tabular-nums;
+}
+.files-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.files-actions .row-open {
+  margin-left: 6px;
+  border-radius: 8px;
+}
+.file-name {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.file-name strong {
+  overflow: hidden;
+  color: var(--c-ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The type, size and date under the name, only when their columns are hidden. */
+.file-name small {
+  display: none;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+.files-table .file-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+/* Each kind keeps its colour, so a list of files scans by type. */
+.file-icon.image {
+  background: color-mix(in srgb, #8b5cf6 14%, transparent);
+  color: #8b5cf6;
+}
+.file-icon.pdf {
+  background: color-mix(in srgb, #e5484d 14%, transparent);
+  color: #e5484d;
+}
+.file-icon.json {
+  background: color-mix(in srgb, #d99a06 16%, transparent);
+  color: #c98a00;
+}
+.file-icon.text {
+  background: color-mix(in srgb, #3b82f6 14%, transparent);
+  color: #3b82f6;
+}
+.file-icon.binary {
+  background: var(--c-tint);
+  color: var(--c-muted);
+}
+.files-uploading td {
+  color: var(--c-ink);
+  font-weight: 500;
+}
+.files-uploading .file-icon {
+  display: inline-grid;
+  margin-right: 14px;
+  vertical-align: middle;
+}
+.files-none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 36px 0;
+  color: var(--c-muted);
+  font-size: 14px;
+}
+.files-none p {
+  margin: 0;
+}
+.files-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+.files-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+  padding: 56px 24px;
+  border: 1.5px dashed var(--c-border);
+  border-radius: 12px;
+  text-align: center;
+}
+.files-empty > span {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 6px;
+  border-radius: 14px;
+  background: var(--c-tint);
+  color: var(--c-accent);
+}
+.files-empty h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.files-empty p {
+  max-width: 44ch;
+  margin: 0 0 8px;
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+/* Dragging files over the browser: the whole of it becomes the drop target. */
+.files-drop {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  border: 2px dashed var(--c-accent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--c-surface) 86%, transparent);
+  backdrop-filter: blur(2px);
+  color: var(--c-ink);
+  pointer-events: none;
+}
+.files-drop svg {
+  color: var(--c-accent);
+}
+.files-drop strong {
+  font-size: 16px;
+}
+.files-drop span {
+  color: var(--c-muted);
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .files-browser {
+    padding: 4px 16px 16px;
+  }
+  .files-total {
+    margin-left: 0;
+  }
+  .files-table th:not(:first-child, :last-child),
+  .files-table td:is(.files-type, .files-size, .files-date) {
+    display: none;
+  }
+  .files-table th:first-child,
+  .files-table td:first-child {
+    width: auto;
+  }
+  .file-name small {
+    display: block;
+  }
+}
+
+.file-open {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  margin: -6px 0 -6px -8px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.file-open:hover {
+  background: var(--c-tint);
+}
+.file-open:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+.console-dialog.file-preview {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  width: min(1040px, calc(100% - 2rem));
+  max-width: min(1040px, calc(100% - 2rem));
+  height: min(860px, calc(100dvh - 3rem));
+  padding: 24px;
+}
+.file-preview-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding-right: 32px;
+  text-align: left;
+}
+.file-preview-head > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.console-dialog.file-preview [data-slot="dialog-title"] {
+  overflow: hidden;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.console-dialog.file-preview [data-slot="dialog-description"] {
+  font-size: 13px;
+}
+.file-preview-body {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: var(--c-tint);
+}
+/* Images sit on a checkerboard, so transparency shows. */
+.file-preview-body.image {
+  place-items: center;
+  background-color: var(--c-surface);
+  background-image:
+    linear-gradient(45deg, var(--c-tint) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--c-tint) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--c-tint) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--c-tint) 75%);
+  background-position:
+    0 0,
+    0 10px,
+    10px -10px,
+    -10px 0;
+  background-size: 20px 20px;
+}
+.file-preview-body img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.file-preview-body iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #525659;
+}
+.file-preview-body:is(.json, .text, .binary) {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.file-preview-body pre {
+  margin: 0;
+  padding: 18px 20px;
+  overflow: auto;
+  color: var(--c-ink);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 2;
+  white-space: pre;
+}
+.file-preview-body.text pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.file-preview-body pre:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: -2px;
+}
+.file-preview-note {
+  margin: 0;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: 13px;
+}
+.file-preview-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--c-muted);
+  font-size: 14px;
+}
+/* Stepping through files on the left, Download on the right. */
+.console-dialog.file-preview .file-preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.file-preview-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--c-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.file-preview-step button {
+  width: 36px;
+  padding: 0;
+}
+@media (max-width: 640px) {
+  .console-dialog.file-preview {
+    height: calc(100dvh - 2rem);
+    padding: 18px;
+  }
+}

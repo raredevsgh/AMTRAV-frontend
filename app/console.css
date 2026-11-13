@@ -1078,30 +1078,6 @@
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
-.files-layout {
-  display: grid;
-  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.7fr);
-  gap: 24px;
-  align-items: start;
-}
-.upload-card {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-  padding: 36px 24px;
-  border: 1px dashed #b4c7e2;
-}
-.upload-card > svg {
-  color: var(--c-accent);
-}
-.upload-card p,
-.upload-card small {
-  color: var(--c-muted);
-  line-height: 1.6;
-  font-size: 12px;
-}
 .file-list {
   list-style: none;
   padding: 0;
@@ -1285,8 +1261,7 @@
   }
   .dashboard-two-col,
   .console-form-layout,
-  .detail-columns,
-  .files-layout {
+  .detail-columns {
     grid-template-columns: minmax(0, 1fr);
   }
   .auth-frame {

@@ -284,6 +284,57 @@ export interface AlertRecord {
   serial_number: string | null;
   user_id: string;
   owner_email: string;
+  /** The incident staff opened for it; absent until someone acknowledges it. */
+  incident_id?: string | null;
+  incident_status?: "acknowledged" | "resolved" | null;
+  escalated?: boolean;
+  assignee_email?: string | null;
+}
+
+export interface Incident {
+  id: string;
+  notification_id: number | null;
+  device_id: string | null;
+  device_serial: string | null;
+  owner_id: string | null;
+  owner_email: string | null;
+  category: AlertCategory;
+  title: string;
+  body: string;
+  alerted_at: string;
+  status: "acknowledged" | "resolved";
+  escalated: boolean;
+  assignee_id: string | null;
+  assignee_email: string | null;
+  resolution: string | null;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+}
+
+export interface IncidentDetail {
+  incident: Incident;
+  events: {
+    action:
+      | "acknowledged"
+      | "assigned"
+      | "unassigned"
+      | "escalated"
+      | "resolved"
+      | "reopened"
+      | "noted";
+    note: string | null;
+    actor_email: string | null;
+    created_at: string;
+  }[];
+  requests: {
+    id: string;
+    reference: string;
+    kind: string;
+    subject: string;
+    status: string;
+    created_at: string;
+  }[];
 }
 
 export interface DeviceHealth {
@@ -457,4 +508,72 @@ export interface Lead {
   product: "essential" | "flagship" | "pro" | "executive" | null;
   message: string | null;
   created_at: string;
+}
+
+// ---- Support and warranty ----
+
+export type TicketKind =
+  "question" | "damage" | "lost" | "tracker" | "order" | "warranty" | "other";
+export type TicketStatus = "open" | "waiting" | "resolved" | "closed";
+export type TicketPriority = "low" | "normal" | "high" | "urgent";
+export type ClaimStatus =
+  "submitted" | "approved" | "rejected" | "in_progress" | "completed";
+
+export interface StaffTicket {
+  id: string;
+  reference: string;
+  kind: TicketKind;
+  subject: string;
+  status: TicketStatus;
+  priority: TicketPriority;
+  owner_id: string;
+  owner_email: string;
+  owner_name: string | null;
+  assignee_id: string | null;
+  assignee_email: string | null;
+  device_id: string | null;
+  device_serial: string | null;
+  device_name: string | null;
+  activity_id: number | null;
+  created_at: string;
+  updated_at: string;
+  last_message_at: string;
+  preview: string | null;
+  unread: boolean;
+  claim_status: ClaimStatus | null;
+}
+
+export interface SupportAttachment {
+  id: string;
+  filename: string;
+  content_type: string;
+  size_bytes: number;
+}
+
+export interface SupportMessage {
+  id: string;
+  from_staff: boolean;
+  internal: boolean;
+  body: string;
+  author: string | null;
+  created_at: string;
+  attachments: SupportAttachment[];
+}
+
+export interface WarrantyClaim {
+  id: string;
+  part: "tracker" | "shell" | "wheels" | "handle" | "zip" | "other";
+  status: ClaimStatus;
+  resolution: "repair" | "replace" | null;
+  decision_note: string | null;
+  decided_at: string | null;
+  replacement_serial: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StaffTicketDetail {
+  ticket: StaffTicket;
+  messages: SupportMessage[];
+  claim: WarrantyClaim | null;
 }
