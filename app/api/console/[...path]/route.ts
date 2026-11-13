@@ -52,6 +52,19 @@ const cookieOptions = {
 const json = (body: unknown, status: number) =>
   NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 
+/**
+ * A request to the API that never follows a redirect, so tokens can't be carried elsewhere.
+ * Cloudflare's runtime has no `redirect: "error"`, so a redirect is refused here instead
+ * (the catch below answers 503).
+ */
+async function backend(input: URL | string, init: RequestInit) {
+  const response = await fetch(input, { ...init, redirect: "manual" });
+  if (response.status >= 300 && response.status < 400) {
+    throw new Error(`the API redirected (${response.status})`);
+  }
+  return response;
+}
+
 async function handle(
   request: Request,
   context: { params: Promise<{ path: string[] }> },
@@ -193,34 +206,31 @@ async function handle(
       }
     }
 
-    let upstream = await fetch(endpoint, {
+    let upstream = await backend(endpoint, {
       method,
       headers,
       body,
       cache: "no-store",
-      redirect: "error",
       signal: AbortSignal.timeout(
         path === "files" || path === "devices/batches" ? 60_000 : 15_000,
       ),
     });
 
     if (path === "auth/logout" && upstream.status === 401 && refresh) {
-      const rotated = await fetch(`${origin.replace(/\/$/, "")}/auth/refresh`, {
+      const rotated = await backend(`${origin.replace(/\/$/, "")}/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refresh }),
         cache: "no-store",
-        redirect: "error",
-        signal: AbortSignal.timeout(15_000),
+          signal: AbortSignal.timeout(15_000),
       });
       if (rotated.ok) {
         const pair = await rotated.json();
-        upstream = await fetch(endpoint, {
+        upstream = await backend(endpoint, {
           method: "POST",
           headers: { Authorization: `Bearer ${pair.access_token}` },
           cache: "no-store",
-          redirect: "error",
-          signal: AbortSignal.timeout(15_000),
+              signal: AbortSignal.timeout(15_000),
         });
       } else if (rotated.status === 401) {
         return clear(new NextResponse(null, { status: 204 }));
