@@ -5,6 +5,18 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-10",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // `wrangler deploy` (Workers Builds' deploy step, after `pnpm run build`) and `wrangler dev`
+  // first turn the Next.js build into the worker, and copy the prerendered pages into its assets.
+  "build": {
+    "command": "pnpm exec opennextjs-cloudflare build --skipNextBuild && pnpm exec opennextjs-cloudflare populateCache local",
+    "watch_dir": "app"
+  },
+  "vars": {
+    // Server-side only: where the console, shop and lead routes reach the API.
+    "BACKEND_API_URL": "https://dev.amortrav.com/api/v1"
+  },
+  // Keep variables and secrets set in the dashboard (the Mapbox token is a build variable there).
+  "keep_vars": true,
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
