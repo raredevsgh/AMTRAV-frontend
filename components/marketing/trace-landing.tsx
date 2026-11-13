@@ -221,22 +221,39 @@ function Hero({
   );
 }
 
-/** An explicitly labelled sample, formatted using the visitor's selected locale. */
+/**
+ * An explicitly labelled sample, formatted using the visitor's selected locale: the bag
+ * and its status, the flight as a route with the plane partway along it, three readings,
+ * and the latest alert.
+ */
 function LiveCard() {
   const { m, tag } = useI18n();
   const number = new Intl.NumberFormat(tag, { maximumFractionDigits: 1 });
+  const battery = 0.78;
   return (
     <aside className="trace-live-card" aria-label={m.landing.example}>
-      <div className="trace-live-top">
-        <span className="trace-dot" aria-hidden="true" />
-        {m.landing.travelling}
-        <b dir="ltr">ACC → LHR</b>
+      <div className="trace-live-head">
+        <strong>Tahoe</strong>
+        <span className="trace-live-status">
+          <span className="trace-dot" aria-hidden="true" />
+          {m.landing.travelling}
+        </span>
       </div>
-      <strong>Tahoe</strong>
+      <p className="trace-live-route" dir="ltr">
+        <b>ACC</b>
+        <span className="trace-live-path" aria-hidden="true">
+          <span className="trace-live-flown" />
+          <Plane size={14} />
+        </span>
+        <span className="trace-live-sr">→</span>
+        <b>LHR</b>
+      </p>
       <dl>
         <div>
           <dt>{m.landing.weight}</dt>
-          <dd>{number.format(21.4)} kg</dd>
+          <dd>
+            {number.format(21.4)} <small>kg</small>
+          </dd>
         </div>
         <div>
           <dt>{m.landing.impactCount}</dt>
@@ -244,12 +261,21 @@ function LiveCard() {
         </div>
         <div>
           <dt>{m.landing.battery}</dt>
-          <dd>{new Intl.NumberFormat(tag, { style: "percent" }).format(0.78)}</dd>
+          <dd>
+            {new Intl.NumberFormat(tag, { style: "percent" }).format(battery)}
+            <span className="trace-live-meter" aria-hidden="true">
+              <span style={{ width: `${battery * 100}%` }} />
+            </span>
+          </dd>
         </div>
       </dl>
       <p className="trace-live-alert">
-        <Zap size={14} aria-hidden="true" />
-        {m.landing.impactAlert} · {number.format(11.8)} g
+        <span className="trace-live-alert-icon" aria-hidden="true">
+          <Zap size={13} />
+        </span>
+        <span>
+          {m.landing.impactAlert} <b>{number.format(11.8)} g</b>
+        </span>
       </p>
     </aside>
   );

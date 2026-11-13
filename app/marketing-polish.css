@@ -119,15 +119,10 @@ html[data-theme="dark"] .site-shell {
 .trace-hero-capabilities svg {
   flex: none;
 }
+/* No frame around the film: it fades in from the page on every side, and the sample
+   journey floats over its lower edge, clear of the luggage. */
 .site-shell .trace-product-showcase {
   min-inline-size: 0;
-  padding: 6px;
-  border: 1px solid var(--marketing-line);
-  border-radius: 18px;
-  background: var(--c-surface);
-  box-shadow:
-    0 2px 4px rgb(0 0 0 / 2%),
-    0 20px 60px rgb(0 0 0 / 4%) !important;
 }
 .trace-showcase-toolbar,
 .trace-showcase-caption {
@@ -192,38 +187,191 @@ html[data-theme="dark"] .site-shell {
 .site-shell main .trace-product-showcase .trace-hero-stage {
   min-height: 0;
   aspect-ratio: auto;
-  border-radius: 12px;
+  overflow: visible;
+  border-radius: 0;
+  background: none;
   box-shadow: none !important;
 }
 .site-shell main .trace-product-showcase .trace-hero-visual {
+  /* An oval that's solid round the bag and gone before any edge, so no corner shows. */
+  --fade: radial-gradient(ellipse at 50% 46%, #000 38%, transparent 70%);
   position: relative;
   aspect-ratio: 16 / 10;
+  background: var(--trace-night);
+  -webkit-mask-image: var(--fade);
+  mask-image: var(--fade);
 }
+/* The sample journey as a flight strip on frosted navy: the bag and its status, the route
+   with the plane partway along, three readings split by hairlines, and the latest alert on
+   an amber wash that fades out. It floats over the film's faded lower edge. */
 .site-shell main .trace-product-showcase .trace-live-card {
   position: relative;
+  z-index: 1;
   inset: auto;
+  display: grid;
+  gap: 16px;
   width: auto;
-  margin: 0;
-  padding: 16px 20px;
-  border-radius: 0;
-  background: #101e32;
-  border-top: 1px solid #28384f;
-  box-shadow: none;
-  backdrop-filter: none;
+  margin: -72px 7% 0;
+  padding: 18px 20px 16px;
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgb(74 145 242 / 16%), transparent 60%),
+    linear-gradient(180deg, rgb(19 33 56 / 92%), rgb(11 21 38 / 94%));
+  color: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 8%),
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 24px 60px rgb(0 0 0 / 28%) !important;
+  backdrop-filter: saturate(1.4) blur(16px);
+  font-variant-numeric: tabular-nums;
 }
-.site-shell main .trace-product-showcase .trace-live-card > strong {
-  margin: 6px 0 10px;
-  font-size: 17px;
+.trace-live-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.trace-live-head strong {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.trace-live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--trace-signal) 12%, transparent);
+  color: var(--trace-signal);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.trace-live-status .trace-dot {
+  width: 6px;
+  height: 6px;
+}
+.site-shell main .trace-product-showcase .trace-live-route {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.trace-live-route b {
+  color: rgb(255 255 255 / 88%);
+  font-weight: 600;
+}
+/* A dashed route, the flown part drawn in blue up to the plane. */
+.trace-live-path {
+  position: relative;
+  flex: 1;
+  height: 14px;
+  background: linear-gradient(90deg, rgb(255 255 255 / 24%) 50%, transparent 0) center /
+    6px 1px repeat-x;
+}
+.trace-live-flown {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 62%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #4a91f2);
+  translate: 0 -50%;
+}
+.trace-live-path svg {
+  position: absolute;
+  top: 50%;
+  left: 62%;
+  color: #fff;
+  translate: -50% -50%;
+  rotate: 45deg;
+}
+.trace-live-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.site-shell main .trace-product-showcase .trace-live-card dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+}
+.site-shell main .trace-product-showcase .trace-live-card dl > div {
+  min-width: 0;
+  padding-inline: 14px;
+}
+.site-shell main .trace-product-showcase .trace-live-card dl > div:first-child {
+  padding-inline-start: 0;
+}
+.site-shell main .trace-product-showcase .trace-live-card dl > div + div {
+  border-inline-start: 1px solid rgb(255 255 255 / 8%);
+}
+.site-shell main .trace-product-showcase .trace-live-card dt {
+  color: rgb(255 255 255 / 55%);
+  font-size: 11px;
+}
+.site-shell main .trace-product-showcase .trace-live-card dd {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.site-shell main .trace-product-showcase .trace-live-card dd small {
+  color: rgb(255 255 255 / 60%);
+  font-size: 12px;
+  font-weight: 500;
+}
+.trace-live-meter {
+  display: block;
+  height: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgb(255 255 255 / 12%);
+}
+.trace-live-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--trace-signal);
 }
 .site-shell main .trace-product-showcase .trace-live-alert {
-  margin-top: 12px !important;
-  padding: 7px 9px;
-  font-size: 11px;
-  line-height: 1.5;
-  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 !important;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgb(245 165 36 / 18%), rgb(245 165 36 / 0%) 85%);
+  color: #ffd38a;
+  font-size: 12px;
+  line-height: 1.4;
 }
-.site-shell .trace-live-card {
-  font-variant-numeric: tabular-nums;
+.trace-live-alert-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgb(245 165 36 / 22%);
+  color: #ffc163;
+}
+.trace-live-alert b {
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
 }
 .site-shell .phone-sheet > small {
   color: #535965;
@@ -231,9 +379,6 @@ html[data-theme="dark"] .site-shell {
 .site-shell .phone-tiles span:not(.on) {
   background: #fff;
   color: #0e1014;
-}
-.site-shell .trace-live-card :is(dt, .trace-live-top b) {
-  color: #b7c2d2;
 }
 .site-shell .trace-head h2 {
   font-weight: 600;
@@ -370,6 +515,9 @@ html[data-theme="dark"] .site-shell {
   .trace-showcase-toolbar,
   .trace-showcase-caption {
     padding-inline: 8px;
+  }
+  .site-shell main .trace-product-showcase .trace-live-card {
+    margin: -48px 12px 0;
   }
   .trace-showcase-toolbar {
     gap: 0 8px;
