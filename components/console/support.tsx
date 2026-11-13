@@ -30,6 +30,7 @@ import type {
   TicketStatus,
 } from "@/lib/console/types";
 import { Button } from "@/components/ui/button";
+import { can } from "@/lib/console/roles";
 import { useConsole, useUsers } from "./provider";
 import { ConsoleSelect } from "./select";
 import { dateLabel, ErrorState, LoadingState, PageHeading } from "./shared";
@@ -268,7 +269,9 @@ function TicketView({ id }: { id: string }) {
   if (detail.isError)
     return <ErrorState message={detail.error.message} retry={() => detail.refetch()} />;
   const { ticket, messages, claim } = detail.data;
-  const staff = (users.data ?? []).filter((item) => item.role === "admin");
+  // Support staff and administrators answer requests; other staff can read them.
+  const handles = can(user.role, "support");
+  const staff = (users.data ?? []).filter((item) => can(item.role, "support"));
   const files: StoredFile[] = messages.flatMap((message) =>
     message.attachments.map((file) => ({
       ...file,
@@ -310,66 +313,78 @@ function TicketView({ id }: { id: string }) {
         </div>
       </header>
 
-      <div className="support-controls">
-        <label>
-          <span>Status</span>
-          <ConsoleSelect
-            compact
-            label="Status"
-            value={ticket.status}
-            disabled={change.isPending}
-            onValueChange={(status) => change.mutate({ status })}
-            options={Object.entries(statuses).map(([value, label]) => ({ value, label }))}
-          />
-        </label>
-        <label>
-          <span>Priority</span>
-          <ConsoleSelect
-            compact
-            label="Priority"
-            value={ticket.priority}
-            disabled={change.isPending}
-            onValueChange={(priority) => change.mutate({ priority })}
-            options={Object.entries(priorities).map(([value, label]) => ({
-              value,
-              label,
-            }))}
-          />
-        </label>
-        <label>
-          <span>Assigned to</span>
-          <ConsoleSelect
-            compact
-            label="Assigned to"
-            value={ticket.assignee_id ?? "none"}
-            disabled={change.isPending}
-            onValueChange={(assignee) => change.mutate({ assignee })}
-            options={[
-              { value: "none", label: "Nobody" },
-              ...(ticket.assignee_id &&
-              !staff.some((item) => item.id === ticket.assignee_id)
-                ? [
-                    {
-                      value: ticket.assignee_id,
-                      label: ticket.assignee_email ?? "Someone",
-                    },
-                  ]
-                : []),
-              ...staff.map((item) => ({
-                value: item.id,
-                label: item.id === user.id ? `${item.email} (you)` : item.email,
-              })),
-            ]}
-          />
-        </label>
-      </div>
+      {handles ? (
+        <div className="support-controls">
+          <label>
+            <span>Status</span>
+            <ConsoleSelect
+              compact
+              label="Status"
+              value={ticket.status}
+              disabled={change.isPending}
+              onValueChange={(status) => change.mutate({ status })}
+              options={Object.entries(statuses).map(([value, label]) => ({
+                value,
+                label,
+              }))}
+            />
+          </label>
+          <label>
+            <span>Priority</span>
+            <ConsoleSelect
+              compact
+              label="Priority"
+              value={ticket.priority}
+              disabled={change.isPending}
+              onValueChange={(priority) => change.mutate({ priority })}
+              options={Object.entries(priorities).map(([value, label]) => ({
+                value,
+                label,
+              }))}
+            />
+          </label>
+          <label>
+            <span>Assigned to</span>
+            <ConsoleSelect
+              compact
+              label="Assigned to"
+              value={ticket.assignee_id ?? "none"}
+              disabled={change.isPending}
+              onValueChange={(assignee) => change.mutate({ assignee })}
+              options={[
+                { value: "none", label: "Nobody" },
+                ...(ticket.assignee_id &&
+                !staff.some((item) => item.id === ticket.assignee_id)
+                  ? [
+                      {
+                        value: ticket.assignee_id,
+                        label: ticket.assignee_email ?? "Someone",
+                      },
+                    ]
+                  : []),
+                ...staff.map((item) => ({
+                  value: item.id,
+                  label: item.id === user.id ? `${item.email} (you)` : item.email,
+                })),
+              ]}
+            />
+          </label>
+        </div>
+      ) : (
+        <p className="support-readonly">
+          {statuses[ticket.status]} · {priorities[ticket.priority]} priority · assigned to{" "}
+          {ticket.assignee_email ?? "nobody"}
+        </p>
+      )}
       {change.isError ? (
         <p className="console-alert error" role="alert">
           {change.error.message}
         </p>
       ) : null}
 
-      {claim ? <ClaimPanel id={id} claim={claim} onChanged={refresh} /> : null}
+      {claim ? (
+        <ClaimPanel id={id} claim={claim} onChanged={refresh} manage={handles} />
+      ) : null}
 
       <ol className="support-messages">
         {messages.map((message) => (
@@ -427,13 +442,15 @@ function TicketView({ id }: { id: string }) {
         <li ref={end} className="support-end" aria-hidden="true" />
       </ol>
 
-      {ticket.status === "closed" ? (
+      {handles && ticket.status === "closed" ? (
         <p className="support-closed">
           This request is closed. Internal notes can still be added; the traveller would
           open a new request.
         </p>
       ) : null}
-      <Composer id={id} closed={ticket.status === "closed"} onSent={refresh} />
+      {handles ? (
+        <Composer id={id} closed={ticket.status === "closed"} onSent={refresh} />
+      ) : null}
       <FilePreview
         files={files}
         file={previewing}
@@ -623,10 +640,12 @@ function ClaimPanel({
   id,
   claim,
   onChanged,
+  manage,
 }: {
   id: string;
   claim: NonNullable<StaffTicketDetail["claim"]>;
   onChanged: () => void;
+  manage: boolean;
 }) {
   const [note, setNote] = useState("");
   const [serial, setSerial] = useState("");
@@ -693,7 +712,7 @@ function ClaimPanel({
         <p className="support-claim-note">“{claim.decision_note}”</p>
       ) : null}
 
-      {claim.status === "submitted" ? (
+      {!manage ? null : claim.status === "submitted" ? (
         <div className="support-claim-actions">
           <textarea
             rows={2}

@@ -1,4 +1,4 @@
-export type StaffRole = "admin" | "manufacturer";
+export type StaffRole = "admin" | "manufacturer" | "support" | "operations" | "finance" | "read_only";
 
 export interface User {
   id: string;
@@ -432,6 +432,15 @@ export interface FirmwareRelease {
   downloading: number;
   installed: number;
   failed: number;
+  /** The rollout pauses itself once `min_failures` installs fail and failures reach this share. */
+  max_failure_percent: number;
+  min_failures: number;
+  /** When it paused itself, and why. */
+  auto_paused_at: string | null;
+  pause_reason: string | null;
+  /** Where bags running it go back to while it's paused. */
+  rollback_release_id: string | null;
+  rollback_version: string | null;
 }
 
 export interface FirmwareInstall {

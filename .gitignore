@@ -48,3 +48,8 @@ next-env.d.ts
 
 # Copied from @sqlite.org/sqlite-wasm by scripts/copy-sqlite.mjs
 /public/sqlite/
+
+# cloudflare (OpenNext build output and wrangler state)
+/.open-next/
+/.wrangler/
+.dev.vars*

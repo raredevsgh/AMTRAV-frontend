@@ -2533,6 +2533,21 @@ img.traveller-initials {
   font-size: 11px;
   word-break: break-all;
 }
+/* A rollout as read-only staff see it. */
+.release-terms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 20px;
+  margin: 14px 0 4px;
+}
+.release-terms dt {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+.release-terms dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
 button.mfa-switch {
   display: block;
   margin-top: 10px;

@@ -1,3 +1,11 @@
 allowBuilds:
+  # The Cloudflare build (OpenNext and wrangler) needs these two to install their native binaries.
+  esbuild: true
+  workerd: true
   sharp: false
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  - '@opennextjs/aws@4.1.16'
+  - '@opennextjs/cloudflare@1.20.17'
+  - miniflare@5.20261110.2-beta
+  - wrangler@4.161.0

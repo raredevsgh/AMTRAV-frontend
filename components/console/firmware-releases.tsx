@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { KeyRound, Rocket, Upload } from "lucide-react";
+import { ConsoleSelect } from "./select";
 import { api, apiResponse, ApiError } from "@/lib/console/api";
 import type {
   FirmwareRelease,
@@ -8,6 +9,7 @@ import type {
   ReleaseStatus,
   SigningKey,
 } from "@/lib/console/types";
+import { can } from "@/lib/console/roles";
 import { useConsole } from "./provider";
 import { dateLabel, ErrorState, LoadingState, timeLabel } from "./shared";
 
@@ -35,23 +37,25 @@ function message(error: unknown, fallback: string) {
   return error instanceof ApiError ? error.message : fallback;
 }
 
-/** Signed firmware releases: upload, staged rollout and where each bag got to (admins). */
+/** Signed firmware releases: upload, staged rollout and where each bag got to. Every staff role
+ * can follow a rollout; operations and administrators upload and change them. */
 export function FirmwareReleases() {
   const { user, preview } = useConsole();
-  const admin = user.role === "admin" && !preview;
+  const staff = can(user.role, "read") && !preview;
+  const manage = staff && can(user.role, "firmware");
   const [selected, setSelected] = useState<string | null>(null);
   const key = useQuery({
     queryKey: ["firmware-signing-key"],
     queryFn: ({ signal }) => api<SigningKey>("admin/firmware/signing-key", { signal }),
-    enabled: admin,
+    enabled: staff,
   });
   const releases = useQuery({
     queryKey: ["firmware-releases"],
     queryFn: ({ signal }) => api<FirmwareRelease[]>("admin/firmware/releases", { signal }),
-    enabled: admin,
+    enabled: staff,
     refetchInterval: 30_000,
   });
-  if (!admin) return null;
+  if (!staff) return null;
   const chosen = releases.data?.find((release) => release.id === selected) ?? null;
   return (
     <>
@@ -84,7 +88,7 @@ export function FirmwareReleases() {
         )}
       </section>
 
-      {key.data?.configured ? <UploadRelease /> : null}
+      {manage && key.data?.configured ? <UploadRelease /> : null}
 
       <section className="console-card">
         <div className="card-heading">
@@ -127,7 +131,9 @@ export function FirmwareReleases() {
                       <div className="cell-sub">{size(release.size_bytes)}</div>
                     </td>
                     <td>
-                      <span className={`trace-badge ${statusBadge[release.status]}`}>{statusLabel[release.status]}</span>
+                      <span className={`trace-badge ${release.auto_paused_at ? "severe" : statusBadge[release.status]}`}>
+                        {release.auto_paused_at ? "Stopped itself" : statusLabel[release.status]}
+                      </span>
                     </td>
                     <td>
                       {release.rollout_percent}%
@@ -145,7 +151,14 @@ export function FirmwareReleases() {
         )}
       </section>
 
-      {chosen ? <ManageRelease key={`${chosen.id}-${chosen.updated_at}`} release={chosen} /> : null}
+      {chosen ? (
+        <ManageRelease
+          key={`${chosen.id}-${chosen.updated_at}`}
+          release={chosen}
+          releases={releases.data ?? []}
+          manage={manage}
+        />
+      ) : null}
     </>
   );
 }
@@ -244,9 +257,20 @@ function UploadRelease() {
   );
 }
 
-function ManageRelease({ release }: { release: FirmwareRelease }) {
+function ManageRelease({
+  release,
+  releases,
+  manage,
+}: {
+  release: FirmwareRelease;
+  releases: FirmwareRelease[];
+  manage: boolean;
+}) {
   const queryClient = useQueryClient();
   const [percent, setPercent] = useState(String(release.rollout_percent));
+  const [failurePercent, setFailurePercent] = useState(String(release.max_failure_percent));
+  const [minFailures, setMinFailures] = useState(String(release.min_failures));
+  const [rollbackTo, setRollbackTo] = useState(release.rollback_release_id ?? "none");
   const [devices, setDevices] = useState(release.rollout_devices.join("\n"));
   const [notes, setNotes] = useState(release.notes ?? "");
   const detail = useQuery({
@@ -266,7 +290,14 @@ function ManageRelease({ release }: { release: FirmwareRelease }) {
   const validList = listed.every((value) => /^[0-9a-fA-F-]{36}$/.test(value));
   function save(event: FormEvent) {
     event.preventDefault();
-    change.mutate({ rollout_percent: Number(percent), rollout_devices: listed, notes });
+    change.mutate({
+      rollout_percent: Number(percent),
+      rollout_devices: listed,
+      notes,
+      max_failure_percent: Number(failurePercent),
+      min_failures: Number(minFailures),
+      rollback_to: rollbackTo,
+    });
   }
   const retired = release.status === "retired";
   return (
@@ -282,8 +313,43 @@ function ManageRelease({ release }: { release: FirmwareRelease }) {
           SHA-256 <code>{release.sha256}</code>
         </span>
       </div>
+      {release.auto_paused_at ? (
+        <p className="console-alert error" role="status">
+          Stopped itself {timeLabel(release.auto_paused_at)}: {release.pause_reason}.{" "}
+          {release.rollback_version
+            ? `Bags running ${release.version} are being offered ${release.rollback_version}, the last release that installed cleanly.`
+            : "No earlier release installed cleanly, so bags stay on it until you choose one to roll back to."}{" "}
+          {manage ? "Resume once it’s fixed, or retire it." : null}
+        </p>
+      ) : null}
       {retired ? (
         <p className="cell-sub">Retired: no longer offered, and can’t be changed.</p>
+      ) : !manage ? (
+        <dl className="release-terms">
+          <div>
+            <dt>Share of all bags</dt>
+            <dd>
+              {release.rollout_percent}%
+              {release.rollout_devices.length ? ` + ${release.rollout_devices.length} listed` : ""}
+            </dd>
+          </div>
+          <div>
+            <dt>Stops itself at</dt>
+            <dd>
+              {release.max_failure_percent}% failed, once {release.min_failures} have
+            </dd>
+          </div>
+          <div>
+            <dt>Rolls back to</dt>
+            <dd>{release.rollback_version ?? "The last release that installed cleanly"}</dd>
+          </div>
+          {release.notes ? (
+            <div>
+              <dt>Notes</dt>
+              <dd>{release.notes}</dd>
+            </div>
+          ) : null}
+        </dl>
       ) : (
         <form className="console-form" onSubmit={save}>
           <div className="threshold-grid">
@@ -304,6 +370,47 @@ function ManageRelease({ release }: { release: FirmwareRelease }) {
             <label className="field">
               <span>Notes</span>
               <input className="console-input" value={notes} maxLength={500} onChange={(event) => setNotes(event.target.value)} />
+            </label>
+          </div>
+          <div className="threshold-grid">
+            <label className="field">
+              <span>Stop when failures reach</span>
+              <div className="unit-input">
+                <input
+                  className="console-input"
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={failurePercent}
+                  onChange={(event) => setFailurePercent(event.target.value)}
+                />
+                <i>%</i>
+              </div>
+            </label>
+            <label className="field">
+              <span>…once at least this many fail</span>
+              <input
+                className="console-input"
+                type="number"
+                min={1}
+                max={1000}
+                value={minFailures}
+                onChange={(event) => setMinFailures(event.target.value)}
+              />
+            </label>
+            <label className="field">
+              <span>If it stops, roll bags back to</span>
+              <ConsoleSelect
+                label="Roll bags back to"
+                value={rollbackTo}
+                onValueChange={setRollbackTo}
+                options={[
+                  { value: "none", label: "The last release that installed cleanly" },
+                  ...releases
+                    .filter((other) => other.id !== release.id && other.status !== "draft")
+                    .map((other) => ({ value: other.id, label: other.version })),
+                ]}
+              />
             </label>
           </div>
           <label className="field">

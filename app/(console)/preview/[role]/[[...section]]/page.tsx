@@ -11,7 +11,13 @@ async function Content({
   params: Promise<{ role: string; section?: string[] }>;
 }) {
   const { role, section = [] } = await params;
-  if (process.env.NODE_ENV === "production" || !isStaff(role) || !validSection(section))
+  // Demo data exists for the admin and manufacturer consoles.
+  if (
+    process.env.NODE_ENV === "production" ||
+    !isStaff(role) ||
+    !["admin", "manufacturer"].includes(role) ||
+    !validSection(section)
+  )
     notFound();
   return <Workspace section={section} previewRole={role} />;
 }

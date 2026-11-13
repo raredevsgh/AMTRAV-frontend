@@ -1,3 +1,4 @@
+import type { StaffRole } from "./types";
 const uuid = "[0-9a-fA-F-]{36}";
 
 // Keep the same-origin gateway limited to the console's supported operations.
@@ -79,6 +80,9 @@ export function isSameOrigin(request: Request) {
   return request.headers.get("origin") === new URL(request.url).origin;
 }
 
-export function isStaff(role: unknown): role is "admin" | "manufacturer" {
-  return role === "admin" || role === "manufacturer";
+const staffRoles = ["admin", "manufacturer", "support", "operations", "finance", "read_only"];
+
+/** Roles that sign in to the console (everyone but travellers). */
+export function isStaff(role: unknown): role is StaffRole {
+  return typeof role === "string" && staffRoles.includes(role);
 }

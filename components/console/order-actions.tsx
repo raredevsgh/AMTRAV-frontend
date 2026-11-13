@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { can } from "@/lib/console/roles";
 import { useConsole } from "./provider";
 import { ErrorState, LoadingState, Tabs, timeLabel } from "./shared";
 import "@/app/order-actions.css";
@@ -265,7 +266,11 @@ export function ResolveDialog({
 type View = "open" | "completed" | "rejected" | "all";
 
 export function ReturnsCard() {
-  const { preview } = useConsole();
+  const { preview, user } = useConsole();
+  // Support or finance decide; whoever ships can log a bag coming back; refunds are finance's.
+  const decides = can(user.role, "support") || can(user.role, "money");
+  const logs = decides || can(user.role, "fulfil");
+  const refunds = can(user.role, "money");
   const [view, setView] = useState<View>("open");
   const [working, setWorking] = useState<{
     row: ReturnRow;
@@ -354,23 +359,25 @@ export function ReturnsCard() {
                   </td>
                   <td className="row-actions">
                     {row.status === "requested" ? (
-                      <>
-                        <button
-                          className="console-secondary"
-                          onClick={() => setWorking({ row, action: "approve" })}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className="console-secondary"
-                          onClick={() => setWorking({ row, action: "reject" })}
-                        >
-                          Reject
-                        </button>
-                      </>
+                      decides ? (
+                        <>
+                          <button
+                            className="console-secondary"
+                            onClick={() => setWorking({ row, action: "approve" })}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="console-secondary"
+                            onClick={() => setWorking({ row, action: "reject" })}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : null
                     ) : row.status === "approved" ? (
                       <>
-                        {row.kind === "return" ? (
+                        {logs && row.kind === "return" ? (
                           <button
                             className="console-secondary"
                             onClick={() => setWorking({ row, action: "receive" })}
@@ -378,14 +385,17 @@ export function ReturnsCard() {
                             Received
                           </button>
                         ) : null}
-                        <button
-                          className="console-secondary"
-                          onClick={() => setWorking({ row, action: "complete" })}
-                        >
-                          Complete
-                        </button>
+                        {(row.kind === "return" ? refunds : logs) ? (
+                          <button
+                            className="console-secondary"
+                            onClick={() => setWorking({ row, action: "complete" })}
+                          >
+                            Complete
+                          </button>
+                        ) : null}
                       </>
-                    ) : row.status === "received" ? (
+                    ) : row.status === "received" &&
+                      (row.kind === "return" ? refunds : logs) ? (
                       <button
                         className="console-secondary"
                         onClick={() => setWorking({ row, action: "complete" })}

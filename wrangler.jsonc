@@ -1,0 +1,26 @@
+// The website on Cloudflare Workers, built with OpenNext (pnpm run deploy, or Workers Builds).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "amortrav",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-10",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Lets the worker call itself; the name must match the worker's.
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "amortrav"
+    }
+  ],
+  "images": {
+    // next/image resizing through Cloudflare Images.
+    "binding": "IMAGES"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

@@ -7,9 +7,6 @@ import { messagesFor } from "@/lib/i18n";
 
 type Props = { params: Promise<{ lang: string; sku: string }> };
 
-// Its title comes from the URL, as the layout's content does.
-export const instant = false;
-
 /** The SKU names the bag ("flagship" → Flagship); its page loads the rest. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, sku } = await params;

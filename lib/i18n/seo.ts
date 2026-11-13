@@ -55,8 +55,7 @@ export function languageAlternates(path: SitePage, absolute = false) {
 /**
  * A page's generateMetadata: what `page` returns for its language (a translated title, say),
  * plus its canonical address, its translations and an Open Graph locale. It reads the URL's
- * language, so a page using it exports `instant = false`, as the [lang] layout does: every
- * language is built ahead of time, but no shell is shared between them.
+ * language, and every language's pages are built ahead of time.
  */
 export function localizedMetadata(
   path: SitePage,

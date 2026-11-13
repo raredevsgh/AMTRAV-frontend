@@ -24,6 +24,7 @@ import {
   SlidersHorizontal,
   Zap,
 } from "lucide-react";
+import { can } from "@/lib/console/roles";
 import { api, ApiError } from "@/lib/console/api";
 import {
   previewAlerts,
@@ -141,11 +142,11 @@ export function FleetHealthPage() {
       preview
         ? Promise.resolve(previewFleetHealth)
         : api<FleetHealth>(`admin/fleet/health?filter=${filter}&limit=${PAGE}&offset=${page * PAGE}`, { signal }),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
     placeholderData: keepPreviousData,
     refetchInterval: 60_000,
   });
-  if (user.role !== "admin") return <AdminOnly what="Fleet health" />;
+  if (!can(user.role, "read")) return <AdminOnly what="Fleet health" />;
   const counts = health.data?.counts;
   const tiles: { label: string; value: number | undefined; detail: string; filter: HealthFilter }[] = [
     { label: "Reporting", value: counts?.reporting, detail: `of ${counts?.total ?? "—"} bags in the last 24 h`, filter: "all" },
@@ -289,9 +290,9 @@ export function ImpactsPage() {
       return api<ImpactReview[]>(`admin/impacts?${params}`, { signal });
     },
     getNextPageParam: (last) => (last.length === PAGE ? last[last.length - 1].id : undefined),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
-  if (user.role !== "admin") return <AdminOnly what="Impacts" />;
+  if (!can(user.role, "read")) return <AdminOnly what="Impacts" />;
   const rows = impacts.data?.pages.flat() ?? [];
   return (
     <>
@@ -418,9 +419,9 @@ export function AlertsPage() {
       return api<AlertRecord[]>(`admin/alerts?${params}`, { signal });
     },
     getNextPageParam: (last) => (last.length === PAGE ? last[last.length - 1].id : undefined),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
-  if (user.role !== "admin") return <AdminOnly what="Alerts" />;
+  if (!can(user.role, "read")) return <AdminOnly what="Alerts" />;
   const rows = alerts.data?.pages.flat() ?? [];
   return (
     <>
@@ -504,7 +505,7 @@ export function AlertsPage() {
                             ? `With ${row.assignee_email.split("@")[0]}`
                             : "Unassigned"}
                     </button>
-                  ) : preview ? null : (
+                  ) : preview || !can(user.role, "incidents") ? null : (
                     <Button
                       className="console-secondary incident-ack"
                       disabled={acknowledge.isPending}
@@ -563,9 +564,9 @@ export function LeadsPage() {
       return api<Lead[]>(`admin/leads?${params}`, { signal });
     },
     getNextPageParam: (last) => (last.length === PAGE ? last[last.length - 1].created_at : undefined),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
-  if (user.role !== "admin") return <AdminOnly what="Leads" />;
+  if (!can(user.role, "read")) return <AdminOnly what="Leads" />;
   const rows = leads.data?.pages.flat() ?? [];
   function download() {
     const blob = new Blob([csv(rows)], { type: "text/csv;charset=utf-8" });
@@ -686,7 +687,9 @@ const thresholdFields: { key: keyof Omit<DeviceConfig, "updated_at">; label: str
 
 function ThresholdsForm({ id, config }: { id: string; config: DeviceConfig }) {
   const queryClient = useQueryClient();
-  const { preview } = useConsole();
+  const { preview, user } = useConsole();
+  // Seen by all staff; changed by operations and administrators.
+  const locked = preview || !can(user.role, "fleet");
   const [values, setValues] = useState(() =>
     Object.fromEntries(thresholdFields.map((field) => [field.key, String(config[field.key])])),
   );
@@ -732,7 +735,7 @@ function ThresholdsForm({ id, config }: { id: string; config: DeviceConfig }) {
       ) : null}
       <div className="form-actions">
         <small>{config.updated_at ? `Last changed ${timeLabel(config.updated_at)}` : "Using the fleet defaults"}</small>
-        <button className="console-button" disabled={save.isPending || preview}>
+        <button className="console-button" disabled={save.isPending || locked}>
           {save.isPending ? "Saving…" : "Save thresholds"}
         </button>
       </div>
@@ -740,9 +743,10 @@ function ThresholdsForm({ id, config }: { id: string; config: DeviceConfig }) {
   );
 }
 
+/** Amortrav staff see each bag's live state and readings; manufacturers don't. */
 function useAdminView() {
   const { user, preview } = useConsole();
-  return user.role === "admin" && !preview;
+  return can(user.role, "read") && !preview;
 }
 
 /** One bag's live state and Travel-Ready checks (admins). */

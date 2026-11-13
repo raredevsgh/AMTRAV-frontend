@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { can } from "@/lib/console/roles";
 import { useConsole, useUsers } from "./provider";
 import { ConsoleSelect } from "./select";
 import { dateLabel, ErrorState, LoadingState } from "./shared";
@@ -94,7 +95,9 @@ function IncidentView({ id }: { id: string }) {
     return <ErrorState message={detail.error.message} retry={() => detail.refetch()} />;
   const { incident, events, requests } = detail.data;
   const resolved = incident.status === "resolved";
-  const staff = (users.data ?? []).filter((item) => item.role === "admin");
+  // Incidents are worked by support, operations and administrators; other staff can follow them.
+  const handles = can(user.role, "incidents");
+  const staff = (users.data ?? []).filter((item) => can(item.role, "incidents"));
   const typed = note.trim();
 
   return (
@@ -124,32 +127,38 @@ function IncidentView({ id }: { id: string }) {
       </DialogHeader>
 
       <div className="incident-controls">
-        <label>
-          <span>Assigned to</span>
-          <ConsoleSelect
-            compact
-            label="Assigned to"
-            value={incident.assignee_id ?? "none"}
-            disabled={act.isPending}
-            onValueChange={(assignee) => act.mutate({ action: "assign", assignee })}
-            options={[
-              { value: "none", label: "Nobody" },
-              ...(incident.assignee_id &&
-              !staff.some((item) => item.id === incident.assignee_id)
-                ? [
-                    {
-                      value: incident.assignee_id,
-                      label: incident.assignee_email ?? "Someone",
-                    },
-                  ]
-                : []),
-              ...staff.map((item) => ({
-                value: item.id,
-                label: item.id === user.id ? `${item.email} (you)` : item.email,
-              })),
-            ]}
-          />
-        </label>
+        {handles ? (
+          <label>
+            <span>Assigned to</span>
+            <ConsoleSelect
+              compact
+              label="Assigned to"
+              value={incident.assignee_id ?? "none"}
+              disabled={act.isPending}
+              onValueChange={(assignee) => act.mutate({ action: "assign", assignee })}
+              options={[
+                { value: "none", label: "Nobody" },
+                ...(incident.assignee_id &&
+                !staff.some((item) => item.id === incident.assignee_id)
+                  ? [
+                      {
+                        value: incident.assignee_id,
+                        label: incident.assignee_email ?? "Someone",
+                      },
+                    ]
+                  : []),
+                ...staff.map((item) => ({
+                  value: item.id,
+                  label: item.id === user.id ? `${item.email} (you)` : item.email,
+                })),
+              ]}
+            />
+          </label>
+        ) : (
+          <p className="incident-assignee">
+            Assigned to {incident.assignee_email ?? "nobody"}
+          </p>
+        )}
         {incident.resolution ? (
           <p className="incident-resolution">
             <CheckCircle2 size={15} /> {incident.resolution}
@@ -157,74 +166,79 @@ function IncidentView({ id }: { id: string }) {
         ) : null}
       </div>
 
-      <div className="incident-compose">
-        <textarea
-          rows={3}
-          maxLength={1000}
-          value={note}
-          onChange={(event) => setNote(event.target.value)}
-          placeholder={
-            resolved
-              ? "Why it's being reopened (optional)"
-              : "A note, or what was done to resolve it"
-          }
-          aria-label="Note"
-        />
-        <div>
-          {resolved ? (
-            <Button
-              className="console-secondary"
-              disabled={act.isPending}
-              onClick={() =>
-                act.mutate({ action: "reopen", ...(typed ? { note: typed } : {}) })
-              }
-            >
-              <RotateCcw size={15} /> Reopen
-            </Button>
-          ) : (
-            <>
+      {handles ? (
+        <div className="incident-compose">
+          <textarea
+            rows={3}
+            maxLength={1000}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            placeholder={
+              resolved
+                ? "Why it's being reopened (optional)"
+                : "A note, or what was done to resolve it"
+            }
+            aria-label="Note"
+          />
+          <div>
+            {resolved ? (
               <Button
                 className="console-secondary"
-                disabled={act.isPending || !typed}
-                onClick={() => act.mutate({ action: "note", note: typed })}
+                disabled={act.isPending}
+                onClick={() =>
+                  act.mutate({ action: "reopen", ...(typed ? { note: typed } : {}) })
+                }
               >
-                <StickyNote size={15} /> Add note
+                <RotateCcw size={15} /> Reopen
               </Button>
-              {!incident.escalated ? (
+            ) : (
+              <>
                 <Button
-                  className="console-danger"
-                  disabled={act.isPending}
-                  onClick={() =>
-                    act.mutate({ action: "escalate", ...(typed ? { note: typed } : {}) })
-                  }
+                  className="console-secondary"
+                  disabled={act.isPending || !typed}
+                  onClick={() => act.mutate({ action: "note", note: typed })}
                 >
-                  <AlertTriangle size={15} /> Escalate
+                  <StickyNote size={15} /> Add note
                 </Button>
-              ) : null}
-              <Button
-                className="console-button"
-                disabled={act.isPending || !typed}
-                onClick={() => act.mutate({ action: "resolve", note: typed })}
-              >
-                {act.isPending ? (
-                  <LoaderCircle className="animate-spin" size={15} />
-                ) : (
-                  <CheckCircle2 size={15} />
-                )}{" "}
-                Resolve
-              </Button>
-            </>
-          )}
+                {!incident.escalated ? (
+                  <Button
+                    className="console-danger"
+                    disabled={act.isPending}
+                    onClick={() =>
+                      act.mutate({
+                        action: "escalate",
+                        ...(typed ? { note: typed } : {}),
+                      })
+                    }
+                  >
+                    <AlertTriangle size={15} /> Escalate
+                  </Button>
+                ) : null}
+                <Button
+                  className="console-button"
+                  disabled={act.isPending || !typed}
+                  onClick={() => act.mutate({ action: "resolve", note: typed })}
+                >
+                  {act.isPending ? (
+                    <LoaderCircle className="animate-spin" size={15} />
+                  ) : (
+                    <CheckCircle2 size={15} />
+                  )}{" "}
+                  Resolve
+                </Button>
+              </>
+            )}
+          </div>
+          {!resolved && !typed ? (
+            <small>Resolving needs a line on what was done.</small>
+          ) : null}
+          {error ? (
+            <p className="field-error" role="alert">
+              {error}
+            </p>
+          ) : null}
         </div>
-        {!resolved && !typed ? (
-          <small>Resolving needs a line on what was done.</small>
-        ) : null}
-        {error ? (
-          <p className="field-error" role="alert">
-            {error}
-          </p>
-        ) : null}
-      </div>
+      ) : null}
 
       {requests.length ? (
         <section className="incident-requests">

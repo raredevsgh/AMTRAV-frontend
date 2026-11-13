@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Cpu } from "lucide-react";
+import { can } from "@/lib/console/roles";
 import { api } from "@/lib/console/api";
 import { previewFirmware } from "@/lib/console/trace-demo";
 import type { FirmwareVersion } from "@/lib/console/types";
@@ -16,9 +17,9 @@ function FleetFirmware() {
     queryKey: ["fleet-firmware", preview],
     queryFn: ({ signal }) =>
       preview ? Promise.resolve(previewFirmware) : api<FirmwareVersion[]>("admin/fleet/firmware", { signal }),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
-  if (user.role !== "admin") return null;
+  if (!can(user.role, "read")) return null;
   const total = versions.data?.reduce((sum, row) => sum + row.devices, 0) ?? 0;
   return (
     <section className="console-card">

@@ -19,6 +19,17 @@ import {
 import { useConsole, useDevices, useUsers } from "./provider";
 import { PageHeading, LoadingState, ErrorState, dateLabel, StatusBadge } from "./shared";
 import { ConsoleSelect } from "./select";
+import { roleHints, roleLabels } from "@/lib/console/roles";
+
+/** The roles an administrator can give a staff account, in the order they're offered. */
+const assignable: StaffRole[] = [
+  "admin",
+  "support",
+  "operations",
+  "finance",
+  "read_only",
+  "manufacturer",
+];
 
 type Credentials = { email: string; password: string };
 
@@ -164,10 +175,10 @@ export function ManufacturersPage() {
                     updateRole.reset();
                     setRoleChange({ user: member, role: role as StaffRole });
                   }}
-                  options={[
-                    { value: "manufacturer", label: "Manufacturer" },
-                    { value: "admin", label: "Admin" },
-                  ]}
+                  options={assignable.map((role) => ({
+                    value: role,
+                    label: roleLabels[role],
+                  }))}
                 />
               )}
             </article>
@@ -337,11 +348,12 @@ export function ManufacturersPage() {
           <DialogHeader>
             <DialogTitle>Change account access?</DialogTitle>
             <DialogDescription>
-              {roleChange?.user.email} will become an {roleChange?.role}. This signs them
-              out on every device.
-              {roleChange?.role === "admin"
-                ? " Administrators can manage all users and devices."
-                : " They will only have access to their manufacturer's inventory."}
+              {roleChange?.user.email} will have the{" "}
+              {roleChange ? roleLabels[roleChange.role] : ""} role:{" "}
+              {roleChange
+                ? roleHints[roleChange.role].replace(/\.$/, "").toLowerCase()
+                : ""}
+              . This signs them out on every device.
             </DialogDescription>
           </DialogHeader>
           {updateRole.isError && (

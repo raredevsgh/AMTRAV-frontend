@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { can } from "@/lib/console/roles";
 import { api } from "@/lib/console/api";
 import { previewTravellerDetail, previewTravellers } from "@/lib/console/demo";
 import type {
@@ -137,11 +138,11 @@ export function TravellersPage() {
       if (search) params.set("q", search);
       return api<TravellerPage>(`admin/travellers?${params}`, { signal });
     },
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
     placeholderData: keepPreviousData,
   });
 
-  if (user.role !== "admin") return <AdminOnly />;
+  if (!can(user.role, "read")) return <AdminOnly />;
   const total = travellers.data?.total ?? 0;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -316,13 +317,13 @@ export function TravellerDetailPage({ id }: { id: string }) {
       preview
         ? Promise.resolve(previewTravellerDetail(id))
         : api<TravellerDetail>(`admin/travellers/${id}`, { signal }),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
     // Every fetch is an audited view of someone's account: don't refetch on a whim.
     staleTime: 5 * 60_000,
     refetchOnWindowFocus: false,
   });
 
-  if (user.role !== "admin") return <AdminOnly />;
+  if (!can(user.role, "read")) return <AdminOnly />;
   if (detail.isPending) return <LoadingState />;
   if (detail.isError)
     return <ErrorState message={detail.error.message} retry={() => detail.refetch()} />;
@@ -344,7 +345,7 @@ export function TravellerDetailPage({ id }: { id: string }) {
         }
       >
         <span className="subtle-pill">This view is recorded in the audit trail</span>
-        <SuspendControl traveller={traveller} />
+        {can(user.role, "support") ? <SuspendControl traveller={traveller} /> : null}
       </PageHeading>
       {traveller.suspended_at && (
         <p className="console-alert error" role="status">

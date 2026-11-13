@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { can } from "@/lib/console/roles";
 import { api } from "@/lib/console/api";
 import { previewSentMessages } from "@/lib/console/demo";
 import type { SentMessage, SentPage } from "@/lib/console/types";
@@ -126,7 +127,7 @@ function SentList({ messages, empty }: { messages: SentMessage[]; empty: string 
   );
 }
 
-/** Admin: announce to every traveller, and see everything sent. */
+/** Administrators announce to every traveller; all staff see everything sent. */
 export function MessagesPage() {
   const { user, preview } = useConsole();
   const client = useQueryClient();
@@ -137,7 +138,7 @@ export function MessagesPage() {
       preview
         ? Promise.resolve({ messages: previewSentMessages, total: previewSentMessages.length })
         : api<SentPage>("admin/messages?limit=100", { signal }),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
   const announce = useMutation({
     mutationFn: (message: { title: string; body: string }) =>
@@ -148,20 +149,26 @@ export function MessagesPage() {
     },
   });
 
-  if (user.role !== "admin")
+  if (!can(user.role, "read"))
     return (
       <div className="console-empty">
         <p>Messages are sent by administrators.</p>
       </div>
     );
+  const announces = can(user.role, "admin");
 
   return (
     <>
       <PageHeading
         title="Messages"
-        description="Announce something to every traveller. It appears in their app’s notifications at once, with a badge. To message one person, open them from Travellers."
+        description={
+          announces
+            ? "Announce something to every traveller. It appears in their app’s notifications at once, with a badge. To message one person, open them from Travellers."
+            : "Everything sent to travellers. Announcements to everyone come from administrators."
+        }
       />
-      <div className="detail-columns">
+      <div className={announces ? "detail-columns" : undefined}>
+        {announces ? (
         <section className="console-card">
           <div className="card-heading">
             <h2>New announcement</h2>
@@ -183,6 +190,7 @@ export function MessagesPage() {
             }}
           />
         </section>
+        ) : null}
         <section className="console-card">
           <div className="card-heading">
             <h2>
@@ -204,7 +212,8 @@ export function MessagesPage() {
 
 /** "Send message" on a traveller: a dialog, then the conversation so far below. */
 export function TravellerMessages({ travellerId, name }: { travellerId: string; name: string }) {
-  const { preview } = useConsole();
+  const { preview, user } = useConsole();
+  const sends = can(user.role, "support");
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
   const history = useQuery({
@@ -233,16 +242,18 @@ export function TravellerMessages({ travellerId, name }: { travellerId: string; 
     <section className="console-card">
       <div className="card-heading">
         <h2>Messages</h2>
-        <Button
-          className="console-button"
-          disabled={preview}
-          onClick={() => {
-            send.reset();
-            setOpen(true);
-          }}
-        >
-          <Send size={16} /> Send message
-        </Button>
+        {sends ? (
+          <Button
+            className="console-button"
+            disabled={preview}
+            onClick={() => {
+              send.reset();
+              setOpen(true);
+            }}
+          >
+            <Send size={16} /> Send message
+          </Button>
+        ) : null}
       </div>
       {history.isPending ? (
         <LoadingState />

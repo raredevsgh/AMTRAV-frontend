@@ -1,5 +1,6 @@
 "use client";
 
+import { can } from "@/lib/console/roles";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LocateFixed, Radio, Search, ShieldCheck } from "lucide-react";
@@ -11,7 +12,7 @@ import { locationIsStale } from "@/lib/console/locations";
 
 export function LocationsPage() {
   const { user } = useConsole();
-  if (user.role !== "admin") {
+  if (!can(user.role, "read")) {
     return (
       <section className="console-card console-empty">
         <ShieldCheck size={30} />

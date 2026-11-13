@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import { useConsole } from "./provider";
 import { OfflineBanner, useOffline, wipeLocalData } from "./offline";
+import { can, roleLabels } from "@/lib/console/roles";
+import type { StaffRole } from "@/lib/console/types";
 import { api, ApiError } from "@/lib/console/api";
 import { useConsoleStore } from "@/stores/console-store";
 import { themeIcons, themes, useTheme, type Theme } from "@/components/marketing/theme-switcher";
@@ -152,6 +154,10 @@ export function ConsoleShell({
   const unsent = useOffline().queued.length;
   const [sidebarOpen, setSidebarOpen] = useSidebarOpen();
   const admin = user.role === "admin";
+  // Amortrav staff see the whole fleet and customers; manufacturers their own bags.
+  const staff = can(user.role, "read");
+  // Registering and provisioning bags is for manufacturers (and administrators).
+  const makes = admin || user.role === "manufacturer";
   // Grouped under small headings, as Clerk's dashboard sidebar; groups without items are dropped.
   const groups: { label?: string; items: { label: string; path: string; icon: typeof Cpu }[] }[] = [
     { items: [{ label: "Dashboard", path: "", icon: LayoutDashboard }] },
@@ -159,7 +165,7 @@ export function ConsoleShell({
       label: "Fleet",
       items: [
         { label: "Devices", path: "devices", icon: Grid2X2 },
-        ...(admin
+        ...(staff
           ? [
               { label: "Fleet map", path: "map", icon: MapPinned },
               { label: "Fleet health", path: "fleet", icon: Gauge },
@@ -172,12 +178,14 @@ export function ConsoleShell({
     },
     {
       label: "Provisioning",
-      items: [
-        { label: "Register device", path: "register", icon: PlusCircle },
-        { label: "Bulk provisioning", path: "provision", icon: QrCode },
-      ],
+      items: makes
+        ? [
+            { label: "Register device", path: "register", icon: PlusCircle },
+            { label: "Bulk provisioning", path: "provision", icon: QrCode },
+          ]
+        : [],
     },
-    ...(admin
+    ...(staff
       ? [
           {
             label: "Customers",
@@ -200,7 +208,7 @@ export function ConsoleShell({
       ],
     },
   ];
-  const roleLabel = admin ? "Admin" : "Manufacturer";
+  const roleLabel = roleLabels[user.role as StaffRole] ?? "Staff";
 
   async function signOut() {
     setLeaving(true);

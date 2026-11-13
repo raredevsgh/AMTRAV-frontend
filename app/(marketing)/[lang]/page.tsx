@@ -2,8 +2,6 @@ import { TraceLanding } from "@/components/marketing/trace-landing";
 import { brand } from "@/lib/brand";
 import { localizedMetadata } from "@/lib/i18n/seo";
 
-// Its title and language links come from the URL's language, as the layout's content does.
-export const instant = false;
 export const generateMetadata = localizedMetadata("", () => ({
   title: `${brand.product}: ${brand.tagline}`,
   description: `${brand.shortProduct} is the ${brand.core} inside every ${brand.company} bag: a journey log, impact detection, accurate weight, location and separation alerts, tamper security and a Travel-Ready check, in one app.`,

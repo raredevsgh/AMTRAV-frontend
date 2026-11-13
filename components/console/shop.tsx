@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { can } from "@/lib/console/roles";
 import { api } from "@/lib/console/api";
 import { useConsole, useDevices } from "./provider";
 import {
@@ -112,6 +113,9 @@ export function ShopPage() {
   const [shipping, setShipping] = useState<ShopOrder | null>(null);
   const [refunding, setRefunding] = useState<OrderSummary | null>(null);
   const [resolving, setResolving] = useState<OrderSummary | null>(null);
+  // Operations ship orders; finance and administrators refund and settle flagged payments.
+  const ships = can(user.role, "fulfil");
+  const pays = can(user.role, "money");
   const orders = useQuery({
     queryKey: ["shop-orders", status, preview],
     queryFn: ({ signal }) =>
@@ -121,9 +125,9 @@ export function ShopPage() {
             `admin/shop/orders${status === "all" ? "" : `?status=${status}`}`,
             { signal },
           ),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
-  if (user.role !== "admin") return <AdminOnly what="Shop orders" />;
+  if (!can(user.role, "read")) return <AdminOnly what="Shop orders" />;
   const rows = orders.data ?? [];
 
   return (
@@ -219,12 +223,12 @@ export function ShopPage() {
                       ) : null}
                     </td>
                     <td className="row-actions">
-                      {order.status === "review" ? (
+                      {pays && order.status === "review" ? (
                         <button className="console-secondary" onClick={() => setResolving(order)}>
                           Resolve
                         </button>
                       ) : null}
-                      {order.status === "paid" || order.status === "review" ? (
+                      {ships && (order.status === "paid" || order.status === "review") ? (
                         <button
                           className="console-secondary"
                           onClick={() => setShipping(order)}
@@ -232,7 +236,8 @@ export function ShopPage() {
                           <Truck size={16} /> Mark shipped
                         </button>
                       ) : null}
-                      {["paid", "shipped", "review"].includes(order.status) &&
+                      {pays &&
+                      ["paid", "shipped", "review"].includes(order.status) &&
                       order.refunded_minor < order.total_minor ? (
                         <button className="console-secondary" onClick={() => setRefunding(order)}>
                           Refund
@@ -319,7 +324,9 @@ function ShipDialog({
 }
 
 function ProductsCard() {
-  const { preview, base } = useConsole();
+  const { preview, base, user } = useConsole();
+  // Prices, stock and photos are finance's and administrators'.
+  const locked = preview || !can(user.role, "money");
   const client = useQueryClient();
   const [adding, setAdding] = useState(false);
   const photo = useMutation({
@@ -354,7 +361,7 @@ function ProductsCard() {
         <button
           className="console-button"
           onClick={() => setAdding(true)}
-          disabled={preview}
+          disabled={locked}
         >
           <Plus size={16} /> Add product
         </button>
@@ -386,38 +393,43 @@ function ProductsCard() {
                         // eslint-disable-next-line @next/next/no-img-element -- served by our API through the shop proxy
                         <img src={product.image} alt="" width={44} height={44} />
                       ) : (
-                        <span className="product-photo-empty" aria-hidden="true" />
-                      )}
-                      <label className="console-secondary product-photo-change">
-                        {photo.isPending && photo.variables?.sku === product.sku
-                          ? "Uploading…"
-                          : "Change image"}
-                        <input
-                          type="file"
-                          accept="image/png,image/jpeg"
-                          className="sr-only"
-                          aria-label={`New photo for ${product.name}`}
-                          onChange={(event) => {
-                            const file = event.target.files?.[0];
-                            if (file) photo.mutate({ sku: product.sku, file });
-                            event.target.value = "";
-                          }}
-                        />
-                      </label>
-                    </div>
-                  </td>
-                  <td className="mono">{product.device_model}</td>
-                  <td>
-                    {product.available > 0 ? (
-                      product.available
-                    ) : (
-                      <span className="stock-empty">
-                        <StatusBadge status="sold_out" />
-                        <Link href={`${base}/register`}>Register bags</Link>
-                      </span>
+                          <span className="product-photo-empty" aria-hidden="true" />
+                        )}
+                        {locked ? null : (
+                          <label className="console-secondary product-photo-change">
+                            {photo.isPending && photo.variables?.sku === product.sku
+                              ? "Uploading…"
+                              : "Change image"}
+                            <input
+                              type="file"
+                              accept="image/png,image/jpeg"
+                              className="sr-only"
+                              aria-label={`New photo for ${product.name}`}
+                              onChange={(event) => {
+                                const file = event.target.files?.[0];
+                                if (file) photo.mutate({ sku: product.sku, file });
+                                event.target.value = "";
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </td>
+                    <td className="mono">{product.device_model}</td>
+                    <td>
+                      {product.available > 0 ? (
+                        product.available
+                      ) : (
+                        <span className="stock-empty">
+                          <StatusBadge status="sold_out" />
+                          <Link href={`${base}/register`}>Register bags</Link>
+                        </span>
                     )}
                   </td>
                   <td>
+                    {locked ? (
+                      money(product.price_minor, product.currency)
+                    ) : (
                     <form
                       className="mfa-inline"
                       onSubmit={(event) => {
@@ -445,13 +457,14 @@ function ProductsCard() {
                         Save
                       </button>
                     </form>
+                    )}
                   </td>
                   <td>
                     <input
                       type="checkbox"
                       aria-label={`${product.name} on sale`}
                       checked={product.active}
-                      disabled={update.isPending}
+                      disabled={locked || update.isPending}
                       onChange={(event) =>
                         update.mutate({
                           sku: product.sku,

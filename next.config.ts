@@ -22,8 +22,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Cache Components (and the partial prefetching built on it) stays off: its staged rendering
+  // relies on Node.js timer ordering that Cloudflare's Workers runtime doesn't give, so pages
+  // hang there (vercel/next.js#94880). The marketing pages are static anyway.
   turbopack: {
     rules: {
       "*.css": {

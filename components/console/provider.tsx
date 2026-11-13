@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { api, ApiError, listAll, listDevices } from "@/lib/console/api";
 import { previewDevices, previewUser, previewUsers } from "@/lib/console/demo";
+import { can } from "@/lib/console/roles";
 import type { MfaStatus, StaffRole, User } from "@/lib/console/types";
 import { isStaff } from "@/lib/console/policy";
 import { MfaEnrolmentGate } from "./mfa";
@@ -166,7 +167,7 @@ export function useDevices() {
       preview
         ? Promise.resolve(
             previewDevices.filter(
-              (d) => user.role === "admin" || d.manufacturer_id === user.id,
+              (d) => can(user.role, "read") || d.manufacturer_id === user.id,
             ),
           )
         : listDevices("devices", signal),
@@ -179,6 +180,6 @@ export function useUsers() {
     queryKey: ["users", user.id, preview],
     queryFn: ({ signal }) =>
       preview ? Promise.resolve(previewUsers) : listAll<User>("admin/users", signal),
-    enabled: user.role === "admin",
+    enabled: can(user.role, "read"),
   });
 }

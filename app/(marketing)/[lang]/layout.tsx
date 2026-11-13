@@ -5,12 +5,6 @@ import { brand } from "@/lib/brand";
 import { isLocale, localeTags, locales } from "@/lib/i18n/config";
 import { siteUrl } from "@/lib/i18n/seo";
 
-/**
- * The language decides every word on the page, so there's no language-free shell to show
- * first; each language's pages are built ahead of time, so waiting for it costs nothing.
- */
-export const instant = false;
-
 /** Every page is built in each language ahead of time. */
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));

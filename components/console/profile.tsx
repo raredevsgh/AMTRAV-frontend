@@ -15,16 +15,12 @@ import {
   Trash2,
 } from "lucide-react";
 import { api } from "@/lib/console/api";
-import type { User } from "@/lib/console/types";
+import type { StaffRole, User } from "@/lib/console/types";
+import { roleLabels } from "@/lib/console/roles";
 import { useConsoleStore } from "@/stores/console-store";
 import { useConsole } from "./provider";
 import { dateLabel, PageHeading } from "./shared";
 import { wipeLocalData } from "./offline";
-
-const roleLabels: Record<string, string> = {
-  admin: "Administrator",
-  manufacturer: "Manufacturer",
-};
 
 export const nameOf = (user: User) =>
   user.display_name?.trim() ||
@@ -214,7 +210,7 @@ export function ProfilePage() {
           {nameOf(user) !== user.email ? <p>{user.email}</p> : null}
           <div className="profile-tags">
             <span className="profile-tag strong">
-              {roleLabels[user.role] ?? user.role}
+              {roleLabels[user.role as StaffRole] ?? user.role}
             </span>
             {user.email_verified ? (
               <span className="profile-tag">
