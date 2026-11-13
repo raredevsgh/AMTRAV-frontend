@@ -14,7 +14,6 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   BatteryCharging,
@@ -42,8 +41,9 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
-import { brand, type RangeItem } from "@/lib/brand";
+import { brand } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
+import { discovery } from "@/lib/i18n/discovery";
 import { fields, Honeypot, sendLead, type Status } from "./enquiry-form";
 import {
   MotionControl,
@@ -54,6 +54,7 @@ import {
 } from "./motion";
 import { Itinerary } from "./itinerary";
 import { Voices } from "./voices";
+import { DiscoveryLinks, RangeExplorer } from "./landing-discovery";
 import "@/app/trace.css";
 import "@/app/film.css";
 import "@/app/trace-routes.css";
@@ -84,8 +85,8 @@ function SectionHead({
 }
 
 /**
- * The headline on the light canvas, then the film in a framed stage below it, muted and
- * looping, with the live card over it; a still for people who prefer less motion.
+ * Copy and product share the first screen. The sample journey sits below the film so
+ * it never obscures the luggage; reduced motion uses the matching poster.
  */
 function Hero({
   onWatch,
@@ -96,7 +97,8 @@ function Hero({
   watchRef: RefObject<HTMLButtonElement | null>;
   filmOpen: boolean;
 }) {
-  const { m, href } = useI18n();
+  const { m, href, locale } = useI18n();
+  const copy = discovery[locale];
   const reduced = useReducedMotionPreference();
   const still = useMotionPaused();
   const video = useRef<HTMLVideoElement>(null);
@@ -129,16 +131,19 @@ function Hero({
   return (
     <section className="trace-hero" aria-labelledby="trace-hero-title">
       <div className="trace-hero-copy">
-        <Eyebrow>{brand.product}</Eyebrow>
+        <span className="trace-hero-intro">
+          <span aria-hidden="true" />
+          {copy.eyebrow}
+        </span>
         <h1 id="trace-hero-title">
-          {m.landing.title}
+          {copy.title}
           <br />
-          <span>{m.landing.titleEnd}</span>
+          <span>{copy.titleEnd}</span>
         </h1>
         <p>{m.landing.body}</p>
         <div className="trace-buttons">
-          <a className="trace-button ink" href="#founding">
-            {m.nav.join} <ArrowRight size={16} aria-hidden="true" />
+          <a className="trace-button ink" href="#range">
+            {m.landing.range} <ArrowRight size={16} aria-hidden="true" />
           </a>
           <button
             ref={watchRef}
@@ -161,6 +166,10 @@ function Hero({
             <Scale size={14} aria-hidden="true" /> {m.landing.weighing}
           </li>
         </ul>
+        <p className="trace-hero-note">
+          <Cpu size={14} aria-hidden="true" />
+          {copy.note}
+        </p>
       </div>
       <div className="trace-product-showcase">
         <div className="trace-showcase-toolbar">
@@ -179,7 +188,7 @@ function Hero({
                 alt=""
                 fill
                 priority
-                sizes="(max-width: 1260px) 88vw, 1260px"
+                sizes="(max-width: 1000px) 88vw, (max-width: 1440px) 48vw, 690px"
               />
             ) : (
               <video
@@ -214,18 +223,10 @@ function Hero({
 
 /** An explicitly labelled sample, formatted using the visitor's selected locale. */
 function LiveCard() {
-  const still = useMotionPaused();
   const { m, tag } = useI18n();
   const number = new Intl.NumberFormat(tag, { maximumFractionDigits: 1 });
   return (
-    <motion.aside
-      className="trace-live-card"
-      aria-label={m.landing.example}
-      animate={{ y: still ? 0 : [0, -4, 0] }}
-      transition={
-        still ? { duration: 0 } : { duration: 7, repeat: Infinity, ease: "easeInOut" }
-      }
-    >
+    <aside className="trace-live-card" aria-label={m.landing.example}>
       <div className="trace-live-top">
         <span className="trace-dot" aria-hidden="true" />
         {m.landing.travelling}
@@ -250,7 +251,7 @@ function LiveCard() {
         <Zap size={14} aria-hidden="true" />
         {m.landing.impactAlert} · {number.format(11.8)} g
       </p>
-    </motion.aside>
+    </aside>
   );
 }
 
@@ -827,45 +828,6 @@ function JourneyDemo() {
   );
 }
 
-function RangeCard({ item }: { item: RangeItem }) {
-  return (
-    <article className="trace-range-card">
-      <div className="trace-range-image">
-        <Image
-          src={item.image}
-          alt={`${brand.company} ${item.name}: ${item.shell}`}
-          fill
-          sizes="(max-width: 700px) 50vw, 25vw"
-        />
-      </div>
-      <h3>{item.name}</h3>
-      <p className="trace-range-shell">
-        {item.shell} · {item.size}
-      </p>
-      <p>{item.summary}</p>
-    </article>
-  );
-}
-
-function Range() {
-  return (
-    <section className="trace-panel" id="range" aria-labelledby="range-title">
-      <SectionHead
-        eyebrow="The range"
-        title={<span id="range-title">Four bags. One {brand.core}.</span>}
-      >
-        Every bag in the range carries the same {brand.core}, so every one does everything
-        on this page. Choose the shell that suits how you travel.
-      </SectionHead>
-      <Stagger className="trace-range">
-        {brand.range.map((item) => (
-          <RangeCard key={item.key} item={item} />
-        ))}
-      </Stagger>
-    </section>
-  );
-}
-
 /**
  * Security and privacy as a spec sheet rather than six cards: three rows (the bag, your
  * account, who else sees it), each with its two promises, ruled off with hairlines
@@ -1277,15 +1239,16 @@ export function TraceLanding() {
   return (
     <div className="trace" style={style}>
       <Hero onWatch={() => setFilm(true)} watchRef={watch} filmOpen={film} />
-      <Routes />
+      <DiscoveryLinks />
+      <RangeExplorer />
       <Features />
       <Voices />
       <HowItWorks />
+      <Routes />
       <Gate />
       <SmartCore />
       <AppPreview />
       <JourneyDemo />
-      <Range />
       <Security />
       <Battery />
       <Faq />

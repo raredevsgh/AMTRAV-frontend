@@ -35,26 +35,65 @@ html[data-theme="dark"] .site-shell {
   translate: 0 1px;
 }
 .site-shell main .trace-hero {
-  gap: 36px;
-  padding-block: clamp(64px, 8vw, 112px) 56px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(32px, 4vw, 64px);
+  padding-block: clamp(48px, 5vw, 80px);
+  background:
+    radial-gradient(
+      ellipse at 75% 30%,
+      color-mix(in srgb, var(--c-accent) 5%, transparent),
+      transparent 65%
+    ),
+    var(--c-soft);
 }
 .site-shell .trace-hero-copy {
   max-inline-size: 840px;
   gap: 22px;
 }
 .site-shell main .trace-hero h1 {
-  font-size: clamp(38px, 4.7vw, 64px);
-  line-height: 1.06;
+  font-size: clamp(38px, 4.2vw, 60px);
+  line-height: 1.1;
   letter-spacing: -0.045em;
   font-weight: 600;
   text-wrap: balance;
 }
 .site-shell .trace-hero-copy > p {
-  max-inline-size: 650px;
-  font-size: clamp(16px, 1.4vw, 18px);
+  max-inline-size: 46ch;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--marketing-muted);
   text-wrap: pretty;
+}
+.trace-hero-intro {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--marketing-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+.trace-hero-intro > span {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-accent) 9%, transparent);
+}
+.site-shell .trace-hero-copy > .trace-hero-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 18px;
+  border-top: 1px solid var(--c-border);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.trace-hero-note svg {
+  flex: none;
 }
 .site-shell .trace-hero-copy .trace-eyebrow {
   font-size: 11px;
@@ -151,8 +190,37 @@ html[data-theme="dark"] .site-shell {
   cursor: default;
 }
 .site-shell main .trace-product-showcase .trace-hero-stage {
+  min-height: 0;
+  aspect-ratio: auto;
   border-radius: 12px;
   box-shadow: none !important;
+}
+.site-shell main .trace-product-showcase .trace-hero-visual {
+  position: relative;
+  aspect-ratio: 16 / 10;
+}
+.site-shell main .trace-product-showcase .trace-live-card {
+  position: relative;
+  inset: auto;
+  width: auto;
+  margin: 0;
+  padding: 16px 20px;
+  border-radius: 0;
+  background: #101e32;
+  border-top: 1px solid #28384f;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.site-shell main .trace-product-showcase .trace-live-card > strong {
+  margin: 6px 0 10px;
+  font-size: 17px;
+}
+.site-shell main .trace-product-showcase .trace-live-alert {
+  margin-top: 12px !important;
+  padding: 7px 9px;
+  font-size: 11px;
+  line-height: 1.5;
+  border-radius: 5px;
 }
 .site-shell .trace-live-card {
   font-variant-numeric: tabular-nums;
@@ -263,13 +331,33 @@ html[data-theme="dark"] .site-shell {
   }
 }
 
+@media (max-width: 1000px) {
+  .site-shell main .trace-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+  .site-shell .trace-hero-copy {
+    max-inline-size: 680px;
+  }
+  .site-shell main .trace-product-showcase .trace-hero-visual {
+    aspect-ratio: 16 / 9;
+  }
+}
 @media (max-width: 734px) {
   .site-shell main .trace-hero {
-    padding-block-start: 48px;
+    padding-block-start: 32px;
     gap: 28px;
   }
   .site-shell .trace-hero-copy {
-    gap: 20px;
+    gap: 16px;
+  }
+  .site-shell .trace-hero-copy > .trace-hero-note {
+    display: none;
+  }
+  .site-shell .trace-hero .trace-button {
+    padding-inline: 12px;
+    font-size: 12px;
+    line-height: 1.5;
   }
   .site-shell .trace-buttons {
     gap: 10px;
