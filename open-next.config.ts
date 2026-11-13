@@ -4,6 +4,11 @@
 import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 import staticAssetsIncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/static-assets-incremental-cache";
 
-export default defineCloudflareConfig({
-  incrementalCache: staticAssetsIncrementalCache,
-});
+export default {
+  ...defineCloudflareConfig({
+    incrementalCache: staticAssetsIncrementalCache,
+  }),
+  // `pnpm run build` is this OpenNext build (Workers Builds runs it, then `wrangler deploy`
+  // hands over to `opennextjs-cloudflare deploy`), so it runs Next's build directly.
+  buildCommand: "pnpm exec next build",
+};
