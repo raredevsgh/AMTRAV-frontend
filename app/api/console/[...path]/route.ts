@@ -222,7 +222,7 @@ async function handle(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refresh }),
         cache: "no-store",
-          signal: AbortSignal.timeout(15_000),
+        signal: AbortSignal.timeout(15_000),
       });
       if (rotated.ok) {
         const pair = await rotated.json();
@@ -230,7 +230,7 @@ async function handle(
           method: "POST",
           headers: { Authorization: `Bearer ${pair.access_token}` },
           cache: "no-store",
-              signal: AbortSignal.timeout(15_000),
+          signal: AbortSignal.timeout(15_000),
         });
       } else if (rotated.status === 401) {
         return clear(new NextResponse(null, { status: 204 }));
