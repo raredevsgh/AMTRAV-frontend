@@ -87,18 +87,24 @@
   line-height: 1.8;
   color: var(--marketing-muted);
 }
+/* No card: the tabs sit on a hairline that fades out at both ends, and the stage's tint
+   and grid dissolve into the page instead of stopping at a border. */
 .ld-explorer {
-  border: 1px solid var(--c-border);
-  border-radius: 14px;
-  overflow: clip;
-  background: var(--c-surface);
+  position: relative;
 }
 .ld-options {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-bottom: 1px solid var(--c-border);
-  padding: 8px;
+  padding: 8px 0;
   gap: 6px;
+  background: linear-gradient(
+      90deg,
+      transparent,
+      var(--c-border) 18%,
+      var(--c-border) 82%,
+      transparent
+    )
+    bottom / 100% 1px no-repeat;
 }
 .ld-option {
   position: relative;
@@ -120,12 +126,12 @@
     background 180ms,
     border-color 180ms;
 }
-.ld-option:hover {
-  background: var(--c-soft);
+.ld-option:not([data-state="active"]) {
+  color: var(--marketing-muted);
 }
-.ld-option[data-state="active"] {
-  background: var(--c-soft);
-  border-color: var(--c-border);
+.ld-option:hover {
+  background: color-mix(in srgb, var(--c-soft) 70%, transparent);
+  color: var(--c-ink);
 }
 .ld-option[data-state="active"]::after {
   content: "";
@@ -168,20 +174,34 @@
   flex-direction: column;
   isolation: isolate;
   overflow: hidden;
-  background: var(--c-soft);
-  border-inline-end: 1px solid var(--c-border);
 }
+/* The floor grid, strongest under the bag and gone well before the edges. */
 .ld-productStage::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.35;
+  opacity: 0.45;
   background-image:
     linear-gradient(var(--c-border) 1px, transparent 1px),
     linear-gradient(90deg, var(--c-border) 1px, transparent 1px);
   background-size: 48px 48px;
-  mask-image: linear-gradient(transparent 15%, #000);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 72%, #000 15%, transparent 70%);
+}
+/* A tint that fades in from nothing at the top, deepest at the floor, out again below. */
+.ld-productStage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--c-soft) 55%,
+    var(--c-soft) 70%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
 }
 .ld-stageLabel {
   position: relative;
@@ -452,8 +472,6 @@
   }
   .ld-productStage {
     min-height: 420px;
-    border-inline-end: 0;
-    border-bottom: 1px solid var(--c-border);
   }
   .ld-productImage {
     min-height: 320px;
@@ -505,8 +523,9 @@
   .ld-option[data-state="active"]::after {
     display: none;
   }
+  /* Two rows of tabs: the chosen one is tinted rather than boxed. */
   .ld-option[data-state="active"] {
-    border-color: var(--c-accent);
+    background: color-mix(in srgb, var(--c-accent) 12%, transparent);
   }
   .ld-productCopy {
     padding: 24px;
