@@ -271,7 +271,6 @@ function footerColumns(m: Messages): { title: string; links: FooterLink[] }[] {
         { label: m.footer.terms, href: "/terms" },
         { label: m.footer.privacy, href: "/privacy" },
         { label: m.footer.cookies, href: "/cookies" },
-        { label: m.footer.photoCredits, href: "/photo-credits" },
       ],
     },
   ];

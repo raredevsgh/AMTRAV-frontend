@@ -95,7 +95,6 @@ export const zhHant: Messages = {
     warrantyLine: "每個行李箱享 {years} 年保固",
     questions: "有問題？",
     backToTop: "回到頂端",
-    photoCredits: "圖片來源",
     getApp: "取得 App",
   },
   dialog: {

@@ -96,7 +96,6 @@ export const es: Messages = {
     warrantyLine: "{years} años de garantía en cada maleta",
     questions: "¿Preguntas?",
     backToTop: "Volver arriba",
-    photoCredits: "Créditos de las fotos",
     getApp: "Consigue la app",
   },
   dialog: {

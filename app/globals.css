@@ -565,13 +565,6 @@ h2 {
   border-radius: 50%;
   background: var(--blue);
 }
-.photo-credits {
-  font-size: 12px;
-  color: var(--c-muted);
-}
-.photo-credits a {
-  text-decoration: underline;
-}
 .explore-section > h2 {
   max-width: 700px;
 }

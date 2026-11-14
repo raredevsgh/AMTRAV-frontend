@@ -96,7 +96,6 @@ export const de: Messages = {
     warrantyLine: "{years} Jahre Garantie auf jeden Koffer",
     questions: "Fragen?",
     backToTop: "Nach oben",
-    photoCredits: "Bildnachweise",
     getApp: "Die App",
   },
   dialog: {

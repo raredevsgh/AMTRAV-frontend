@@ -96,7 +96,6 @@ export const en = {
     warrantyLine: "{years}-year warranty on every bag",
     questions: "Questions?",
     backToTop: "Back to top",
-    photoCredits: "Photo credits",
     getApp: "Get the app",
   },
   dialog: {

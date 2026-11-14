@@ -27,7 +27,6 @@ export const sitePages = [
   "/privacy",
   "/terms",
   "/cookies",
-  "/photo-credits",
 ] as const;
 export type SitePage = (typeof sitePages)[number];
 

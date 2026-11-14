@@ -95,7 +95,6 @@ export const zhHans: Messages = {
     warrantyLine: "每个行李箱享 {years} 年保修",
     questions: "有问题？",
     backToTop: "返回顶部",
-    photoCredits: "图片来源",
     getApp: "获取应用",
   },
   dialog: {
