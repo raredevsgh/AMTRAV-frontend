@@ -417,7 +417,7 @@ body {
   background: var(--sky);
   color: var(--ink);
   font-weight: 700;
-  box-shadow: 0 22px 60px rgb(213 244 91 / 22%);
+  box-shadow: 0 22px 60px rgb(143 195 255 / 22%);
 }
 .end-url {
   margin-top: 0.9em;

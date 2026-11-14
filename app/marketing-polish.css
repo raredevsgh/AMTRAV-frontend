@@ -438,6 +438,16 @@ html[data-theme="dark"] .site-shell {
   aspect-ratio: 16 / 9;
   background: #070d16;
 }
+/* Phones held upright play the portrait cut (PORTRAIT_FILM in trace-landing.tsx). */
+@media (orientation: portrait) and (max-width: 700px) {
+  .trace-film-dialog video {
+    aspect-ratio: 9 / 16;
+    max-height: calc(100dvh - 160px);
+    width: auto;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+}
 .trace-film-description {
   margin: 0;
   padding: 16px 20px 20px;

@@ -15,7 +15,7 @@ export const fr: Messages = {
     close: "Fermer le film",
     filmLabel: "Film de présentation",
     filmDescription:
-      "Film sans son : une valise Amortrav en rotation, ses roues et sa coque en gros plan, le Smart Core et les quatre finitions de bagages.",
+      "Film sans son de 15 secondes : où va votre bagage, comment il est manipulé et ce qu’il pèse, dans l’app Amortrav avec des données d’exemple, puis le bagage dans ses quatre finitions.",
     example: "Exemple de voyage",
     travelling: "En voyage",
     weight: "Poids",

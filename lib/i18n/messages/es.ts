@@ -15,7 +15,7 @@ export const es: Messages = {
     close: "Cerrar vídeo",
     filmLabel: "Vídeo del producto",
     filmDescription:
-      "Vídeo sin sonido: una maleta Amortrav girando, un primer plano de sus ruedas y carcasa, el Smart Core y los cuatro acabados de equipaje.",
+      "Vídeo sin sonido de 15 segundos: adónde va tu maleta, cómo la tratan y cuánto pesa, en la app de Amortrav con datos de ejemplo, y después la maleta en sus cuatro acabados.",
     example: "Ejemplo de viaje",
     travelling: "De viaje",
     weight: "Peso",

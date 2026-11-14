@@ -225,6 +225,9 @@ function LiveCard() {
   );
 }
 
+/** Where the film dialog plays the portrait cut (kept in step with marketing-polish.css). */
+const PORTRAIT_FILM = "(orientation: portrait) and (max-width: 700px)";
+
 function FilmDialog({
   open,
   onClose,
@@ -274,6 +277,13 @@ function FilmDialog({
             poster={brand.film.poster}
             aria-label={m.landing.filmLabel}
           >
+            {/* Phones held upright get the portrait cut; everything else the landscape one. */}
+            <source
+              src={brand.film.portraitWebm}
+              type="video/webm"
+              media={PORTRAIT_FILM}
+            />
+            <source src={brand.film.portraitMp4} type="video/mp4" media={PORTRAIT_FILM} />
             <source src={brand.film.webm} type="video/webm" />
             <source src={brand.film.mp4} type="video/mp4" />
           </video>

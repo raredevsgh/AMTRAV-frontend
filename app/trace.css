@@ -659,7 +659,7 @@
   color: var(--trace-on-signal);
 }
 .journey-entry[aria-current="step"] .journey-node {
-  box-shadow: 0 0 0 4px rgb(213 244 91 / 18%) !important;
+  box-shadow: 0 0 0 4px rgb(143 195 255 / 18%) !important;
 }
 .journey-entry.alert[aria-current="step"] .journey-node {
   box-shadow: 0 0 0 4px rgb(255 138 61 / 20%) !important;
@@ -892,7 +892,7 @@
   margin-bottom: 0;
 }
 .trace-battery .trace-head p {
-  color: rgb(27 34 0 / 75%);
+  color: rgb(0 31 77 / 75%);
 }
 .trace-battery-facts {
   grid-area: facts;

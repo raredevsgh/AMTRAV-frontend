@@ -15,7 +15,7 @@ export const en = {
     close: "Close film",
     filmLabel: "Product film",
     filmDescription:
-      "Silent film: a rotating Amortrav suitcase, a close-up of its wheels and shell, the Smart Core, and the four luggage finishes.",
+      "Silent 15-second film: where your bag goes, how it’s handled and what it weighs, shown in the Amortrav app with sample data, then the bag in its four finishes.",
     example: "Example journey",
     travelling: "On a journey",
     weight: "Weight",

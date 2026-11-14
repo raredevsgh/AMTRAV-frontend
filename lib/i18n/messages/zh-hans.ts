@@ -15,7 +15,7 @@ export const zhHans: Messages = {
     close: "关闭影片",
     filmLabel: "产品影片",
     filmDescription:
-      "无声影片：旋转展示的 Amortrav 行李箱、轮子与箱体特写、Smart Core，以及四款行李箱外观。",
+      "15 秒无声影片：在 Amortrav 应用中用示例数据展示行李去了哪里、如何被搬运以及有多重，随后展示行李箱的四款外观。",
     example: "旅程示例",
     travelling: "旅途中",
     weight: "重量",

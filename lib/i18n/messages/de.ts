@@ -15,7 +15,7 @@ export const de: Messages = {
     close: "Film schließen",
     filmLabel: "Produktfilm",
     filmDescription:
-      "Stummer Film: ein sich drehender Amortrav-Koffer, Nahaufnahmen von Rollen und Schale, der Smart Core und die vier Kofferausführungen.",
+      "Stummer 15-Sekunden-Film: wohin Ihr Koffer reist, wie er behandelt wird und was er wiegt, gezeigt in der Amortrav-App mit Beispieldaten, dann der Koffer in seinen vier Ausführungen.",
     example: "Beispielreise",
     travelling: "Unterwegs",
     weight: "Gewicht",

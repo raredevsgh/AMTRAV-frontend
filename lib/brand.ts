@@ -25,7 +25,10 @@ export const brand = {
   app: pick(process.env.NEXT_PUBLIC_BRAND_APP, "the Amortrav app"),
   tagline: "Every journey. Every impact. Every kilogram. In one view.",
   /** The footer's line under the logo. */
-  footerLine: pick(process.env.NEXT_PUBLIC_BRAND_FOOTER_LINE, "Smart luggage, paired to your phone."),
+  footerLine: pick(
+    process.env.NEXT_PUBLIC_BRAND_FOOTER_LINE,
+    "Smart luggage, paired to your phone.",
+  ),
   email: pick(process.env.NEXT_PUBLIC_BRAND_EMAIL, "executive@amortrav.com"),
   /** The copyright year in the footer; set here, not from the clock, so pages can be built ahead. */
   year: pick(process.env.NEXT_PUBLIC_BRAND_YEAR, "2026"),
@@ -48,10 +51,13 @@ export const brand = {
     signal: pick(process.env.NEXT_PUBLIC_BRAND_SIGNAL, "#8fc3ff"),
     accent: pick(process.env.NEXT_PUBLIC_BRAND_ACCENT, "#0047ad"),
   },
+  /** "Watch the film": the 15-second spot from marketing/ads, with a portrait cut for phones. */
   film: {
-    mp4: "/video/trace-film.mp4",
-    webm: "/video/trace-film.webm",
-    poster: "/images/trace/film-poster.jpg",
+    mp4: "/video/amortrav-spot.mp4",
+    webm: "/video/amortrav-spot.webm",
+    portraitMp4: "/video/amortrav-spot-portrait.mp4",
+    portraitWebm: "/video/amortrav-spot-portrait.webm",
+    poster: "/images/trace/spot-poster.jpg",
   },
   range: [
     {
@@ -59,7 +65,8 @@ export const brand = {
       name: pick(process.env.NEXT_PUBLIC_BRAND_RANGE_ESSENTIAL, "Essential"),
       shell: "Graphite polycarbonate carry-on",
       size: "55 × 40 × 23 cm",
-      summary: "Everything TRACE does, in a cabin-size shell that fits most overhead bins.",
+      summary:
+        "Everything TRACE does, in a cabin-size shell that fits most overhead bins.",
       image: "/images/trace/range-essential.png",
     },
     {
@@ -83,7 +90,8 @@ export const brand = {
       name: pick(process.env.NEXT_PUBLIC_BRAND_RANGE_EXECUTIVE, "Executive"),
       shell: "Black check-in, gloss finish",
       size: "70 × 47 × 28 cm",
-      summary: "Understated and large enough for a long trip, with the same Smart Core inside.",
+      summary:
+        "Understated and large enough for a long trip, with the same Smart Core inside.",
       image: "/images/trace/range-executive.png",
     },
   ] satisfies RangeItem[],
