@@ -329,6 +329,12 @@
   border: 0;
   cursor: pointer;
 }
+.support-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
 .support-end {
   height: 1px;
 }

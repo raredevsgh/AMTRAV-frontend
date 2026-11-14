@@ -34,7 +34,13 @@ import { can } from "@/lib/console/roles";
 import { useConsole, useUsers } from "./provider";
 import { ConsoleSelect } from "./select";
 import { dateLabel, ErrorState, LoadingState, PageHeading } from "./shared";
-import { FileIcon, FilePreview, sizeLabel } from "./file-preview";
+import {
+  FileIcon,
+  FilePreview,
+  FileThumbnail,
+  fileKind,
+  sizeLabel,
+} from "./file-preview";
 import "@/app/support.css";
 
 const kinds: Record<StaffTicket["kind"], string> = {
@@ -81,6 +87,10 @@ const views = [
   { value: "resolved", label: "Resolved" },
   { value: "all", label: "All" },
 ];
+
+/** Photos (PNG and JPEG) show in the conversation itself. */
+const isImage = (file: SupportAttachment) =>
+  fileKind({ ...file, owner_id: "", created_at: "" }) === "image";
 
 function timeLabel(value: string) {
   const date = new Date(value);
@@ -415,25 +425,50 @@ function TicketView({ id }: { id: string }) {
                 </time>
               </span>
               <p>{message.body}</p>
-              {message.attachments.length ? (
-                <ul className="support-files">
-                  {message.attachments.map((file) => (
-                    <li key={file.id}>
-                      <button
-                        type="button"
-                        onClick={() =>
+              {/* Photos show in place; other files are chips that open the preview. */}
+              {message.attachments.some((file) => isImage(file)) ? (
+                <div className="support-images">
+                  {message.attachments
+                    .filter((file) => isImage(file))
+                    .map((file) => (
+                      <FileThumbnail
+                        key={file.id}
+                        file={{ ...file, owner_id: "", created_at: message.created_at }}
+                        path={`support/tickets/${id}/files/${file.id}`}
+                        onOpen={() =>
                           setPreviewing(files.find((item) => item.id === file.id) ?? null)
                         }
-                      >
-                        <FileIcon
-                          file={{ ...file, owner_id: "", created_at: message.created_at }}
-                          size={16}
-                        />
-                        <span>{file.filename}</span>
-                        <small>{sizeLabel(file.size_bytes)}</small>
-                      </button>
-                    </li>
-                  ))}
+                      />
+                    ))}
+                </div>
+              ) : null}
+              {message.attachments.some((file) => !isImage(file)) ? (
+                <ul className="support-files">
+                  {message.attachments
+                    .filter((file) => !isImage(file))
+                    .map((file) => (
+                      <li key={file.id}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPreviewing(
+                              files.find((item) => item.id === file.id) ?? null,
+                            )
+                          }
+                        >
+                          <FileIcon
+                            file={{
+                              ...file,
+                              owner_id: "",
+                              created_at: message.created_at,
+                            }}
+                            size={16}
+                          />
+                          <span>{file.filename}</span>
+                          <small>{sizeLabel(file.size_bytes)}</small>
+                        </button>
+                      </li>
+                    ))}
                 </ul>
               ) : null}
             </div>

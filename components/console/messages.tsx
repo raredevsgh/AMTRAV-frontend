@@ -23,7 +23,7 @@ import { ErrorState, LoadingState, PageHeading, timeLabel } from "./shared";
 const TITLE_MAX = 80;
 const BODY_MAX = 2000;
 
-/** Title and message, with limits shown as you type; travellers see them in the app. */
+/** Title and message, with limits shown as you type; travellers get them in the app, by push and by email. */
 function ComposeForm({
   submitLabel,
   pending,
@@ -163,7 +163,7 @@ export function MessagesPage() {
         title="Messages"
         description={
           announces
-            ? "Announce something to every traveller. It appears in their app’s notifications at once, with a badge. To message one person, open them from Travellers."
+            ? "Announce something to every traveller. It appears in their app’s notifications at once, with a badge, and goes by push notification and email to everyone with those alerts on. To message one person, open them from Travellers."
             : "Everything sent to travellers. Announcements to everyone come from administrators."
         }
       />
@@ -267,8 +267,9 @@ export function TravellerMessages({ travellerId, name }: { travellerId: string; 
           <DialogHeader>
             <DialogTitle>Message {name}</DialogTitle>
             <DialogDescription>
-              It appears in their Amortrav app’s notifications right away, with a badge. Keep it
-              to what they need to know; it’s recorded in the audit trail.
+              It appears in their Amortrav app’s notifications right away, with a badge, and goes
+              by push notification and email if they have those alerts on. Keep it to what they
+              need to know; it’s recorded in the audit trail.
             </DialogDescription>
           </DialogHeader>
           <ComposeForm

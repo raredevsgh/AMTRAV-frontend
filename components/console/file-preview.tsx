@@ -103,7 +103,11 @@ type Loaded =
   | { kind: "json" | "text"; blob: Blob; text: string; cut: boolean }
   | { kind: "binary"; blob: Blob; text: string };
 
-async function load(path: string, file: StoredFile, signal: AbortSignal): Promise<Loaded> {
+async function load(
+  path: string,
+  file: StoredFile,
+  signal: AbortSignal,
+): Promise<Loaded> {
   const response = await apiResponse(path, { signal });
   const data = await response.arrayBuffer();
   const kind = fileKind(file);
@@ -145,6 +149,48 @@ function useObjectUrl(blob: Blob | undefined) {
     [url],
   );
   return url;
+}
+
+/**
+ * An image file shown in place, loaded through the same cache as FilePreview, so opening it
+ * there is instant rather than a second download. Click to open the preview.
+ */
+export function FileThumbnail({
+  file,
+  path,
+  onOpen,
+}: {
+  file: StoredFile;
+  /** Where to fetch it from, as FilePreview's `source` gives it. */
+  path: string;
+  onOpen: () => void;
+}) {
+  const image = useQuery({
+    queryKey: ["file-preview", path],
+    queryFn: ({ signal }) => load(path, file, signal),
+    staleTime: Infinity,
+    gcTime: 5 * 60_000,
+  });
+  const url = useObjectUrl(image.data?.kind === "image" ? image.data.blob : undefined);
+  return (
+    <button
+      type="button"
+      className="file-thumb"
+      onClick={onOpen}
+      title={`${file.filename} · ${sizeLabel(file.size_bytes)}`}
+      aria-label={`Open ${file.filename}`}
+    >
+      {url ? (
+        // eslint-disable-next-line @next/next/no-img-element -- a local blob, not an optimisable asset.
+        <img src={url} alt={file.filename} />
+      ) : (
+        <span className="file-thumb-wait" aria-hidden="true">
+          <FileIcon file={file} size={22} />
+          {image.isError ? <small>{file.filename}</small> : null}
+        </span>
+      )}
+    </button>
+  );
 }
 
 export function FilePreview({
