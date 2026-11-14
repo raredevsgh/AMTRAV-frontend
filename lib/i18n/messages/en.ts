@@ -9,7 +9,6 @@ export const en = {
     location: "Location history",
     impacts: "Impact detection",
     weighing: "Built-in weighing",
-    filmTitle: "Meet TRACE",
     pause: "Pause animations",
     resume: "Resume animations",
     reduced: "Reduced motion is on",

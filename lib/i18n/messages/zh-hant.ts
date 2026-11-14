@@ -9,7 +9,6 @@ export const zhHant: Messages = {
     location: "位置記錄",
     impacts: "撞擊偵測",
     weighing: "內建秤重",
-    filmTitle: "認識 TRACE",
     pause: "暫停動畫",
     resume: "繼續動畫",
     reduced: "已啟用減少動態效果",

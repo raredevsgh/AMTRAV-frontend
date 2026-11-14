@@ -9,7 +9,6 @@ export const de: Messages = {
     location: "Standortverlauf",
     impacts: "Stoßerkennung",
     weighing: "Integrierte Waage",
-    filmTitle: "TRACE entdecken",
     pause: "Animationen pausieren",
     resume: "Animationen fortsetzen",
     reduced: "Reduzierte Bewegung aktiviert",

@@ -45,7 +45,7 @@ import { brand } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
 import { discovery } from "@/lib/i18n/discovery";
 import { fields, Honeypot, sendLead, type Status } from "./enquiry-form";
-import { MotionControl, Parallax, Stagger, useMotionPaused } from "./motion";
+import { Parallax, Stagger, useMotionPaused } from "./motion";
 import { Itinerary } from "./itinerary";
 import { Voices } from "./voices";
 import { BagViewer } from "./bag-viewer";
@@ -141,13 +141,6 @@ function Hero({
         </p>
       </div>
       <div className="trace-product-showcase">
-        <div className="trace-showcase-toolbar">
-          <span>
-            <span className="trace-showcase-dot" aria-hidden="true" />
-            {m.landing.filmTitle}
-          </span>
-          <MotionControl />
-        </div>
         <div className="trace-hero-stage">
           <BagViewer
             className="trace-hero-visual"

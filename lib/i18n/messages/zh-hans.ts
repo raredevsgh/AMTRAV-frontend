@@ -9,7 +9,6 @@ export const zhHans: Messages = {
     location: "位置记录",
     impacts: "撞击检测",
     weighing: "内置称重",
-    filmTitle: "认识 TRACE",
     pause: "暂停动画",
     resume: "继续动画",
     reduced: "已启用减少动态效果",

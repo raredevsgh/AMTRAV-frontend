@@ -9,7 +9,6 @@ export const fr: Messages = {
     location: "Historique des positions",
     impacts: "Détection des chocs",
     weighing: "Pesée intégrée",
-    filmTitle: "Découvrez TRACE",
     pause: "Mettre les animations en pause",
     resume: "Reprendre les animations",
     reduced: "Mouvements réduits activés",

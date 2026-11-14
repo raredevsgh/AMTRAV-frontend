@@ -34,11 +34,12 @@ html[data-theme="dark"] .site-shell {
 .site-shell :is(.pill, .trace-button):active {
   translate: 0 1px;
 }
+/* The headline and the bag both start at the top, just under the header. */
 .site-shell main .trace-hero {
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
-  align-items: center;
+  align-items: start;
   gap: clamp(32px, 4vw, 64px);
-  padding-block: clamp(48px, 5vw, 80px);
+  padding-block: clamp(24px, 3vw, 40px) clamp(48px, 5vw, 80px);
   background:
     radial-gradient(
       ellipse at 75% 30%,
@@ -124,7 +125,6 @@ html[data-theme="dark"] .site-shell {
 .site-shell .trace-product-showcase {
   min-inline-size: 0;
 }
-.trace-showcase-toolbar,
 .trace-showcase-caption {
   display: flex;
   flex-wrap: wrap;
@@ -136,21 +136,10 @@ html[data-theme="dark"] .site-shell {
   font-size: 12px;
   line-height: 1.5;
 }
-.trace-showcase-toolbar > span,
 .trace-showcase-caption a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-.trace-showcase-toolbar > span {
-  color: var(--c-ink);
-  font-weight: 600;
-}
-.trace-showcase-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--c-accent);
 }
 .trace-showcase-caption a {
   min-block-size: 44px;
@@ -504,15 +493,11 @@ html[data-theme="dark"] .site-shell {
     white-space: normal;
     text-align: center;
   }
-  .trace-showcase-toolbar,
   .trace-showcase-caption {
     padding-inline: 8px;
   }
   .site-shell main .trace-product-showcase .trace-live-card {
     margin: -8px 12px 0;
-  }
-  .trace-showcase-toolbar {
-    gap: 0 8px;
   }
   .site-shell .trace-hero-capabilities {
     gap: 10px 16px;
