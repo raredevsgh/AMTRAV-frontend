@@ -209,7 +209,7 @@ export function ShopPage() {
                     </td>
                     <td>
                       <span
-                        className={`trace-badge ${order.status === "paid" || order.status === "shipped" ? "lime" : order.status === "review" ? "warn" : "info"}`}
+                        className={`trace-badge ${order.status === "paid" || order.status === "shipped" ? "sky" : order.status === "review" ? "warn" : "info"}`}
                         title={
                           order.review_reason
                             ? reviewReasons[order.review_reason]

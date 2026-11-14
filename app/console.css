@@ -2202,8 +2202,8 @@ img.traveller-initials {
   color: #fff;
 }
 .message-icon.all {
-  background: #d5f45b;
-  color: #1b2200;
+  background: #8fc3ff;
+  color: #001f4d;
 }
 .device-status.sold_out,
 .device-status.suspended,
@@ -2258,11 +2258,11 @@ img.traveller-initials {
   background: #fde8e8;
   color: #b42323;
 }
-.trace-badge.lime,
+.trace-badge.sky,
 .trace-badge.cat-journey,
 .trace-badge.cat-transfer {
-  background: #ecf9c4;
-  color: #3d5200;
+  background: #e3efff;
+  color: #0047ad;
 }
 .trace-badge.info,
 .trace-badge.cat-tracker {
@@ -2288,7 +2288,7 @@ img.traveller-initials {
 .battery-meter i {
   position: absolute;
   inset: 0 auto 0 0;
-  background: #d5f45b;
+  background: #8fc3ff;
   opacity: 0.75;
 }
 .battery-meter.low i {
@@ -3174,7 +3174,7 @@ html[data-theme="dark"] .product-drop.filled {
   }
 }
 .auth-brand .auth-eyebrow {
-  color: var(--trace-signal, #d5f45b);
+  color: var(--trace-signal, #8fc3ff);
 }
 
 /* A page's content, laid out as the main column was. */

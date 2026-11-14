@@ -2,11 +2,11 @@
 .trace {
   --trace-ink: #001f4d;
   --trace-night: #071226;
-  --trace-signal: #d5f45b;
+  --trace-signal: #8fc3ff;
   --trace-accent: #0047ad;
   --trace-muted: #526581;
   --trace-soft: #f5f7fa;
-  --trace-on-signal: #1b2200;
+  --trace-on-signal: #001f4d;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -563,8 +563,8 @@
 }
 
 /*
- * Journey Log demo: the trip as a timeline, each event a node (alerts amber, good news lime)
- * joined by a rail that fills in lime as the journey plays; beside it, the trip as a boarding
+ * Journey Log demo: the trip as a timeline, each event a node (alerts amber, good news light blue)
+ * joined by a rail that fills in light blue as the journey plays; beside it, the trip as a boarding
  * pass and the phone's latest alert. The section is dark in both themes.
  */
 .trace-demo-grid {
@@ -583,7 +583,7 @@
 .journey-entry {
   position: relative;
 }
-/* The rail from this node down to the next; lime once the journey has reached both. */
+/* The rail from this node down to the next; light blue once the journey has reached both. */
 .journey-entry:not(:last-child)::after {
   content: "";
   position: absolute;
@@ -747,7 +747,7 @@
 .journey-pass-to {
   text-align: right;
 }
-/* The flight path: dashed ahead of the plane, solid lime behind it. */
+/* The flight path: dashed ahead of the plane, solid light blue behind it. */
 .journey-pass-track {
   position: relative;
   height: 2px;

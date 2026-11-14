@@ -351,7 +351,7 @@ export function ReturnsCard() {
                   </td>
                   <td>
                     <span
-                      className={`trace-badge ${row.status === "completed" ? "lime" : row.status === "rejected" ? "info" : "warn"}`}
+                      className={`trace-badge ${row.status === "completed" ? "sky" : row.status === "rejected" ? "info" : "warn"}`}
                     >
                       {steps[row.status]}
                     </span>

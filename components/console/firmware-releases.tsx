@@ -15,7 +15,7 @@ import { dateLabel, ErrorState, LoadingState, timeLabel } from "./shared";
 
 const statusBadge: Record<ReleaseStatus, string> = {
   draft: "",
-  active: "lime",
+  active: "sky",
   paused: "warn",
   retired: "",
 };
@@ -65,7 +65,7 @@ export function FirmwareReleases() {
             <KeyRound size={18} /> Signing key
           </h2>
           {key.data ? (
-            <span className={`trace-badge ${key.data.configured ? "lime" : "warn"}`}>
+            <span className={`trace-badge ${key.data.configured ? "sky" : "warn"}`}>
               {key.data.configured ? "Uploads checked" : "Not configured"}
             </span>
           ) : null}
@@ -463,7 +463,7 @@ function ManageRelease({
             <li key={install.device_id}>
               <strong>{install.serial_number}</strong>
               <span>
-                <span className={`trace-badge ${install.status === "installed" ? "lime" : install.status === "failed" ? "severe" : "info"}`}>
+                <span className={`trace-badge ${install.status === "installed" ? "sky" : install.status === "failed" ? "severe" : "info"}`}>
                   {install.status}
                 </span>{" "}
                 {install.detail ?? ""} · {timeLabel(install.updated_at)}

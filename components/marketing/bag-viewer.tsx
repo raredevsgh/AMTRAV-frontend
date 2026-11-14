@@ -139,8 +139,12 @@ function stage(
     const mesh = object as Three.Mesh;
     if (!mesh.isMesh) return;
     const material = mesh.material as Three.MeshPhysicalMaterial;
-    // The brand lime stays exact, as in the app, so it reads as the signal colour.
-    if (material.name === "Lime") material.toneMapped = false;
+    // The brand light blue stays exact, as in the app, so it reads as the signal colour.
+    // The model files still call it "Lime", from before the signal colour changed.
+    if (material.name === "Lime") {
+      material.color.set("#8fc3ff");
+      material.toneMapped = false;
+    }
     if (material.name !== "Shell" && material.name !== "Rib") return;
     const shell = material.clone();
     if (finish.color) shell.color.set(finish.color);

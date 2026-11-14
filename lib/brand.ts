@@ -45,7 +45,7 @@ export const brand = {
     /** Night panels behind the product film and the Smart Core. */
     night: pick(process.env.NEXT_PUBLIC_BRAND_NIGHT, "#071226"),
     /** The signal colour: live, ready, "look here". */
-    signal: pick(process.env.NEXT_PUBLIC_BRAND_SIGNAL, "#d5f45b"),
+    signal: pick(process.env.NEXT_PUBLIC_BRAND_SIGNAL, "#8fc3ff"),
     accent: pick(process.env.NEXT_PUBLIC_BRAND_ACCENT, "#0047ad"),
   },
   film: {

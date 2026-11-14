@@ -2355,10 +2355,10 @@ html[data-theme="dark"] .site-shell {
   ) {
   border-radius: var(--ds-control);
 }
-/* In dark mode the ink fill turns light, so numbers and avatars flip to lime on dark. */
+/* In dark mode the ink fill turns light, so numbers and avatars flip to light blue on dark. */
 html[data-theme="dark"] .site-shell :is(.trace-number, .trace-voice-avatar) {
   background: var(--trace-signal);
-  color: var(--trace-on-signal, #1b2200);
+  color: var(--trace-on-signal, #001f4d);
 }
 .site-shell .footer-social a {
   border-color: transparent;
@@ -2462,7 +2462,7 @@ html[data-theme="dark"] .site-shell :is(.trace-number, .trace-voice-avatar) {
 /*
  * Clerk's layout and palette. Light pages use near-black ink and dark sections in place of
  * the navy (the landing sets its ink and night inline from lib/brand.ts, hence !important);
- * Amortrav's blue stays as the accent and lime as the signal.
+ * Amortrav's blue stays as the accent and light blue as the signal.
  */
 html:not([data-theme="dark"]) .site-shell {
   --c-ink: #131316;
@@ -2605,7 +2605,7 @@ html:not([data-theme="dark"]) .site-shell .trace {
   text-align: center;
 }
 
-/* The battery section sits on the canvas, with lime only in its icons. */
+/* The battery section sits on the canvas, with light blue only in its icons. */
 html:not([data-theme="dark"]) .site-shell .trace-battery {
   background: var(--c-soft);
   color: var(--trace-ink);
@@ -2823,7 +2823,7 @@ html[data-theme="dark"] .site-shell .status-page::before {
   background: repeating-radial-gradient(
     circle,
     transparent 0 119px,
-    color-mix(in srgb, var(--trace-signal, #d5f45b) 14%, transparent) 120px 121px,
+    color-mix(in srgb, var(--trace-signal, #8fc3ff) 14%, transparent) 120px 121px,
     transparent 122px 180px
   );
   translate: -50% -50%;
@@ -3374,7 +3374,7 @@ html[data-theme="dark"] .pill.header-cta:hover {
   background: var(--c-fill-hover);
   color: var(--c-on-fill);
 }
-/* Battery: lime in light mode; in dark, a dark panel with lime as the accent. */
+/* Battery: light blue in light mode; in dark, a dark panel with light blue as the accent. */
 html[data-theme="dark"] .site-shell .trace-battery {
   color: var(--trace-ink);
 }

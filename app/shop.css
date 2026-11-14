@@ -362,12 +362,12 @@
   border-color: var(--c-ink);
 }
 html[data-theme="dark"] .checkout-steps li[data-state="done"] span {
-  border-color: var(--trace-signal, #d5f45b);
-  background: var(--trace-signal, #d5f45b);
+  border-color: var(--trace-signal, #8fc3ff);
+  background: var(--trace-signal, #8fc3ff);
   color: #121212;
 }
 html[data-theme="dark"] .checkout-steps li[data-state="done"] + li::before {
-  border-color: var(--trace-signal, #d5f45b);
+  border-color: var(--trace-signal, #8fc3ff);
 }
 .checkout-layout {
   display: grid;

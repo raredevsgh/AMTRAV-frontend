@@ -472,7 +472,7 @@ function SmartCore() {
       <div className="trace-core-image">
         <Image
           src="/images/trace/smart-core.jpg"
-          alt={`The ${brand.core}: a dark module with a lime status light`}
+          alt={`The ${brand.core}: a dark module with a light blue status light`}
           fill
           sizes="(max-width: 900px) 100vw, 50vw"
         />
@@ -561,7 +561,7 @@ function AppPreview() {
 }
 
 /**
- * The demo flight's log. `kind` colours its node: alerts amber, good news lime, the rest
+ * The demo flight's log. `kind` colours its node: alerts amber, good news light blue, the rest
  * plain; `impact` counts towards the pass's impacts.
  */
 const demo: {

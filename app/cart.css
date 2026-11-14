@@ -41,7 +41,7 @@
   font-variant-numeric: tabular-nums;
 }
 html[data-theme="dark"] .cart-count {
-  background: var(--trace-signal, #d5f45b);
+  background: var(--trace-signal, #8fc3ff);
   color: #121212;
 }
 

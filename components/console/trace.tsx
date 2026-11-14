@@ -243,7 +243,7 @@ export function FleetHealthPage() {
                     </td>
                     <td>{row.calibrated_at ? dateLabel(row.calibrated_at) : <span className="trace-badge warn">Never</span>}</td>
                     <td className="trace-flags">
-                      {row.journey_active ? <span className="trace-badge lime">On a journey</span> : null}
+                      {row.journey_active ? <span className="trace-badge sky">On a journey</span> : null}
                       {row.theft_mode ? <span className="trace-badge severe">Theft Mode</span> : null}
                       {!row.journey_active && !row.theft_mode ? <span className="cell-sub">—</span> : null}
                     </td>
@@ -368,7 +368,7 @@ export function ImpactsPage() {
                         "—"
                       )}
                     </td>
-                    <td>{row.journey_id ? <span className="trace-badge lime">During a journey</span> : "—"}</td>
+                    <td>{row.journey_id ? <span className="trace-badge sky">During a journey</span> : "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -630,7 +630,7 @@ export function LeadsPage() {
                   <tr key={row.id}>
                     <td>{timeLabel(row.created_at)}</td>
                     <td>
-                      <span className={`trace-badge ${row.kind === "founding_traveller" ? "lime" : "info"}`}>
+                      <span className={`trace-badge ${row.kind === "founding_traveller" ? "sky" : "info"}`}>
                         {leadKinds[row.kind]}
                       </span>
                     </td>
@@ -778,7 +778,7 @@ export function DeviceLiveState({ id }: { id: string }) {
           <Radio size={18} /> Live state
         </h2>
         {status.data ? (
-          <span className={`trace-badge ${status.data.ready ? "lime" : "warn"}`}>
+          <span className={`trace-badge ${status.data.ready ? "sky" : "warn"}`}>
             {status.data.ready ? "Travel-Ready" : "Not travel-ready"}
           </span>
         ) : null}
@@ -1051,7 +1051,7 @@ function ImpactReadings({ id }: { id: string }) {
                     </td>
                     <td>{reading.duration_ms != null ? `${reading.duration_ms} ms` : "—"}</td>
                     <td>
-                      <span className={`trace-badge ${reading.outcome === "recorded" || reading.outcome === "merged" ? "lime" : "warn"}`}>
+                      <span className={`trace-badge ${reading.outcome === "recorded" || reading.outcome === "merged" ? "sky" : "warn"}`}>
                         {outcomeLabel[reading.outcome]}
                       </span>
                     </td>
