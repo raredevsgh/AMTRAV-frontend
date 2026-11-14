@@ -592,7 +592,12 @@ html[data-theme="dark"] .checkout-steps li[data-state="done"] + li::before {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
-  .product-stage,
+  /* One column: no longer sticky, but still the box the product photo fills (next/image
+     `fill` positions the photo against it; static let it cover the whole panel). */
+  .product-stage {
+    position: relative;
+    top: auto;
+  }
   .checkout-summary {
     position: static;
   }
