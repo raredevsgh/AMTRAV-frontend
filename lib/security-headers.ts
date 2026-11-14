@@ -19,15 +19,21 @@ export function securityHeaders({
   }
   const mapbox =
     "https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com";
+  // Cloudflare Web Analytics: the edge adds its beacon script to each page, and the beacon
+  // reports page-load timings back to Cloudflare.
+  const analytics = {
+    script: "https://static.cloudflareinsights.com",
+    connect: "https://cloudflareinsights.com",
+  };
   const directives = [
     "default-src 'self'",
     // 'wasm-unsafe-eval' lets the local SQLite database compile its WebAssembly; it
     // does not permit JavaScript eval.
-    `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${production ? "" : " 'unsafe-eval'"}`,
+    `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${analytics.script}${production ? "" : " 'unsafe-eval'"}`,
     "style-src 'self' 'unsafe-inline'",
     `img-src 'self' data: blob: ${mapbox}`,
     "font-src 'self' data:",
-    `connect-src 'self' ${mapbox}${socketOrigin ? ` ${socketOrigin}` : ""}${production ? "" : " ws:"}`,
+    `connect-src 'self' ${mapbox} ${analytics.connect}${socketOrigin ? ` ${socketOrigin}` : ""}${production ? "" : " ws:"}`,
     "worker-src 'self' blob:",
     "child-src blob:",
     "media-src 'self'",

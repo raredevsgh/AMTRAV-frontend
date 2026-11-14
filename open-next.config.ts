@@ -7,6 +7,9 @@ import staticAssetsIncrementalCache from "@opennextjs/cloudflare/overrides/incre
 export default {
   ...defineCloudflareConfig({
     incrementalCache: staticAssetsIncrementalCache,
+    // Prerendered pages are answered from that cache before Next's server is loaded, which
+    // cuts the time to first byte. Safe while the site doesn't use partial prerendering.
+    enableCacheInterception: true,
   }),
   // `pnpm run build` is this OpenNext build (Workers Builds runs it, then `wrangler deploy`
   // hands over to `opennextjs-cloudflare deploy`), so it runs Next's build directly.

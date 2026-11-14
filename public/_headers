@@ -1,0 +1,22 @@
+# Browser caching for files Cloudflare serves straight from the Worker's static assets
+# (https://developers.cloudflare.com/workers/static-assets/headers/). Without this every
+# file goes out with max-age=0, so each visit re-checks every script and image.
+#
+# Next's build files have a hash in their name, so they never change: keep them a year.
+# Images, models and the film keep their names when replaced, so a day, then revalidate in
+# the background for a week. sw.js and the rest keep the default (always revalidate).
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/models/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/video/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/brand/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

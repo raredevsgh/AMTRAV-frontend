@@ -402,7 +402,8 @@ describe("two-step sign-in", () => {
       request("auth/mfa/verify", "POST", { code: "123456" }),
       context("auth/mfa/verify"),
     );
-    expect(result.status).toBe(401);
+    // Gone, not unauthorized: the five-minute challenge expired, so the form starts over.
+    expect(result.status).toBe(410);
     expect(upstream).not.toHaveBeenCalled();
   });
 
