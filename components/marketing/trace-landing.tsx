@@ -45,16 +45,11 @@ import { brand } from "@/lib/brand";
 import { useI18n } from "@/lib/i18n/client";
 import { discovery } from "@/lib/i18n/discovery";
 import { fields, Honeypot, sendLead, type Status } from "./enquiry-form";
-import {
-  MotionControl,
-  Parallax,
-  Stagger,
-  useMotionPaused,
-  useReducedMotionPreference,
-} from "./motion";
+import { MotionControl, Parallax, Stagger, useMotionPaused } from "./motion";
 import { Itinerary } from "./itinerary";
 import { Voices } from "./voices";
-import { DiscoveryLinks, RangeExplorer } from "./landing-discovery";
+import { BagViewer } from "./bag-viewer";
+import { bags, DiscoveryLinks, RangeExplorer } from "./landing-discovery";
 import "@/app/trace.css";
 import "@/app/film.css";
 import "@/app/trace-routes.css";
@@ -85,8 +80,9 @@ function SectionHead({
 }
 
 /**
- * Copy and product share the first screen. The sample journey sits below the film so
- * it never obscures the luggage; reduced motion uses the matching poster.
+ * Copy and product share the first screen. The product is the Flagship in live 3D on the
+ * page itself, with no backdrop; the sample journey sits below it so it never covers the
+ * luggage. The bag holds still while the film plays.
  */
 function Hero({
   onWatch,
@@ -99,34 +95,7 @@ function Hero({
 }) {
   const { m, href, locale } = useI18n();
   const copy = discovery[locale];
-  const reduced = useReducedMotionPreference();
-  const still = useMotionPaused();
-  const video = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const element = video.current;
-    if (!element) return;
-    let visible = false;
-    const update = () => {
-      if (still || filmOpen || document.hidden || !visible) element.pause();
-      else element.play().catch(() => {});
-    };
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting;
-        update();
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(element);
-    document.addEventListener("visibilitychange", update);
-    update();
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", update);
-      element.pause();
-    };
-  }, [still, filmOpen, reduced]);
+  const flagship = brand.range.find((item) => item.key === "flagship") ?? brand.range[0];
 
   return (
     <section className="trace-hero" aria-labelledby="trace-hero-title">
@@ -180,34 +149,16 @@ function Hero({
           <MotionControl />
         </div>
         <div className="trace-hero-stage">
-          <div className="trace-hero-visual">
-            {reduced ? (
-              <Image
-                className="trace-hero-media"
-                src={brand.film.poster}
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 1000px) 88vw, (max-width: 1440px) 48vw, 690px"
-              />
-            ) : (
-              <video
-                ref={video}
-                className="trace-hero-media"
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster={brand.film.poster}
-                aria-hidden="true"
-                tabIndex={-1}
-              >
-                <source src={brand.film.webm} type="video/webm" />
-                <source src={brand.film.mp4} type="video/mp4" />
-              </video>
-            )}
-            <div className="trace-hero-shade" />
-          </div>
+          <BagViewer
+            className="trace-hero-visual"
+            model={bags[flagship.key].model}
+            finish={bags[flagship.key].finish}
+            label={`${brand.company} ${flagship.name} · ${copy.finishes[flagship.key]}`}
+            description={copy.model}
+            hint={copy.turn}
+            poster={flagship.image}
+            paused={filmOpen}
+          />
           <LiveCard />
         </div>
         <div className="trace-showcase-caption">

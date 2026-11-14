@@ -377,6 +377,7 @@ type Status = "waiting" | "loading" | "ready" | "failed";
 /**
  * A bag from the range in 3D, filling its parent. `poster` shows if WebGL or the model
  * can't load. `label` names the bag for screen readers; `description` says how to turn it.
+ * `paused` stops the idle spin while something covers it, such as the film dialog.
  */
 export function BagViewer({
   model,
@@ -387,6 +388,7 @@ export function BagViewer({
   poster,
   className,
   style,
+  paused = false,
 }: {
   model: BagModelName;
   finish: BagFinish;
@@ -396,19 +398,20 @@ export function BagViewer({
   poster: string;
   className?: string;
   style?: CSSProperties;
+  paused?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const canvasHost = useRef<HTMLDivElement>(null);
   const running = useRef<Stage | null>(null);
   const still = useMotionPaused();
-  const stillNow = useRef(still);
+  const stillNow = useRef(still || paused);
   const [status, setStatus] = useState<Status>("waiting");
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
-    stillNow.current = still;
+    stillNow.current = still || paused;
     running.current?.wake();
-  }, [still]);
+  }, [still, paused]);
 
   useEffect(() => {
     const element = root.current;

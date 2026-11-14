@@ -52,24 +52,25 @@ const finishes = {
  * Which 3D model each bag uses and how its shell is finished. Flagship is the check-in
  * model as rendered for the app; the others recolour its shell.
  */
-const bags: Record<RangeItem["key"], { model: BagModelName; finish: BagFinish }> = {
-  essential: { model: "carry-on", finish: { color: "#3a3f47", roughness: 0.45 } },
-  flagship: { model: "check-in", finish: {} },
-  pro: {
-    model: "carry-on",
-    finish: { color: "#c4c9d0", metalness: 0.9, roughness: 0.3, clearcoat: 0.1 },
-  },
-  executive: {
-    model: "check-in",
-    finish: {
-      color: "#141518",
-      metalness: 0.05,
-      roughness: 0.2,
-      clearcoat: 1,
-      clearcoatRoughness: 0.05,
+export const bags: Record<RangeItem["key"], { model: BagModelName; finish: BagFinish }> =
+  {
+    essential: { model: "carry-on", finish: { color: "#3a3f47", roughness: 0.45 } },
+    flagship: { model: "check-in", finish: {} },
+    pro: {
+      model: "carry-on",
+      finish: { color: "#c4c9d0", metalness: 0.9, roughness: 0.3, clearcoat: 0.1 },
     },
-  },
-};
+    executive: {
+      model: "check-in",
+      finish: {
+        color: "#141518",
+        metalness: 0.05,
+        roughness: 0.2,
+        clearcoat: 1,
+        clearcoatRoughness: 0.05,
+      },
+    },
+  };
 
 /** Manual selection keeps the product still until the visitor chooses to explore it. */
 export function RangeExplorer() {

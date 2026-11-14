@@ -192,14 +192,15 @@ html[data-theme="dark"] .site-shell {
   background: none;
   box-shadow: none !important;
 }
+/* The live 3D bag (components/marketing/bag-viewer.tsx) on the page itself: no backdrop,
+   so nothing glows around it. Its hint sits at the top, clear of the journey card. */
 .site-shell main .trace-product-showcase .trace-hero-visual {
-  /* An oval that's solid round the bag and gone before any edge, so no corner shows. */
-  --fade: radial-gradient(ellipse at 50% 46%, #000 38%, transparent 70%);
   position: relative;
-  aspect-ratio: 16 / 10;
-  background: var(--trace-night);
-  -webkit-mask-image: var(--fade);
-  mask-image: var(--fade);
+  aspect-ratio: 4 / 3;
+}
+.site-shell main .trace-product-showcase .ld-modelHint {
+  top: 4px;
+  bottom: auto;
 }
 /* The sample journey as a flight strip on frosted navy: the bag and its status, the route
    with the plane partway along, three readings split by hairlines, and the latest alert on
@@ -211,12 +212,10 @@ html[data-theme="dark"] .site-shell {
   display: grid;
   gap: 16px;
   width: auto;
-  margin: -72px 7% 0;
+  margin: -12px 7% 0;
   padding: 18px 20px 16px;
   border-radius: 18px;
-  background:
-    radial-gradient(120% 90% at 0% 0%, rgb(74 145 242 / 16%), transparent 60%),
-    linear-gradient(180deg, rgb(19 33 56 / 92%), rgb(11 21 38 / 94%));
+  background: linear-gradient(180deg, rgb(19 33 56 / 92%), rgb(11 21 38 / 94%));
   color: #fff;
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 8%),
@@ -517,7 +516,7 @@ html[data-theme="dark"] .site-shell {
     padding-inline: 8px;
   }
   .site-shell main .trace-product-showcase .trace-live-card {
-    margin: -48px 12px 0;
+    margin: -8px 12px 0;
   }
   .trace-showcase-toolbar {
     gap: 0 8px;
