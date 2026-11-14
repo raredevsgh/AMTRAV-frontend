@@ -1,0 +1,30 @@
+<!doctype html>
+<!--
+  The Amortrav ad, as one deterministic page: ad.js lays out every element for the chosen
+  format and cut, and window.seek(t) draws the frame at time t. render.mjs steps through it
+  in headless Chrome and pipes the frames to ffmpeg.
+  ?format=landscape|portrait|square  &cut=spot|bumper
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Amortrav ad</title>
+    <link rel="stylesheet" href="/ad/ad.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/three/build/three.module.js",
+          "three/addons/": "/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="bg"></div>
+      <div class="glow"></div>
+      <div class="grid"></div>
+    </div>
+    <script type="module" src="/ad/ad.js"></script>
+  </body>
+</html>
