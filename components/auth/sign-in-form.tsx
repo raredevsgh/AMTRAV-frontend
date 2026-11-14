@@ -315,17 +315,6 @@ export function SignInForm() {
       <Link href="/account-help" className="auth-help">
         Need an account or help signing in?
       </Link>
-      {process.env.NODE_ENV !== "production" && (
-        <div className="auth-preview-links">
-          <span>Explore with sample data</span>
-          <Link href="/preview/admin">
-            Admin preview <ArrowRight size={14} />
-          </Link>
-          <Link href="/preview/manufacturer">
-            Manufacturer preview <ArrowRight size={14} />
-          </Link>
-        </div>
-      )}
     </form>
   );
 }
