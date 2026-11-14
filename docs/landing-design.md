@@ -15,6 +15,11 @@ New copy is provided in all six site languages. The product selector supports
 keyboard navigation, light/dark themes, and the existing reduced-motion and pause
 controls.
 
+The app section uses the existing mobile captures `public/images/app/bag.jpg`
+and `activity.jpg`, also used by the app tour. Both keep their full aspect ratio
+inside responsive phone frames, with descriptive alt text and lazy loading.
+The previous HTML reconstruction of the app screen has been removed.
+
 ## References
 
 - [Clerk](https://clerk.com/): restrained interface framing and clear action hierarchy.

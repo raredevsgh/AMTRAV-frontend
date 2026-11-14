@@ -503,7 +503,7 @@ function SmartCore() {
   );
 }
 
-/** The app's bag page, drawn in HTML so it stays sharp at any size. */
+/** Actual mobile-app captures, shared with the app tour. */
 function AppPreview() {
   return (
     <section className="trace-panel trace-app" aria-labelledby="app-title">
@@ -530,47 +530,31 @@ function AppPreview() {
           </li>
         </ul>
       </div>
-      <div className="trace-phone" aria-label="The bag page in the app" role="img">
-        <div className="phone-map">
-          <svg viewBox="0 0 300 180" aria-hidden>
-            <path d="M-10 150 C 60 140, 90 90, 150 96 S 250 40, 320 30" />
-          </svg>
-          <span className="phone-pin" />
-        </div>
-        <div className="phone-sheet">
-          <b className="phone-name">Tahoe</b>
-          <small>Heathrow Terminal 5, London</small>
-          <div className="phone-journey">
-            <small>● ON A JOURNEY</small>
-            <b>Accra to London</b>
-            <div>
-              <span>
-                <i>So far</i>11 h 20 min
-              </span>
-              <span>
-                <i>Impacts</i>2
-              </span>
-            </div>
-            <em>End journey</em>
+      <div className="trace-app-captures">
+        <figure className="trace-app-capture">
+          <div className="trace-app-device">
+            <Image
+              src="/images/app/bag.jpg"
+              alt="Amortrav’s bag screen showing Tahoe, its status checks, last known address, and location map."
+              width={780}
+              height={1688}
+              sizes="(max-width: 600px) 42vw, (max-width: 900px) 240px, 20vw"
+            />
           </div>
-          <div className="phone-ready">
-            <b>Travel-Ready</b>
-            <span>
-              <Check size={10} /> Battery 78%
-            </span>
-            <span>
-              <Check size={10} /> 21.4 kg of 23 kg
-            </span>
+          <figcaption>Your bag, at a glance</figcaption>
+        </figure>
+        <figure className="trace-app-capture">
+          <div className="trace-app-device">
+            <Image
+              src="/images/app/activity.jpg"
+              alt="Amortrav’s Activity screen with bag filters and a timeline of journeys and Theft Mode events."
+              width={780}
+              height={1688}
+              sizes="(max-width: 600px) 42vw, (max-width: 900px) 240px, 20vw"
+            />
           </div>
-          <div className="phone-tiles">
-            <span>
-              <i>Weight</i>21.4 kg
-            </span>
-            <span className="on">
-              <i>Theft Mode</i>On
-            </span>
-          </div>
-        </div>
+          <figcaption>Every journey, recorded</figcaption>
+        </figure>
       </div>
     </section>
   );

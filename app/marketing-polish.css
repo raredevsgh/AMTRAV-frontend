@@ -372,13 +372,6 @@ html[data-theme="dark"] .site-shell {
   font-weight: 600;
   white-space: nowrap;
 }
-.site-shell .phone-sheet > small {
-  color: #535965;
-}
-.site-shell .phone-tiles span:not(.on) {
-  background: #fff;
-  color: #0e1014;
-}
 .site-shell .trace-head h2 {
   font-weight: 600;
   line-height: 1.16;
