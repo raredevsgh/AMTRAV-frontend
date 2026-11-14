@@ -87,6 +87,17 @@ export const en = {
     social: "{company} on {network}",
     contactUs: "Contact us",
     app: "The app",
+    allBags: "All bags",
+    ctaEyebrow: "Founding Travellers",
+    ctaTitle: "Be one of the first to travel with {product}.",
+    ctaBody:
+      "Be first to know when the range is available, and have a say in what we build next.",
+    ctaShop: "Shop the range",
+    warrantyLine: "{years}-year warranty on every bag",
+    questions: "Questions?",
+    backToTop: "Back to top",
+    photoCredits: "Photo credits",
+    getApp: "Get the app",
   },
   dialog: {
     appTitle: "Your next journey starts here.",

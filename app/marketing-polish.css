@@ -537,3 +537,42 @@ html[data-theme="dark"] .site-shell {
     animation: none;
   }
 }
+
+/* Wide screens: the sample journey sits under the headline and the 3D bag fills the right
+   column beside both, so neither column ends in a gap. The showcase wrappers step aside
+   (display: contents) to make the bag, the journey card and its caption cells of the
+   hero's grid; the document order, which phones and screen readers follow, is unchanged. */
+@media (min-width: 1001px) {
+  .site-shell main .trace-hero {
+    grid-template-areas:
+      "copy bag"
+      "card bag"
+      "caption bag";
+    grid-template-rows: auto auto 1fr;
+    row-gap: 24px;
+  }
+  .site-shell main .trace-hero-copy {
+    grid-area: copy;
+  }
+  .site-shell main .trace-hero :is(.trace-product-showcase, .trace-hero-stage) {
+    display: contents;
+  }
+  .site-shell main .trace-product-showcase .trace-hero-visual {
+    grid-area: bag;
+    align-self: stretch;
+    /* The canvas sizes itself to this box; without a zero minimum its own width would hold
+       the column open and grow it on every resize. */
+    min-inline-size: 0;
+    min-block-size: 480px;
+    aspect-ratio: auto;
+  }
+  .site-shell main .trace-product-showcase .trace-live-card {
+    grid-area: card;
+    margin: 0;
+  }
+  .site-shell main .trace-showcase-caption {
+    grid-area: caption;
+    align-self: start;
+    padding-inline: 4px;
+  }
+}

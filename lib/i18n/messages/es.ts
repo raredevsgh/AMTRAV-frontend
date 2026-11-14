@@ -87,6 +87,17 @@ export const es: Messages = {
     social: "{company} en {network}",
     contactUs: "Contáctanos",
     app: "La app",
+    allBags: "Todas las maletas",
+    ctaEyebrow: "Viajeros Fundadores",
+    ctaTitle: "Sé de los primeros en viajar con {product}.",
+    ctaBody:
+      "Entérate antes que nadie de cuándo estará disponible la gama y opina sobre lo que crearemos después.",
+    ctaShop: "Ver la gama",
+    warrantyLine: "{years} años de garantía en cada maleta",
+    questions: "¿Preguntas?",
+    backToTop: "Volver arriba",
+    photoCredits: "Créditos de las fotos",
+    getApp: "Consigue la app",
   },
   dialog: {
     appTitle: "Tu próximo viaje empieza aquí.",

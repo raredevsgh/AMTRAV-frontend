@@ -2,7 +2,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Smartphone, Building2 } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUp,
+  Building2,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Smartphone,
+  Truck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +24,8 @@ import { brand } from "@/lib/brand";
 import { format, type Messages } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/client";
 import { CartButton } from "@/components/shop/cart";
+import { SHIPPING_COUNTRIES } from "@/components/shop/shop";
+import { WARRANTY_YEARS } from "@/lib/policies";
 import { LanguageSwitcher } from "./language-switcher";
 import { LocaleMenu, MenuContainer, menus, NavMenu } from "./header-menus";
 import { useSiteStore, type SiteDialog } from "@/stores/site-store";
@@ -24,6 +35,7 @@ import { Suspense, useEffect, useState, type ReactNode } from "react";
 import "@/app/site-header.css";
 import "@/app/motion.css";
 import "@/app/marketing-polish.css";
+import "@/app/site-footer.css";
 /** The staff and manufacturer console (the admin dashboard); it asks for sign-in itself. */
 const consoleUrl = process.env.NEXT_PUBLIC_CONSOLE_URL || "/console";
 
@@ -207,50 +219,63 @@ export function DownloadSection() {
     </section>
   );
 }
-type FooterKey = keyof Messages["footer"];
+type FooterLink = {
+  label: string;
+  href: string;
+  /** The address is used as it is, not moved under the page's language. */
+  direct?: boolean;
+};
 
-const footerColumns: {
-  title: FooterKey;
-  /** `direct`: the address is used as it is, not moved under the page's language. */
-  links: { label: FooterKey | "email"; href: string; direct?: boolean }[];
-}[] = [
-  {
-    title: "company",
-    links: [
-      { label: "about", href: "/about" },
-      { label: "features", href: "/features" },
-      { label: "app", href: "/app" },
-      { label: "brands", href: "/for-brands" },
-      { label: "shop", href: "/shop" },
-      { label: "console", href: consoleUrl, direct: true },
-    ],
-  },
-  {
-    title: "support",
-    links: [
-      { label: "faq", href: "/#faq" },
-      { label: "pairing", href: "/how-it-works" },
-      { label: "shipping", href: "/shipping-returns" },
-      { label: "warranty", href: "/warranty" },
-    ],
-  },
-  {
-    title: "legal",
-    links: [
-      { label: "terms", href: "/terms" },
-      { label: "privacy", href: "/privacy" },
-      { label: "cookies", href: "/cookies" },
-    ],
-  },
-  {
-    title: "contact",
-    links: [
-      { label: "email", href: `mailto:${brand.email}` },
-      { label: "partnerships", href: "/contact#enquiry" },
-      { label: "contactUs", href: "/contact" },
-    ],
-  },
-];
+/** The footer's link columns: the product, each bag in the range, help, the company, legal. */
+function footerColumns(m: Messages): { title: string; links: FooterLink[] }[] {
+  return [
+    {
+      title: m.nav.product,
+      links: [
+        { label: brand.product, href: "/" },
+        { label: m.nav.features, href: "/features" },
+        { label: m.nav.how, href: "/#how" },
+        { label: m.nav.range, href: "/#range" },
+        { label: m.footer.app, href: "/app" },
+      ],
+    },
+    {
+      title: m.footer.shop,
+      links: [
+        { label: m.footer.allBags, href: "/shop" },
+        ...brand.range.map((item) => ({ label: item.name, href: `/shop/${item.key}` })),
+      ],
+    },
+    {
+      title: m.footer.support,
+      links: [
+        { label: m.footer.faq, href: "/#faq" },
+        { label: m.footer.pairing, href: "/how-it-works" },
+        { label: m.footer.shipping, href: "/shipping-returns" },
+        { label: m.footer.warranty, href: "/warranty" },
+        { label: m.footer.contactUs, href: "/contact" },
+      ],
+    },
+    {
+      title: m.footer.company,
+      links: [
+        { label: m.footer.about, href: "/about" },
+        { label: m.footer.brands, href: "/for-brands" },
+        { label: m.footer.partnerships, href: "/contact#enquiry" },
+        { label: m.footer.console, href: consoleUrl, direct: true },
+      ],
+    },
+    {
+      title: m.footer.legal,
+      links: [
+        { label: m.footer.terms, href: "/terms" },
+        { label: m.footer.privacy, href: "/privacy" },
+        { label: m.footer.cookies, href: "/cookies" },
+        { label: m.footer.photoCredits, href: "/photo-credits" },
+      ],
+    },
+  ];
+}
 
 // Brand marks, drawn inline: the icon set has no logos of other companies.
 const socialIcons = {
@@ -265,13 +290,39 @@ const socialIcons = {
   ),
 };
 
+/**
+ * The footer: an invitation to join (except on the home page, which ends with one), the
+ * brand with the apps, language and social links, five link columns, what every order
+ * comes with, and the closing line.
+ */
 function Footer() {
   const { m, href } = useI18n();
+  // The home page ("/en") already ends with the Founding Travellers section.
+  const home = /^\/[^/]+\/?$/.test(usePathname() ?? "");
   const socials = (Object.keys(socialIcons) as (keyof typeof socialIcons)[]).filter(
     (key) => brand.social[key],
   );
   return (
     <footer className="site-footer">
+      {home ? null : (
+        <section className="footer-cta" aria-labelledby="footer-cta-title">
+          <div>
+            <p className="footer-eyebrow">{m.footer.ctaEyebrow}</p>
+            <h2 id="footer-cta-title">
+              {format(m.footer.ctaTitle, { product: brand.shortProduct })}
+            </h2>
+            <p>{m.footer.ctaBody}</p>
+          </div>
+          <div className="footer-cta-actions">
+            <Link className="trace-button ink" href={href("/#founding")}>
+              {m.nav.join} <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+            <Link className="trace-button ghost-ink" href={href("/shop")}>
+              {m.footer.ctaShop}
+            </Link>
+          </div>
+        </section>
+      )}
       <div className="footer-top">
         <div className="footer-brand">
           <Link
@@ -286,17 +337,56 @@ function Footer() {
             />
           </Link>
           <p>{m.footer.line}</p>
+          <div className="footer-apps">
+            <h2>{m.footer.getApp}</h2>
+            <div>
+              <ActionButton action="ios" className="footer-app">
+                <Smartphone size={16} aria-hidden="true" /> {m.download.ios}
+              </ActionButton>
+              <ActionButton action="android" className="footer-app">
+                <Smartphone size={16} aria-hidden="true" /> {m.download.android}
+              </ActionButton>
+            </div>
+          </div>
           <LanguageSwitcher className="footer-language" />
+          {socials.length ? (
+            <ul className="footer-social">
+              {socials.map((key) => (
+                <li key={key}>
+                  <a
+                    className={key}
+                    href={brand.social[key]!}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={format(m.footer.social, {
+                      company: brand.company,
+                      network: key === "x" ? "X" : key[0].toUpperCase() + key.slice(1),
+                    })}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="18"
+                      height="18"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      {socialIcons[key]}
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
         <nav className="footer-columns" aria-label={m.footer.label}>
-          {footerColumns.map((column) => (
+          {footerColumns(m).map((column) => (
             <div key={column.title}>
-              <h2>{m.footer[column.title]}</h2>
+              <h2>{column.title}</h2>
               <ul>
                 {column.links.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.href}>
                     <Link href={link.direct ? link.href : href(link.href)}>
-                      {link.label === "email" ? brand.email : m.footer[link.label]}
+                      {link.label}
                     </Link>
                   </li>
                 ))}
@@ -305,39 +395,40 @@ function Footer() {
           ))}
         </nav>
       </div>
+      <ul className="footer-promises">
+        <li>
+          <Lock size={18} aria-hidden="true" />
+          <span>{m.shop.payments}</span>
+        </li>
+        <li>
+          <Truck size={18} aria-hidden="true" />
+          <span>{format(m.shop.tracked, { count: SHIPPING_COUNTRIES })}</span>
+        </li>
+        <li>
+          <ShieldCheck size={18} aria-hidden="true" />
+          <span>{format(m.footer.warrantyLine, { years: WARRANTY_YEARS })}</span>
+        </li>
+        <li>
+          <Mail size={18} aria-hidden="true" />
+          <span>
+            {m.footer.questions} <a href={`mailto:${brand.email}`}>{brand.email}</a>
+          </span>
+        </li>
+      </ul>
       <div className="footer-bottom">
-        <MotionControl />
         <span>
           {format(m.footer.rights, { year: brand.year, company: brand.company })}
         </span>
-        {socials.length ? (
-          <ul className="footer-social">
-            {socials.map((key) => (
-              <li key={key}>
-                <a
-                  className={key}
-                  href={brand.social[key]!}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={format(m.footer.social, {
-                    company: brand.company,
-                    network: key === "x" ? "X" : key[0].toUpperCase() + key.slice(1),
-                  })}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    {socialIcons[key]}
-                  </svg>
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        <div className="footer-bottom-actions">
+          <MotionControl />
+          <button
+            type="button"
+            className="footer-to-top"
+            onClick={() => window.scrollTo({ top: 0 })}
+          >
+            <ArrowUp size={14} aria-hidden="true" /> {m.footer.backToTop}
+          </button>
+        </div>
       </div>
       <p className="footer-watermark" aria-hidden="true">
         {brand.company.toUpperCase()}

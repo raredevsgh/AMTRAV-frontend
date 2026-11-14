@@ -87,6 +87,17 @@ export const de: Messages = {
     social: "{company} auf {network}",
     contactUs: "Kontakt aufnehmen",
     app: "Die App",
+    allBags: "Alle Koffer",
+    ctaEyebrow: "Founding Travellers",
+    ctaTitle: "Reisen Sie als Erste mit {product}.",
+    ctaBody:
+      "Erfahren Sie zuerst, wann die Kollektion erhältlich ist, und reden Sie mit, was wir als Nächstes bauen.",
+    ctaShop: "Zur Kollektion",
+    warrantyLine: "{years} Jahre Garantie auf jeden Koffer",
+    questions: "Fragen?",
+    backToTop: "Nach oben",
+    photoCredits: "Bildnachweise",
+    getApp: "Die App",
   },
   dialog: {
     appTitle: "Deine nächste Reise beginnt hier.",

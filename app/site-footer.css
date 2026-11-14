@@ -1,0 +1,205 @@
+/* The site footer (components/marketing/site-shell.tsx): an invitation to join, the brand
+   beside five link columns, what every order comes with, and the closing line. Scoped to
+   the site shell, so it builds on the base footer rules in globals.css. */
+.site-shell .site-footer {
+  padding-top: 56px;
+}
+
+/* Join: a band across the top, the copy beside the two actions. */
+.site-shell .footer-cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px 48px;
+  margin-bottom: 56px;
+  padding: clamp(28px, 4vw, 48px);
+  border: 1px solid var(--c-border);
+  border-radius: var(--ds-card-radius, 24px);
+  background:
+    radial-gradient(
+      ellipse at 85% 0%,
+      color-mix(in srgb, var(--c-accent) 12%, transparent),
+      transparent 60%
+    ),
+    var(--c-soft);
+}
+.site-shell .footer-eyebrow {
+  margin-bottom: 10px;
+  color: var(--c-accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.site-shell .footer-cta h2 {
+  max-width: 24ch;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.site-shell .footer-cta h2 + p {
+  max-width: 54ch;
+  margin-top: 12px;
+  color: var(--c-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.site-shell .footer-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* The brand, then five columns of links. */
+.site-shell .site-footer .footer-top {
+  grid-template-columns: minmax(240px, 1fr) minmax(0, 2.8fr);
+  gap: 48px;
+}
+.site-shell .site-footer .footer-columns {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-content: stretch;
+  gap: 32px 24px;
+}
+.site-shell .site-footer .footer-columns h2,
+.site-shell .footer-apps h2 {
+  margin-bottom: 12px;
+  color: var(--c-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.site-shell .site-footer .footer-columns ul {
+  gap: 2px;
+}
+.site-shell .site-footer .footer-columns a {
+  min-height: 34px;
+  font-size: 14px;
+}
+.site-shell .footer-brand > p {
+  max-width: 30ch;
+  line-height: 1.6;
+}
+.site-shell .footer-apps {
+  display: grid;
+  margin-top: 28px;
+}
+.site-shell .footer-apps h2 {
+  margin-bottom: 10px;
+}
+.site-shell .footer-apps > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.site-shell .footer-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--c-border);
+  background: var(--c-soft);
+  color: var(--c-ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+.site-shell .footer-app:hover {
+  background: var(--c-surface);
+}
+.site-shell .footer-brand .footer-language {
+  margin-top: 20px;
+}
+.site-shell .footer-brand .footer-social {
+  margin-top: 16px;
+}
+
+/* What every order comes with: payment, shipping, warranty, and who to ask. */
+.site-shell .footer-promises {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 48px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.site-shell .footer-promises li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  background: var(--c-soft);
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.site-shell .footer-promises svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--c-accent);
+}
+.site-shell .footer-promises a {
+  color: var(--c-ink);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.site-shell .footer-promises a:hover {
+  color: var(--c-accent);
+}
+
+/* The closing line: rights on one side, pause and back-to-top on the other. */
+.site-shell .site-footer .footer-bottom {
+  margin-top: 32px;
+}
+.site-shell .footer-bottom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.site-shell .footer-to-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.site-shell .footer-to-top:hover {
+  color: var(--c-ink);
+}
+
+@media (max-width: 1100px) {
+  .site-shell .site-footer .footer-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .site-shell .site-footer .footer-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .site-shell .footer-promises {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .site-shell .site-footer {
+    padding-top: 40px;
+  }
+  .site-shell .footer-cta {
+    grid-template-columns: minmax(0, 1fr);
+    margin-bottom: 40px;
+  }
+  .site-shell .site-footer .footer-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .site-shell .footer-promises {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 40px;
+  }
+}

@@ -855,24 +855,22 @@ function Security() {
 function Battery() {
   return (
     <section className="trace-panel trace-battery" aria-labelledby="battery-title">
-      <div>
-        <SectionHead
-          eyebrow="Airline-conscious battery"
-          title={<span id="battery-title">Quiet in the air. Awake on the ground.</span>}
-        >
-          The {brand.core} notices take-off from air pressure and acceleration and
-          switches its radios off for the flight. After landing it wakes up and sends
-          everything it saved. If an airline asks, it lifts out of the bag in seconds.
-        </SectionHead>
-        <figure className="trace-battery-photo">
-          <Image
-            src="/images/airliner.jpg"
-            alt="A white airliner seen from below, climbing against a clear blue sky"
-            fill
-            sizes="(max-width: 900px) 100vw, 45vw"
-          />
-        </figure>
-      </div>
+      <SectionHead
+        eyebrow="Airline-conscious battery"
+        title={<span id="battery-title">Quiet in the air. Awake on the ground.</span>}
+      >
+        The {brand.core} notices take-off from air pressure and acceleration and switches
+        its radios off for the flight. After landing it wakes up and sends everything it
+        saved. If an airline asks, it lifts out of the bag in seconds.
+      </SectionHead>
+      <figure className="trace-battery-photo">
+        <Image
+          src="/images/airliner.jpg"
+          alt="A white airliner seen from below, climbing against a clear blue sky"
+          fill
+          sizes="(max-width: 900px) 100vw, 45vw"
+        />
+      </figure>
       <Stagger as="ul" className="trace-battery-facts">
         <li>
           <Plane size={20} />
