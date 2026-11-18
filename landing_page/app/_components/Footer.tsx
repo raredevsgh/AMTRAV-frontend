@@ -10,9 +10,9 @@ const GROUPS: readonly { title: string; links: readonly FooterLink[] }[] = [
     title: "Company",
     links: [
       { label: "About", href: "/" },
+      { label: "The Range", href: "/shop" },
       { label: "For brands", href: "/for-brands" },
-      { label: "Careers" },
-      { label: "Blog" },
+      { label: "How it works", href: "/how-it-works" },
     ],
   },
   {
@@ -20,16 +20,16 @@ const GROUPS: readonly { title: string; links: readonly FooterLink[] }[] = [
     links: [
       { label: "FAQ", href: "/#faq" },
       { label: "Pairing help", href: "/how-it-works" },
-      { label: "Shipping & returns" },
-      { label: "Warranty" },
+      { label: "Shipping & returns", href: "/shipping-returns" },
+      { label: "Warranty", href: "/warranty" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Terms of use" },
-      { label: "Privacy" },
-      { label: "Cookies" },
+      { label: "Terms of use", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Cookies", href: "/cookies" },
     ],
   },
   {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import FaqList from "../_components/FaqList";
+import Itinerary from "../_components/Itinerary";
 
 export const metadata: Metadata = {
   title: "How it works",
@@ -514,6 +515,9 @@ export default function HowItWorksPage() {
       />
       <HowItWorksHero />
       <Steps />
+      <section className="my-8">
+        <Itinerary />
+      </section>
       <UnderTheHood />
       <Faq />
     </>

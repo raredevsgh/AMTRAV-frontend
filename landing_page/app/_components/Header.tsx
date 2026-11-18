@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import Button from "./Button";
 import MobileMenu from "./MobileMenu";
-import { GET_THE_APP_HREF } from "./nav";
 import SiteNav, { ShopLink } from "./SiteNav";
+import HeaderActions from "./HeaderActions";
 
 // The glass stays in its own pseudo-element; modal navigation is portaled to the body.
 export default function Header() {
@@ -24,12 +23,12 @@ export default function Header() {
 
           <div className="flex items-center gap-2 xl:hidden">
             <ShopLink />
-            <div className="hidden min-[640px]:block"><Button href={GET_THE_APP_HREF} label="Join the list" size="xs" /></div>
+            <HeaderActions isMobile />
             <MobileMenu />
           </div>
           <div className="hidden items-center gap-3 justify-self-end xl:flex">
             <ShopLink />
-            <Button href={GET_THE_APP_HREF} label="Join the list" />
+            <HeaderActions />
           </div>
         </header>
       </div>

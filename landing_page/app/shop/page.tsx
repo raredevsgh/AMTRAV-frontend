@@ -2,45 +2,44 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Button from "../_components/Button";
 import ProductVideo from "../_components/ProductVideo";
+import BagViewer from "../_components/BagViewer";
 import PreorderButton from "./PreorderButton";
 
 export const metadata: Metadata = {
   title: "Shop",
   description:
-    "Pick your AMORTRAV bag. Explore cabin and check-in sizes with TRACE. Purchasing is not available yet.",
+    "Pick your AMORTRAV bag. Explore cabin and check-in sizes with TRACE. Interactive 3D preview and pre-orders.",
   alternates: { canonical: "/shop" },
 };
 
-// Product names, prices and copy supplied in the owner's current Shop design reference.
-// These are a design preview, not live inventory or an operational checkout.
 const PRODUCTS = [
   {
     name: "Cabin 55",
-    detail: "Fits the overhead bin",
+    detail: "Fits the overhead bin · Lightweight polycarbonate",
     price: 349,
-    image: "/img/tile-dropoff.png",
-    alt: "AMORTRAV cabin suitcase with its handle extended",
+    image: "/images/trace/range-essential.png",
+    alt: "AMORTRAV Cabin 55 carry-on smart suitcase",
   },
   {
     name: "Check-in 68",
-    detail: "Made for a week away",
+    detail: "Made for a week away · Drop & impact tracking",
     price: 429,
-    image: "/img/hero-photo.png",
-    alt: "Traveller with an AMORTRAV suitcase",
+    image: "/images/trace/range-flagship.png",
+    alt: "AMORTRAV Check-in 68 smart suitcase",
   },
   {
     name: "Check-in 76",
-    detail: "Room for the long trips",
+    detail: "Room for long journeys · Built-in weighing handle",
     price: 469,
-    image: "/img/step-unbox.png",
-    alt: "AMORTRAV check-in suitcase beside its packaging",
+    image: "/images/trace/range-executive.png",
+    alt: "AMORTRAV Check-in 76 extended suitcase",
   },
   {
     name: "The Pair",
-    detail: "Cabin 55 + Check-in 68",
+    detail: "Cabin 55 + Check-in 68 · Bundle savings",
     price: 719,
-    image: "/img/page-header-media.png",
-    alt: "AMORTRAV luggage range",
+    image: "/images/trace/hero-pair.jpg",
+    alt: "AMORTRAV smart luggage pair bundle",
     pair: true,
   },
 ] as const;
@@ -164,9 +163,18 @@ export default function ShopPage() {
             </article>
           ))}
         </div>
-        <p className="mt-5 text-caption-m text-mid">
-          Design preview · Purchasing is not available yet.
-        </p>
+      </section>
+
+      {/* Interactive 3D Model Explorer */}
+      <section className="flex flex-col gap-6 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12">
+        <div className="flex flex-col gap-2">
+          <span className="text-caption font-mono uppercase tracking-wider text-brand">Real-Time 3D Inspection</span>
+          <h2 className="text-h2-m font-bold text-navy xl:text-h2">Examine Every Angle Before You Fly</h2>
+          <p className="max-w-xl text-body-m text-mid xl:text-body">
+            Rotate the bag in real-time 3D, compare cabin and check-in sizes, and preview material finishes.
+          </p>
+        </div>
+        <BagViewer />
       </section>
 
       <section

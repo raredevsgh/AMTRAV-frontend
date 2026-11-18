@@ -6,6 +6,7 @@ import Header from "./_components/Header";
 import Preloader from "./_components/Preloader";
 import RevealObserver from "./_components/RevealObserver";
 import ScrollProgressBar from "./_components/ScrollProgressBar";
+import { I18nProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -121,15 +122,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="font-sans">
-        <ScrollProgressBar />
-        <Preloader />
-        <Header />
-        <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[88px] pb-3 xl:gap-5 xl:px-5 xl:pt-[108px] xl:pb-5">
-          <main id="main-content" className="flex flex-col gap-4 xl:gap-5">{children}</main>
-          <AppSignup />
-          <Footer />
-        </div>
-        <RevealObserver />
+        <I18nProvider>
+          <ScrollProgressBar />
+          <Preloader />
+          <Header />
+          <div className="relative mx-auto flex max-w-[1440px] flex-col gap-4 px-3 pt-[88px] pb-3 xl:gap-5 xl:px-5 xl:pt-[108px] xl:pb-5">
+            <main id="main-content" className="flex flex-col gap-4 xl:gap-5">{children}</main>
+            <AppSignup />
+            <Footer />
+          </div>
+          <RevealObserver />
+        </I18nProvider>
       </body>
     </html>
   );
