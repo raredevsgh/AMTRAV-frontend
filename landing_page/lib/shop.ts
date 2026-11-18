@@ -65,19 +65,24 @@ export function formatPrice(minor: number, currency = "USD", locale = "en-US") {
   }).format(minor / 100);
 }
 
+const EMPTY_CART: CartItems = {};
 const listeners = new Set<() => void>();
 let cachedCart: CartItems | null = null;
 
 function readCart(): CartItems {
   if (cachedCart) return cachedCart;
-  if (typeof window === "undefined") return {};
+  if (typeof window === "undefined") return EMPTY_CART;
   try {
     const raw = localStorage.getItem(CART_KEY);
-    cachedCart = raw ? JSON.parse(raw) : {};
+    cachedCart = raw ? JSON.parse(raw) : EMPTY_CART;
   } catch {
-    cachedCart = {};
+    cachedCart = EMPTY_CART;
   }
-  return cachedCart ?? {};
+  return cachedCart ?? EMPTY_CART;
+}
+
+function getCartServerSnapshot(): CartItems {
+  return EMPTY_CART;
 }
 
 function writeCart(cart: CartItems) {
@@ -119,7 +124,7 @@ export function clearCart() {
 }
 
 export function useCart() {
-  const cart: CartItems = useSyncExternalStore<CartItems>(subscribe, readCart, () => ({}));
+  const cart: CartItems = useSyncExternalStore<CartItems>(subscribe, readCart, getCartServerSnapshot);
   const totalItems: number = Object.values(cart).reduce((a: number, b: number) => a + b, 0);
 
   const subtotalMinor: number = Object.entries(cart).reduce((total: number, [sku, qty]: [string, number]) => {
