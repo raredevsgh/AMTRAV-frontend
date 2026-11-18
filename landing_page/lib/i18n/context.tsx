@@ -72,7 +72,7 @@ interface I18nContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   messages: typeof en;
-  t: (keyPath: string, fallback?: string) => string;
+  t: (keyPath: string, fallback?: string, vars?: Record<string, string | number>) => string;
 }
 
 const I18nContext = createContext<I18nContextType>({
@@ -86,17 +86,24 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const locale = useSyncExternalStore(subscribeLocale, getLocaleSnapshot, getLocaleServerSnapshot);
   const currentMessages = MESSAGES[locale] ?? en;
 
-  const t = (keyPath: string, fallback?: string): string => {
+  const t = (keyPath: string, fallback?: string, vars?: Record<string, string | number>): string => {
     const parts = keyPath.split(".");
     let val: unknown = currentMessages;
     for (const part of parts) {
       if (val && typeof val === "object" && part in (val as Record<string, unknown>)) {
         val = (val as Record<string, unknown>)[part];
       } else {
-        return fallback ?? keyPath;
+        val = undefined;
+        break;
       }
     }
-    return typeof val === "string" ? val : fallback ?? keyPath;
+    let res = typeof val === "string" ? val : fallback ?? keyPath;
+    if (vars) {
+      for (const [k, v] of Object.entries(vars)) {
+        res = res.replaceAll(`{${k}}`, String(v));
+      }
+    }
+    return res;
   };
 
   return (

@@ -3,14 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS, SHOP_LINK } from "./nav";
+import { SHOP_LINK } from "./nav";
+import { useI18n } from "@/lib/i18n/context";
 
 // Figma "Nav link" (2018:537, 124:776): State=Active marks current page with rounded-full light-blue pill badge.
 export default function SiteNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
+
+  const links = [
+    { href: "/features", label: t("nav.features", "Features") },
+    { href: "/how-it-works", label: t("nav.how", "How it works") },
+    { href: "/for-brands", label: t("nav.brands", "For brands") },
+  ];
+
   return (
-    <nav aria-label="Main navigation" className="flex h-11 items-center gap-2 xl:gap-3 px-1">
-      {NAV_LINKS.map(({ href, label }) => {
+    <nav aria-label={t("nav.main", "Main navigation")} className="flex h-11 items-center gap-2 xl:gap-3 px-1">
+      {links.map(({ href, label }) => {
         const active = pathname === href;
         return (
           <Link
@@ -34,10 +43,11 @@ export default function SiteNav() {
 // Recreated from the supplied header screenshot with the owner's approval; not a Figma export.
 export function ShopLink() {
   const active = usePathname() === SHOP_LINK.href;
+  const { t } = useI18n();
   return (
     <Link
       href={SHOP_LINK.href}
-      aria-label={SHOP_LINK.label}
+      aria-label={t("nav.shop", "Shop")}
       aria-current={active ? "page" : undefined}
       className={`group flex size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${active ? "bg-blue-pale" : "border-[1.5px] border-ink"}`}
     >

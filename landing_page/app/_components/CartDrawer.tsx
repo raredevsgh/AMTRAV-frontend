@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useCart, CATALOG, formatPrice } from "@/lib/shop";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function CartDrawer({
   isOpen,
@@ -12,6 +13,7 @@ export default function CartDrawer({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const { cart, totalItems, subtotalMinor, addToCart, removeFromCart, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmation, setOrderConfirmation] = useState<{ id: string; message: string } | null>(null);
@@ -58,7 +60,7 @@ export default function CartDrawer({
         <div className="flex items-center justify-between border-b border-line px-6 py-5">
           <div className="flex items-center gap-2">
             <ShoppingBag className="size-5 text-brand" />
-            <h2 className="text-h4 font-bold text-navy">Your Pre-Order</h2>
+            <h2 className="text-h4 font-bold text-navy">{t("shop.cart", "Your Pre-Order")}</h2>
             <span className="rounded-full bg-blue-pale px-2.5 py-0.5 text-caption font-semibold text-brand">
               {totalItems}
             </span>
@@ -67,7 +69,7 @@ export default function CartDrawer({
             type="button"
             onClick={onClose}
             className="rounded-full p-2 text-mid hover:bg-surface hover:text-navy"
-            aria-label="Close cart"
+            aria-label={t("shop.close", "Close cart")}
           >
             <X className="size-5" />
           </button>
@@ -96,14 +98,14 @@ export default function CartDrawer({
                 }}
                 className="mt-4 rounded-xl bg-navy px-6 py-2.5 text-caption font-semibold text-white hover:bg-navy-deep"
               >
-                Continue Browsing
+                {t("shop.keepShopping", "Continue Browsing")}
               </button>
             </div>
           ) : entries.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center text-mid">
               <ShoppingBag className="size-12 text-mid/40" />
-              <p className="text-body font-medium text-navy">Your cart is empty</p>
-              <p className="max-w-xs text-caption">Explore our smart luggage range and pick your size with built-in TRACE.</p>
+              <p className="text-body font-medium text-navy">{t("shop.cartEmpty", "Your cart is empty")}</p>
+              <p className="max-w-xs text-caption">{t("shop.browse", "Explore our smart luggage range and pick your size with built-in TRACE.")}</p>
             </div>
           ) : (
             <div className="flex flex-col divide-y divide-line">
@@ -165,7 +167,7 @@ export default function CartDrawer({
         {!orderConfirmation && entries.length > 0 && (
           <div className="border-t border-line bg-surface/50 p-6">
             <div className="mb-4 flex items-center justify-between text-caption text-navy">
-              <span className="text-mid">Subtotal</span>
+              <span className="text-mid">{t("shop.subtotal", "Subtotal")}</span>
               <span className="text-h4 font-bold">{formatPrice(subtotalMinor)}</span>
             </div>
             <div className="mb-4 flex items-center gap-2 rounded-xl bg-blue-pale/60 p-2.5 text-[12px] text-brand">
@@ -178,7 +180,7 @@ export default function CartDrawer({
               onClick={handleCheckout}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-navy py-3.5 text-caption font-bold text-white transition-colors hover:bg-navy-deep disabled:opacity-50"
             >
-              <span>{isSubmitting ? "Securing Reservation..." : "Proceed to Pre-Order"}</span>
+              <span>{isSubmitting ? "Securing Reservation..." : t("shop.checkout", "Check out")}</span>
               <ArrowRight className="size-4" />
             </button>
           </div>

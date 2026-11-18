@@ -5,13 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { GET_THE_APP_HREF, NAV_LINKS, SHOP_LINK } from "./nav";
-
-const ALL_LINKS = [
-  { href: "/", label: "Home" },
-  ...NAV_LINKS,
-  { href: SHOP_LINK.href, label: "Shop now" },
-];
+import { GET_THE_APP_HREF, SHOP_LINK } from "./nav";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function MobileMenu() {
   const pathname = usePathname();
@@ -51,9 +46,18 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
   close: () => void;
   restoreFocus: () => void;
 }) {
+  const { t } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const focusReturn = useRef(restoreFocus);
+
+  const links = [
+    { href: "/", label: t("nav.home", "Home") },
+    { href: "/features", label: t("nav.features", "Features") },
+    { href: "/how-it-works", label: t("nav.how", "How it works") },
+    { href: "/for-brands", label: t("nav.brands", "For brands") },
+    { href: SHOP_LINK.href, label: t("nav.shop", "Shop now") },
+  ];
 
   useEffect(() => {
     const element = dialog.current;
@@ -119,8 +123,8 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
         </div>
 
         {/* Links List */}
-        <nav aria-label="Mobile navigation" className="my-auto flex flex-col py-6">
-          {ALL_LINKS.map(({ href, label }) => {
+        <nav aria-label={t("nav.mobile", "Mobile navigation")} className="my-auto flex flex-col py-6">
+          {links.map(({ href, label }) => {
             const isShop = href === "/shop";
             return (
               <Link
@@ -148,7 +152,7 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
             onClick={close}
             className="flex h-13 w-full items-center justify-center gap-2 rounded-full bg-brand text-base font-semibold text-white shadow-sm transition-opacity hover:opacity-95 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           >
-            <span>Join the list</span>
+            <span>{t("nav.joinShort", "Join the list")}</span>
             <Image src="/icons/arrow-white.svg" alt="" width={16} height={16} />
           </Link>
           <p className="text-caption text-mid">©2026 Amortrav</p>

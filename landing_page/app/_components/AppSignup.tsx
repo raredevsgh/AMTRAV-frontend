@@ -4,11 +4,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GET_THE_APP_HREF } from "./nav";
+import { useI18n } from "@/lib/i18n/context";
 
 // Figma "App signup / Desktop" (2020:591) and "/ Mobile" (2020:619): email capture shared by all
 // pages. There is no waitlist endpoint yet, so a valid submission only shows a notice and sends nothing.
 export default function AppSignup() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,7 +22,15 @@ export default function AppSignup() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const link = e.target instanceof Element && e.target.closest(`a[href="${GET_THE_APP_HREF}"]`);
-      if (link && matchMedia("(pointer: fine)").matches) email.current?.focus({ preventScroll: true });
+      if (link) {
+        const target = document.getElementById("signup");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (matchMedia("(pointer: fine)").matches) {
+            email.current?.focus({ preventScroll: true });
+          }
+        }
+      }
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
@@ -48,18 +58,18 @@ export default function AppSignup() {
 
       if (res.ok) {
         setIsSuccess(true);
-        setStatusMessage("Thank you for joining our waitlist! We will notify you when pre-orders open.");
+        setStatusMessage(t("landing.waitlistSuccess", "Thank you for joining our waitlist! We will notify you when pre-orders open."));
         if (email.current) email.current.value = "";
       } else if (res.status === 429) {
         setIsSuccess(true);
-        setStatusMessage("You're already on our list! We will be in touch soon.");
+        setStatusMessage(t("landing.waitlistAlready", "You're already on our list! We will be in touch soon."));
       } else {
         setIsSuccess(false);
-        setStatusMessage(data.error || "Please verify your email address and try again.");
+        setStatusMessage(data.error || t("landing.waitlistError", "Please verify your email address and try again."));
       }
     } catch {
       setIsSuccess(true);
-      setStatusMessage("Thank you for joining! We have recorded your interest.");
+      setStatusMessage(t("landing.waitlistFallback", "Thank you for joining! We have recorded your interest."));
     } finally {
       setIsSubmitting(false);
     }
@@ -161,11 +171,10 @@ export default function AppSignup() {
 
       <div data-reveal className="relative flex w-full flex-col items-center gap-3 text-center [--motion-delay:80ms] xl:w-auto xl:gap-2">
         <h2 className="text-h1-m font-bold text-white xl:min-w-[512px] xl:text-h1 xl:whitespace-nowrap">
-          Ready when <br className="xl:hidden" />
-          your flight is.
+          {t("landing.waitlistTitle", "Ready when your flight is.")}
         </h2>
         <p className="text-small text-stale xl:w-[520px] xl:text-lead">
-          AMORTRAV is in development. Leave your email and we will write when it is ready to order.
+          {t("landing.waitlistSubhead", "AMORTRAV is in development. Leave your email and we will write when it is ready to order.")}
         </p>
       </div>
 
@@ -185,7 +194,7 @@ export default function AppSignup() {
             type="email"
             name="email"
             required
-            placeholder="Your email address"
+            placeholder={t("landing.waitlistPlaceholder", "Your email address")}
             className="min-w-0 flex-1 bg-transparent text-small text-navy outline-none placeholder:text-mid xl:text-caption"
           />
         </label>
@@ -194,7 +203,7 @@ export default function AppSignup() {
           disabled={isSubmitting}
           className="w-full rounded-2xl bg-brand px-5 py-4 text-btn-sm font-bold whitespace-nowrap text-surface transition-[background-color,color,scale] duration-200 ease-out-soft hover:bg-sky hover:text-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky disabled:opacity-60 motion-safe:active:scale-[0.97] xl:w-auto xl:text-btn"
         >
-          {isSubmitting ? "Joining..." : "Join the Experience"}
+          {isSubmitting ? t("landing.waitlistJoining", "Joining...") : t("landing.waitlistButton", "Join the Experience")}
         </button>
       </form>
 
