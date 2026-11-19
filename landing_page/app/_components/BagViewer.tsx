@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { Rotate3d, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Rotate3d, Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, Eye, Layers } from "lucide-react";
 import type * as Three from "three";
 import type { GLTF } from "three/addons/loaders/GLTFLoader.js";
+import { addToCart } from "@/lib/shop";
+import { useRegion } from "@/lib/region";
+import CartDrawer from "./CartDrawer";
 
-export type BagModelName = "carry-on" | "check-in";
+export type LuggageTier = "essential" | "pro" | "executive" | "flagship";
+export type LuggageType = "cabin" | "checkin" | "both";
+export type Active3DModel = "carry-on" | "check-in";
 
 export interface BagFinish {
   id: string;
@@ -17,19 +22,40 @@ export interface BagFinish {
   posterImage: string;
 }
 
-export const FINISHES: BagFinish[] = [
-  { id: "navy", name: "Navy Flagship", color: "#001f4d", metalness: 0.15, roughness: 0.35, posterImage: "/images/trace/range-flagship.png" },
-  { id: "graphite", name: "Graphite Essential", color: "#22252a", metalness: 0.2, roughness: 0.5, posterImage: "/images/trace/range-essential.png" },
-  { id: "silver", name: "Brushed Aluminum Pro", color: "#b8c0cc", metalness: 0.85, roughness: 0.22, posterImage: "/images/trace/range-pro.png" },
-  { id: "obsidian", name: "Executive Obsidian", color: "#0d0f12", metalness: 0.4, roughness: 0.15, posterImage: "/images/trace/range-executive.png" },
+// Photo 1: Essential Colors: Midnight Black, Space Grey, Navy Blue
+export const ESSENTIAL_SWATCHES: BagFinish[] = [
+  { id: "midnight-black", name: "Midnight Black", color: "#1a1a1c", metalness: 0.2, roughness: 0.45, posterImage: "/images/trace/range-essential.png" },
+  { id: "space-grey", name: "Space Grey", color: "#7d828a", metalness: 0.35, roughness: 0.38, posterImage: "/images/trace/range-pro.png" },
+  { id: "navy-blue", name: "Navy Blue", color: "#1e2d42", metalness: 0.25, roughness: 0.4, posterImage: "/images/trace/range-flagship.png" },
 ];
 
-const MODELS: Record<BagModelName, string> = {
+// Photo 2: Pro, Executive, Flagship Colors: Graphite Black, Midnight Blue, Titanium Silver, Pearl White, Champagne Gold, Forest Green
+export const PRO_FLAGSHIP_SWATCHES: BagFinish[] = [
+  { id: "graphite-black", name: "Graphite Black", color: "#2b2d2f", metalness: 0.6, roughness: 0.3, posterImage: "/images/trace/range-essential.png" },
+  { id: "midnight-blue", name: "Midnight Blue", color: "#1d3356", metalness: 0.55, roughness: 0.32, posterImage: "/images/trace/range-flagship.png" },
+  { id: "titanium-silver", name: "Titanium Silver", color: "#c5cbd3", metalness: 0.85, roughness: 0.22, posterImage: "/images/trace/range-pro.png" },
+  { id: "pearl-white", name: "Pearl White", color: "#f4f5f7", metalness: 0.3, roughness: 0.25, posterImage: "/images/trace/range-essential.png" },
+  { id: "champagne-gold", name: "Champagne Gold", color: "#d8b888", metalness: 0.75, roughness: 0.28, posterImage: "/images/trace/range-executive.png" },
+  { id: "forest-green", name: "Forest Green", color: "#3e533e", metalness: 0.5, roughness: 0.35, posterImage: "/images/trace/range-flagship.png" },
+];
+
+// Curated luxury accents for the custom color palette
+export const LUXURY_PALETTE_PRESETS = [
+  { name: "Bordeaux Burgundy", hex: "#581825" },
+  { name: "British Racing Green", hex: "#1b3b2b" },
+  { name: "Desert Dune Gold", hex: "#c2a87d" },
+  { name: "Royal Amethyst", hex: "#3b1d4a" },
+  { name: "Monaco Crimson", hex: "#9c2424" },
+  { name: "Arctic Ice Blue", hex: "#8faecc" },
+  { name: "Nordic Slate", hex: "#3a4856" },
+  { name: "Rose Gold Mirage", hex: "#c99385" },
+];
+
+const MODELS: Record<Active3DModel, string> = {
   "carry-on": "/models/carry-on.glb",
   "check-in": "/models/check-in.glb",
 };
 
-const START_ROTATION = (-32 * Math.PI) / 180;
 const VIEW_HEIGHT = 1.16;
 const VIEW_WIDTH = 0.8;
 const TARGET_Y = 0.49;
@@ -54,7 +80,6 @@ function getKit(): Promise<Kit> {
       await MeshoptDecoder.ready;
     }
     const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-    // Register TextureLoader for CSP compliance with embedded wordmark textures
     loader.register((parser) => {
       const images = new THREE.TextureLoader(parser.options.manager);
       images.setCrossOrigin(parser.options.crossOrigin);
@@ -69,8 +94,8 @@ function getKit(): Promise<Kit> {
   return kitPromise;
 }
 
-const modelCache = new Map<BagModelName, Promise<GLTF>>();
-function getModel(name: BagModelName): Promise<GLTF> {
+const modelCache = new Map<Active3DModel, Promise<GLTF>>();
+function getModel(name: Active3DModel): Promise<GLTF> {
   let model = modelCache.get(name);
   if (!model) {
     model = getKit().then(({ load }) => load(MODELS[name]));
@@ -81,21 +106,64 @@ function getModel(name: BagModelName): Promise<GLTF> {
 }
 
 export default function BagViewer({
-  defaultModel = "carry-on",
+  defaultTier = "essential",
+  defaultLuggageType = "cabin",
   className = "",
 }: {
-  defaultModel?: BagModelName;
+  defaultTier?: LuggageTier;
+  defaultLuggageType?: LuggageType;
   className?: string;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
-  const [modelName, setModelName] = useState<BagModelName>(defaultModel);
-  const [selectedFinish, setSelectedFinish] = useState<BagFinish>(FINISHES[0]);
+  const { formatPrice, isEcommerce } = useRegion();
+
+  // Tier (Essential, Pro, Executive, Flagship)
+  const [selectedTier, setSelectedTier] = useState<LuggageTier>(defaultTier);
+
+  // Luggage Type: Cabin, Check-In, or Both
+  const [selectedLuggageType, setSelectedLuggageType] = useState<LuggageType>(defaultLuggageType);
+
+  // Which model is currently actively rendered in 3D (carry-on or check-in)
+  const [activeModel, setActiveModel] = useState<Active3DModel>(
+    defaultLuggageType === "checkin" ? "check-in" : "carry-on"
+  );
+
+  // Active swatches based on collection
+  const availableSwatches = useMemo(() => {
+    return selectedTier === "essential" ? ESSENTIAL_SWATCHES : PRO_FLAGSHIP_SWATCHES;
+  }, [selectedTier]);
+
+  // Selected Finish / Color
+  const [selectedFinish, setSelectedFinish] = useState<BagFinish>(availableSwatches[0]);
+  const [isCustomColor, setIsCustomColor] = useState(false);
+  const [customHex, setCustomHex] = useState("#c2a87d");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [studioTheme, setStudioTheme] = useState<"light" | "dark">("light");
+  const isLight = studioTheme === "light";
+
+  // Update selected finish if tier changes
+  useEffect(() => {
+    if (!isCustomColor) {
+      setSelectedFinish(availableSwatches[0]);
+    }
+  }, [selectedTier, availableSwatches, isCustomColor]);
+
+  // When luggage type changes:
+  const handleLuggageTypeSelect = (type: LuggageType) => {
+    setSelectedLuggageType(type);
+    if (type === "cabin") setActiveModel("carry-on");
+    else if (type === "checkin") setActiveModel("check-in");
+    // If 'both', keep the currently viewed model
+  };
+
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [addedNotice, setAddedNotice] = useState(false);
 
   const rotateActionRef = useRef<((delta: number) => void) | null>(null);
+  const shellMaterialsRef = useRef<Three.MeshPhysicalMaterial[]>([]);
 
   const rotateBy = useCallback((deltaRadians: number) => {
     if (rotateActionRef.current) {
@@ -103,6 +171,24 @@ export default function BagViewer({
     }
   }, []);
 
+  // Compute active color and material properties
+  const activeColor = isCustomColor ? customHex : selectedFinish.color;
+  const activeMetalness = selectedTier === "essential" ? 0.25 : 0.7;
+  const activeRoughness = selectedTier === "essential" ? 0.45 : 0.28;
+
+  // Real-time material update without GLTF reloading
+  useEffect(() => {
+    if (shellMaterialsRef.current.length > 0) {
+      shellMaterialsRef.current.forEach((mat) => {
+        mat.color.set(activeColor);
+        mat.metalness = activeMetalness;
+        mat.roughness = activeRoughness;
+        mat.needsUpdate = true;
+      });
+    }
+  }, [activeColor, activeMetalness, activeRoughness]);
+
+  // 3D Scene Initialization
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
@@ -114,7 +200,7 @@ export default function BagViewer({
     setIsReady(false);
     setHasError(false);
 
-    Promise.all([getKit(), getModel(modelName)])
+    Promise.all([getKit(), getModel(activeModel)])
       .then(([kit, gltf]) => {
         if (cancelled) return;
         const { THREE, RoomEnvironment } = kit;
@@ -153,7 +239,7 @@ export default function BagViewer({
 
         // Clone model and recolor finishes
         const bag = gltf.scene.clone(true);
-        const ownedMaterials: Three.Material[] = [];
+        const ownedMaterials: Three.MeshPhysicalMaterial[] = [];
         bag.traverse((child) => {
           const mesh = child as Three.Mesh;
           if (!mesh.isMesh) return;
@@ -164,15 +250,16 @@ export default function BagViewer({
           }
           if (mat.name === "Shell" || mat.name === "Rib") {
             const shell = mat.clone();
-            shell.color.set(selectedFinish.color);
-            shell.metalness = selectedFinish.metalness;
-            shell.roughness = selectedFinish.roughness;
+            shell.color.set(activeColor);
+            shell.metalness = activeMetalness;
+            shell.roughness = activeRoughness;
             mesh.material = shell;
             ownedMaterials.push(shell);
           }
         });
+        shellMaterialsRef.current = ownedMaterials;
 
-        // Realistic ground contact shadow
+        // Ground shadow
         const size = new THREE.Box3().setFromObject(bag).getSize(new THREE.Vector3());
         const shadowCanvas = document.createElement("canvas");
         shadowCanvas.width = shadowCanvas.height = 256;
@@ -271,44 +358,45 @@ export default function BagViewer({
         canvas.addEventListener("pointerup", onPointerUp);
         canvas.addEventListener("pointercancel", onPointerUp);
 
-        const resizeObserver = new ResizeObserver(() => {
-          fit();
-        });
-        resizeObserver.observe(host);
         fit();
+        const ro = new ResizeObserver(fit);
+        ro.observe(host);
 
-        const tick = () => {
-          if (cancelled) return;
-          if (autoSpin && !dragging) {
-            angle += 0.005;
+        let lastTime = performance.now();
+        const tick = (now: number) => {
+          const dt = Math.min((now - lastTime) / 1000, 0.1);
+          lastTime = now;
+          if (autoSpin) {
+            angle += 0.25 * dt;
           }
-          turntable.rotation.y = START_ROTATION + angle;
+          turntable.rotation.y = angle;
           renderer.render(scene, camera);
           animationFrameId = requestAnimationFrame(tick);
         };
-        tick();
+        animationFrameId = requestAnimationFrame(tick);
 
         setIsReady(true);
 
         cleanupStage = () => {
           cancelAnimationFrame(animationFrameId);
           clearTimeout(spinResumeTimeout);
-          resizeObserver.disconnect();
+          ro.disconnect();
           canvas.removeEventListener("pointerdown", onPointerDown);
           canvas.removeEventListener("pointermove", onPointerMove);
           canvas.removeEventListener("pointerup", onPointerUp);
           canvas.removeEventListener("pointercancel", onPointerUp);
-          for (const m of ownedMaterials) m.dispose();
-          shadowTexture.dispose();
-          shadowMaterial.dispose();
-          shadowGeo.dispose();
-          environment.dispose();
           renderer.dispose();
-          canvas.remove();
+          environment.dispose();
+          shadowTexture.dispose();
+          shadowGeo.dispose();
+          shadowMaterial.dispose();
+          ownedMaterials.forEach((m) => m.dispose());
+          host.innerHTML = "";
+          shellMaterialsRef.current = [];
         };
       })
       .catch((err) => {
-        console.warn("Failed to initialize 3D Model viewer, fallback to high-res poster:", err);
+        console.error("Three.js Model load failed:", err);
         if (!cancelled) setHasError(true);
       });
 
@@ -316,16 +404,193 @@ export default function BagViewer({
       cancelled = true;
       if (cleanupStage) cleanupStage();
     };
-  }, [modelName, selectedFinish]);
+  }, [activeModel]);
+
+  // Pricing calculation
+  const basePriceMinor = useMemo(() => {
+    const tierMultiplier: Record<LuggageTier, number> = {
+      essential: 32900,
+      pro: 38900,
+      executive: 44900,
+      flagship: 49900,
+    };
+    const sizeMultiplier: Record<LuggageType, number> = {
+      cabin: 1.0,
+      checkin: 1.25,
+      both: 2.0, // Bundle pricing advantage
+    };
+    return Math.round(tierMultiplier[selectedTier] * sizeMultiplier[selectedLuggageType]);
+  }, [selectedTier, selectedLuggageType]);
+
+  // Add to cart handler
+  const handleReserve = () => {
+    const sizeKey = selectedLuggageType === "both" ? "the-pair" : selectedLuggageType === "checkin" ? "checkin-68" : "cabin-55";
+    const colorName = isCustomColor ? `Custom Color` : selectedFinish.name;
+    const cleanHex = activeColor.replace("#", "");
+    const compoundSku = `${selectedTier}-${sizeKey}__${encodeURIComponent(colorName)}__${cleanHex}`;
+
+    addToCart(compoundSku, 1);
+    setAddedNotice(true);
+    setTimeout(() => setAddedNotice(false), 3000);
+    setCartOpen(true);
+  };
 
   return (
     <div
-      ref={containerRef}
-      className={`relative flex flex-col items-center rounded-3xl border border-line bg-gradient-to-b from-[#051126] to-navy p-5 text-white shadow-hero ${className}`}
+      className={`relative flex flex-col gap-4 rounded-3xl p-4 transition-colors duration-300 xl:p-6 ${
+        isLight
+          ? "border border-divider bg-white text-navy shadow-card"
+          : "border border-white/10 bg-navy text-white shadow-2xl"
+      } ${className}`}
     >
-      {/* 3D Canvas / Fallback Container */}
-      <div className="relative h-[380px] w-full cursor-grab overflow-hidden active:cursor-grabbing sm:h-[440px]">
-        {/* Visual Fallback Poster (rendered while loading or on WebGL error) */}
+      {/* Top Header: Collection & Luggage Type Selectors + Studio Theme Toggle */}
+      <div
+        className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b pb-4 ${
+          isLight ? "border-divider" : "border-white/10"
+        }`}
+      >
+        {/* Collection / Tier Tabs */}
+        <div>
+          <span
+            className={`block text-[11px] font-mono uppercase tracking-wider mb-1 ${
+              isLight ? "text-brand" : "text-sky"
+            }`}
+          >
+            Luggage Collection
+          </span>
+          <div
+            className={`flex items-center gap-1 rounded-full p-1 border ${
+              isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+            }`}
+          >
+            {(["essential", "pro", "executive", "flagship"] as LuggageTier[]).map((tier) => (
+              <button
+                key={tier}
+                type="button"
+                onClick={() => setSelectedTier(tier)}
+                className={`rounded-full px-3.5 py-1 text-caption-m font-semibold capitalize transition-all ${
+                  selectedTier === tier
+                    ? isLight
+                      ? "bg-navy text-white shadow-xs"
+                      : "bg-sky text-navy shadow-sm"
+                    : isLight
+                    ? "text-mid hover:text-navy"
+                    : "text-blue-pale hover:text-white"
+                }`}
+              >
+                {tier}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Center: Luggage Type: Cabin, Check-In, Both */}
+        <div>
+          <span
+            className={`block text-[11px] font-mono uppercase tracking-wider mb-1 sm:text-center ${
+              isLight ? "text-brand" : "text-sky"
+            }`}
+          >
+            Luggage Type
+          </span>
+          <div
+            className={`flex items-center gap-1 rounded-full p-1 border ${
+              isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => handleLuggageTypeSelect("cabin")}
+              className={`rounded-full px-3.5 py-1 text-caption-m font-semibold transition-all ${
+                selectedLuggageType === "cabin"
+                  ? isLight
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-sky text-navy shadow-sm"
+                  : isLight
+                  ? "text-mid hover:text-navy"
+                  : "text-blue-pale hover:text-white"
+              }`}
+            >
+              Cabin 55
+            </button>
+            <button
+              type="button"
+              onClick={() => handleLuggageTypeSelect("checkin")}
+              className={`rounded-full px-3.5 py-1 text-caption-m font-semibold transition-all ${
+                selectedLuggageType === "checkin"
+                  ? isLight
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-sky text-navy shadow-sm"
+                  : isLight
+                  ? "text-mid hover:text-navy"
+                  : "text-blue-pale hover:text-white"
+              }`}
+            >
+              Check-In 68
+            </button>
+            <button
+              type="button"
+              onClick={() => handleLuggageTypeSelect("both")}
+              className={`rounded-full px-3.5 py-1 text-caption-m font-semibold transition-all ${
+                selectedLuggageType === "both"
+                  ? isLight
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-sky text-navy shadow-sm"
+                  : isLight
+                  ? "text-mid hover:text-navy"
+                  : "text-blue-pale hover:text-white"
+              }`}
+            >
+              Both (Duo Set)
+            </button>
+          </div>
+        </div>
+
+        {/* Right: Studio Environment Switcher */}
+        <div>
+          <span
+            className={`block text-[11px] font-mono uppercase tracking-wider mb-1 sm:text-right ${
+              isLight ? "text-mid" : "text-blue-pale"
+            }`}
+          >
+            Studio View
+          </span>
+          <div
+            className={`flex items-center gap-1 rounded-full p-1 border ${
+              isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => setStudioTheme("light")}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                isLight ? "bg-white text-navy shadow-xs" : "text-blue-pale hover:text-white"
+              }`}
+            >
+              Studio Light
+            </button>
+            <button
+              type="button"
+              onClick={() => setStudioTheme("dark")}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                !isLight ? "bg-sky text-navy shadow-xs" : "text-mid hover:text-navy"
+              }`}
+            >
+              Midnight
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 3D Canvas / Poster Container */}
+      <div
+        className={`relative h-[380px] w-full cursor-grab overflow-hidden rounded-2xl active:cursor-grabbing sm:h-[440px] transition-colors duration-300 ${
+          isLight
+            ? "border border-divider/60 bg-gradient-to-b from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0]"
+            : "border border-white/10 bg-radial from-navy-deep/80 to-navy"
+        }`}
+      >
+        {/* Visual Fallback Poster */}
         {(!isReady || hasError) && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center">
             <div className="relative h-72 w-72 transition-transform duration-500">
@@ -339,7 +604,11 @@ export default function BagViewer({
               />
             </div>
             {!hasError && (
-              <span className="mt-2 text-caption text-sky font-mono animate-pulse">
+              <span
+                className={`mt-2 text-caption font-mono animate-pulse ${
+                  isLight ? "text-navy" : "text-sky"
+                }`}
+              >
                 Initializing 3D Interactive Model...
               </span>
             )}
@@ -349,21 +618,71 @@ export default function BagViewer({
         {/* Real-time 3D Canvas Mount Point */}
         <div ref={hostRef} className="absolute inset-0 w-full h-full" />
 
+        {/* When 'Both' is selected, toggle which bag is in active 3D view */}
+        {selectedLuggageType === "both" && (
+          <div
+            className={`absolute top-3 left-3 z-20 flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] backdrop-blur-md shadow-md border ${
+              isLight
+                ? "border-divider/60 bg-white/90 text-navy"
+                : "border-white/10 bg-navy-deep/90 text-white"
+            }`}
+          >
+            <Layers className={`size-3 ${isLight ? "text-brand" : "text-sky"}`} />
+            <span className={`mr-1 ${isLight ? "text-mid" : "text-light-white"}`}>3D View:</span>
+            <button
+              type="button"
+              onClick={() => setActiveModel("carry-on")}
+              className={`rounded-full px-2 py-0.5 font-semibold transition-all ${
+                activeModel === "carry-on"
+                  ? isLight
+                    ? "bg-navy text-white"
+                    : "bg-sky text-navy"
+                  : isLight
+                  ? "text-mid hover:text-navy"
+                  : "text-mid hover:text-white"
+              }`}
+            >
+              Cabin
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveModel("check-in")}
+              className={`rounded-full px-2 py-0.5 font-semibold transition-all ${
+                activeModel === "check-in"
+                  ? isLight
+                    ? "bg-navy text-white"
+                    : "bg-sky text-navy"
+                  : isLight
+                  ? "text-mid hover:text-navy"
+                  : "text-mid hover:text-white"
+              }`}
+            >
+              Check-In
+            </button>
+          </div>
+        )}
+
         {/* 360 Spin Hint & Manual Turn Controls */}
         <div className="pointer-events-auto absolute bottom-3 inset-x-4 z-20 flex items-center justify-between">
           <button
             type="button"
             onClick={() => rotateBy(-KEY_TURN)}
-            className="flex size-9 items-center justify-center rounded-full bg-navy-deep/80 text-white backdrop-blur-md transition-colors hover:bg-sky hover:text-navy active:scale-95"
+            className={`flex size-9 items-center justify-center rounded-full backdrop-blur-md border transition-colors active:scale-95 ${
+              isLight
+                ? "border-divider/60 bg-white/90 text-navy shadow-sm hover:bg-navy hover:text-white"
+                : "border-white/10 bg-navy-deep/80 text-white hover:bg-sky hover:text-navy"
+            }`}
             aria-label="Rotate left"
           >
             <ChevronLeft className="size-5" />
           </button>
 
           <div
-            className={`pointer-events-none flex items-center gap-1.5 rounded-full bg-navy-deep/90 px-3.5 py-1.5 text-caption-m text-sky backdrop-blur-md border border-white/10 shadow-lg transition-opacity duration-300 ${
-              touched ? "opacity-75" : "opacity-100"
-            }`}
+            className={`pointer-events-none flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-caption-m backdrop-blur-md border shadow-lg transition-opacity duration-300 ${
+              isLight
+                ? "border-divider/60 bg-white/90 text-navy"
+                : "border-white/10 bg-navy-deep/90 text-sky"
+            } ${touched ? "opacity-75" : "opacity-100"}`}
           >
             <Rotate3d className="size-3.5 animate-pulse" />
             <span>Drag or swipe to rotate 360°</span>
@@ -372,7 +691,11 @@ export default function BagViewer({
           <button
             type="button"
             onClick={() => rotateBy(KEY_TURN)}
-            className="flex size-9 items-center justify-center rounded-full bg-navy-deep/80 text-white backdrop-blur-md transition-colors hover:bg-sky hover:text-navy active:scale-95"
+            className={`flex size-9 items-center justify-center rounded-full backdrop-blur-md border transition-colors active:scale-95 ${
+              isLight
+                ? "border-divider/60 bg-white/90 text-navy shadow-sm hover:bg-navy hover:text-white"
+                : "border-white/10 bg-navy-deep/80 text-white hover:bg-sky hover:text-navy"
+            }`}
             aria-label="Rotate right"
           >
             <ChevronRight className="size-5" />
@@ -380,59 +703,230 @@ export default function BagViewer({
         </div>
       </div>
 
-      {/* Model & Finish Controls */}
-      <div className="mt-4 flex w-full flex-col gap-4 border-t border-line/40 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Model switcher */}
-        <div className="flex items-center gap-1.5 rounded-full bg-navy-deep p-1 border border-white/10">
-          <button
-            type="button"
-            onClick={() => setModelName("carry-on")}
-            className={`rounded-full px-4 py-1.5 text-caption font-semibold transition-all ${
-              modelName === "carry-on"
-                ? "bg-sky text-navy shadow-sm"
-                : "text-blue-pale hover:text-white"
-            }`}
-          >
-            Cabin 55
-          </button>
-          <button
-            type="button"
-            onClick={() => setModelName("check-in")}
-            className={`rounded-full px-4 py-1.5 text-caption font-semibold transition-all ${
-              modelName === "check-in"
-                ? "bg-sky text-navy shadow-sm"
-                : "text-blue-pale hover:text-white"
-            }`}
-          >
-            Check-in 68
-          </button>
-        </div>
-
-        {/* Finish selectors */}
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-caption font-medium text-blue-pale">
-            <span className="size-2 rounded-full bg-sky inline-block" /> {selectedFinish.name}
-          </span>
+      {/* Color Selection Bar & Custom Palette Tool */}
+      <div
+        className={`mt-2 flex flex-col gap-3 border-t pt-4 ${
+          isLight ? "border-divider" : "border-line/40"
+        }`}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Active Color Info */}
           <div className="flex items-center gap-2">
-            {FINISHES.map((finish) => (
-              <button
-                key={finish.id}
-                type="button"
-                title={finish.name}
-                onClick={() => setSelectedFinish(finish)}
-                className={`relative flex size-7 items-center justify-center rounded-full border-2 transition-all ${
-                  selectedFinish.id === finish.id
-                    ? "scale-125 border-sky shadow-md ring-2 ring-sky/40"
-                    : "border-white/30 hover:scale-110"
-                }`}
-                style={{ backgroundColor: finish.color }}
-              >
-                {selectedFinish.id === finish.id && <Check className="size-3 text-white drop-shadow" />}
-              </button>
-            ))}
+            <span
+              className={`size-4 rounded-full border shadow-sm ${
+                isLight ? "border-navy/30" : "border-white/40"
+              }`}
+              style={{ backgroundColor: activeColor }}
+            />
+            <span className={`text-small font-semibold ${isLight ? "text-navy" : "text-white"}`}>
+              {isCustomColor ? `Custom Finish (${activeColor.toUpperCase()})` : selectedFinish.name}
+            </span>
+            <span
+              className={`text-[11px] font-mono capitalize ${
+                isLight ? "text-mid" : "text-blue-pale/80"
+              }`}
+            >
+              · {selectedTier} Finish
+            </span>
+          </div>
+
+          {/* Color Swatch Dots + Custom Palette Trigger */}
+          <div className="flex items-center gap-2">
+            {/* Primary Swatches (Photo 1 for Essential, Photo 2 for Pro/Executive/Flagship) */}
+            {availableSwatches.map((finish) => {
+              const isSelected = !isCustomColor && selectedFinish.id === finish.id;
+              const isLightColor = finish.color === "#f4f5f7" || finish.color === "#c5cbd3";
+              return (
+                <button
+                  key={finish.id}
+                  type="button"
+                  title={finish.name}
+                  onClick={() => {
+                    setIsCustomColor(false);
+                    setSelectedFinish(finish);
+                    setPaletteOpen(false);
+                  }}
+                  className={`relative flex size-7 items-center justify-center rounded-full border-2 transition-all ${
+                    isSelected
+                      ? isLight
+                        ? "scale-125 border-navy shadow-md ring-2 ring-navy/20"
+                        : "scale-125 border-sky shadow-md ring-2 ring-sky/40"
+                      : isLight
+                      ? "border-divider hover:scale-110"
+                      : "border-white/30 hover:scale-110"
+                  }`}
+                  style={{ backgroundColor: finish.color }}
+                >
+                  {isSelected && (
+                    <Check
+                      className={`size-3 drop-shadow ${
+                        isLightColor ? "text-navy" : "text-white"
+                      }`}
+                    />
+                  )}
+                </button>
+              );
+            })}
+
+            {/* Custom Color Palette Button */}
+            <button
+              type="button"
+              onClick={() => setPaletteOpen(!paletteOpen)}
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-all ${
+                isCustomColor || paletteOpen
+                  ? isLight
+                    ? "border-navy bg-navy text-white shadow-xs"
+                    : "border-sky bg-sky text-navy shadow-sm"
+                  : isLight
+                  ? "border-divider bg-surface text-navy hover:border-mid"
+                  : "border-white/20 bg-navy-deep text-blue-pale hover:border-white/40 hover:text-white"
+              }`}
+            >
+              <Palette className="size-3.5" />
+              <span>Custom Palette</span>
+            </button>
           </div>
         </div>
+
+        {/* Expandable Custom Color Palette Studio */}
+        {paletteOpen && (
+          <div
+            className={`mt-1 rounded-2xl border p-4 backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 ${
+              isLight
+                ? "border-divider bg-surface/90 text-navy shadow-md"
+                : "border-sky/30 bg-navy-deep/95 text-white"
+            }`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h4
+                  className={`text-caption font-bold uppercase tracking-wider ${
+                    isLight ? "text-brand" : "text-sky"
+                  }`}
+                >
+                  Bespoke Color Configurator
+                </h4>
+                <p className={`text-[12px] ${isLight ? "text-mid" : "text-light-white"}`}>
+                  Pick any custom shade for the aerospace shell. Real-time 3D updates live.
+                </p>
+              </div>
+
+              {/* Native HTML5 Color Wheel Picker & Hex Input */}
+              <div className="flex items-center gap-3">
+                <label
+                  className={`relative flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-1.5 text-caption font-mono ${
+                    isLight
+                      ? "border-divider bg-white text-navy hover:border-navy"
+                      : "border-white/20 bg-navy text-white hover:border-sky"
+                  }`}
+                >
+                  <span
+                    className="size-4 rounded-full border border-black/20 shadow-xs"
+                    style={{ backgroundColor: customHex }}
+                  />
+                  <span>{customHex.toUpperCase()}</span>
+                  <input
+                    type="color"
+                    value={customHex}
+                    onChange={(e) => {
+                      setCustomHex(e.target.value);
+                      setIsCustomColor(true);
+                    }}
+                    className="absolute inset-0 size-full cursor-pointer opacity-0"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Curated Luxury Preset Accents */}
+            <div
+              className={`mt-3 flex flex-wrap items-center gap-2 border-t pt-3 ${
+                isLight ? "border-divider" : "border-white/10"
+              }`}
+            >
+              <span
+                className={`text-[11px] font-mono mr-1 ${
+                  isLight ? "text-mid" : "text-blue-pale"
+                }`}
+              >
+                Curated Shades:
+              </span>
+              {LUXURY_PALETTE_PRESETS.map((p) => (
+                <button
+                  key={p.name}
+                  type="button"
+                  title={p.name}
+                  onClick={() => {
+                    setCustomHex(p.hex);
+                    setIsCustomColor(true);
+                  }}
+                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] transition-all ${
+                    isCustomColor && customHex === p.hex
+                      ? isLight
+                        ? "border-navy bg-navy/10 font-bold text-navy shadow-xs"
+                        : "border-sky bg-white/10 font-semibold text-white"
+                      : isLight
+                      ? "border-divider text-mid hover:border-navy/40 hover:text-navy"
+                      : "border-white/10 text-light-white hover:border-white/30 hover:text-white"
+                  }`}
+                >
+                  <span className="size-2.5 rounded-full" style={{ backgroundColor: p.hex }} />
+                  <span>{p.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Bottom Action Bar: Specs Summary, Price & Reserve CTA */}
+      <div
+        className={`mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t pt-4 ${
+          isLight ? "border-divider" : "border-white/10"
+        }`}
+      >
+        <div>
+          <div className="flex items-center gap-2">
+            <span className={`text-h3 font-bold ${isLight ? "text-navy" : "text-white"}`}>
+              {formatPrice(basePriceMinor)}
+            </span>
+            <span className={`text-[11px] ${isLight ? "text-mid" : "text-blue-pale"}`}>
+              incl. VAT & global shipping
+            </span>
+          </div>
+          <span className={`text-[12px] ${isLight ? "text-mid" : "text-light-white"}`}>
+            {selectedTier.toUpperCase()} ·{" "}
+            {selectedLuggageType === "both"
+              ? "Cabin 55 + Check-In 68 Duo Set (100L)"
+              : selectedLuggageType === "checkin"
+              ? "Check-In 68 (65L)"
+              : "Cabin 55 (35L)"}{" "}
+            · Lifetime Guarantee
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {addedNotice && (
+            <span className="text-caption font-semibold text-success animate-in fade-in">
+              ✓ Added to Cart!
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleReserve}
+            className={`flex items-center gap-2 rounded-full px-6 py-2.5 text-small font-bold shadow-md active:scale-95 transition-all ${
+              isLight
+                ? "bg-navy text-white hover:bg-navy-deep"
+                : "bg-sky text-navy hover:bg-white"
+            }`}
+          >
+            <ShoppingBag className="size-4" />
+            <span>{isEcommerce ? "Reserve Luggage" : "Inquire Now"}</span>
+          </button>
+        </div>
+      </div>
+
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

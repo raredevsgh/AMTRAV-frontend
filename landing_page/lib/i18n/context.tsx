@@ -11,8 +11,38 @@ import { ko } from "./messages/ko";
 import { no } from "./messages/no";
 import { zhHans } from "./messages/zh-hans";
 import { zhHant } from "./messages/zh-hant";
+import { ar } from "./messages/ar";
+import { pt } from "./messages/pt";
+import { nl } from "./messages/nl";
+import { sv } from "./messages/sv";
+import { da } from "./messages/da";
+import { fi } from "./messages/fi";
+import { ru } from "./messages/ru";
+import { hi } from "./messages/hi";
+import { tr } from "./messages/tr";
+import { pl } from "./messages/pl";
 
-export type Locale = "en" | "de" | "es" | "fr" | "it" | "ja" | "ko" | "no" | "zh-hans" | "zh-hant";
+export type Locale =
+  | "en"
+  | "no"
+  | "de"
+  | "fr"
+  | "es"
+  | "it"
+  | "ja"
+  | "ko"
+  | "zh-hans"
+  | "zh-hant"
+  | "ar"
+  | "pt"
+  | "nl"
+  | "sv"
+  | "da"
+  | "fi"
+  | "ru"
+  | "hi"
+  | "tr"
+  | "pl";
 
 export const LOCALES: Record<Locale, { label: string; flag: string }> = {
   en: { label: "English", flag: "🇺🇸" },
@@ -25,6 +55,16 @@ export const LOCALES: Record<Locale, { label: string; flag: string }> = {
   ko: { label: "한국어", flag: "🇰🇷" },
   "zh-hans": { label: "简体中文", flag: "🇨🇳" },
   "zh-hant": { label: "繁體中文", flag: "🇹🇼" },
+  ar: { label: "العربية", flag: "🇦🇪" },
+  pt: { label: "Português", flag: "🇵🇹" },
+  nl: { label: "Nederlands", flag: "🇳🇱" },
+  sv: { label: "Svenska", flag: "🇸🇪" },
+  da: { label: "Dansk", flag: "🇩🇰" },
+  fi: { label: "Suomi", flag: "🇫🇮" },
+  ru: { label: "Русский", flag: "🇷🇺" },
+  hi: { label: "हिन्दी", flag: "🇮🇳" },
+  tr: { label: "Türkçe", flag: "🇹🇷" },
+  pl: { label: "Polski", flag: "🇵🇱" },
 };
 
 const MESSAGES: Record<Locale, typeof en> = {
@@ -38,6 +78,16 @@ const MESSAGES: Record<Locale, typeof en> = {
   ko,
   "zh-hans": zhHans,
   "zh-hant": zhHant,
+  ar,
+  pt,
+  nl,
+  sv,
+  da,
+  fi,
+  ru,
+  hi,
+  tr,
+  pl,
 };
 
 const listeners = new Set<() => void>();
@@ -49,6 +99,10 @@ function getLocaleSnapshot(): Locale {
     const saved = localStorage.getItem("amortrav.locale") as Locale;
     if (saved && saved in MESSAGES) {
       currentLocale = saved;
+      if (document?.documentElement) {
+        document.documentElement.lang = saved;
+        document.documentElement.dir = saved === "ar" ? "rtl" : "ltr";
+      }
       return saved;
     }
   } catch {
@@ -73,7 +127,10 @@ function updateLocale(newLocale: Locale) {
   try {
     localStorage.setItem("amortrav.locale", newLocale);
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-    document.documentElement.lang = newLocale;
+    if (document?.documentElement) {
+      document.documentElement.lang = newLocale;
+      document.documentElement.dir = newLocale === "ar" ? "rtl" : "ltr";
+    }
   } catch {
     // Ignore
   }

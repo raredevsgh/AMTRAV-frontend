@@ -71,7 +71,7 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
 
           {activeTab === "lang" ? (
             /* Language List */
-            <div className="max-h-60 overflow-y-auto space-y-0.5">
+            <div className="max-h-72 overflow-y-auto space-y-0.5">
               {(Object.keys(LOCALES) as Locale[]).map((loc) => {
                 const item = LOCALES[loc];
                 const isSelected = loc === locale;

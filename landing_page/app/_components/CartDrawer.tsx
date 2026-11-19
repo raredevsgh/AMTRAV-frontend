@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
-import { useCart, CATALOG, formatPrice } from "@/lib/shop";
+import { useCart, resolveProduct, formatPrice } from "@/lib/shop";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function CartDrawer({
@@ -120,23 +120,34 @@ export default function CartDrawer({
           ) : (
             <div className="flex flex-col divide-y divide-line">
               {entries.map(([sku, qty]) => {
-                const product = CATALOG.find((p) => p.sku === sku);
-                if (!product) return null;
+                const item = resolveProduct(sku);
                 return (
                   <div key={sku} className="flex gap-4 py-4 first:pt-0 last:pb-0">
                     <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-line bg-surface">
-                      <Image src={product.image} alt={product.name} fill className="object-contain p-2" />
+                      <Image src={item.image} alt={item.name} fill className="object-contain p-2" />
                     </div>
                     <div className="flex flex-1 flex-col justify-between">
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-start gap-2">
                         <div>
-                          <h4 className="text-caption font-bold text-navy">{product.name}</h4>
-                          <span className="text-[12px] text-mid">{formatPrice(product.price_minor)}</span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h4 className="text-caption font-bold text-navy">{item.name}</h4>
+                            <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.2 text-[10px] font-semibold text-navy">
+                              {item.selectedSize}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center gap-1.5 text-[11px] text-mid">
+                            <span
+                              className="size-3 rounded-full border border-black/20 shrink-0 shadow-xs"
+                              style={{ backgroundColor: item.selectedColorHex }}
+                            />
+                            <span>{item.selectedColorName}</span>
+                          </div>
+                          <span className="block mt-1 text-[12px] font-semibold text-navy">{formatPrice(item.price_minor)}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => removeFromCart(sku)}
-                          className="text-mid/60 hover:text-red-500"
+                          className="text-mid/60 hover:text-red-500 transition-colors p-1"
                           title="Remove item"
                         >
                           <Trash2 className="size-4" />
@@ -162,7 +173,7 @@ export default function CartDrawer({
                           </button>
                         </div>
                         <span className="text-caption font-bold text-navy">
-                          {formatPrice(product.price_minor * qty)}
+                          {formatPrice(item.price_minor * qty)}
                         </span>
                       </div>
                     </div>

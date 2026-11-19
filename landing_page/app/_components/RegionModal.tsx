@@ -150,9 +150,9 @@ export default function RegionModal({ isOpen, onClose }: RegionModalProps) {
           {/* Language Selection */}
           <div className="border-t border-divider pt-5">
             <label className="block text-caption-m font-semibold uppercase tracking-wider text-mid mb-2.5">
-              Language (10 Locales Available)
+              Language ({Object.keys(LOCALES).length} International Locales Available)
             </label>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {(Object.keys(LOCALES) as Locale[]).map((locKey) => {
                 const locInfo = LOCALES[locKey];
                 const isSelected = selectedLocale === locKey;
