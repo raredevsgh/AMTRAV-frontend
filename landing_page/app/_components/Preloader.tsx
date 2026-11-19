@@ -26,8 +26,9 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
     const html = document.documentElement;
     const el = root.current;
 
-    // Skip only if the user explicitly prefers reduced motion
+    // Skip only if the user explicitly prefers reduced motion or already preloaded
     if (html.hasAttribute("data-preloaded") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDone(true);
       return;
     }
     if (!el) return;
@@ -45,8 +46,9 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
     // Fallback safety timer: ensures the preloader never gets stuck on screen under any circumstance
     const safetyTimer = window.setTimeout(() => {
       html.style.overflow = "";
+      html.setAttribute("data-preloaded", "");
       setDone(true);
-    }, 6000);
+    }, 4000);
 
     // Progress 0 → 1 drives the plane, the drawn route, the counter and the step labels.
     const flight = { p: 0 };
@@ -90,6 +92,10 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
         onComplete() {
           window.clearTimeout(safetyTimer);
           html.style.overflow = "";
+          html.setAttribute("data-preloaded", "");
+          try {
+            sessionStorage.setItem("amortrav-preloaded", "1");
+          } catch {}
           setDone(true);
         },
       });
@@ -262,8 +268,8 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
 
         {/* Lockup: mark, wordmark and tagline. Hidden until step 4. */}
         <div data-lockup className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-6 px-5 text-center opacity-0">
-          <div data-mark>
-            <Image src="/img/cta-mark.png" alt="" width={92} height={74} preload />
+          <div data-mark className="relative h-[74px] w-[92px]" style={{ maxWidth: 92, maxHeight: 74 }}>
+            <Image src="/img/cta-mark.png" alt="" width={92} height={74} style={{ width: "auto", height: "auto" }} preload />
           </div>
           <p className="flex overflow-hidden text-[48px] leading-[1.05] font-bold tracking-[-0.02em] sm:text-[80px] xl:text-[128px]">
             {WORDMARK.map((letter, i) => (

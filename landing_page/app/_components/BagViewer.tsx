@@ -126,7 +126,11 @@ export default function BagViewer({
         renderer.toneMappingExposure = 1.15;
 
         const canvas = renderer.domElement;
-        canvas.className = "ld-modelCanvas";
+        canvas.style.display = "block";
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.cursor = "grab";
+        canvas.style.touchAction = "pan-y";
         host.innerHTML = "";
         host.appendChild(canvas);
 
@@ -241,6 +245,7 @@ export default function BagViewer({
           autoSpin = false;
           lastX = e.clientX;
           canvas.setPointerCapture(e.pointerId);
+          canvas.style.cursor = "grabbing";
           clearTimeout(spinResumeTimeout);
           setTouched(true);
         };
@@ -255,6 +260,7 @@ export default function BagViewer({
         const onPointerUp = () => {
           if (!dragging) return;
           dragging = false;
+          canvas.style.cursor = "grab";
           spinResumeTimeout = setTimeout(() => {
             autoSpin = true;
           }, 2500);
@@ -341,7 +347,7 @@ export default function BagViewer({
         )}
 
         {/* Real-time 3D Canvas Mount Point */}
-        <div ref={hostRef} className="ld-modelHost" />
+        <div ref={hostRef} className="absolute inset-0 w-full h-full" />
 
         {/* 360 Spin Hint & Manual Turn Controls */}
         <div className="pointer-events-auto absolute bottom-3 inset-x-4 z-20 flex items-center justify-between">
