@@ -188,7 +188,7 @@ function Experience() {
   ];
 
   return (
-    <section data-backdrop="blue-pale" className="flex flex-col items-center px-5 py-8 xl:px-[140px] xl:py-2.5">
+    <section data-backdrop="blue-pale" className="flex flex-col items-center overflow-clip px-5 py-8 xl:px-[140px] xl:py-2.5">
       <div className="flex w-full flex-col items-center gap-6 xl:gap-8 xl:py-[66px]">
         <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
           <p className="text-caption-m text-brand font-semibold uppercase xl:text-small">

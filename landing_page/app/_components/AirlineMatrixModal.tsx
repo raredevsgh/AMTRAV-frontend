@@ -127,7 +127,7 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
         </div>
 
         {/* Table Content */}
-        <div className="max-h-[60vh] overflow-y-auto">
+        <div className="max-h-[60vh] overflow-y-auto overflow-x-auto">
           <table className="w-full text-left border-collapse text-small">
             <thead className="sticky top-0 bg-surface border-b border-divider text-caption-m uppercase tracking-wider text-mid font-semibold">
               <tr>

@@ -93,7 +93,7 @@ export default function ConfiguratorClient() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 pt-24 pb-20">
+    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Studio Header */}
         <div className="border-b border-divider pb-6 text-center">
@@ -109,7 +109,7 @@ export default function ConfiguratorClient() {
         </div>
 
         {/* 4-Step Progress Bar */}
-        <div className="my-8 flex items-center justify-between max-w-2xl mx-auto">
+        <div className="my-6 sm:my-8 flex items-center justify-between max-w-2xl mx-auto px-2">
           {[
             { num: 1, label: "Shell & Size" },
             { num: 2, label: "Tag & Monogram" },
@@ -137,7 +137,7 @@ export default function ConfiguratorClient() {
                   {isCompleted ? <Check className="size-4" /> : step.num}
                 </div>
                 <span
-                  className={`text-[11px] font-semibold uppercase tracking-wider ${
+                  className={`text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-center max-w-[70px] sm:max-w-none leading-tight ${
                     isCurrent ? "text-navy" : "text-mid"
                   }`}
                 >
@@ -151,7 +151,7 @@ export default function ConfiguratorClient() {
         {/* Main Configurator Area: 3D Left, Configuration Right */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* Left: Interactive 3D Canvas / Visual Preview (7 cols) */}
-          <div className="lg:col-span-7 space-y-4 sticky top-28">
+          <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-28">
             <div className="overflow-hidden rounded-3xl border border-divider bg-white p-4 shadow-card">
               <BagViewer
                 defaultLuggageType={selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}

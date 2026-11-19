@@ -685,7 +685,8 @@ export default function BagViewer({
             } ${touched ? "opacity-75" : "opacity-100"}`}
           >
             <Rotate3d className="size-3.5 animate-pulse" />
-            <span>Drag or swipe to rotate 360°</span>
+            <span className="hidden sm:inline">Drag or swipe to rotate 360°</span>
+            <span className="sm:hidden">Swipe to rotate 360°</span>
           </div>
 
           <button

@@ -79,7 +79,7 @@ function HowItWorksHero() {
             How it works
           </span>
 
-          <h1 className="text-4xl font-semibold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[56px] xl:leading-[1.05]">
+          <h1 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[56px] xl:leading-[1.05]">
             Box to boarding in three steps.
           </h1>
 
@@ -87,17 +87,17 @@ function HowItWorksHero() {
             A card in the box and the app do the work. No Bluetooth menus, no pairing dance.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 w-full sm:w-auto">
             <Link
               href={GET_THE_APP_HREF}
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all w-full sm:w-auto text-center"
             >
               {t("landing.heroGetApp", "Get the app")}
             </Link>
 
             <a
               href="#steps"
-              className="inline-flex h-12 items-center gap-2 rounded-full border border-divider bg-white px-6 text-[15px] font-semibold text-[#0B1B3D] shadow-xs hover:bg-surface hover:border-brand/40 active:scale-95 transition-all"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-divider bg-white px-6 text-[15px] font-semibold text-[#0B1B3D] shadow-xs hover:bg-surface hover:border-brand/40 active:scale-95 transition-all w-full sm:w-auto text-center"
             >
               <span>See the steps</span>
               <svg
@@ -122,7 +122,7 @@ function HowItWorksHero() {
         <div
           role="img"
           aria-label="An Amortrav claim card next to a phone showing the Claim a bag screen"
-          className="relative mx-auto aspect-[540/460] w-full max-w-[500px]"
+          className="relative mx-auto min-h-[360px] sm:min-h-[420px] aspect-[540/480] sm:aspect-[540/460] w-full max-w-[500px]"
         >
           {/* Animated Flight Path SVG */}
           <svg viewBox="0 0 540 480" aria-hidden="true" className="absolute inset-0 size-full overflow-visible pointer-events-none">

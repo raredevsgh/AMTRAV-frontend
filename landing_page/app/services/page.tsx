@@ -62,7 +62,7 @@ const SERVICES = [
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-surface/30 pt-28 pb-20">
+    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="border-b border-divider pb-8 text-center sm:text-left">

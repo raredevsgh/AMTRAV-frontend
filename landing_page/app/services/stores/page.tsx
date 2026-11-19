@@ -106,7 +106,7 @@ export default function StoresPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 pt-28 pb-20">
+    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <div className="mb-6 flex items-center gap-2 text-caption text-mid">

@@ -122,7 +122,7 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
         <div className="flex items-center justify-between rounded-full bg-white px-5 py-3 shadow-xs border border-gray-100">
           <p id="mobile-menu-title" className="sr-only">Navigation menu</p>
           <Link href="/" onClick={close} className="relative h-6 w-[116px] shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
-            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="116px" className="object-cover" />
+            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="116px" className="object-contain" />
           </Link>
           <button
             ref={closeButton}
@@ -137,7 +137,7 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
 
         {/* Links List */}
         <nav aria-label={t("nav.mobile", "Mobile navigation")} className="my-auto flex flex-col py-6">
-          {links.map(({ href, label }) => {
+          {links.map(({ href, label, badge }) => {
             const isShop = href === "/shop";
             return (
               <Link
@@ -145,9 +145,16 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
                 href={href}
                 onClick={close}
                 aria-current={pathname === href ? "page" : undefined}
-                className="flex items-center justify-between border-b border-[#E2E8F0] py-5 text-[22px] font-bold text-navy transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
+                className="flex items-center justify-between border-b border-[#E2E8F0] py-4 text-[20px] font-bold text-navy transition-colors hover:text-brand focus-visible:outline-2 focus-visible:outline-brand"
               >
-                <span>{label}</span>
+                <div className="flex items-center gap-2">
+                  <span>{label}</span>
+                  {badge && (
+                    <span className="rounded-full bg-navy/5 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-brand border border-brand/20">
+                      {badge}
+                    </span>
+                  )}
+                </div>
                 {isShop ? (
                   <Image src="/icons/shop-cart.svg" alt="" width={22} height={22} className="opacity-80" />
                 ) : (

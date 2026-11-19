@@ -577,7 +577,7 @@ export default function ShopView() {
         id="shop-hero-dark"
         data-theme="dark"
         aria-labelledby="shop-heading"
-        className="relative flex min-h-[640px] flex-col justify-between gap-12 overflow-hidden rounded-3xl bg-navy px-5 pt-28 pb-6 md:min-h-[580px] md:px-10 md:pb-10 xl:rounded-[32px] xl:px-14 xl:pt-32"
+        className="relative flex min-h-[580px] flex-col justify-between gap-10 overflow-hidden rounded-3xl bg-navy px-5 pt-14 pb-6 md:px-10 md:pb-10 md:pt-24 xl:rounded-[32px] xl:px-14 xl:pt-32"
       >
         <ProductVideo />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-ink/75 via-ink/65 to-navy/70" />
@@ -627,7 +627,7 @@ export default function ShopView() {
       {/* 2. Interactive 3D Model Explorer */}
       <section
         id="3d-inspection"
-        className="scroll-mt-28 mx-5 my-8 flex flex-col gap-6 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:mx-14 xl:rounded-[32px] xl:px-14 xl:py-12"
+        className="scroll-mt-28 my-8 flex flex-col gap-6 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
       >
         <div className="flex flex-col gap-2">
           <span className="text-caption font-mono uppercase tracking-wider text-brand">
@@ -697,14 +697,14 @@ export default function ShopView() {
           </div>
 
           {/* Right: Collection Filter & Sort Selectors */}
-          <div className="flex items-center gap-3">
+          <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
             {/* Collection Dropdown */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-1 sm:flex-initial items-center gap-1.5">
               <span className="text-[11px] font-mono text-mid hidden md:inline">Collection:</span>
               <select
                 value={activeCollection}
                 onChange={(e) => setActiveCollection(e.target.value)}
-                className="rounded-full border border-divider bg-white px-3 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy"
+                className="w-full sm:w-auto rounded-full border border-divider bg-white px-3 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy"
               >
                 <option value="all">All Collections</option>
                 <option value="essential">Essential (Polycarbonate)</option>
@@ -715,12 +715,12 @@ export default function ShopView() {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-1 sm:flex-initial items-center gap-1.5">
               <span className="text-[11px] font-mono text-mid hidden md:inline">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="rounded-full border border-divider bg-white px-3 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy"
+                className="w-full sm:w-auto rounded-full border border-divider bg-white px-3 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy"
               >
                 <option value="top-sellers">Top Sellers</option>
                 <option value="price-asc">Price: Low to High</option>
