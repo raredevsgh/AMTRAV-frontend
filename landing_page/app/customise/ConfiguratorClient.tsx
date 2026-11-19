@@ -154,7 +154,7 @@ export default function ConfiguratorClient() {
           <div className="lg:col-span-7 space-y-4 sticky top-28">
             <div className="overflow-hidden rounded-3xl border border-divider bg-white p-4 shadow-card">
               <BagViewer
-                defaultModel={selectedShell.size === "Cabin 55" ? "carry-on" : "check-in"}
+                defaultLuggageType={selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
                 className="w-full"
               />
 

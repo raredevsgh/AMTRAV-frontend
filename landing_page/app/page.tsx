@@ -32,7 +32,11 @@ function Hero({ onWatchFilm }: { onWatchFilm: () => void }) {
   const { t } = useI18n();
 
   return (
-    <section className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section
+      id="hero-dark"
+      data-theme="dark"
+      className="relative flex flex-col gap-8 overflow-clip rounded-3xl bg-navy px-5 py-8 xl:flex-row xl:items-center xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16"
+    >
       <ProductVideo />
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(0,31,77,0.94)] via-[rgba(0,31,77,0.82)] via-45% to-[rgba(0,31,77,0.55)]" />
 

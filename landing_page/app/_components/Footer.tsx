@@ -116,28 +116,28 @@ function FooterAccordion({
   );
 }
 
-const SOCIAL_STYLE = `relative size-11 shrink-0 rounded-full transition-[translate] ${EASE} motion-safe:hover:-translate-y-1 ${FOCUS}`;
+const SOCIAL_STYLE = `relative flex size-11 items-center justify-center shrink-0 rounded-full transition-[translate] ${EASE} motion-safe:hover:-translate-y-1 ${FOCUS}`;
 
 function Social({ onUnavailable }: { onUnavailable: (name: string) => void }) {
   return (
     <div className="flex items-center gap-2.5 xl:gap-3">
-      <button type="button" onClick={() => onUnavailable("Facebook")} aria-label="Facebook" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-facebook.svg" alt="" fill sizes="44px" className="object-contain" />
+      <button type="button" onClick={() => onUnavailable("Facebook")} aria-label="Facebook" className={SOCIAL_STYLE} style={{ width: 44, height: 44 }}>
+        <Image src="/icons/social-facebook.svg" alt="" width={44} height={44} className="size-11 object-contain" />
       </button>
-      <button type="button" onClick={() => onUnavailable("Instagram")} aria-label="Instagram" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-instagram-bg.png" alt="" fill sizes="44px" className="object-contain" />
-        <span className="absolute inset-[30%]">
-          <Image src="/icons/instagram-1.svg" alt="" fill sizes="20px" />
+      <button type="button" onClick={() => onUnavailable("Instagram")} aria-label="Instagram" className={SOCIAL_STYLE} style={{ width: 44, height: 44 }}>
+        <Image src="/icons/social-instagram-bg.png" alt="" width={44} height={44} className="size-11 object-contain" />
+        <span className="absolute inset-[30%] pointer-events-none">
+          <Image src="/icons/instagram-1.svg" alt="" width={18} height={18} />
           <span className="absolute inset-[11.91%_11.91%_76.37%_76.37%]">
-            <Image src="/icons/instagram-2.svg" alt="" fill sizes="10px" />
+            <Image src="/icons/instagram-2.svg" alt="" width={8} height={8} />
           </span>
           <span className="absolute inset-[23.63%]">
-            <Image src="/icons/instagram-3.svg" alt="" fill sizes="14px" />
+            <Image src="/icons/instagram-3.svg" alt="" width={12} height={12} />
           </span>
         </span>
       </button>
-      <button type="button" onClick={() => onUnavailable("X")} aria-label="X" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-x.svg" alt="" fill sizes="44px" className="object-contain" />
+      <button type="button" onClick={() => onUnavailable("X")} aria-label="X" className={SOCIAL_STYLE} style={{ width: 44, height: 44 }}>
+        <Image src="/icons/social-x.svg" alt="" width={44} height={44} className="size-11 object-contain" />
       </button>
     </div>
   );

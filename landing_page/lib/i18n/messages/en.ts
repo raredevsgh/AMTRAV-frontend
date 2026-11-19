@@ -391,6 +391,7 @@ export const en = {
   },
 };
 
-type Strings<T> = { [K in keyof T]: T[K] extends string ? string : Strings<T[K]> };
-/** Every language's text has this shape. */
-export type Messages = Strings<typeof en>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DeepPartialStrings<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartialStrings<T[K]> } & { [key: string]: any };
+/** Every language's text can provide full or partial overrides; missing keys fall back to English. */
+export type Messages = DeepPartialStrings<typeof en>;

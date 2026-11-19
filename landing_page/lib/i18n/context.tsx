@@ -67,7 +67,9 @@ export const LOCALES: Record<Locale, { label: string; flag: string }> = {
   pl: { label: "Polski", flag: "🇵🇱" },
 };
 
-const MESSAGES: Record<Locale, typeof en> = {
+// Messages mapping: supports full and partial dictionaries with automatic fallback to English
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MESSAGES: Record<Locale, Record<string, any>> = {
   en,
   no,
   de,
@@ -153,7 +155,7 @@ const I18nContext = createContext<I18nContextType>({
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const locale = useSyncExternalStore(subscribeLocale, getLocaleSnapshot, getLocaleServerSnapshot);
-  const currentMessages = MESSAGES[locale] ?? en;
+  const currentMessages = (MESSAGES[locale] ?? en) as typeof en;
 
   const t = (keyPath: string, fallback?: string, vars?: Record<string, string | number>): string => {
     const parts = keyPath.split(".");
@@ -165,6 +167,19 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
         val = undefined;
         break;
       }
+    }
+    // Fall back to English dictionary if key was missing in current locale
+    if (val === undefined) {
+      let enVal: unknown = en;
+      for (const part of parts) {
+        if (enVal && typeof enVal === "object" && part in (enVal as Record<string, unknown>)) {
+          enVal = (enVal as Record<string, unknown>)[part];
+        } else {
+          enVal = undefined;
+          break;
+        }
+      }
+      val = enVal;
     }
     let res = typeof val === "string" ? val : fallback ?? keyPath;
     if (vars) {

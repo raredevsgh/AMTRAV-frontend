@@ -574,6 +574,8 @@ export default function ShopView() {
     <>
       {/* 1. Clean AMTRAV Hero Section with Video */}
       <section
+        id="shop-hero-dark"
+        data-theme="dark"
         aria-labelledby="shop-heading"
         className="relative flex min-h-[640px] flex-col justify-between gap-12 overflow-hidden rounded-3xl bg-navy px-5 pt-28 pb-6 md:min-h-[580px] md:px-10 md:pb-10 xl:rounded-[32px] xl:px-14 xl:pt-32"
       >
