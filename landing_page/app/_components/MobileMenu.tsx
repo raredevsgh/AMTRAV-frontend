@@ -8,13 +8,13 @@ import { createPortal } from "react-dom";
 import { GET_THE_APP_HREF } from "./nav";
 import { useI18n } from "@/lib/i18n/context";
 
-export default function MobileMenu() {
+export default function MobileMenu({ isNegative = false }: { isNegative?: boolean }) {
   const pathname = usePathname();
-  return <NavigationMenu key={pathname} pathname={pathname} />;
+  return <NavigationMenu key={pathname} pathname={pathname} isNegative={isNegative} />;
 }
 
 // A route change resets local menu state, including browser back/forward navigation.
-function NavigationMenu({ pathname }: { pathname: string }) {
+function NavigationMenu({ pathname, isNegative = false }: { pathname: string; isNegative?: boolean }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const close = useCallback(() => setOpen(false), []);
@@ -29,9 +29,20 @@ function NavigationMenu({ pathname }: { pathname: string }) {
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen(true)}
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface transition-colors hover:bg-stale/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        className={`flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+          isNegative
+            ? "border border-white/25 bg-white/10 text-white hover:bg-white/20 shadow-xs"
+            : "bg-surface hover:bg-stale/40 text-navy"
+        }`}
       >
-        <Image src="/icons/menu.svg" alt="" width={20} height={20} loading="eager" />
+        <Image
+          src="/icons/menu.svg"
+          alt=""
+          width={20}
+          height={20}
+          loading="eager"
+          className={isNegative ? "brightness-0 invert" : ""}
+        />
       </button>
       {open && createPortal(
         <NavigationDialog pathname={pathname} close={close} restoreFocus={() => trigger.current?.focus()} />,

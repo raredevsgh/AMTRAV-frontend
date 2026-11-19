@@ -5,7 +5,13 @@ import { Globe, ChevronDown, Check } from "lucide-react";
 import { useI18n, LOCALES, type Locale } from "@/lib/i18n/context";
 import { useRegion, COUNTRIES } from "@/lib/region";
 
-export default function LanguageSwitcher({ className = "" }: { className?: string }) {
+export default function LanguageSwitcher({
+  className = "",
+  isNegative = false,
+}: {
+  className?: string;
+  isNegative?: boolean;
+}) {
   const { locale, setLocale } = useI18n();
   const { country, countryCode, setCountry } = useRegion();
   const [isOpen, setIsOpen] = useState(false);
@@ -32,13 +38,27 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label="Select language and region"
-        className="flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface/80 px-3 text-caption font-medium text-navy backdrop-blur-sm transition-colors hover:border-sky hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky"
+        className={`flex h-9 items-center gap-1.5 rounded-full px-3 text-caption font-medium backdrop-blur-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky ${
+          isNegative
+            ? "border border-white/25 bg-white/10 text-white hover:bg-white/20 hover:border-white/40 shadow-xs"
+            : "border border-line bg-surface/80 text-navy hover:border-sky hover:bg-surface"
+        }`}
       >
-        <Globe className="size-3.5 text-mid" />
+        <Globe className={`size-3.5 transition-colors ${isNegative ? "text-white/80" : "text-mid"}`} />
         <span className="mr-0.5">{current.flag}</span>
         <span className="hidden sm:inline font-semibold">{current.label}</span>
-        <span className="text-[11px] text-mid hidden md:inline">({country.currency})</span>
-        <ChevronDown className={`size-3 text-mid transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+        <span
+          className={`text-[11px] hidden md:inline ${
+            isNegative ? "text-white/70" : "text-mid"
+          }`}
+        >
+          ({country.currency})
+        </span>
+        <ChevronDown
+          className={`size-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${
+            isNegative ? "text-white/80" : "text-mid"
+          }`}
+        />
       </button>
 
       {isOpen && (

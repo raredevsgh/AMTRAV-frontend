@@ -9,7 +9,7 @@ import { SHOP_LINK } from "./nav";
 import { useI18n } from "@/lib/i18n/context";
 import { useCart } from "@/lib/shop";
 
-export default function SiteNav() {
+export default function SiteNav({ isNegative = false }: { isNegative?: boolean }) {
   const pathname = usePathname();
   const { t } = useI18n();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -53,7 +53,11 @@ export default function SiteNav() {
             aria-current={active ? "page" : undefined}
             className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-btn font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
               active
-                ? "bg-blue-pale text-brand shadow-xs"
+                ? isNegative
+                  ? "bg-white/20 text-white border border-white/30 shadow-xs"
+                  : "bg-blue-pale text-brand shadow-xs"
+                : isNegative
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-ink hover:text-brand hover:bg-white/40"
             }`}
           >
@@ -70,12 +74,20 @@ export default function SiteNav() {
           aria-expanded={dropdownOpen}
           className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-btn font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
             dropdownOpen || pathname.startsWith("/services") || pathname.startsWith("/customise")
-              ? "bg-blue-pale text-brand shadow-xs"
+              ? isNegative
+                ? "bg-white/20 text-white border border-white/30 shadow-xs"
+                : "bg-blue-pale text-brand shadow-xs"
+              : isNegative
+              ? "text-white/90 hover:text-white hover:bg-white/10"
               : "text-ink hover:text-brand hover:bg-white/40"
           }`}
         >
           <span>Services</span>
-          <ChevronDown className={`size-3.5 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`size-3.5 transition-transform duration-200 ${
+              dropdownOpen ? "rotate-180" : ""
+            } ${isNegative ? "text-white/80" : "text-mid"}`}
+          />
         </button>
 
         {dropdownOpen && (
