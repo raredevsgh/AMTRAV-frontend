@@ -122,22 +122,22 @@ function Social({ onUnavailable }: { onUnavailable: (name: string) => void }) {
   return (
     <div className="flex items-center gap-2.5 xl:gap-3">
       <button type="button" onClick={() => onUnavailable("Facebook")} aria-label="Facebook" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-facebook.svg" alt="" fill className="object-contain" />
+        <Image src="/icons/social-facebook.svg" alt="" fill sizes="44px" className="object-contain" />
       </button>
       <button type="button" onClick={() => onUnavailable("Instagram")} aria-label="Instagram" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-instagram-bg.png" alt="" fill className="object-contain" />
+        <Image src="/icons/social-instagram-bg.png" alt="" fill sizes="44px" className="object-contain" />
         <span className="absolute inset-[30%]">
-          <Image src="/icons/instagram-1.svg" alt="" fill />
+          <Image src="/icons/instagram-1.svg" alt="" fill sizes="20px" />
           <span className="absolute inset-[11.91%_11.91%_76.37%_76.37%]">
-            <Image src="/icons/instagram-2.svg" alt="" fill />
+            <Image src="/icons/instagram-2.svg" alt="" fill sizes="10px" />
           </span>
           <span className="absolute inset-[23.63%]">
-            <Image src="/icons/instagram-3.svg" alt="" fill />
+            <Image src="/icons/instagram-3.svg" alt="" fill sizes="14px" />
           </span>
         </span>
       </button>
       <button type="button" onClick={() => onUnavailable("X")} aria-label="X" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-x.svg" alt="" fill className="object-contain" />
+        <Image src="/icons/social-x.svg" alt="" fill sizes="44px" className="object-contain" />
       </button>
     </div>
   );
