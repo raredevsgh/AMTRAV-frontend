@@ -5,25 +5,37 @@ import { en } from "./messages/en";
 import { de } from "./messages/de";
 import { es } from "./messages/es";
 import { fr } from "./messages/fr";
+import { it } from "./messages/it";
+import { ja } from "./messages/ja";
+import { ko } from "./messages/ko";
+import { no } from "./messages/no";
 import { zhHans } from "./messages/zh-hans";
 import { zhHant } from "./messages/zh-hant";
 
-export type Locale = "en" | "de" | "es" | "fr" | "zh-hans" | "zh-hant";
+export type Locale = "en" | "de" | "es" | "fr" | "it" | "ja" | "ko" | "no" | "zh-hans" | "zh-hant";
 
 export const LOCALES: Record<Locale, { label: string; flag: string }> = {
   en: { label: "English", flag: "🇺🇸" },
+  no: { label: "Norsk", flag: "🇳🇴" },
   de: { label: "Deutsch", flag: "🇩🇪" },
-  es: { label: "Español", flag: "🇪🇸" },
   fr: { label: "Français", flag: "🇫🇷" },
+  es: { label: "Español", flag: "🇪🇸" },
+  it: { label: "Italiano", flag: "🇮🇹" },
+  ja: { label: "日本語", flag: "🇯🇵" },
+  ko: { label: "한국어", flag: "🇰🇷" },
   "zh-hans": { label: "简体中文", flag: "🇨🇳" },
   "zh-hant": { label: "繁體中文", flag: "🇹🇼" },
 };
 
 const MESSAGES: Record<Locale, typeof en> = {
   en,
+  no,
   de,
-  es,
   fr,
+  es,
+  it,
+  ja,
+  ko,
   "zh-hans": zhHans,
   "zh-hant": zhHant,
 };
