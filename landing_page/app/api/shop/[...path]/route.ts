@@ -22,6 +22,15 @@ function allowed(path: string, method: string) {
 // Fallback catalog when developing offline without the backend
 const FALLBACK_PRODUCTS = [
   {
+    sku: "duffel-side-bag",
+    name: "Suede & Aluminium Duffel Side Bag",
+    description: "Handcrafted suede with signature aluminium accents, RFID protection, and travel strap.",
+    image: "/images/trace/duffel-side-bag.jpg",
+    price_minor: 28900,
+    currency: "USD",
+    available: 35,
+  },
+  {
     sku: "cabin-55",
     name: "Cabin 55",
     description: "Graphite polycarbonate carry-on with TRACE built in.",

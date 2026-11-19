@@ -49,7 +49,10 @@ function getKit(): Promise<Kit> {
     import("three/addons/loaders/GLTFLoader.js"),
     import("three/addons/libs/meshopt_decoder.module.js"),
     import("three/addons/environments/RoomEnvironment.js"),
-  ]).then(([THREE, { GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }]) => {
+  ]).then(async ([THREE, { GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }]) => {
+    if (MeshoptDecoder?.ready) {
+      await MeshoptDecoder.ready;
+    }
     const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
     // Register TextureLoader for CSP compliance with embedded wordmark textures
     loader.register((parser) => {
