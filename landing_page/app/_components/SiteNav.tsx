@@ -28,6 +28,7 @@ export default function SiteNav() {
   const links = [
     { href: "/features", label: t("nav.features", "Features") },
     { href: "/how-it-works", label: t("nav.how", "How it works") },
+    { href: "/shop", label: t("nav.shop", "Shop") },
     { href: "/for-brands", label: t("nav.brands", "For brands") },
   ];
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useCart, CATALOG, formatPrice } from "@/lib/shop";
@@ -18,7 +19,16 @@ export default function CartDrawer({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmation, setOrderConfirmation] = useState<{ id: string; message: string } | null>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = origOverflow;
+    };
+  }, [isOpen]);
+
+  if (!isOpen || typeof document === "undefined") return null;
 
   const handleCheckout = async () => {
     setIsSubmitting(true);
@@ -53,7 +63,7 @@ export default function CartDrawer({
 
   const entries: [string, number][] = Object.entries(cart).filter(([, qty]) => qty > 0);
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex justify-end bg-navy-deep/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative flex h-full w-full max-w-md flex-col bg-white shadow-2xl animate-in slide-in-from-right duration-300">
         {/* Header */}
@@ -186,6 +196,7 @@ export default function CartDrawer({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Search, X, CheckCircle, AlertCircle, Plane } from "lucide-react";
 
 export interface AirlineSpec {
@@ -53,9 +54,9 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
     return AIRLINES.filter((a) => a.name.toLowerCase().includes(q) || a.notes.toLowerCase().includes(q));
   }, [query]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -176,6 +177,7 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
           <span className="font-medium text-navy">AMTRAV Travel Assurance</span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
