@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Lock, RotateCcw, SlidersHorizontal, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { ShieldCheck, Lock, RotateCcw, SlidersHorizontal, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 
 type SizeKey = "cabin" | "checkinM" | "checkinL" | "trunk";
@@ -262,7 +262,7 @@ export default function LuxurySpecs() {
         <div className="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col gap-3 max-w-xl">
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-sky" />
+              <span className="size-2 rounded-full bg-sky inline-block" />
               <span className="text-[12px] font-bold tracking-wider text-sky uppercase">
                 {t("landing.personalisationTitle", "Custom Personalisation")}
               </span>

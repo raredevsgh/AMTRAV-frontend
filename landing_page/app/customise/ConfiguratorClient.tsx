@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Sparkles,
   Check,
   ShoppingBag,
   ChevronLeft,
@@ -99,7 +98,7 @@ export default function ConfiguratorClient() {
         {/* Studio Header */}
         <div className="border-b border-divider pb-6 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 px-3 py-1 text-caption font-bold uppercase tracking-widest text-navy border border-navy/10">
-            <Sparkles className="size-3.5 text-sky" /> AMTRAV UNIQUE Studio
+            <span className="size-2 rounded-full bg-sky inline-block" /> AMTRAV UNIQUE Studio
           </span>
           <h1 className="mt-2 text-display-m font-bold text-navy md:text-h1">
             Build Your Bespoke Silhouette

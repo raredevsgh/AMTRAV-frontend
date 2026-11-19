@@ -1,33 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
-import MegaMenu from "./MegaMenu";
+import SiteNav, { ShopLink } from "./SiteNav";
 import HeaderActions from "./HeaderActions";
 
+// The glass stays in its own pseudo-element; modal navigation is portaled to the body.
 export default function Header() {
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-40">
-      <div className="mx-auto max-w-[1480px] px-3 pt-[max(10px,env(safe-area-inset-top))] xl:px-6 xl:pt-4">
-        <header className="glass pointer-events-auto relative flex items-center justify-between gap-3 rounded-full py-2 pr-3 pl-5 border border-line/60 bg-white/85 shadow-card backdrop-blur-xl xl:grid xl:grid-cols-[auto_1fr_auto] xl:gap-6 xl:py-2.5 xl:pr-3 xl:pl-6">
-          {/* Brand Wordmark */}
+      <div className="mx-auto max-w-[1440px] px-3 pt-[max(12px,env(safe-area-inset-top))] xl:px-5 xl:pt-5">
+        <header className="glass pointer-events-auto relative flex items-center justify-between gap-2 rounded-full py-2 pr-2 pl-5 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-7 xl:py-2.5 xl:pr-2.5 xl:pl-7">
           <Link
             href="/"
-            className="relative h-6 w-[116px] shrink-0 rounded-sm transition-opacity duration-200 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand xl:h-[28px] xl:w-[136px]"
+            className="relative h-6 w-[116px] shrink-0 rounded-sm transition-opacity duration-200 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand xl:h-[30.76px] xl:w-[150px]"
           >
-            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="140px" className="object-contain" priority />
+            <Image src="/img/logo.png" alt="AMORTRAV" fill sizes="150px" className="object-cover" priority />
           </Link>
 
-          {/* RIMOWA-Style Mega Menu 8 Pillars (Desktop) */}
-          <div className="hidden xl:flex justify-center">
-            <MegaMenu />
+          <div className="hidden xl:block">
+            <SiteNav />
           </div>
 
-          {/* Actions & Utilities (Mobile & Desktop) */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 xl:hidden">
+            <ShopLink />
+            <HeaderActions isMobile />
+            <MobileMenu />
+          </div>
+          <div className="hidden items-center gap-3 justify-self-end xl:flex">
+            <ShopLink />
             <HeaderActions />
-            <div className="xl:hidden">
-              <MobileMenu />
-            </div>
           </div>
         </header>
       </div>

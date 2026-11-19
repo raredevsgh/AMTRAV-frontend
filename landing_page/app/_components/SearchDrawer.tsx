@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, X, ArrowRight, CornerDownLeft, Sparkles, Luggage } from "lucide-react";
+import { Search, X, ArrowRight, CornerDownLeft, Luggage } from "lucide-react";
 import { useRegion } from "@/lib/region";
 
 export interface SearchProduct {
@@ -203,8 +203,8 @@ export default function SearchDrawer({ isOpen, onClose }: SearchDrawerProps) {
 
         {/* Popular Tags */}
         <div className="border-b border-divider/60 bg-surface/50 px-5 py-2.5 flex items-center gap-2 overflow-x-auto text-caption">
-          <span className="shrink-0 text-mid font-medium flex items-center gap-1">
-            <Sparkles className="size-3 text-sky" /> Popular:
+          <span className="shrink-0 text-mid font-medium flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-sky inline-block" /> Popular:
           </span>
           {POPULAR_SEARCHES.map((term) => (
             <button

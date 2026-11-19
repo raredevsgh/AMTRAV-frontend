@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
-import { Rotate3D, Sparkles, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Rotate3D, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
@@ -328,7 +328,7 @@ export default function BagViewer({
         {/* Finish selectors */}
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-caption font-medium text-blue-pale">
-            <Sparkles className="size-3.5 text-sky" /> {selectedFinish.name}
+            <span className="size-2 rounded-full bg-sky inline-block" /> {selectedFinish.name}
           </span>
           <div className="flex items-center gap-2">
             {FINISHES.map((finish) => (

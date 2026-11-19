@@ -52,16 +52,13 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
   const focusReturn = useRef(restoreFocus);
 
   const links = [
-    { href: "/shop?category=gifts", label: "Gifts" },
-    { href: "/shop", label: "Luggage" },
-    { href: "/shop?product=duffel-side-bag", label: "Bags (Suede Duffel)", badge: "New" },
-    { href: "/shop?category=accessories", label: "Accessories" },
-    { href: "/shop?category=specialties", label: "Specialties" },
-    { href: "/shop?filter=new", label: "New Arrivals" },
-    { href: "/services", label: "Client Services" },
-    { href: "/customise", label: "AMTRAV UNIQUE Studio", badge: "3D" },
+    { href: "/features", label: t("nav.features", "Features") },
     { href: "/how-it-works", label: t("nav.how", "How it works") },
     { href: "/for-brands", label: t("nav.brands", "For brands") },
+    { href: "/shop", label: t("nav.shop", "Shop now") },
+    { href: "/shop?product=duffel-side-bag", label: "Suede Duffel Bag", badge: "New" },
+    { href: "/customise", label: "AMTRAV UNIQUE Studio", badge: "3D" },
+    { href: "/services", label: "Client Services" },
   ];
 
   useEffect(() => {

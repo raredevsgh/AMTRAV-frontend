@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import ShopClient from "./ShopClient";
+import ShopView from "./ShopView";
 
 export const metadata: Metadata = {
-  title: "Suitcases & Smart Bags | AMTRAV Luxury Travel",
+  title: "Shop Luxury Luggage & Suede Bags | AMTRAV",
   description:
-    "Explore the AMTRAV luxury luggage collection. Original aluminium cases, essential polycarbonate, and the handcrafted Suede & Aluminium Duffel Side Bag. With integrated TRACE smart core and lifetime guarantee.",
+    "Pick your AMTRAV luggage. Explore cabin and check-in sizes, the Trunk 90, and the handcrafted Suede & Aluminium Duffel Side Bag. Real-time 3D preview and pre-orders.",
   alternates: { canonical: "/shop" },
 };
 
 export default function ShopPage() {
-  return <ShopClient />;
+  return <ShopView />;
 }

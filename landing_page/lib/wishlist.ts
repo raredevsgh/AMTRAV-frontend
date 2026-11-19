@@ -3,25 +3,29 @@
 import { useSyncExternalStore } from "react";
 
 const WISHLIST_KEY = "amortrav.wishlist";
+const EMPTY_WISHLIST: string[] = [];
+
 const listeners = new Set<() => void>();
-let cachedWishlist: string[] = [];
+let cachedWishlist: string[] = EMPTY_WISHLIST;
+let lastRawWishlist: string | null = null;
 
 function getWishlistSnapshot(): string[] {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return EMPTY_WISHLIST;
   try {
-    const saved = localStorage.getItem(WISHLIST_KEY);
-    if (saved) {
-      cachedWishlist = JSON.parse(saved);
+    const raw = localStorage.getItem(WISHLIST_KEY);
+    if (raw === lastRawWishlist) {
       return cachedWishlist;
     }
+    lastRawWishlist = raw;
+    cachedWishlist = raw ? JSON.parse(raw) : EMPTY_WISHLIST;
+    return cachedWishlist;
   } catch {
-    // Ignore
+    return cachedWishlist;
   }
-  return cachedWishlist;
 }
 
 function getWishlistServerSnapshot(): string[] {
-  return [];
+  return EMPTY_WISHLIST;
 }
 
 function subscribeWishlist(callback: () => void) {
@@ -36,8 +40,9 @@ export function toggleWishlistItem(sku: string) {
   const exists = current.includes(sku);
   const updated = exists ? current.filter((s) => s !== sku) : [...current, sku];
   cachedWishlist = updated;
+  lastRawWishlist = JSON.stringify(updated);
   try {
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(updated));
+    localStorage.setItem(WISHLIST_KEY, lastRawWishlist);
   } catch {
     // Ignore
   }
