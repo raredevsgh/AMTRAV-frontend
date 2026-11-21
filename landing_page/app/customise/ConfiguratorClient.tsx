@@ -184,16 +184,15 @@ export default function ConfiguratorClient() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* Left: Interactive 3D Canvas / Visual Preview (7 cols) */}
           <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-28">
-            <div className="overflow-hidden rounded-3xl border border-divider bg-white p-4 shadow-card">
-              <BagViewer
-                defaultLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
-                externalLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
-                externalColorHex={isCustomShellColor ? customShellHex : selectedShell.finishColor}
-                externalTier={selectedShell.tier.toLowerCase() as any}
-                className="w-full"
-              />
+            <BagViewer
+              defaultLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
+              externalLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
+              externalColorHex={isCustomShellColor ? customShellHex : selectedShell.finishColor}
+              externalTier={selectedShell.tier.toLowerCase() as any}
+              className="w-full"
+            />
 
-              {/* Monogram Overlay Badge Preview */}
+            {/* Monogram Overlay Badge Preview */}
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface border border-divider p-4">
                 <div className="flex items-center gap-3.5">
                   <div
@@ -226,7 +225,6 @@ export default function ConfiguratorClient() {
                   <p className="text-small font-bold text-navy uppercase tracking-widest">{monogramText || "AMT"}</p>
                 </div>
               </div>
-            </div>
           </div>
 
           {/* Right: Step Options Panel (5 cols) */}

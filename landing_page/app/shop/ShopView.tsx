@@ -619,7 +619,7 @@ export default function ShopView() {
       {/* 2. Interactive 3D Model Explorer */}
       <section
         id="3d-inspection"
-        className="scroll-mt-28 my-8 flex flex-col gap-6 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
+        className="scroll-mt-28 my-8 flex flex-col gap-6 rounded-3xl border border-divider bg-surface px-3.5 py-6 sm:px-6 sm:py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
       >
         <div className="flex flex-col gap-2">
           <span className="text-caption font-mono uppercase tracking-wider text-brand">

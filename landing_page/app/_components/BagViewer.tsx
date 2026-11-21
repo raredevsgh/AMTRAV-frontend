@@ -531,7 +531,7 @@ export default function BagViewer({
 
   return (
     <div
-      className={`relative flex flex-col gap-4 rounded-3xl p-4 transition-colors duration-300 xl:p-6 ${
+      className={`relative flex flex-col gap-4 rounded-3xl p-3.5 sm:p-5 xl:p-6 transition-colors duration-300 ${
         isLight
           ? "border border-divider bg-white text-navy shadow-card"
           : "border border-white/10 bg-navy text-white shadow-2xl"
@@ -564,7 +564,7 @@ export default function BagViewer({
                   key={tier}
                   type="button"
                   onClick={() => setSelectedTier(tier)}
-                  className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold capitalize whitespace-nowrap text-center transition-all ${
+                  className={`rounded-full px-1.5 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold capitalize whitespace-nowrap text-center transition-all ${
                     selectedTier === tier
                       ? isLight
                         ? "bg-navy text-white shadow-xs"
@@ -597,7 +597,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("cabin")}
-                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
+                className={`rounded-full px-1.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
                   selectedLuggageType === "cabin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -612,7 +612,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("checkin")}
-                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
+                className={`rounded-full px-1.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
                   selectedLuggageType === "checkin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -627,7 +627,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("both")}
-                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
+                className={`rounded-full px-1.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
                   selectedLuggageType === "both"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -644,20 +644,14 @@ export default function BagViewer({
         </div>
 
         {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="w-full sm:w-auto pt-2.5 border-t border-divider/40 sm:border-0 sm:pt-0 flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
-          {/* Traveller Size Guide */}
-          <div className="flex flex-col items-start">
-            <span
-              className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
-                isLight ? "text-mid" : "text-blue-pale"
-              }`}
-            >
-              Size Guide
-            </span>
+        <div className="w-full lg:w-auto pt-3 border-t border-divider/40 lg:border-0 lg:pt-0 flex flex-col sm:flex-row sm:items-center sm:justify-between lg:justify-end gap-2.5 sm:gap-4">
+          {/* Action Tools: Size Guide & Room AR in equal 2-col grid on mobile */}
+          <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center">
+            {/* Traveller Size Guide */}
             <button
               type="button"
               onClick={() => setShowHumanScale(!showHumanScale)}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
+              className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold border transition-all ${
                 showHumanScale
                   ? "bg-brand text-white border-brand shadow-xs"
                   : isLight
@@ -666,53 +660,44 @@ export default function BagViewer({
               }`}
               title="Compare bag size against real traveller height (178 cm)"
             >
-              <User className="size-3.5" />
-              <span>Traveller Height</span>
+              <User className="size-3.5 shrink-0" />
+              <span className="whitespace-nowrap">Size Guide</span>
             </button>
-          </div>
 
-          {/* WebAR Camera Room Projection */}
-          <div className="flex flex-col items-start">
-            <span
-              className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
-                isLight ? "text-mid" : "text-blue-pale"
-              }`}
-            >
-              Room AR
-            </span>
+            {/* WebAR Camera Room Projection */}
             <button
               type="button"
               onClick={() => setArRoomOpen(true)}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
+              className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold border transition-all ${
                 isLight
                   ? "border-divider bg-surface text-navy hover:border-navy hover:bg-navy hover:text-white shadow-xs"
                   : "border-sky/40 bg-sky/15 text-sky hover:bg-sky hover:text-navy shadow-xs"
               }`}
               title="Project 3D suitcase in your room via Camera (WebAR)"
             >
-              <Camera className="size-3.5" />
-              <span>In Room</span>
+              <Camera className="size-3.5 shrink-0" />
+              <span className="whitespace-nowrap">Room AR</span>
             </button>
           </div>
 
-          {/* Studio View */}
-          <div className="flex flex-col items-start">
+          {/* Studio View Lighting Toggle */}
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
             <span
-              className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
+              className={`text-[10px] font-mono uppercase tracking-wider ${
                 isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
-              Studio
+              Studio:
             </span>
             <div
-              className={`flex items-center gap-0.5 rounded-full p-1 border whitespace-nowrap ${
+              className={`flex items-center gap-0.5 rounded-full p-1 border ${
                 isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
               }`}
             >
               <button
                 type="button"
                 onClick={() => setStudioTheme("light")}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap transition-all ${
+                className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
                   isLight ? "bg-white text-navy shadow-xs" : "text-blue-pale hover:text-white"
                 }`}
               >
@@ -721,7 +706,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => setStudioTheme("dark")}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap transition-all ${
+                className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
                   !isLight ? "bg-navy-deep text-white shadow-xs font-bold" : "text-mid hover:text-navy"
                 }`}
               >
