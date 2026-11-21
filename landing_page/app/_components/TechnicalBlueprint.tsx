@@ -142,10 +142,10 @@ export default function TechnicalBlueprint({ product }: TechnicalBlueprintProps)
             <button
               type="button"
               onClick={() => setMatrixOpen(true)}
-              className="group flex items-center gap-2 text-small font-semibold text-brand underline underline-offset-4 hover:text-navy transition-colors"
+              className="group inline-flex items-center gap-2 text-left text-[13px] font-semibold text-brand underline underline-offset-4 hover:text-navy transition-colors"
             >
-              <Plane className="size-4 text-sky" />
-              <span>Airline Compatibility Matrix (50+ Airlines)</span>
+              <Plane className="size-4 text-sky shrink-0" />
+              <span className="leading-tight">Airline Compatibility Matrix (50+ Airlines)</span>
             </button>
           </div>
         </div>

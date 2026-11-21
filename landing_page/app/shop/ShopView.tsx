@@ -539,11 +539,11 @@ export default function ShopView() {
   const [duffelColorIdx, setDuffelColorIdx] = useState(0);
 
   const SUEDE_COLOR_OPTIONS = [
-    { name: "Cognac Brown", color: "#6e3b1b", filter: "none" },
-    { name: "Onyx Black", color: "#1a1a1a", filter: "brightness(0.35) contrast(1.2)" },
-    { name: "Midnight Navy", color: "#10213b", filter: "hue-rotate(185deg) saturate(1.25) brightness(0.7)" },
-    { name: "Sand Beige", color: "#c2b29d", filter: "sepia(0.55) saturate(0.85) brightness(1.15)" },
-    { name: "Charcoal Grey", color: "#424449", filter: "grayscale(1) brightness(0.65)" },
+    { name: "Cognac Brown", color: "#6e3b1b" },
+    { name: "Onyx Black", color: "#1a1a1a" },
+    { name: "Midnight Navy", color: "#10213b" },
+    { name: "Sand Beige", color: "#c2b29d" },
+    { name: "Charcoal Grey", color: "#424449" },
   ];
 
   const handleAddToCart = (compoundSku: string) => {
@@ -759,8 +759,7 @@ export default function ShopView() {
                   alt="AMTRAV Premium Suede & Aluminium Duffel Side Bag"
                   fill
                   sizes="(min-width: 1024px) 380px, 90vw"
-                  style={{ filter: SUEDE_COLOR_OPTIONS[duffelColorIdx].filter }}
-                  className="object-cover transition-all duration-300 group-hover:scale-104"
+                  className="object-cover transition-transform duration-300 group-hover:scale-104"
                 />
                 <span className="absolute top-3 left-3 rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
                   New Arrival

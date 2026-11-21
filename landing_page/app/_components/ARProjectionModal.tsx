@@ -632,31 +632,42 @@ export default function ARProjectionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300">
-      {/* Top Header Controls Bar */}
-      <div className="absolute top-0 inset-x-0 z-40 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/85 via-black/50 to-transparent pointer-events-auto">
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-9 items-center justify-center rounded-full bg-brand text-white shadow-md">
-            <Camera className="size-4.5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-sky">
-                WebAR Spatial Lens
-              </span>
-              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+      {/* Top Header Controls Bar - Responsive 2-tier on mobile */}
+      <div className="absolute top-0 inset-x-0 z-40 flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-6 gap-2.5 sm:gap-4 bg-gradient-to-b from-black/90 via-black/60 to-transparent pointer-events-auto">
+        <div className="flex items-center justify-between w-full sm:w-auto">
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 sm:size-9 items-center justify-center rounded-full bg-brand text-white shadow-md">
+              <Camera className="size-4" />
             </div>
-            <h2 className="text-small sm:text-lead font-bold text-white">
-              Project Bag in Real Room
-            </h2>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9.5px] font-mono font-bold uppercase tracking-widest text-sky">
+                  WebAR Spatial Lens
+                </span>
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <h2 className="text-[13px] sm:text-lead font-bold text-white">
+                Project Bag in Room
+              </h2>
+            </div>
           </div>
+          {/* Mobile Close Button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="sm:hidden flex size-8 items-center justify-center rounded-full bg-white/15 text-white active:scale-95"
+            aria-label="Close AR projection"
+          >
+            <X className="size-4" />
+          </button>
         </div>
 
         {/* Silhouette Model Toggle: Cabin 55 vs Check-In 68 vs Suede Duffel */}
-        <div className="flex items-center gap-1 rounded-full bg-white/10 p-1 border border-white/20 backdrop-blur-md">
+        <div className="flex items-center justify-center gap-1 rounded-full bg-white/10 p-1 border border-white/20 backdrop-blur-md self-center sm:self-auto">
           <button
             type="button"
             onClick={() => setModel("carry-on")}
-            className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${
+            className={`rounded-full px-3 py-1 text-[10.5px] sm:text-[11px] font-semibold transition-all ${
               model === "carry-on" ? "bg-white text-navy shadow-xs font-bold" : "text-white/75 hover:text-white"
             }`}
           >
@@ -665,7 +676,7 @@ export default function ARProjectionModal({
           <button
             type="button"
             onClick={() => setModel("check-in")}
-            className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${
+            className={`rounded-full px-3 py-1 text-[10.5px] sm:text-[11px] font-semibold transition-all ${
               model === "check-in" ? "bg-white text-navy shadow-xs font-bold" : "text-white/75 hover:text-white"
             }`}
           >
@@ -674,7 +685,7 @@ export default function ARProjectionModal({
           <button
             type="button"
             onClick={() => setModel("duffel")}
-            className={`rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${
+            className={`rounded-full px-3 py-1 text-[10.5px] sm:text-[11px] font-semibold transition-all ${
               model === "duffel" ? "bg-white text-navy shadow-xs font-bold" : "text-white/75 hover:text-white"
             }`}
           >
@@ -682,11 +693,11 @@ export default function ARProjectionModal({
           </button>
         </div>
 
-        {/* Close Button */}
+        {/* Desktop Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="flex size-10 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 active:scale-95 transition-all"
+          className="hidden sm:flex size-10 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 active:scale-95 transition-all"
           aria-label="Close AR projection"
         >
           <X className="size-5" />
@@ -736,20 +747,20 @@ export default function ARProjectionModal({
 
         {/* Real-time Interactive Weighing Scale HUD Overlay */}
         {isWeighingActive && (
-          <div className="absolute top-24 z-30 animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="flex items-center gap-3 rounded-2xl border border-sky/40 bg-black/80 px-5 py-3 text-white backdrop-blur-md shadow-2xl">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-sky/20 text-sky">
-                <Scale className="size-5 animate-pulse" />
+          <div className="absolute top-28 sm:top-24 z-30 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center gap-3 rounded-2xl border border-sky/40 bg-black/80 px-4 py-2.5 sm:px-5 sm:py-3 text-white backdrop-blur-md shadow-2xl">
+              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-sky/20 text-sky">
+                <Scale className="size-4 sm:size-5 animate-pulse" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-lg font-black text-white">{liveWeightKg} kg</span>
-                  <span className="text-xs text-white/60">({(liveWeightKg * 2.20462).toFixed(1)} lbs)</span>
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                  <span className="font-mono text-base sm:text-lg font-black text-white">{liveWeightKg} kg</span>
+                  <span className="text-[11px] sm:text-xs text-white/60">({(liveWeightKg * 2.20462).toFixed(1)} lbs)</span>
+                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9.5px] sm:text-[10px] font-bold text-emerald-400">
                     ✓ Flight-Safe
                   </span>
                 </div>
-                <span className="text-[10px] font-mono uppercase text-sky">
+                <span className="text-[9px] sm:text-[10px] font-mono uppercase text-sky">
                   TRACE Smart Core · Under 23kg Allowance
                 </span>
               </div>
@@ -760,67 +771,67 @@ export default function ARProjectionModal({
         {/* Three.js 3D Bag Canvas Overlay */}
         <div ref={hostRef} className="absolute inset-0 size-full z-20 pointer-events-auto cursor-grab active:cursor-grabbing" />
 
-        {/* Interactive AR Feature Action Bar (Left Side floating) */}
-        <div className="absolute left-4 top-24 z-30 flex flex-col gap-2 pointer-events-auto">
+        {/* Interactive AR Feature Action Bar - Positioned responsively */}
+        <div className="absolute bottom-[88px] sm:bottom-auto sm:top-24 inset-x-3 sm:inset-x-auto sm:left-6 z-30 flex flex-row sm:flex-col items-center sm:items-start justify-center gap-1.5 sm:gap-2 pointer-events-auto">
           {model !== "duffel" && (
             <>
               {/* Clamshell Open/Close Toggle */}
               <button
                 type="button"
                 onClick={() => setIsCaseOpen(!isCaseOpen)}
-                className={`flex items-center gap-2 rounded-xl px-3 py-2 text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
                   isCaseOpen
                     ? "bg-sky text-navy border-sky font-extrabold"
                     : "bg-black/70 text-white border-white/20 hover:bg-black/90"
                 }`}
               >
-                <FolderOpen className="size-3.5" />
-                <span>{isCaseOpen ? "Close Interior" : "Open Case (Clamshell)"}</span>
+                <FolderOpen className="size-3 sm:size-3.5" />
+                <span>{isCaseOpen ? "Close Interior" : "Open Case"}</span>
               </button>
 
               {/* Telescopic Handle Extension Toggle */}
               <button
                 type="button"
                 onClick={() => setIsHandleExtended(!isHandleExtended)}
-                className={`flex items-center gap-2 rounded-xl px-3 py-2 text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
                   isHandleExtended
                     ? "bg-sky text-navy border-sky font-extrabold"
                     : "bg-black/70 text-white border-white/20 hover:bg-black/90"
                 }`}
               >
-                <Maximize2 className="size-3.5" />
-                <span>{isHandleExtended ? "Retract Handle" : "Extend Handle"}</span>
+                <Maximize2 className="size-3 sm:size-3.5" />
+                <span>{isHandleExtended ? "Retract" : "Extend Handle"}</span>
               </button>
 
               {/* Digital Scale Weighing HUD Toggle */}
               <button
                 type="button"
                 onClick={toggleWeighing}
-                className={`flex items-center gap-2 rounded-xl px-3 py-2 text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
                   isWeighingActive
                     ? "bg-emerald-500 text-white border-emerald-400 font-extrabold"
                     : "bg-black/70 text-white border-white/20 hover:bg-black/90"
                 }`}
               >
-                <Scale className="size-3.5" />
-                <span>{isWeighingActive ? "Hide Scale" : "Weigh Bag (TRACE)"}</span>
+                <Scale className="size-3 sm:size-3.5" />
+                <span>{isWeighingActive ? "Hide Scale" : "Weigh Bag"}</span>
               </button>
             </>
           )}
 
           {/* Suede Duffel Color Switcher Pill */}
           {model === "duffel" && (
-            <div className="flex flex-col gap-1.5 rounded-2xl bg-black/75 p-3 border border-white/20 backdrop-blur-md text-white shadow-xl">
-              <span className="text-[10px] font-mono uppercase text-sky font-bold">
-                Italian Suede Swatches
+            <div className="flex items-center gap-2 rounded-2xl bg-black/80 px-3 py-1.5 border border-white/20 backdrop-blur-md text-white shadow-xl">
+              <span className="text-[10px] font-mono uppercase text-sky font-bold hidden sm:inline">
+                Suede:
               </span>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-1.5">
                 {SUEDE_AR_SWATCHES.map((sw) => (
                   <button
                     key={sw.name}
                     type="button"
                     onClick={() => setSuedeColorHex(sw.hex)}
-                    className={`size-6 rounded-full border transition-all ${
+                    className={`size-5 sm:size-6 rounded-full border transition-all ${
                       suedeColorHex === sw.hex
                         ? "ring-2 ring-white ring-offset-2 scale-110 shadow-xs border-white"
                         : "border-black/30 hover:scale-105"
@@ -835,19 +846,11 @@ export default function ARProjectionModal({
           )}
         </div>
 
-        {/* Floor drag hint badge */}
-        <div className="pointer-events-none absolute bottom-24 inset-x-0 z-30 flex flex-col items-center text-center">
-          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-black/70 px-4 py-1.5 text-[11px] font-medium text-white/90 backdrop-blur-md shadow-lg">
-            <Rotate3d className="size-3.5 text-sky animate-spin-slow" />
-            <span>Drag anywhere to rotate 360° · Drag up/down to shift floor position</span>
-          </div>
-        </div>
-
         {/* Bottom Floating Control Bar */}
-        <div className="absolute bottom-6 inset-x-4 sm:inset-x-8 z-40 flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-black/80 border border-white/20 backdrop-blur-md text-white max-w-3xl mx-auto pointer-events-auto shadow-2xl">
+        <div className="absolute bottom-4 sm:bottom-6 inset-x-3 sm:inset-x-8 z-40 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 p-3 sm:p-3.5 rounded-2xl bg-black/85 border border-white/20 backdrop-blur-md text-white max-w-2xl mx-auto pointer-events-auto shadow-2xl">
           {/* Scale Slider */}
-          <div className="flex items-center gap-2.5">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-white/70">
+          <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-2">
+            <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/70">
               Scale:
             </span>
             <input
@@ -861,15 +864,15 @@ export default function ARProjectionModal({
                 setScale(s);
                 scaleRef.current = s;
               }}
-              className="w-24 sm:w-32 accent-sky cursor-pointer"
+              className="flex-1 sm:w-32 accent-sky cursor-pointer"
             />
-            <span className="font-mono text-[11px] font-bold text-sky">
-              {scale === 1.0 ? "1:1 True Scale" : `${Math.round(scale * 100)}%`}
+            <span className="font-mono text-[10.5px] sm:text-[11px] font-bold text-sky shrink-0">
+              {scale === 1.0 ? "1:1 Scale" : `${Math.round(scale * 100)}%`}
             </span>
           </div>
 
           {/* Quick Real-World Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end w-full sm:w-auto gap-2">
             <button
               type="button"
               onClick={() => {
@@ -883,7 +886,7 @@ export default function ARProjectionModal({
                 setIsHandleExtended(false);
                 setIsWeighingActive(false);
               }}
-              className="flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-white/20 active:scale-95 transition-all"
+              className="flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1.5 text-[10.5px] sm:text-[11px] font-semibold text-white hover:bg-white/20 active:scale-95 transition-all"
             >
               <RefreshCw className="size-3" />
               <span>Reset</span>
@@ -893,7 +896,7 @@ export default function ARProjectionModal({
             <button
               type="button"
               onClick={handleCapturePhoto}
-              className="flex items-center gap-1.5 rounded-xl bg-brand px-4 py-1.5 text-[11px] font-bold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all"
+              className="flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-[10.5px] sm:text-[11px] font-bold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all"
             >
               <Camera className="size-3.5" />
               <span>Capture Photo</span>

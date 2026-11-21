@@ -151,48 +151,47 @@ export default function CartDrawer({
                     <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-line bg-surface">
                       <Image src={item.image} alt={item.name} fill className="object-contain p-2" />
                     </div>
-                    <div className="flex flex-1 flex-col justify-between">
-                      <div className="flex justify-between items-start gap-2">
-                        <div>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <h4 className="text-caption font-bold text-navy">{item.name}</h4>
-                            <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.2 text-[10px] font-semibold text-navy">
+                    <div className="flex flex-1 flex-col justify-between min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-caption font-bold text-navy truncate">{item.name}</h4>
+                          <div className="mt-1 flex items-center gap-2 flex-wrap">
+                            <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.5 text-[10px] font-semibold text-navy">
                               {item.selectedSize}
                             </span>
+                            <div className="flex items-center gap-1 text-[11px] text-mid">
+                              <span
+                                className="size-2.5 rounded-full border border-black/20 shrink-0 shadow-xs"
+                                style={{ backgroundColor: item.selectedColorHex }}
+                              />
+                              <span className="truncate max-w-[110px]">{item.selectedColorName}</span>
+                            </div>
                           </div>
-                          <div className="mt-1 flex items-center gap-1.5 text-[11px] text-mid">
-                            <span
-                              className="size-3 rounded-full border border-black/20 shrink-0 shadow-xs"
-                              style={{ backgroundColor: item.selectedColorHex }}
-                            />
-                            <span>{item.selectedColorName}</span>
-                          </div>
-                          <span className="block mt-1 text-[12px] font-semibold text-navy">{formatPrice(item.price_minor)}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => removeFromCart(sku)}
-                          className="text-mid/60 hover:text-red-500 transition-colors p-1"
+                          className="p-1 text-mid/60 hover:text-danger transition-colors shrink-0"
                           title="Remove item"
                         >
                           <Trash2 className="size-4" />
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 rounded-lg border border-line px-2 py-0.5">
+                      <div className="mt-3 flex items-center justify-between pt-1">
+                        <div className="flex items-center gap-2.5 rounded-lg border border-line px-2 py-0.5 bg-surface/50">
                           <button
                             type="button"
                             onClick={() => addToCart(sku, -1)}
-                            className="text-caption font-bold text-mid hover:text-navy"
+                            className="text-caption font-bold text-mid hover:text-navy px-1"
                           >
                             -
                           </button>
-                          <span className="text-caption font-semibold">{qty}</span>
+                          <span className="text-caption font-bold text-navy">{qty}</span>
                           <button
                             type="button"
                             onClick={() => addToCart(sku, 1)}
-                            className="text-caption font-bold text-mid hover:text-navy"
+                            className="text-caption font-bold text-mid hover:text-navy px-1"
                           >
                             +
                           </button>

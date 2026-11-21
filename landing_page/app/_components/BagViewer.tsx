@@ -552,15 +552,15 @@ export default function BagViewer({
         </div>
 
         {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Human Scale Anthropometric Reality Anchor */}
-          <div>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Traveller Size Guide */}
+          <div className="flex flex-col items-start sm:items-end">
             <span
-              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 text-right ${
+              className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
-              HCI Scale
+              Size Guide
             </span>
             <button
               type="button"
@@ -572,17 +572,17 @@ export default function BagViewer({
                   ? "border-divider bg-surface text-navy hover:border-mid"
                   : "border-white/10 bg-navy-deep text-white hover:border-white/30"
               }`}
-              title="Toggle Human Scale Silhouette & Overhead Bin Clearance"
+              title="Compare bag size against real traveller height (178 cm)"
             >
               <User className="size-3.5" />
-              <span>Human Scale</span>
+              <span>Traveller Height</span>
             </button>
           </div>
 
           {/* WebAR Camera Room Projection */}
-          <div>
+          <div className="flex flex-col items-start sm:items-end">
             <span
-              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 text-right ${
+              className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
@@ -604,9 +604,9 @@ export default function BagViewer({
           </div>
 
           {/* Studio View */}
-          <div>
+          <div className="flex flex-col items-start sm:items-end">
             <span
-              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 text-right ${
+              className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
@@ -630,7 +630,7 @@ export default function BagViewer({
                 type="button"
                 onClick={() => setStudioTheme("dark")}
                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all ${
-                  !isLight ? "bg-sky text-navy shadow-xs" : "text-mid hover:text-navy"
+                  !isLight ? "bg-navy-deep text-white shadow-xs" : "text-mid hover:text-navy"
                 }`}
               >
                 Dark
