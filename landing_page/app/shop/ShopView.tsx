@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingBag, Palette, Check, Layers, Rotate3d, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import { ShoppingBag, Palette, Check, Layers, Rotate3d, SlidersHorizontal, ArrowUpDown, ChevronDown } from "lucide-react";
 import Button from "../_components/Button";
 import ProductVideo from "../_components/ProductVideo";
 import BagViewer, { LUXURY_PALETTE_PRESETS } from "../_components/BagViewer";
@@ -536,6 +536,15 @@ export default function ShopView() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [activeCollection, setActiveCollection] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("top-sellers");
+  const [duffelColorIdx, setDuffelColorIdx] = useState(0);
+
+  const SUEDE_COLOR_OPTIONS = [
+    { name: "Cognac Brown", color: "#6e3b1b", filter: "none" },
+    { name: "Onyx Black", color: "#1a1a1a", filter: "brightness(0.35) contrast(1.2)" },
+    { name: "Midnight Navy", color: "#10213b", filter: "hue-rotate(185deg) saturate(1.25) brightness(0.7)" },
+    { name: "Sand Beige", color: "#c2b29d", filter: "sepia(0.55) saturate(0.85) brightness(1.15)" },
+    { name: "Charcoal Grey", color: "#424449", filter: "grayscale(1) brightness(0.65)" },
+  ];
 
   const handleAddToCart = (compoundSku: string) => {
     if (!isEcommerce) {
@@ -547,7 +556,9 @@ export default function ShopView() {
   };
 
   const handleBuyDuffel = () => {
-    addToCart("duffel-side-bag", 1);
+    const chosen = SUEDE_COLOR_OPTIONS[duffelColorIdx];
+    const sku = `duffel-${chosen.name.toLowerCase().replace(/\s+/g, "-")}`;
+    addToCart(sku, 1);
     setCartOpen(true);
   };
 
@@ -701,32 +712,38 @@ export default function ShopView() {
             {/* Collection Dropdown */}
             <div className="flex flex-1 sm:flex-initial items-center gap-1.5">
               <span className="text-[11px] font-mono text-mid hidden md:inline">Collection:</span>
-              <select
-                value={activeCollection}
-                onChange={(e) => setActiveCollection(e.target.value)}
-                className="w-full sm:w-auto rounded-full border border-divider bg-white px-3 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy"
-              >
-                <option value="all">All Collections</option>
-                <option value="essential">Essential (Polycarbonate)</option>
-                <option value="pro">Pro (Aluminium)</option>
-                <option value="executive">Executive (Obsidian Alloy)</option>
-                <option value="flagship">Flagship (Signature Alloy)</option>
-              </select>
+              <div className="relative w-full sm:w-auto">
+                <select
+                  value={activeCollection}
+                  onChange={(e) => setActiveCollection(e.target.value)}
+                  className="appearance-none w-full sm:w-auto rounded-full border border-divider bg-white pl-3.5 pr-8 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
+                >
+                  <option value="all">All Collections</option>
+                  <option value="essential">Essential (Polycarbonate)</option>
+                  <option value="pro">Pro (Aluminium)</option>
+                  <option value="executive">Executive (Obsidian Alloy)</option>
+                  <option value="flagship">Flagship (Signature Alloy)</option>
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60" />
+              </div>
             </div>
 
-            {/* Sort Dropdown */}
+            {/* Sort Dropdown - With single sleek chevron */}
             <div className="flex flex-1 sm:flex-initial items-center gap-1.5">
               <span className="text-[11px] font-mono text-mid hidden md:inline">Sort:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="w-full sm:w-auto rounded-full border border-divider bg-white px-3 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy"
-              >
-                <option value="top-sellers">Top Sellers</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="volume">Volume (Liters)</option>
-              </select>
+              <div className="relative w-full sm:w-auto">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  className="appearance-none w-full sm:w-auto rounded-full border border-divider bg-white pl-3.5 pr-8 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
+                >
+                  <option value="top-sellers">Top Sellers</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="volume">Volume (Liters)</option>
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60" />
+              </div>
             </div>
           </div>
         </div>
@@ -742,7 +759,8 @@ export default function ShopView() {
                   alt="AMTRAV Premium Suede & Aluminium Duffel Side Bag"
                   fill
                   sizes="(min-width: 1024px) 380px, 90vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-104"
+                  style={{ filter: SUEDE_COLOR_OPTIONS[duffelColorIdx].filter }}
+                  className="object-cover transition-all duration-300 group-hover:scale-104"
                 />
                 <span className="absolute top-3 left-3 rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
                   New Arrival
@@ -754,9 +772,14 @@ export default function ShopView() {
 
               <div className="flex flex-1 flex-col justify-between pt-4">
                 <div>
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
-                    Italian Suede & Aluminium
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
+                      Italian Suede & Aluminium
+                    </span>
+                    <span className="text-[10px] font-semibold text-brand font-mono">
+                      {SUEDE_COLOR_OPTIONS[duffelColorIdx].name}
+                    </span>
+                  </div>
                   <h3 className="text-h3-m font-bold text-navy xl:text-[21px]">
                     Suede Duffel Side Bag
                   </h3>
@@ -764,23 +787,28 @@ export default function ShopView() {
                     Handcrafted Italian suede with aerospace-grade ribbed aluminium stripes, RFID-shielded compartment, and travel strap.
                   </p>
 
-                  {/* Suede Swatches */}
-                  <div className="mt-3.5 flex items-center gap-1.5 border-t border-divider/60 pt-3">
-                    {[
-                      { name: "Cognac Brown", color: "#6e3b1b" },
-                      { name: "Onyx Black", color: "#1a1a1a" },
-                      { name: "Midnight Navy", color: "#10213b" },
-                      { name: "Sand Beige", color: "#c2b29d" },
-                      { name: "Charcoal Grey", color: "#424449" },
-                    ].map((sw) => (
-                      <span
-                        key={sw.name}
-                        className="size-5 rounded-full border border-black/20"
-                        style={{ backgroundColor: sw.color }}
-                        title={sw.name}
-                      />
-                    ))}
-                    <span className="ml-1 text-[11px] text-mid">5 Suede Finishes</span>
+                  {/* Interactive Suede Swatches */}
+                  <div className="mt-3.5 flex items-center justify-between border-t border-divider/60 pt-3">
+                    <div className="flex items-center gap-2">
+                      {SUEDE_COLOR_OPTIONS.map((sw, idx) => (
+                        <button
+                          key={sw.name}
+                          type="button"
+                          onClick={() => setDuffelColorIdx(idx)}
+                          className={`size-5 rounded-full border transition-all ${
+                            duffelColorIdx === idx
+                              ? "ring-2 ring-navy ring-offset-2 scale-110 border-white shadow-xs"
+                              : "border-black/20 hover:scale-105"
+                          }`}
+                          style={{ backgroundColor: sw.color }}
+                          title={sw.name}
+                          aria-label={`Select ${sw.name}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[11px] font-medium text-mid">
+                      {SUEDE_COLOR_OPTIONS[duffelColorIdx].name}
+                    </span>
                   </div>
                 </div>
 

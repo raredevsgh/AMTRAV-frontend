@@ -66,11 +66,233 @@ const FAQ = [
   },
 ] as const;
 
+// Authentic AMTRAV iOS Mobile Companion App (Screenshot 4: Good morning, Ama)
+function AmortravCompanionAppPhone({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`relative mx-auto w-full max-w-[320px] sm:max-w-[340px] rounded-[36px] sm:rounded-[40px] border-[6px] sm:border-[7px] border-[#0B1B3D] bg-[#F6F7F9] p-3 shadow-2xl text-navy select-none overflow-hidden ${className}`}
+    >
+      {/* Dynamic Island / Speaker notch */}
+      <div className="relative mx-auto mb-2 flex h-5 w-full items-center justify-between px-3 text-[11px] font-bold text-navy">
+        <span>9:41</span>
+        <div className="h-3.5 w-20 sm:w-24 rounded-full bg-[#0B1B3D]" />
+        <div className="flex items-center gap-1.5 text-navy">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4 18.59 5.41 20l.98-.98C8.01 19.9 9.93 20.5 12 20.5s3.99-.6 5.61-1.48l.98.98L20 18.59l-.97-.98C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
+          </svg>
+          <div className="h-2.5 w-5 rounded-xs border border-navy p-0.5">
+            <div className="h-full w-3.5 bg-navy rounded-2xs" />
+          </div>
+        </div>
+      </div>
+
+      {/* App Top Bar */}
+      <div className="flex items-center justify-between px-1.5 py-1">
+        <div>
+          <span className="text-[10px] text-slate-500 font-medium">Wednesday 18 November</span>
+          <h3 className="text-xl font-extrabold tracking-tight text-[#0F172A] leading-tight">
+            Good morning,<br />Ama
+          </h3>
+        </div>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 shadow-xs border border-slate-200/60">
+            <span className="size-2 rounded-full bg-[#2A4BD7] animate-pulse" />
+            <span className="text-[11px] font-bold text-navy">Live</span>
+          </div>
+          <div className="relative flex size-8 items-center justify-center rounded-full bg-white shadow-xs border border-slate-200/60">
+            <svg className="size-4 text-navy" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-[#2A4BD7] text-[9px] font-bold text-white">
+              2
+            </span>
+          </div>
+          <div className="flex size-8 items-center justify-center rounded-full bg-[#0B1B3D] text-xs font-bold text-white shadow-xs">
+            A
+          </div>
+        </div>
+      </div>
+
+      {/* Twin Luggage Cards */}
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        {/* Card 1: Blue carry-on */}
+        <div className="relative flex flex-col items-center rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60 text-center">
+          <div className="relative my-1 size-14 sm:size-16 flex items-center justify-center">
+            <svg className="size-14 sm:size-16 -rotate-90" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" strokeWidth="4" />
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                fill="none"
+                stroke="#2A4BD7"
+                strokeWidth="4"
+                strokeDasharray="163.36"
+                strokeDashoffset="45"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="size-8 rounded-sm bg-[#1e3a6a] flex items-center justify-center text-white text-[9px] font-bold shadow-xs">
+                55
+              </div>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-[#0B1B3D] truncate w-full">Blue carry-on</span>
+          <div className="mt-1 flex items-center gap-1 rounded-full bg-[#2A4BD7] px-2 py-0.5 text-[8.5px] font-bold text-white">
+            <svg className="size-2.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L4 20h16L12 2z" />
+            </svg>
+            <span>Moving 72%</span>
+          </div>
+        </div>
+
+        {/* Card 2: Check-in 70 */}
+        <div className="relative flex flex-col items-center rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60 text-center">
+          <div className="relative my-1 size-14 sm:size-16 flex items-center justify-center">
+            <svg className="size-14 sm:size-16 -rotate-90" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" strokeWidth="4" />
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                fill="none"
+                stroke="#4A91F2"
+                strokeWidth="4"
+                strokeDasharray="163.36"
+                strokeDashoffset="68"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="size-8 rounded-sm bg-[#224488] flex items-center justify-center text-white text-[9px] font-bold shadow-xs">
+                70
+              </div>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-[#0B1B3D] truncate w-full">Check-in 70</span>
+          <div className="mt-1 flex items-center gap-1 rounded-full bg-[#4A91F2]/20 px-2 py-0.5 text-[8.5px] font-bold text-[#2A4BD7]">
+            <Check className="size-2.5 stroke-[3]" />
+            <span>Ready 58%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Indicators Strip */}
+      <div className="mt-2.5 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl bg-white p-2 shadow-xs border border-slate-200/60 text-center">
+        <div className="flex flex-col items-center">
+          <div className="size-3.5 rounded-full border-2 border-[#4A91F2] mb-0.5" />
+          <span className="text-xs sm:text-sm font-extrabold text-[#0B1B3D]">2/2</span>
+          <span className="text-[9px] text-slate-400 font-medium">Ready</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-[11px] font-bold text-[#2A4BD7] mb-0.5">▲</span>
+          <span className="text-xs sm:text-sm font-extrabold text-[#2A4BD7]">1</span>
+          <span className="text-[9px] text-slate-400 font-medium">Moving</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-[11px] text-amber-500 mb-0.5">🔔</span>
+          <span className="text-xs sm:text-sm font-extrabold text-amber-500">1</span>
+          <span className="text-[9px] text-slate-400 font-medium">Alerts today</span>
+        </div>
+      </div>
+
+      {/* Flights Around You banner */}
+      <div className="mt-2 flex items-center justify-between rounded-xl bg-white p-2 shadow-xs border border-slate-200/60">
+        <div className="flex items-center gap-2">
+          <div className="flex size-6 sm:size-7 items-center justify-center rounded-full bg-[#4A91F2]/20 text-[#2A4BD7]">
+            <Plane className="size-3 sm:size-3.5" />
+          </div>
+          <span className="text-[10px] sm:text-[11px] font-bold text-[#0B1B3D]">Flights around you</span>
+        </div>
+        <span className="text-slate-400 text-xs">›</span>
+      </div>
+
+      {/* Distance Travelled Card with 7-Day Bar Chart */}
+      <div className="mt-2 rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60">
+        <div className="flex items-center justify-between text-[9.5px]">
+          <span className="text-slate-500">Distance travelled · 7 days</span>
+          <div className="flex items-center gap-1">
+            <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">This week ▾</span>
+            <span className="rounded-md bg-[#2A4BD7]/10 px-1.5 py-0.5 font-bold text-[#2A4BD7]">+18%</span>
+          </div>
+        </div>
+        <div className="mt-1 flex items-baseline gap-1.5">
+          <span className="text-base sm:text-lg font-black tracking-tight text-[#0B1B3D]">1,248 km</span>
+          <span className="text-[9.5px] text-slate-400">12 moves</span>
+        </div>
+        {/* Weekly Bar Chart */}
+        <div className="mt-1.5 grid grid-cols-7 items-end gap-1.5 h-10 pt-1 border-b border-slate-100 pb-1">
+          {[
+            { day: "M", height: "40%", active: false },
+            { day: "T", height: "65%", active: false },
+            { day: "W", height: "25%", active: false },
+            { day: "T", height: "80%", active: false },
+            { day: "F", height: "55%", active: false },
+            { day: "S", height: "70%", active: false },
+            { day: "S", height: "95%", active: true },
+          ].map((bar, i) => (
+            <div key={i} className="flex flex-col items-center gap-1 h-full justify-end">
+              <div
+                className={`w-full rounded-t-sm transition-all ${bar.active ? "bg-[#2A4BD7]" : "bg-slate-400/60"}`}
+                style={{ height: bar.height }}
+              />
+              <span className={`text-[8px] font-medium ${bar.active ? "text-[#2A4BD7] font-bold" : "text-slate-400"}`}>
+                {bar.day}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Tabs */}
+      <div className="mt-2.5 grid grid-cols-5 border-t border-slate-200/60 pt-1.5 text-center text-[8.5px] font-medium text-slate-400">
+        <div className="flex flex-col items-center gap-0.5 text-[#0B1B3D] font-bold">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
+          <span>Home</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="6" y="7" width="12" height="13" rx="2" />
+            <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+          </svg>
+          <span>Bags</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+          </svg>
+          <span>Map</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span>Activity</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Account</span>
+        </div>
+      </div>
+      {/* Home bar */}
+      <div className="mx-auto mt-1.5 h-1 w-24 rounded-full bg-[#0B1B3D]" />
+    </div>
+  );
+}
+
 function HowItWorksHero() {
   const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState<"pairing" | "companion">("pairing");
 
   return (
-    <section className="relative pt-4 pb-10 sm:pt-8 sm:pb-14 xl:pt-12 xl:pb-16 overflow-hidden">
+    <section className="relative overflow-clip rounded-3xl bg-white border border-divider p-6 sm:p-10 xl:p-14 shadow-xs">
       <div className="grid grid-cols-1 items-center gap-8 xl:grid-cols-2 xl:gap-14">
         {/* Left Column: Copy & Actions */}
         <div className="flex flex-col items-start gap-4 sm:gap-6">
@@ -121,129 +343,163 @@ function HowItWorksHero() {
               </svg>
             </a>
           </div>
+
+          {/* Interactive Screen Preview Mode Switcher */}
+          <div className="mt-2 flex items-center gap-1.5 rounded-full bg-[#F6F7F9] p-1 border border-divider">
+            <button
+              type="button"
+              onClick={() => setActiveTab("pairing")}
+              className={`rounded-full px-3.5 py-1 text-caption font-semibold transition-all ${
+                activeTab === "pairing"
+                  ? "bg-[#0B1B3D] text-white shadow-xs font-bold"
+                  : "text-[#4A5266] hover:text-[#0B1B3D]"
+              }`}
+            >
+              1. Claim Card Setup
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("companion")}
+              className={`rounded-full px-3.5 py-1 text-caption font-semibold transition-all ${
+                activeTab === "companion"
+                  ? "bg-[#0B1B3D] text-white shadow-xs font-bold"
+                  : "text-[#4A5266] hover:text-[#0B1B3D]"
+              }`}
+            >
+              2. Live Companion App
+            </button>
+          </div>
         </div>
 
         {/* Right Column: Visual Mockup with Precision Box Sizing & Proportions */}
-        <div
-          role="img"
-          aria-label="An Amortrav claim card next to a phone showing the Pair Luggage screen"
-          className="relative mx-auto aspect-[540/460] w-full max-w-[420px] sm:max-w-[480px] xl:max-w-[500px]"
-        >
-          {/* Subtle Ambient Flight Path SVG - Contained so it never overflows */}
-          <svg viewBox="0 0 540 460" aria-hidden="true" className="absolute inset-0 size-full overflow-hidden pointer-events-none opacity-70">
-            <path
-              d="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
-              fill="none"
-              stroke="#B3C8EE"
-              strokeWidth="2"
-              strokeDasharray="2 9"
-              strokeLinecap="round"
-            />
-            <g>
-              <path
-                d="M12 0 C12 -1.5 10.5 -2 9 -2 L3 -2 L-4 -10 L-7 -10 L-3 -2 L-8 -2 L-10 -5 L-12 -5 L-11 0 L-12 5 L-10 5 L-8 2 L-3 2 L-7 10 L-4 10 L3 2 L9 2 C10.5 2 12 1.5 12 0 Z"
-                fill="#0B1B3D"
-              />
-              <animateMotion
-                dur="8s"
-                repeatCount="indefinite"
-                rotate="auto"
-                path="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
-              />
-            </g>
-          </svg>
-
-          {/* Precision Phone Frame - Positioned with ample breathing room */}
-          <div className="absolute top-0 right-[4%] aspect-[9/18] w-[46%] sm:w-[45%] overflow-hidden rounded-[26px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)] flex flex-col justify-between p-3 sm:p-4 pt-2 sm:pt-2.5 z-0">
-            {/* Speaker Slit */}
-            <div className="mx-auto h-1 w-12 rounded-full bg-[#0B1B3D]/30" />
-
-            {/* Screen UI Matching Photo */}
-            <div className="flex flex-1 flex-col justify-between pt-1">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-[#E8ECF2] pb-1.5">
-                <span className="text-[11px] sm:text-xs font-bold tracking-tight text-[#0B1B3D]">
-                  Pair Luggage
-                </span>
-                <span className="rounded-full bg-[#2A4BD7]/10 px-2 py-0.5 text-[8px] sm:text-[9.5px] font-bold text-[#2A4BD7] whitespace-nowrap">
-                  Step 2 of 3
-                </span>
-              </div>
-
-              {/* Form Fields */}
-              <div className="flex flex-col gap-2 my-auto">
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[8.5px] sm:text-[9.5px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
-                    Case Serial Number
-                  </span>
-                  <div className="rounded-lg border border-[#DCE1EA] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold text-[#0B1B3D]">
-                    AMT-C055-80F3A1
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[8.5px] sm:text-[9.5px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
-                    Encrypted Claim Code
-                  </span>
-                  <div className="rounded-lg border border-[#0B1B3D] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold tracking-widest text-[#0B1B3D]">
-                    7KQ2-••••••••
-                  </div>
-                </div>
-
-                {/* Cryptographic Verification Badge */}
-                <div className="flex items-center gap-1 text-[8px] sm:text-[9px] font-medium text-[#2A4BD7]">
-                  <svg className="size-2.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                  </svg>
-                  <span className="truncate uppercase font-mono font-semibold text-[8px]">
-                    Cryptographically verified
-                  </span>
-                </div>
-              </div>
-
-              {/* Action Button - Fully unobstructed and centered */}
-              <button
-                type="button"
-                className="w-full rounded-lg bg-[#0B1B3D] py-2 text-center text-[10px] sm:text-[11px] font-bold text-white shadow-xs hover:bg-[#0047AD] transition-colors"
-              >
-                Add to My Account
-              </button>
-            </div>
-
-            {/* Home Indicator */}
-            <div className="mt-1 mx-auto h-1 w-10 sm:w-12 rounded-full bg-[#0B1B3D]/30" />
-          </div>
-
-          {/* 3D Floating Metal Claim Card - Positioned gracefully without blocking phone text */}
-          <div className="animate-float absolute bottom-[2%] left-0 flex aspect-[1.586] w-[52%] sm:w-[50%] -rotate-6 flex-col justify-between rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#102754] to-[#061229] p-3 sm:p-4 text-white shadow-[0_25px_50px_-15px_rgba(11,27,61,0.65)] border border-white/20 z-10 backdrop-blur-md">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Image
-                  src="/img/cta-mark.png"
-                  alt="AMORTRAV"
-                  width={20}
-                  height={18}
-                  className="h-3.5 sm:h-4 w-auto object-contain brightness-0 invert"
+        <div className="relative mx-auto w-full flex items-center justify-center">
+          {activeTab === "pairing" ? (
+            <div
+              role="img"
+              aria-label="An Amortrav claim card next to a phone showing the Pair Luggage screen"
+              className="relative mx-auto aspect-[540/460] w-full max-w-[420px] sm:max-w-[480px] xl:max-w-[500px]"
+            >
+              {/* Subtle Ambient Flight Path SVG */}
+              <svg viewBox="0 0 540 460" aria-hidden="true" className="absolute inset-0 size-full overflow-hidden pointer-events-none opacity-70">
+                <path
+                  d="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
+                  fill="none"
+                  stroke="#B3C8EE"
+                  strokeWidth="2"
+                  strokeDasharray="2 9"
+                  strokeLinecap="round"
                 />
-                <span className="font-mono text-[8.5px] sm:text-[9.5px] font-bold tracking-wider text-white uppercase">
-                  AMORTRAV
-                </span>
-              </div>
-              <span className="text-[8px] sm:text-[9px] font-mono font-medium text-[#A9B6D3] uppercase tracking-wider">
-                Claim Card
-              </span>
-            </div>
+                <g>
+                  <path
+                    d="M12 0 C12 -1.5 10.5 -2 9 -2 L3 -2 L-4 -10 L-7 -10 L-3 -2 L-8 -2 L-10 -5 L-12 -5 L-11 0 L-12 5 L-10 5 L-8 2 L-3 2 L-7 10 L-4 10 L3 2 L9 2 C10.5 2 12 1.5 12 0 Z"
+                    fill="#0B1B3D"
+                  />
+                  <animateMotion
+                    dur="8s"
+                    repeatCount="indefinite"
+                    rotate="auto"
+                    path="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
+                  />
+                </g>
+              </svg>
 
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[7.5px] sm:text-[8.5px] font-mono text-[#A9B6D3] uppercase tracking-wider">
-                Unique Serial
-              </span>
-              <span className="font-mono text-[10px] sm:text-xs font-bold tracking-wider text-white">
-                AMT-C055-80F3A1
-              </span>
-              <div className="mt-1 h-3 sm:h-3.5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)] shadow-inner border border-white/10" />
+              {/* Precision Phone Frame */}
+              <div className="absolute top-0 right-[4%] aspect-[9/18] w-[48%] sm:w-[46%] overflow-hidden rounded-[26px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)] flex flex-col justify-between p-3 sm:p-4 pt-2 sm:pt-2.5 z-0">
+                {/* Speaker Slit */}
+                <div className="mx-auto h-1 w-12 rounded-full bg-[#0B1B3D]/30" />
+
+                {/* Screen UI Matching Photo */}
+                <div className="flex flex-1 flex-col justify-between pt-1">
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-[#E8ECF2] pb-1.5">
+                    <span className="text-[11px] sm:text-xs font-bold tracking-tight text-[#0B1B3D]">
+                      Pair Luggage
+                    </span>
+                    <span className="rounded-full bg-[#2A4BD7]/10 px-2 py-0.5 text-[8px] sm:text-[9.5px] font-bold text-[#2A4BD7] whitespace-nowrap">
+                      Step 2 of 3
+                    </span>
+                  </div>
+
+                  {/* Form Fields */}
+                  <div className="flex flex-col gap-2 my-auto">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[8.5px] sm:text-[9.5px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
+                        Case Serial Number
+                      </span>
+                      <div className="rounded-lg border border-[#DCE1EA] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold text-[#0B1B3D]">
+                        AMT-C055-80F3A1
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[8.5px] sm:text-[9.5px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
+                        Encrypted Claim Code
+                      </span>
+                      <div className="rounded-lg border border-[#0B1B3D] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold tracking-widest text-[#0B1B3D]">
+                        7KQ2-••••••••
+                      </div>
+                    </div>
+
+                    {/* Cryptographic Verification Badge */}
+                    <div className="flex items-center gap-1 text-[8px] sm:text-[9px] font-medium text-[#2A4BD7]">
+                      <svg className="size-2.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                      </svg>
+                      <span className="truncate uppercase font-mono font-semibold text-[8px]">
+                        Cryptographically verified
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <button
+                    type="button"
+                    className="w-full rounded-lg bg-[#0B1B3D] py-2 text-center text-[10px] sm:text-[11px] font-bold text-white shadow-xs hover:bg-[#0047AD] transition-colors"
+                  >
+                    Add to My Account
+                  </button>
+                </div>
+
+                {/* Home Indicator */}
+                <div className="mt-1 mx-auto h-1 w-10 sm:w-12 rounded-full bg-[#0B1B3D]/30" />
+              </div>
+
+              {/* 3D Floating Metal Claim Card */}
+              <div className="animate-float absolute bottom-[2%] left-0 flex aspect-[1.586] w-[52%] sm:w-[50%] -rotate-6 flex-col justify-between rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#102754] to-[#061229] p-3 sm:p-4 text-white shadow-[0_25px_50px_-15px_rgba(11,27,61,0.65)] border border-white/20 z-10 backdrop-blur-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Image
+                      src="/img/cta-mark.png"
+                      alt="AMORTRAV"
+                      width={20}
+                      height={18}
+                      className="h-3.5 sm:h-4 w-auto object-contain brightness-0 invert"
+                    />
+                    <span className="font-mono text-[8.5px] sm:text-[9.5px] font-bold tracking-wider text-white uppercase">
+                      AMORTRAV
+                    </span>
+                  </div>
+                  <span className="text-[8px] sm:text-[9px] font-mono font-medium text-[#A9B6D3] uppercase tracking-wider">
+                    Claim Card
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[7.5px] sm:text-[8.5px] font-mono text-[#A9B6D3] uppercase tracking-wider">
+                    Unique Serial
+                  </span>
+                  <span className="font-mono text-[10px] sm:text-xs font-bold tracking-wider text-white">
+                    AMT-C055-80F3A1
+                  </span>
+                  <div className="mt-1 h-3 sm:h-3.5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)] shadow-inner border border-white/10" />
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="py-2">
+              <AmortravCompanionAppPhone />
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -551,7 +807,7 @@ function Faq() {
 
 export default function HowItWorksPage() {
   return (
-    <div className="mx-auto max-w-[1240px] px-4 sm:px-6 xl:px-8">
+    <div className="flex flex-col gap-4 xl:gap-5 w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck, ArrowUpRight } from "lucide-react";
 import { useCart, resolveProduct } from "@/lib/shop";
 import { useRegion } from "@/lib/region";
 import { useI18n } from "@/lib/i18n/context";
@@ -77,14 +78,24 @@ export default function CartDrawer({
               {totalItems}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full p-2 text-mid hover:bg-surface hover:text-navy"
-            aria-label={t("shop.close", "Close cart")}
-          >
-            <X className="size-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/shop"
+              onClick={onClose}
+              className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-brand hover:text-navy transition-colors uppercase tracking-wider font-mono"
+            >
+              <span>Catalog</span>
+              <ArrowUpRight className="size-3.5" />
+            </Link>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full p-2 text-mid hover:bg-surface hover:text-navy"
+              aria-label={t("shop.close", "Close cart")}
+            >
+              <X className="size-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -102,22 +113,34 @@ export default function CartDrawer({
               <p className="max-w-xs text-[13px] text-mid">
                 We have reserved your bag from the initial production run. You will receive updates as shipping dates approach.
               </p>
-              <button
-                type="button"
+              <Link
+                href="/shop"
                 onClick={() => {
                   setOrderConfirmation(null);
                   onClose();
                 }}
-                className="mt-4 rounded-xl bg-navy px-6 py-2.5 text-caption font-semibold text-white hover:bg-navy-deep"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-2.5 text-caption font-semibold text-white hover:bg-navy-deep"
               >
                 {t("shop.keepShopping", "Continue Browsing")}
-              </button>
+              </Link>
             </div>
           ) : entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center text-mid">
-              <ShoppingBag className="size-12 text-mid/40" />
-              <p className="text-body font-medium text-navy">{t("shop.cartEmpty", "Your cart is empty")}</p>
-              <p className="max-w-xs text-caption">{t("shop.browse", "Explore our smart luggage range and pick your size with built-in TRACE.")}</p>
+            <div className="flex flex-col items-center justify-center gap-3.5 py-16 text-center text-mid">
+              <div className="flex size-16 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs">
+                <ShoppingBag className="size-8 text-brand" />
+              </div>
+              <p className="text-body font-bold text-navy">{t("shop.cartEmpty", "Your pre-order cart is empty")}</p>
+              <p className="max-w-xs text-caption text-mid">
+                {t("shop.browse", "Explore our smart luggage range, configure sizes and colors, or reserve the handcrafted Suede Duffel.")}
+              </p>
+              <Link
+                href="/shop"
+                onClick={onClose}
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-caption font-bold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all"
+              >
+                <span>{t("shop.exploreCollection", "Explore Shop Collection")}</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
             </div>
           ) : (
             <div className="flex flex-col divide-y divide-line">
@@ -206,6 +229,13 @@ export default function CartDrawer({
               <span>{isSubmitting ? "Securing Reservation..." : t("shop.checkout", "Check out")}</span>
               <ArrowRight className="size-4" />
             </button>
+            <Link
+              href="/shop"
+              onClick={onClose}
+              className="mt-2.5 block text-center text-[12px] font-semibold text-mid hover:text-navy transition-colors"
+            >
+              ← {t("shop.continueShopping", "Continue Shopping in Store")}
+            </Link>
           </div>
         )}
       </div>
