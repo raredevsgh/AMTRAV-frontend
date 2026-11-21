@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Search, X, CheckCircle, AlertCircle, Plane } from "lucide-react";
 
@@ -48,6 +48,17 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
   const [query, setQuery] = useState("");
   const [unit, setUnit] = useState<"metric" | "imperial">("metric");
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   const filteredAirlines = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return AIRLINES;
@@ -61,33 +72,33 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
       role="dialog"
       aria-modal="true"
       aria-labelledby="airline-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 pt-[max(56px,env(safe-area-inset-top))] pb-[max(20px,env(safe-area-inset-bottom))] sm:p-6"
     >
-      <div className="fixed inset-0 bg-ink/70 backdrop-blur-md" onClick={onClose} />
+      <div className="fixed inset-0 bg-ink/75 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-divider bg-white shadow-2xl">
+      <div className="relative flex flex-col w-full max-w-4xl max-h-[calc(100vh-max(72px,env(safe-area-inset-top)))] overflow-hidden rounded-3xl border border-divider bg-white shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-divider px-6 py-5">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-navy/5 text-navy">
-              <Plane className="size-5" />
+        <div className="flex items-start sm:items-center justify-between border-b border-divider px-4 sm:px-6 py-4 sm:py-5 gap-3">
+          <div className="flex items-start sm:items-center gap-3 min-w-0">
+            <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full bg-navy/5 text-navy">
+              <Plane className="size-4 sm:size-5" />
             </div>
-            <div>
-              <h2 id="airline-modal-title" className="text-h3-m font-bold text-navy">
+            <div className="min-w-0">
+              <h2 id="airline-modal-title" className="text-body font-bold text-navy sm:text-h3-m leading-tight">
                 Airline Hand-Luggage Compatibility Matrix
               </h2>
-              <p className="text-caption text-mid">
-                Compare AMTRAV Cabin 55 (55 x 40 x 23 cm) against global airline overhead bin restrictions.
+              <p className="text-[11px] sm:text-caption text-mid line-clamp-2 mt-0.5">
+                Compare AMTRAV Cabin 55 (55 × 40 × 23 cm) against global airline overhead bin restrictions.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-mid transition hover:bg-surface hover:text-navy"
+            className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-full bg-surface text-mid hover:bg-navy hover:text-white transition-all active:scale-90"
             aria-label="Close"
           >
-            <X className="size-5" />
+            <X className="size-4 sm:size-5" />
           </button>
         </div>
 

@@ -233,8 +233,13 @@ export default function BagViewer({
     setIsReady(false);
     setHasError(false);
 
-    Promise.all([getKit(), getModel(activeModel)])
-      .then(([kit, gltf]) => {
+    const isBoth = selectedLuggageType === "both";
+    const modelsPromise = isBoth
+      ? Promise.all([getModel("carry-on"), getModel("check-in")])
+      : getModel(activeModel).then((m) => [m]);
+
+    Promise.all([getKit(), modelsPromise])
+      .then(([kit, loadedModels]) => {
         if (cancelled) return;
         const { THREE, RoomEnvironment } = kit;
 
@@ -270,30 +275,74 @@ export default function BagViewer({
         rim.position.set(0.5, 1.8, -2);
         scene.add(key, fill, rim, new THREE.AmbientLight(0xffffff, 0.4));
 
-        // Clone model and recolor finishes
-        const bag = gltf.scene.clone(true);
         const ownedMaterials: Three.MeshPhysicalMaterial[] = [];
-        bag.traverse((child: any) => {
-          const mesh = child as Three.Mesh;
-          if (!mesh.isMesh) return;
-          const mat = mesh.material as Three.MeshPhysicalMaterial;
-          if (mat.name === "Lime") {
-            mat.color.set("#8fc3ff");
-            mat.toneMapped = false;
-          }
-          if (mat.name === "Shell" || mat.name === "Rib") {
-            const shell = mat.clone();
-            shell.color.set(activeColor);
-            shell.metalness = activeMetalness;
-            shell.roughness = activeRoughness;
-            mesh.material = shell;
-            ownedMaterials.push(shell);
-          }
-        });
+        const luggageGroup = new THREE.Group();
+
+        if (isBoth) {
+          const [carryOnGLTF, checkInGLTF] = loadedModels;
+          const cabinBag = carryOnGLTF.scene.clone(true);
+          const checkinBag = checkInGLTF.scene.clone(true);
+
+          const processMesh = (bagMesh: any) => {
+            bagMesh.traverse((child: any) => {
+              const mesh = child as Three.Mesh;
+              if (!mesh.isMesh) return;
+              const mat = mesh.material as Three.MeshPhysicalMaterial;
+              if (mat.name === "Lime") {
+                mat.color.set("#8fc3ff");
+                mat.toneMapped = false;
+              }
+              if (mat.name === "Shell" || mat.name === "Rib") {
+                const shell = mat.clone();
+                shell.color.set(activeColor);
+                shell.metalness = activeMetalness;
+                shell.roughness = activeRoughness;
+                mesh.material = shell;
+                ownedMaterials.push(shell);
+              }
+            });
+          };
+
+          processMesh(cabinBag);
+          processMesh(checkinBag);
+
+          // Position Check-In 68 (tall) slightly right and back
+          checkinBag.position.set(0.2, 0, -0.06);
+          checkinBag.rotation.y = THREE.MathUtils.degToRad(-10);
+
+          // Position Cabin 55 (compact) slightly left and forward
+          cabinBag.position.set(-0.2, 0, 0.06);
+          cabinBag.rotation.y = THREE.MathUtils.degToRad(10);
+
+          luggageGroup.add(checkinBag);
+          luggageGroup.add(cabinBag);
+        } else {
+          const [singleGLTF] = loadedModels;
+          const bag = singleGLTF.scene.clone(true);
+          bag.traverse((child: any) => {
+            const mesh = child as Three.Mesh;
+            if (!mesh.isMesh) return;
+            const mat = mesh.material as Three.MeshPhysicalMaterial;
+            if (mat.name === "Lime") {
+              mat.color.set("#8fc3ff");
+              mat.toneMapped = false;
+            }
+            if (mat.name === "Shell" || mat.name === "Rib") {
+              const shell = mat.clone();
+              shell.color.set(activeColor);
+              shell.metalness = activeMetalness;
+              shell.roughness = activeRoughness;
+              mesh.material = shell;
+              ownedMaterials.push(shell);
+            }
+          });
+          luggageGroup.add(bag);
+        }
         shellMaterialsRef.current = ownedMaterials;
 
         // Ground shadow
-        const size = new THREE.Box3().setFromObject(bag).getSize(new THREE.Vector3());
+        const shadowBox = new THREE.Box3().setFromObject(luggageGroup);
+        const size = shadowBox.getSize(new THREE.Vector3());
         const shadowCanvas = document.createElement("canvas");
         shadowCanvas.width = shadowCanvas.height = 256;
         const ctx = shadowCanvas.getContext("2d");
@@ -311,13 +360,16 @@ export default function BagViewer({
           transparent: true,
           depthWrite: false,
         });
-        const shadowGeo = new THREE.PlaneGeometry(size.x * 1.9, size.z * 2.6);
+        const shadowGeo = new THREE.PlaneGeometry(
+          isBoth ? size.x * 1.5 : size.x * 1.9,
+          size.z * 2.6
+        );
         const shadow = new THREE.Mesh(shadowGeo, shadowMaterial);
         shadow.rotation.x = -Math.PI / 2;
         shadow.position.y = 0.001;
 
         const turntable = new THREE.Group();
-        turntable.add(bag, shadow);
+        turntable.add(luggageGroup, shadow);
         scene.add(turntable);
 
         const camera = new THREE.PerspectiveCamera(24, 1, 0.05, 20);
@@ -330,9 +382,11 @@ export default function BagViewer({
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
           const slope = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+          const effectiveWidth = isBoth ? 1.35 : VIEW_WIDTH;
+          const effectiveHeight = isBoth ? 1.22 : VIEW_HEIGHT;
           const distance = Math.max(
-            VIEW_HEIGHT / 2 / slope,
-            VIEW_WIDTH / 2 / (slope * camera.aspect)
+            effectiveHeight / 2 / slope,
+            effectiveWidth / 2 / (slope * camera.aspect)
           );
           camera.position.set(
             0,
@@ -445,7 +499,7 @@ export default function BagViewer({
       cancelled = true;
       if (cleanupStage) cleanupStage();
     };
-  }, [activeModel]);
+  }, [activeModel, selectedLuggageType]);
 
   // Pricing calculation
   const basePriceMinor = useMemo(() => {
@@ -485,14 +539,14 @@ export default function BagViewer({
     >
       {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
       <div
-        className={`flex flex-wrap items-end justify-between gap-3.5 border-b pb-4 ${
+        className={`flex flex-col gap-3.5 border-b pb-4 lg:flex-row lg:items-end lg:justify-between ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
         {/* Left: Collection Tier & Luggage Type */}
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
           {/* Collection / Tier Tabs */}
-          <div className="flex flex-col items-start shrink-0">
+          <div className="flex flex-col items-start w-full sm:w-auto">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -501,7 +555,7 @@ export default function BagViewer({
               Luggage Collection
             </span>
             <div
-              className={`flex items-center gap-1 rounded-full p-1 border overflow-x-auto ${
+              className={`grid grid-cols-4 sm:flex items-center gap-1 rounded-full p-1 border w-full sm:w-auto ${
                 isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
               }`}
             >
@@ -510,7 +564,7 @@ export default function BagViewer({
                   key={tier}
                   type="button"
                   onClick={() => setSelectedTier(tier)}
-                  className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold capitalize whitespace-nowrap transition-all ${
+                  className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold capitalize whitespace-nowrap text-center transition-all ${
                     selectedTier === tier
                       ? isLight
                         ? "bg-navy text-white shadow-xs"
@@ -526,8 +580,8 @@ export default function BagViewer({
             </div>
           </div>
 
-          {/* Luggage Type: Cabin, Check-In, Both (Duo) */}
-          <div className="flex flex-col items-start shrink-0">
+          {/* Luggage Type: Cabin 55, Check-In 68, Both (Duo) */}
+          <div className="flex flex-col items-start w-full sm:w-auto">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -536,14 +590,14 @@ export default function BagViewer({
               Luggage Type
             </span>
             <div
-              className={`flex items-center gap-1 rounded-full p-1 border overflow-x-auto ${
+              className={`grid grid-cols-3 sm:flex items-center gap-1 rounded-full p-1 border w-full sm:w-auto ${
                 isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
               }`}
             >
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("cabin")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
                   selectedLuggageType === "cabin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -558,7 +612,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("checkin")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
                   selectedLuggageType === "checkin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -573,7 +627,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("both")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
                   selectedLuggageType === "both"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -590,9 +644,9 @@ export default function BagViewer({
         </div>
 
         {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap shrink-0">
+        <div className="w-full sm:w-auto pt-2.5 border-t border-divider/40 sm:border-0 sm:pt-0 flex items-center justify-between sm:justify-start gap-2 sm:gap-3">
           {/* Traveller Size Guide */}
-          <div className="flex flex-col items-start shrink-0">
+          <div className="flex flex-col items-start">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -603,7 +657,7 @@ export default function BagViewer({
             <button
               type="button"
               onClick={() => setShowHumanScale(!showHumanScale)}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
                 showHumanScale
                   ? "bg-brand text-white border-brand shadow-xs"
                   : isLight
@@ -618,7 +672,7 @@ export default function BagViewer({
           </div>
 
           {/* WebAR Camera Room Projection */}
-          <div className="flex flex-col items-start shrink-0">
+          <div className="flex flex-col items-start">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -629,7 +683,7 @@ export default function BagViewer({
             <button
               type="button"
               onClick={() => setArRoomOpen(true)}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 rounded-full px-2.5 sm:px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
                 isLight
                   ? "border-divider bg-surface text-navy hover:border-navy hover:bg-navy hover:text-white shadow-xs"
                   : "border-sky/40 bg-sky/15 text-sky hover:bg-sky hover:text-navy shadow-xs"
@@ -642,7 +696,7 @@ export default function BagViewer({
           </div>
 
           {/* Studio View */}
-          <div className="flex flex-col items-start shrink-0">
+          <div className="flex flex-col items-start">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -714,47 +768,18 @@ export default function BagViewer({
         {/* Real-time 3D Canvas Mount Point */}
         <div ref={hostRef} className="absolute inset-0 w-full h-full" />
 
-        {/* When 'Both' is selected, toggle which bag is in active 3D view */}
+        {/* When 'Both' is selected, show Duo Set showcase badge */}
         {selectedLuggageType === "both" && (
           <div
-            className={`absolute top-3 left-3 z-20 flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] backdrop-blur-md shadow-md border ${
+            className={`absolute top-3 left-3 z-20 flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold backdrop-blur-md shadow-md border ${
               isLight
-                ? "border-divider/60 bg-white/90 text-navy"
-                : "border-white/10 bg-navy-deep/90 text-white"
+                ? "border-divider/60 bg-white/95 text-navy shadow-xs"
+                : "border-white/15 bg-navy-deep/95 text-sky shadow-xs"
             }`}
           >
-            <Layers className={`size-3 ${isLight ? "text-brand" : "text-sky"}`} />
-            <span className={`mr-1 ${isLight ? "text-mid" : "text-light-white"}`}>3D View:</span>
-            <button
-              type="button"
-              onClick={() => setActiveModel("carry-on")}
-              className={`rounded-full px-2 py-0.5 font-semibold transition-all ${
-                activeModel === "carry-on"
-                  ? isLight
-                    ? "bg-navy text-white"
-                    : "bg-sky text-navy"
-                  : isLight
-                  ? "text-mid hover:text-navy"
-                  : "text-mid hover:text-white"
-              }`}
-            >
-              Cabin
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveModel("check-in")}
-              className={`rounded-full px-2 py-0.5 font-semibold transition-all ${
-                activeModel === "check-in"
-                  ? isLight
-                    ? "bg-navy text-white"
-                    : "bg-sky text-navy"
-                  : isLight
-                  ? "text-mid hover:text-navy"
-                  : "text-mid hover:text-white"
-              }`}
-            >
-              Check-In
-            </button>
+            <Layers className={`size-3.5 ${isLight ? "text-brand" : "text-sky"}`} />
+            <span className="font-bold tracking-tight">The Pair Duo · Cabin 55 + Check-In 68</span>
+            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
           </div>
         )}
 
@@ -832,7 +857,11 @@ export default function BagViewer({
                 {/* Bag Height marker */}
                 <div className="absolute bottom-[28%] left-full ml-1 whitespace-nowrap">
                   <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded border shadow-xs ${isLight ? "bg-white text-navy border-brand" : "bg-navy-deep text-sky border-sky"}`}>
-                    {activeModel === "carry-on" ? "55 cm Cabin" : "68 cm Check-In"}
+                    {selectedLuggageType === "both"
+                      ? "Pair: 55 cm + 68 cm"
+                      : activeModel === "carry-on"
+                      ? "55 cm Cabin"
+                      : "68 cm Check-In"}
                   </span>
                 </div>
               </div>
@@ -843,10 +872,18 @@ export default function BagViewer({
               <div className={`rounded-xl p-2 sm:p-2.5 border shadow-lg backdrop-blur-md ${isLight ? "bg-white/95 border-divider text-navy" : "bg-navy-deep/95 border-white/10 text-white"}`}>
                 <div className="flex items-center gap-1.5 text-brand font-bold text-[9px] sm:text-[9.5px] uppercase font-mono mb-0.5 sm:mb-1">
                   <Check className="size-2.5 sm:size-3 text-emerald-600 shrink-0" />
-                  <span className="truncate">{activeModel === "carry-on" ? "Overhead Bin Compliant" : "Maximum Checked Standard"}</span>
+                  <span className="truncate">
+                    {selectedLuggageType === "both"
+                      ? "Dual Travel System (100L)"
+                      : activeModel === "carry-on"
+                      ? "Overhead Bin Compliant"
+                      : "Maximum Checked Standard"}
+                  </span>
                 </div>
                 <p className="text-[9.5px] sm:text-[10.5px] leading-tight text-mid">
-                  {activeModel === "carry-on"
+                  {selectedLuggageType === "both"
+                    ? "Complete pairing: 35L Cabin 55 fits overhead bins, 65L Check-In 68 holds full-week wardrobe."
+                    : activeModel === "carry-on"
                     ? "55 × 40 × 23 cm complies with IATA guidelines for global airlines (Lufthansa, British Airways, Air France, Delta & United)."
                     : "68 × 45 × 28 cm full week capacity with 65L packing volume and built-in drop impact sensors."}
                 </p>
@@ -1087,7 +1124,7 @@ export default function BagViewer({
       <ARProjectionModal
         isOpen={arRoomOpen}
         onClose={() => setArRoomOpen(false)}
-        activeModel={activeModel}
+        activeModel={selectedLuggageType === "both" ? "both" : activeModel}
         colorHex={activeColor}
         metalness={selectedFinish.metalness}
         roughness={selectedFinish.roughness}
