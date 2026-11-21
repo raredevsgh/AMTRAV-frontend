@@ -125,7 +125,7 @@ export default function ConfiguratorClient() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 pt-24 sm:pt-28 xl:pt-32 pb-16">
+    <div className="min-h-screen bg-surface/30 pt-28 sm:pt-32 lg:pt-36 xl:pt-40 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Studio Header */}
         <div className="border-b border-divider pb-6 text-center">
@@ -187,6 +187,9 @@ export default function ConfiguratorClient() {
             <div className="overflow-hidden rounded-3xl border border-divider bg-white p-4 shadow-card">
               <BagViewer
                 defaultLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
+                externalLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
+                externalColorHex={isCustomShellColor ? customShellHex : selectedShell.finishColor}
+                externalTier={selectedShell.tier.toLowerCase() as any}
                 className="w-full"
               />
 

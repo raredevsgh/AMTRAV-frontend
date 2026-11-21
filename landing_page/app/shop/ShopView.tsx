@@ -588,7 +588,7 @@ export default function ShopView() {
         id="shop-hero-dark"
         data-theme="dark"
         aria-labelledby="shop-heading"
-        className="relative flex min-h-[580px] flex-col justify-between gap-10 overflow-hidden rounded-3xl bg-navy px-5 pt-14 pb-6 md:px-10 md:pb-10 md:pt-24 xl:rounded-[32px] xl:px-14 xl:pt-32"
+        className="relative flex min-h-[580px] flex-col justify-between gap-10 overflow-hidden rounded-3xl bg-navy px-5 pt-24 pb-6 sm:pt-28 md:px-10 md:pb-10 md:pt-28 xl:rounded-[32px] xl:px-14 xl:pt-36"
       >
         <ProductVideo />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-ink/75 via-ink/65 to-navy/70" />

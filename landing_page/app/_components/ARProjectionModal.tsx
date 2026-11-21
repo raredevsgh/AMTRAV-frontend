@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   Camera,
   X,
@@ -113,6 +114,23 @@ export default function ARProjectionModal({
 
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhotoUrl, setCapturedPhotoUrl] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   // Mutable refs for Three.js render loop (fixes stale closures)
   const pitchRef = useRef(0); // Vertical elevation in radians
@@ -659,12 +677,12 @@ export default function ARProjectionModal({
     setIsCapturing(false);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300">
-      {/* Top Header Controls Bar - Responsive 2-tier on mobile */}
-      <div className="absolute top-0 inset-x-0 z-40 flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-6 gap-2.5 sm:gap-4 bg-gradient-to-b from-black/90 via-black/60 to-transparent pointer-events-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300 pointer-events-auto">
+      {/* Top Header Controls Bar - Responsive 2-tier on mobile with safe-area */}
+      <div className="absolute top-0 inset-x-0 z-40 flex flex-col sm:flex-row sm:items-center justify-between pt-[max(14px,env(safe-area-inset-top))] p-3.5 sm:p-6 gap-2.5 sm:gap-4 bg-gradient-to-b from-black/90 via-black/60 to-transparent pointer-events-auto">
         <div className="flex items-center justify-between w-full sm:w-auto">
           <div className="flex items-center gap-2">
             <div className="flex size-8 sm:size-9 items-center justify-center rounded-full bg-brand text-white shadow-md">
@@ -682,6 +700,18 @@ export default function ARProjectionModal({
               </h2>
             </div>
           </div>
+
+          {/* Active Color Swatch Badge in Header */}
+          <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 border border-white/20 backdrop-blur-md sm:ml-2">
+            <span
+              className="size-2.5 rounded-full border border-white/40 shadow-xs"
+              style={{ backgroundColor: model === "duffel" ? suedeColorHex : colorHex }}
+            />
+            <span className="text-[10px] font-mono text-white/90 uppercase font-semibold">
+              {model === "duffel" ? suedeColorHex : colorHex}
+            </span>
+          </div>
+
           {/* Mobile Close Button */}
           <button
             type="button"
@@ -1098,6 +1128,7 @@ export default function ARProjectionModal({
           </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

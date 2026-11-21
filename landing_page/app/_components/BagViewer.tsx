@@ -122,15 +122,23 @@ function getModel(name: Active3DModel): Promise<any> {
   return model;
 }
 
+export interface BagViewerProps {
+  defaultTier?: LuggageTier;
+  defaultLuggageType?: LuggageType;
+  className?: string;
+  externalColorHex?: string;
+  externalLuggageType?: LuggageType;
+  externalTier?: LuggageTier;
+}
+
 export default function BagViewer({
   defaultTier = "essential",
   defaultLuggageType = "cabin",
   className = "",
-}: {
-  defaultTier?: LuggageTier;
-  defaultLuggageType?: LuggageType;
-  className?: string;
-}) {
+  externalColorHex,
+  externalLuggageType,
+  externalTier,
+}: BagViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const { formatPrice, isEcommerce } = useRegion();
 
@@ -158,6 +166,29 @@ export default function BagViewer({
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [studioTheme, setStudioTheme] = useState<"light" | "dark">("light");
   const isLight = studioTheme === "light";
+
+  // Sync external props when provided (e.g., from ConfiguratorClient)
+  useEffect(() => {
+    if (externalColorHex) {
+      setCustomHex(externalColorHex);
+      setIsCustomColor(true);
+    }
+  }, [externalColorHex]);
+
+  useEffect(() => {
+    if (externalLuggageType) {
+      setSelectedLuggageType(externalLuggageType);
+      if (externalLuggageType === "cabin") setActiveModel("carry-on");
+      else if (externalLuggageType === "checkin") setActiveModel("check-in");
+      else if (externalLuggageType === "duffel") setActiveModel("duffel");
+    }
+  }, [externalLuggageType]);
+
+  useEffect(() => {
+    if (externalTier) {
+      setSelectedTier(externalTier);
+    }
+  }, [externalTier]);
 
   // Update selected finish if tier or luggage type changes
   useEffect(() => {
@@ -484,13 +515,14 @@ export default function BagViewer({
     >
       {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
       <div
-        className={`flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 border-b pb-4 ${
+        className={`flex flex-wrap items-end justify-between gap-3.5 border-b pb-4 ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        {/* Left: Collection Tier & Luggage Type */}
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {/* Collection / Tier Tabs */}
-          <div>
+          <div className="flex flex-col items-start shrink-0">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -508,7 +540,7 @@ export default function BagViewer({
                   key={tier}
                   type="button"
                   onClick={() => setSelectedTier(tier)}
-                  className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold capitalize transition-all ${
+                  className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold capitalize whitespace-nowrap transition-all ${
                     selectedTier === tier
                       ? isLight
                         ? "bg-navy text-white shadow-xs"
@@ -525,7 +557,7 @@ export default function BagViewer({
           </div>
 
           {/* Luggage Type: Cabin, Check-In, Suede Duffel, Both */}
-          <div>
+          <div className="flex flex-col items-start shrink-0">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -541,7 +573,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("cabin")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
                   selectedLuggageType === "cabin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -556,7 +588,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("checkin")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
                   selectedLuggageType === "checkin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -571,7 +603,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("duffel")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
                   selectedLuggageType === "duffel"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -586,7 +618,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("both")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
                   selectedLuggageType === "both"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -603,9 +635,9 @@ export default function BagViewer({
         </div>
 
         {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap shrink-0">
           {/* Traveller Size Guide */}
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start shrink-0">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -616,7 +648,7 @@ export default function BagViewer({
             <button
               type="button"
               onClick={() => setShowHumanScale(!showHumanScale)}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border transition-all ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
                 showHumanScale
                   ? "bg-brand text-white border-brand shadow-xs"
                   : isLight
@@ -631,7 +663,7 @@ export default function BagViewer({
           </div>
 
           {/* WebAR Camera Room Projection */}
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start shrink-0">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -642,7 +674,7 @@ export default function BagViewer({
             <button
               type="button"
               onClick={() => setArRoomOpen(true)}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border transition-all ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border whitespace-nowrap transition-all ${
                 isLight
                   ? "border-divider bg-surface text-navy hover:border-navy hover:bg-navy hover:text-white shadow-xs"
                   : "border-sky/40 bg-sky/15 text-sky hover:bg-sky hover:text-navy shadow-xs"
@@ -655,7 +687,7 @@ export default function BagViewer({
           </div>
 
           {/* Studio View */}
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start shrink-0">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -664,14 +696,14 @@ export default function BagViewer({
               Studio
             </span>
             <div
-              className={`flex items-center gap-0.5 rounded-full p-1 border ${
+              className={`flex items-center gap-0.5 rounded-full p-1 border whitespace-nowrap ${
                 isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
               }`}
             >
               <button
                 type="button"
                 onClick={() => setStudioTheme("light")}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap transition-all ${
                   isLight ? "bg-white text-navy shadow-xs" : "text-blue-pale hover:text-white"
                 }`}
               >
@@ -680,8 +712,8 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => setStudioTheme("dark")}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all ${
-                  !isLight ? "bg-navy-deep text-white shadow-xs" : "text-mid hover:text-navy"
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap transition-all ${
+                  !isLight ? "bg-navy-deep text-white shadow-xs font-bold" : "text-mid hover:text-navy"
                 }`}
               >
                 Dark
