@@ -11,8 +11,8 @@ import CartDrawer from "./CartDrawer";
 import ARProjectionModal from "./ARProjectionModal";
 
 export type LuggageTier = "essential" | "pro" | "executive" | "flagship";
-export type LuggageType = "cabin" | "checkin" | "both";
-export type Active3DModel = "carry-on" | "check-in";
+export type LuggageType = "cabin" | "checkin" | "duffel" | "both";
+export type Active3DModel = "carry-on" | "check-in" | "duffel";
 
 export interface BagFinish {
   id: string;
@@ -22,6 +22,15 @@ export interface BagFinish {
   roughness: number;
   posterImage: string;
 }
+
+// Handcrafted Italian Suede Swatches
+export const SUEDE_SWATCHES: BagFinish[] = [
+  { id: "cognac-brown", name: "Cognac Brown", color: "#6e3b1b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
+  { id: "onyx-black", name: "Onyx Black", color: "#1a1a1a", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
+  { id: "midnight-navy", name: "Midnight Navy", color: "#10213b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
+  { id: "sand-beige", name: "Sand Beige", color: "#c2b29d", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
+  { id: "charcoal-grey", name: "Charcoal Grey", color: "#424449", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
+];
 
 // Photo 1: Essential Colors: Midnight Black, Space Grey, Navy Blue
 export const ESSENTIAL_SWATCHES: BagFinish[] = [
@@ -52,7 +61,7 @@ export const LUXURY_PALETTE_PRESETS = [
   { name: "Rose Gold Mirage", hex: "#c99385" },
 ];
 
-const MODELS: Record<Active3DModel, string> = {
+const MODELS: Record<"carry-on" | "check-in", string> = {
   "carry-on": "/models/carry-on.glb",
   "check-in": "/models/check-in.glb",
 };
@@ -95,11 +104,111 @@ function getKit(): Promise<Kit> {
   return kitPromise;
 }
 
-const modelCache = new Map<Active3DModel, Promise<GLTF>>();
-function getModel(name: Active3DModel): Promise<GLTF> {
+const modelCache = new Map<Active3DModel, Promise<any>>();
+function getModel(name: Active3DModel): Promise<any> {
+  if (name === "duffel") {
+    return getKit().then(({ THREE }) => {
+      const duffelGroup = new THREE.Group();
+
+      // 1. Suede Cylindrical Barrel Body
+      const bodyGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.88, 32, 1);
+      bodyGeo.rotateZ(Math.PI / 2);
+      const suedeMat = new THREE.MeshPhysicalMaterial({
+        color: "#6e3b1b",
+        roughness: 0.86,
+        metalness: 0.04,
+        clearcoat: 0.08,
+        clearcoatRoughness: 0.4,
+      });
+      suedeMat.name = "Shell";
+      const bodyMesh = new THREE.Mesh(bodyGeo, suedeMat);
+      bodyMesh.castShadow = true;
+      bodyMesh.receiveShadow = true;
+      duffelGroup.add(bodyMesh);
+
+      // 2. Rounded Suede Endcaps
+      const endCapGeo = new THREE.SphereGeometry(0.32, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+      const endCapLeft = new THREE.Mesh(endCapGeo, suedeMat);
+      endCapLeft.rotation.z = Math.PI / 2;
+      endCapLeft.position.x = -0.44;
+      endCapLeft.castShadow = true;
+      duffelGroup.add(endCapLeft);
+
+      const endCapRight = new THREE.Mesh(endCapGeo, suedeMat);
+      endCapRight.rotation.z = -Math.PI / 2;
+      endCapRight.position.x = 0.44;
+      endCapRight.castShadow = true;
+      duffelGroup.add(endCapRight);
+
+      // 3. Leather Trim & Carry Handles
+      const leatherMat = new THREE.MeshStandardMaterial({
+        color: 0x181818,
+        roughness: 0.45,
+        metalness: 0.15,
+      });
+      const brassMat = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        roughness: 0.28,
+        metalness: 0.88,
+      });
+
+      // Twin Leather Reinforcing Straps
+      const strapGeo = new THREE.TorusGeometry(0.326, 0.016, 16, 48);
+      strapGeo.rotateY(Math.PI / 2);
+      const strap1 = new THREE.Mesh(strapGeo, leatherMat);
+      strap1.position.x = -0.22;
+      duffelGroup.add(strap1);
+
+      const strap2 = new THREE.Mesh(strapGeo, leatherMat);
+      strap2.position.x = 0.22;
+      duffelGroup.add(strap2);
+
+      // Aluminium Central Accent Stripe
+      const aluGeo = new THREE.BoxGeometry(0.04, 0.01, 0.86);
+      const aluMat = new THREE.MeshStandardMaterial({
+        color: 0xd0d5dd,
+        metalness: 0.95,
+        roughness: 0.15,
+      });
+      const aluStripe = new THREE.Mesh(aluGeo, aluMat);
+      aluStripe.position.set(0, 0.322, 0);
+      duffelGroup.add(aluStripe);
+
+      // Top Carry Handle Arc
+      const handleCurve = new THREE.QuadraticBezierCurve3(
+        new THREE.Vector3(-0.16, 0.32, 0),
+        new THREE.Vector3(0, 0.62, 0),
+        new THREE.Vector3(0.16, 0.32, 0)
+      );
+      const handleGeo = new THREE.TubeGeometry(handleCurve, 20, 0.022, 12, false);
+      const handleMesh = new THREE.Mesh(handleGeo, leatherMat);
+      duffelGroup.add(handleMesh);
+
+      // Brass Hardware Rings
+      const ringGeo = new THREE.TorusGeometry(0.035, 0.008, 12, 24);
+      const ringLeft = new THREE.Mesh(ringGeo, brassMat);
+      ringLeft.position.set(-0.16, 0.33, 0);
+      duffelGroup.add(ringLeft);
+
+      const ringRight = new THREE.Mesh(ringGeo, brassMat);
+      ringRight.position.set(0.16, 0.33, 0);
+      duffelGroup.add(ringRight);
+
+      // Engraved Brand Plate
+      const badgeGeo = new THREE.BoxGeometry(0.12, 0.005, 0.04);
+      const badgeMesh = new THREE.Mesh(badgeGeo, aluMat);
+      badgeMesh.position.set(0, 0.326, 0.15);
+      duffelGroup.add(badgeMesh);
+
+      // Center and lift to proper view height
+      duffelGroup.position.set(0, 0.34, 0);
+
+      return { scene: duffelGroup } as any;
+    });
+  }
   let model = modelCache.get(name);
   if (!model) {
-    model = getKit().then(({ load }) => load(MODELS[name]));
+    model = getKit().then(({ load }) => load(MODELS[name as "carry-on" | "check-in"]));
     modelCache.set(name, model);
     model.catch(() => modelCache.delete(name));
   }
@@ -129,10 +238,11 @@ export default function BagViewer({
     defaultLuggageType === "checkin" ? "check-in" : "carry-on"
   );
 
-  // Active swatches based on collection
+  // Active swatches based on collection or duffel bag
   const availableSwatches = useMemo(() => {
+    if (selectedLuggageType === "duffel") return SUEDE_SWATCHES;
     return selectedTier === "essential" ? ESSENTIAL_SWATCHES : PRO_FLAGSHIP_SWATCHES;
-  }, [selectedTier]);
+  }, [selectedTier, selectedLuggageType]);
 
   // Selected Finish / Color
   const [selectedFinish, setSelectedFinish] = useState<BagFinish>(availableSwatches[0]);
@@ -142,7 +252,7 @@ export default function BagViewer({
   const [studioTheme, setStudioTheme] = useState<"light" | "dark">("light");
   const isLight = studioTheme === "light";
 
-  // Update selected finish if tier changes
+  // Update selected finish if tier or luggage type changes
   useEffect(() => {
     if (!isCustomColor) {
       setSelectedFinish(availableSwatches[0]);
@@ -154,6 +264,7 @@ export default function BagViewer({
     setSelectedLuggageType(type);
     if (type === "cabin") setActiveModel("carry-on");
     else if (type === "checkin") setActiveModel("check-in");
+    else if (type === "duffel") setActiveModel("duffel");
     // If 'both', keep the currently viewed model
   };
 
@@ -176,8 +287,8 @@ export default function BagViewer({
 
   // Compute active color and material properties
   const activeColor = isCustomColor ? customHex : selectedFinish.color;
-  const activeMetalness = selectedTier === "essential" ? 0.25 : 0.7;
-  const activeRoughness = selectedTier === "essential" ? 0.45 : 0.28;
+  const activeMetalness = selectedLuggageType === "duffel" ? 0.04 : selectedTier === "essential" ? 0.25 : 0.7;
+  const activeRoughness = selectedLuggageType === "duffel" ? 0.86 : selectedTier === "essential" ? 0.45 : 0.28;
 
   // Real-time material update without GLTF reloading
   useEffect(() => {
@@ -243,7 +354,7 @@ export default function BagViewer({
         // Clone model and recolor finishes
         const bag = gltf.scene.clone(true);
         const ownedMaterials: Three.MeshPhysicalMaterial[] = [];
-        bag.traverse((child) => {
+        bag.traverse((child: any) => {
           const mesh = child as Three.Mesh;
           if (!mesh.isMesh) return;
           const mat = mesh.material as Three.MeshPhysicalMaterial;
@@ -411,6 +522,9 @@ export default function BagViewer({
 
   // Pricing calculation
   const basePriceMinor = useMemo(() => {
+    if (selectedLuggageType === "duffel") {
+      return 44400; // 444 € / $480
+    }
     const tierMultiplier: Record<LuggageTier, number> = {
       essential: 32900,
       pro: 38900,
@@ -421,18 +535,25 @@ export default function BagViewer({
       cabin: 1.0,
       checkin: 1.25,
       both: 2.0, // Bundle pricing advantage
+      duffel: 1.0,
     };
     return Math.round(tierMultiplier[selectedTier] * sizeMultiplier[selectedLuggageType]);
   }, [selectedTier, selectedLuggageType]);
 
   // Add to cart handler
   const handleReserve = () => {
-    const sizeKey = selectedLuggageType === "both" ? "the-pair" : selectedLuggageType === "checkin" ? "checkin-68" : "cabin-55";
-    const colorName = isCustomColor ? `Custom Color` : selectedFinish.name;
-    const cleanHex = activeColor.replace("#", "");
-    const compoundSku = `${selectedTier}-${sizeKey}__${encodeURIComponent(colorName)}__${cleanHex}`;
-
-    addToCart(compoundSku, 1);
+    if (selectedLuggageType === "duffel") {
+      const colorName = isCustomColor ? `Custom Suede` : selectedFinish.name;
+      const cleanHex = activeColor.replace("#", "");
+      const compoundSku = `duffel-side-bag__${encodeURIComponent(colorName)}__${cleanHex}`;
+      addToCart(compoundSku, 1);
+    } else {
+      const sizeKey = selectedLuggageType === "both" ? "the-pair" : selectedLuggageType === "checkin" ? "checkin-68" : "cabin-55";
+      const colorName = isCustomColor ? `Custom Color` : selectedFinish.name;
+      const cleanHex = activeColor.replace("#", "");
+      const compoundSku = `${selectedTier}-${sizeKey}__${encodeURIComponent(colorName)}__${cleanHex}`;
+      addToCart(compoundSku, 1);
+    }
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 3000);
     setCartOpen(true);
@@ -448,22 +569,22 @@ export default function BagViewer({
     >
       {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
       <div
-        className={`flex flex-wrap items-center justify-between gap-3.5 border-b pb-4 ${
+        className={`flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 border-b pb-4 ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
-        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           {/* Collection / Tier Tabs */}
           <div>
             <span
-              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 ${
+              className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
               }`}
             >
               Luggage Collection
             </span>
             <div
-              className={`flex items-center gap-1 rounded-full p-1 border ${
+              className={`flex items-center gap-1 rounded-full p-1 border overflow-x-auto ${
                 isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
               }`}
             >
@@ -472,7 +593,7 @@ export default function BagViewer({
                   key={tier}
                   type="button"
                   onClick={() => setSelectedTier(tier)}
-                  className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold capitalize transition-all ${
+                  className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold capitalize transition-all ${
                     selectedTier === tier
                       ? isLight
                         ? "bg-navy text-white shadow-xs"
@@ -488,24 +609,24 @@ export default function BagViewer({
             </div>
           </div>
 
-          {/* Luggage Type: Cabin, Check-In, Both */}
+          {/* Luggage Type: Cabin, Check-In, Suede Duffel, Both */}
           <div>
             <span
-              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 ${
+              className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
               }`}
             >
               Luggage Type
             </span>
             <div
-              className={`flex items-center gap-1 rounded-full p-1 border ${
+              className={`flex items-center gap-1 rounded-full p-1 border overflow-x-auto ${
                 isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
               }`}
             >
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("cabin")}
-                className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
                   selectedLuggageType === "cabin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -520,7 +641,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("checkin")}
-                className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
                   selectedLuggageType === "checkin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -534,8 +655,23 @@ export default function BagViewer({
               </button>
               <button
                 type="button"
+                onClick={() => handleLuggageTypeSelect("duffel")}
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
+                  selectedLuggageType === "duffel"
+                    ? isLight
+                      ? "bg-navy text-white shadow-xs"
+                      : "bg-sky text-navy shadow-sm"
+                    : isLight
+                    ? "text-mid hover:text-navy"
+                    : "text-blue-pale hover:text-white"
+                }`}
+              >
+                Suede Duffel
+              </button>
+              <button
+                type="button"
                 onClick={() => handleLuggageTypeSelect("both")}
-                className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold transition-all ${
+                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold transition-all ${
                   selectedLuggageType === "both"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -552,9 +688,9 @@ export default function BagViewer({
         </div>
 
         {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
           {/* Traveller Size Guide */}
-          <div className="flex flex-col items-start sm:items-end">
+          <div className="flex flex-col items-start">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -580,7 +716,7 @@ export default function BagViewer({
           </div>
 
           {/* WebAR Camera Room Projection */}
-          <div className="flex flex-col items-start sm:items-end">
+          <div className="flex flex-col items-start">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -604,7 +740,7 @@ export default function BagViewer({
           </div>
 
           {/* Studio View */}
-          <div className="flex flex-col items-start sm:items-end">
+          <div className="flex flex-col items-start">
             <span
               className={`block text-[10px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-mid" : "text-blue-pale"
@@ -794,7 +930,7 @@ export default function BagViewer({
                 {/* Bag Height marker */}
                 <div className="absolute bottom-[28%] left-full ml-1 whitespace-nowrap">
                   <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded border shadow-xs ${isLight ? "bg-white text-navy border-brand" : "bg-navy-deep text-sky border-sky"}`}>
-                    {activeModel === "carry-on" ? "55 cm Cabin" : "68 cm Check-In"}
+                    {activeModel === "carry-on" ? "55 cm Cabin" : activeModel === "duffel" ? "32L Suede Duffel" : "68 cm Check-In"}
                   </span>
                 </div>
               </div>
@@ -805,11 +941,13 @@ export default function BagViewer({
               <div className={`rounded-xl p-2.5 border shadow-lg backdrop-blur-md ${isLight ? "bg-white/95 border-divider text-navy" : "bg-navy-deep/95 border-white/10 text-white"}`}>
                 <div className="flex items-center gap-1.5 text-brand font-bold text-[9.5px] uppercase font-mono mb-1">
                   <Check className="size-3 text-emerald-600" />
-                  <span>{activeModel === "carry-on" ? "Overhead Bin Compliant" : "Maximum Checked Standard"}</span>
+                  <span>{activeModel === "carry-on" ? "Overhead Bin Compliant" : activeModel === "duffel" ? "Cabin & Underseat Carry" : "Maximum Checked Standard"}</span>
                 </div>
                 <p className="text-[10.5px] leading-tight text-mid">
                   {activeModel === "carry-on"
                     ? "55 × 40 × 23 cm complies with IATA guidelines for global airlines (Lufthansa, British Airways, Air France, Delta & United)."
+                    : activeModel === "duffel"
+                    ? "Handcrafted Italian suede side bag designed to slot over luggage telescopic handle and fit under airline seats."
                     : "68 × 45 × 28 cm full week capacity with 65L packing volume and built-in drop impact sensors."}
                 </p>
               </div>
@@ -1010,13 +1148,15 @@ export default function BagViewer({
             </span>
           </div>
           <span className={`text-[12px] ${isLight ? "text-mid" : "text-light-white"}`}>
-            {selectedTier.toUpperCase()} ·{" "}
-            {selectedLuggageType === "both"
-              ? "Cabin 55 + Check-In 68 Duo Set (100L)"
-              : selectedLuggageType === "checkin"
-              ? "Check-In 68 (65L)"
-              : "Cabin 55 (35L)"}{" "}
-            · Lifetime Guarantee
+            {selectedLuggageType === "duffel"
+              ? "ITALIAN SUEDE & ALUMINIUM · Suede Duffel Side Bag (32L) · Lifetime Guarantee"
+              : `${selectedTier.toUpperCase()} · ${
+                  selectedLuggageType === "both"
+                    ? "Cabin 55 + Check-In 68 Duo Set (100L)"
+                    : selectedLuggageType === "checkin"
+                    ? "Check-In 68 (65L)"
+                    : "Cabin 55 (35L)"
+                } · Lifetime Guarantee`}
           </span>
         </div>
 
@@ -1036,7 +1176,13 @@ export default function BagViewer({
             }`}
           >
             <ShoppingBag className="size-4" />
-            <span>{isEcommerce ? "Reserve Luggage" : "Inquire Now"}</span>
+            <span>
+              {isEcommerce
+                ? selectedLuggageType === "duffel"
+                  ? "Reserve Suede Duffel"
+                  : "Reserve Luggage"
+                : "Inquire Now"}
+            </span>
           </button>
         </div>
       </div>

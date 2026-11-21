@@ -28,7 +28,6 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
   const links = [
     { href: "/features", label: t("nav.features", "Features") },
     { href: "/how-it-works", label: t("nav.how", "How it works") },
-    { href: "/shop", label: t("nav.shop", "Shop") },
     { href: "/for-brands", label: t("nav.brands", "For brands") },
   ];
 
@@ -130,7 +129,8 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
 
 export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void; isNegative?: boolean }) {
   const pathname = usePathname();
-  const active = pathname === SHOP_LINK.href;
+  const isShop = pathname === SHOP_LINK.href || pathname.startsWith("/shop");
+  const active = isShop;
   const { t } = useI18n();
   const { totalItems } = useCart();
 
@@ -144,8 +144,32 @@ export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void
       : "border-[1.5px] border-ink/80 bg-surface/80 hover:border-ink hover:bg-surface text-navy"
   }`;
 
-  const content = (
-    <>
+  const handleClick = (e: React.MouseEvent) => {
+    // If user is already on /shop and clicks the cart/shop icon, open the cart drawer!
+    if (isShop && onClick) {
+      e.preventDefault();
+      onClick();
+    }
+    // If not on /shop, Link navigates naturally to /shop so user sees the shop screen!
+  };
+
+  const handleBadgeClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    }
+  };
+
+  return (
+    <Link
+      href={SHOP_LINK.href}
+      onClick={handleClick}
+      aria-label={active ? t("nav.cart", "Cart") : t("nav.shop", "Shop")}
+      aria-current={active ? "page" : undefined}
+      className={className}
+      title={isShop ? "View Pre-Order Cart" : "Explore Luggage Shop"}
+    >
       <Image
         src="/icons/shop-cart.svg"
         alt=""
@@ -161,34 +185,14 @@ export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void
         }`}
       />
       {totalItems > 0 && (
-        <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white shadow-xs">
+        <span
+          onClick={handleBadgeClick}
+          className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white shadow-xs cursor-pointer hover:scale-115 transition-transform"
+          title="Open Cart"
+        >
           {totalItems}
         </span>
       )}
-    </>
-  );
-
-  if (onClick) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        aria-label={t("nav.cart", "Cart & Shop")}
-        className={className}
-      >
-        {content}
-      </button>
-    );
-  }
-
-  return (
-    <Link
-      href={SHOP_LINK.href}
-      aria-label={t("nav.shop", "Shop")}
-      aria-current={active ? "page" : undefined}
-      className={className}
-    >
-      {content}
     </Link>
   );
 }

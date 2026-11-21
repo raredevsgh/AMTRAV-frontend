@@ -648,7 +648,7 @@ export default function ShopView() {
             Examine Every Angle Before You Fly
           </h2>
           <p className="max-w-xl text-body-m text-mid xl:text-body">
-            Rotate the bag in real-time 3D, compare Cabin 55, Check-In 68, or Both (Duo Sets), preview finishes, and configure custom bespoke colors live.
+            Rotate the bag in real-time 3D, compare Cabin 55, Check-In 68, Suede Duffel, or Both (Duo Sets), preview finishes, and configure custom bespoke colors live.
           </p>
         </div>
         <BagViewer />
@@ -819,21 +819,28 @@ export default function ShopView() {
                     <span className="block text-[10px] text-mid">incl. tax & duties</span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <a
+                      href="#3d-inspection"
+                      className="rounded-full border border-divider px-2.5 sm:px-3 py-1.5 text-caption font-semibold text-navy hover:bg-surface transition-colors"
+                      title="Inspect Suede Duffel in 3D & WebAR"
+                    >
+                      3D View
+                    </a>
                     <button
                       type="button"
                       onClick={() => {
                         setSelectedProductForSpecs(CATALOG[0]);
                         document.getElementById("technical-specs")?.scrollIntoView({ behavior: "smooth" });
                       }}
-                      className="rounded-full border border-divider px-3 py-1.5 text-caption font-semibold text-navy hover:bg-surface transition-colors"
+                      className="rounded-full border border-divider px-2.5 sm:px-3 py-1.5 text-caption font-semibold text-navy hover:bg-surface transition-colors"
                     >
                       Specs
                     </button>
                     <button
                       type="button"
                       onClick={handleBuyDuffel}
-                      className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-1.5 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
+                      className="flex items-center gap-1.5 rounded-full bg-navy px-3.5 sm:px-4 py-1.5 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
                     >
                       <ShoppingBag className="size-3.5" />
                       <span>Reserve</span>

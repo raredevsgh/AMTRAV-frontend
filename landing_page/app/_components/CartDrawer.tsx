@@ -78,14 +78,15 @@ export default function CartDrawer({
               {totalItems}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/shop"
               onClick={onClose}
-              className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-brand hover:text-navy transition-colors uppercase tracking-wider font-mono"
+              className="inline-flex items-center gap-1 rounded-full bg-blue-pale/80 hover:bg-blue-pale px-2.5 py-1 text-[11px] font-bold text-brand transition-colors uppercase tracking-wider font-mono"
+              title="Browse Full Shop Collection"
             >
-              <span>Catalog</span>
-              <ArrowUpRight className="size-3.5" />
+              <span>Shop</span>
+              <ArrowUpRight className="size-3" />
             </Link>
             <button
               type="button"
