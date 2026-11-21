@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [75],
   },
+  turbopack: {
+    rules: {
+      "*.css": {
+        loaders: ["@tailwindcss/turbopack"],
+        as: "*.css",
+      },
+    },
+  },
 };
 
 export default nextConfig;
