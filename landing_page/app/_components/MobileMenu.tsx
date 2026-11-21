@@ -7,6 +7,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { GET_THE_APP_HREF } from "./nav";
 import { useI18n } from "@/lib/i18n/context";
+import { useRegion } from "@/lib/region";
+import CurrencySwitcher from "./CurrencySwitcher";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function MobileMenu({ isNegative = false }: { isNegative?: boolean }) {
   const pathname = usePathname();
@@ -58,6 +61,7 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
   restoreFocus: () => void;
 }) {
   const { t } = useI18n();
+  const { currency, country } = useRegion();
   const dialog = useRef<HTMLDialogElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const focusReturn = useRef(restoreFocus);
@@ -165,8 +169,23 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
           })}
         </nav>
 
-        {/* Bottom CTA & Footer */}
+        {/* Bottom CTA, Region & Footer */}
         <div className="flex flex-col items-center gap-3 pt-4">
+          <div className="flex w-full items-center justify-between gap-3 rounded-2xl bg-white p-3 border border-divider shadow-xs">
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-mid">
+                Currency & Region
+              </span>
+              <span className="text-xs font-bold text-navy">
+                {currency.code} ({currency.symbol}) · {country.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <CurrencySwitcher />
+              <LanguageSwitcher />
+            </div>
+          </div>
+
           <Link
             href={GET_THE_APP_HREF}
             onClick={close}

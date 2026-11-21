@@ -71,46 +71,51 @@ function HowItWorksHero() {
 
   return (
     <section className="relative pt-6 pb-12 sm:pt-10 sm:pb-16 xl:pt-14 xl:pb-20">
-      <div className="grid grid-cols-1 items-center gap-12 xl:grid-cols-2 xl:gap-16">
+      <div className="grid grid-cols-1 items-center gap-10 xl:grid-cols-2 xl:gap-14">
         {/* Left Column: Copy & Actions */}
-        <div className="flex flex-col items-start gap-6">
-          <span className="flex items-center gap-3 text-xs font-semibold tracking-wider text-[#2A4BD7] uppercase">
-            <span aria-hidden="true" className="h-[2px] w-6 bg-[#2A4BD7]" />
-            How it works
-          </span>
+        <div className="flex flex-col items-start gap-5 sm:gap-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#2A4BD7]/10 px-3.5 py-1 border border-[#2A4BD7]/20">
+            <span className="size-1.5 rounded-full bg-[#2A4BD7]" />
+            <span className="text-[11px] font-bold tracking-wider text-[#2A4BD7] uppercase">
+              Onboarding & Security Architecture
+            </span>
+          </div>
 
-          <h1 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[56px] xl:leading-[1.05]">
-            Box to boarding in three steps.
+          <h1 className="text-3xl font-bold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[54px] xl:leading-[1.08]">
+            Box to boarding in three simple steps.
           </h1>
 
           <p className="max-w-lg text-base font-normal leading-relaxed text-[#4A5266] sm:text-lg">
-            A card in the box and the app do the work. No Bluetooth menus, no pairing dance.
+            An engraved metal claim card and our streamlined companion app eliminate Bluetooth pairing dances. No complex setup menus—just pure Swiss-German precision.
           </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2 w-full sm:w-auto">
+            {/* Primary Action Button */}
             <Link
               href={GET_THE_APP_HREF}
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all w-full sm:w-auto text-center"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-md hover:bg-[#0047AD] active:scale-95 transition-all w-full sm:w-auto text-center"
             >
-              {t("landing.heroGetApp", "Get the app")}
+              <span>{t("landing.heroGetApp", "Get the app")}</span>
+              <span aria-hidden="true">&rarr;</span>
             </Link>
 
+            {/* Secondary Action Button - High Contrast Fix for Invisible White Button */}
             <a
               href="#steps"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-divider bg-white px-6 text-[15px] font-semibold text-[#0B1B3D] shadow-xs hover:bg-surface hover:border-brand/40 active:scale-95 transition-all w-full sm:w-auto text-center"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-[#0B1B3D] bg-white px-7 text-[15px] font-semibold text-[#0B1B3D] shadow-xs hover:bg-[#0B1B3D] hover:text-white active:scale-95 transition-all w-full sm:w-auto text-center group"
             >
-              <span>See the steps</span>
+              <span>Explore the 3 steps</span>
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
+                strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
-                className="text-[#2A4BD7]"
+                className="transition-transform duration-200 group-hover:translate-y-0.5"
               >
                 <path d="M12 5v14M6 13l6 6 6-6" />
               </svg>
@@ -118,18 +123,18 @@ function HowItWorksHero() {
           </div>
         </div>
 
-        {/* Right Column: Visual Mockup with Phone & Floating Claim Card */}
+        {/* Right Column: Visual Mockup with Precision Box Sizing & Clean Alignment */}
         <div
           role="img"
-          aria-label="An Amortrav claim card next to a phone showing the Claim a bag screen"
-          className="relative mx-auto min-h-[360px] sm:min-h-[420px] aspect-[540/480] sm:aspect-[540/460] w-full max-w-[500px]"
+          aria-label="An Amortrav claim card next to a phone showing the Pair Luggage screen"
+          className="relative mx-auto flex items-center justify-center w-full max-w-[480px] min-h-[380px] sm:min-h-[440px] px-2 py-4"
         >
-          {/* Animated Flight Path SVG */}
-          <svg viewBox="0 0 540 480" aria-hidden="true" className="absolute inset-0 size-full overflow-visible pointer-events-none">
+          {/* Subtle Ambient Flight Path SVG */}
+          <svg viewBox="0 0 540 460" aria-hidden="true" className="absolute inset-0 size-full overflow-visible pointer-events-none opacity-70">
             <path
               d="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
               fill="none"
-              stroke="#9AAEDD"
+              stroke="#B3C8EE"
               strokeWidth="2"
               strokeDasharray="2 9"
               strokeLinecap="round"
@@ -148,60 +153,95 @@ function HowItWorksHero() {
             </g>
           </svg>
 
-          {/* Phone Frame: Positioned top-right so card does not obscure inputs */}
-          <div className="absolute top-2 right-[4%] aspect-[9/18] w-[46%] overflow-hidden rounded-[28px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)]">
-            {/* Sleek speaker slit */}
-            <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-[#0B1B3D]/25 sm:mt-2.5 sm:h-1.5 sm:w-14" />
+          {/* Precision Phone Frame */}
+          <div className="relative w-[250px] sm:w-[280px] aspect-[9/18.5] rounded-[36px] sm:rounded-[40px] border-[6px] border-[#0B1B3D] bg-[#FAFBFC] shadow-[0_24px_60px_-18px_rgba(11,27,61,0.32)] overflow-hidden flex flex-col justify-between p-3.5 sm:p-4 pt-2.5 sm:pt-3 ml-8 sm:ml-12">
+            {/* Speaker & Sensor */}
+            <div className="mx-auto mb-2.5 h-1 sm:h-1.5 w-12 sm:w-14 rounded-full bg-[#0B1B3D]/30" />
 
-            <div className="flex h-full flex-col gap-2.5 p-3 pt-2 sm:gap-3 sm:p-5 sm:pt-3">
-              <span className="text-xs sm:text-sm font-semibold tracking-tight text-[#0B1B3D]">Claim a bag</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                <span className="h-1 rounded-full bg-[#0B1B3D]" />
-                <span className="h-1 rounded-full bg-[#DCE1EA]" />
-              </div>
-              <div className="mt-1 flex flex-col gap-1 sm:mt-2">
-                <span className="text-[10px] sm:text-xs font-medium text-[#4A5266]">Serial number</span>
-                <span className="overflow-hidden rounded-lg border border-[#DCE1EA] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs text-[#0B1B3D] whitespace-nowrap">
-                  AMT-C055-00F3A1
+            {/* Screen UI Matching Photo */}
+            <div className="flex flex-1 flex-col justify-between">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-[#E8ECF2] pb-2">
+                <span className="text-xs sm:text-sm font-bold tracking-tight text-[#0B1B3D]">
+                  Pair Luggage
+                </span>
+                <span className="rounded-full bg-[#2A4BD7]/10 border border-[#2A4BD7]/25 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-[#2A4BD7]">
+                  Step 2 of 3
                 </span>
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] sm:text-xs font-medium text-[#4A5266]">Claim code</span>
-                <span className="overflow-hidden rounded-lg border border-[#0B1B3D] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs tracking-wider text-[#0B1B3D] whitespace-nowrap">
-                  7KQ2-••••-••••
-                </span>
+
+              {/* Form Fields */}
+              <div className="flex flex-col gap-2.5 my-auto">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
+                    Case Serial Number
+                  </span>
+                  <div className="rounded-xl border border-[#DCE1EA] bg-white px-3 py-2 font-mono text-xs sm:text-[13px] font-bold text-[#0B1B3D] shadow-2xs">
+                    AMT-C055-80F3A1
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
+                    Encrypted Claim Code
+                  </span>
+                  <div className="rounded-xl border border-[#0B1B3D] bg-white px-3 py-2 font-mono text-xs sm:text-[13px] font-bold tracking-widest text-[#0B1B3D] shadow-2xs">
+                    7KQ2-••••••••
+                  </div>
+                </div>
+
+                {/* Cryptographic Verification Badge */}
+                <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-medium text-[#2A4BD7]">
+                  <svg className="size-3 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                  </svg>
+                  <span className="tracking-tight uppercase font-mono font-semibold text-[8.5px]">
+                    Claim card cryptographically verified
+                  </span>
+                </div>
               </div>
-              <span className="mt-auto mb-3 flex h-8 sm:h-9 items-center justify-center rounded-xl bg-[#0B1B3D] text-[10px] sm:text-xs font-medium text-white whitespace-nowrap shadow-xs">
-                Claim this bag
-              </span>
+
+              {/* Action Button */}
+              <button
+                type="button"
+                className="w-full rounded-xl bg-[#0B1B3D] py-2.5 text-center text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-[#0047AD] transition-colors"
+              >
+                Add to My Account
+              </button>
             </div>
 
-            {/* Home indicator */}
-            <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-20">
-              <span className="block h-1 w-14 rounded-full bg-[#0B1B3D]/30" />
-            </div>
+            {/* Home Indicator */}
+            <div className="mt-2 mx-auto h-1 w-12 sm:w-14 rounded-full bg-[#0B1B3D]/30" />
           </div>
 
-          {/* 3D Floating Claim Card: Positioned bottom-left with natural subtle overlap */}
-          <div className="animate-float absolute bottom-[8%] left-0 flex aspect-[1.586] w-[60%] -rotate-7 flex-col justify-between rounded-2xl bg-[#0B1B3D] p-4 sm:p-5 text-white shadow-[0_30px_50px_-28px_rgba(11,27,61,0.6)] border border-white/10">
+          {/* 3D Floating Metal Claim Card with Natural Organic Overlap */}
+          <div className="animate-float absolute bottom-4 sm:bottom-6 left-0 sm:left-2 flex aspect-[1.586] w-[210px] sm:w-[250px] -rotate-6 flex-col justify-between rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#102754] to-[#061229] p-3.5 sm:p-4 text-white shadow-[0_25px_50px_-15px_rgba(11,27,61,0.65)] border border-white/20 z-10 backdrop-blur-md">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Image
                   src="/img/cta-mark.png"
                   alt="AMORTRAV"
-                  width={24}
-                  height={20}
-                  className="h-4 sm:h-5 w-auto object-contain brightness-0 invert"
+                  width={20}
+                  height={18}
+                  className="h-4 w-auto object-contain brightness-0 invert"
                 />
-                <span className="font-mono text-[10px] font-bold tracking-wider text-white uppercase">AMORTRAV</span>
+                <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-white uppercase">
+                  AMORTRAV
+                </span>
               </div>
-              <span className="text-[10px] sm:text-xs font-mono font-medium text-[#A9B6D3]">Claim card</span>
+              <span className="text-[9px] sm:text-[10px] font-mono font-medium text-[#A9B6D3] uppercase tracking-wider">
+                Claim Card
+              </span>
             </div>
 
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] sm:text-[10px] font-mono text-[#A9B6D3] uppercase">Serial Number</span>
-              <span className="font-mono text-xs sm:text-sm tracking-wider text-white">AMT-C055-00F3A1</span>
-              <div className="mt-1 sm:mt-2 h-4 sm:h-5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)] shadow-inner" />
+              <span className="text-[8px] sm:text-[9px] font-mono text-[#A9B6D3] uppercase tracking-wider">
+                Unique Serial
+              </span>
+              <span className="font-mono text-xs sm:text-[13px] font-bold tracking-wider text-white">
+                AMT-C055-80F3A1
+              </span>
+              <div className="mt-1 h-3.5 sm:h-4 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)] shadow-inner border border-white/10" />
             </div>
           </div>
         </div>

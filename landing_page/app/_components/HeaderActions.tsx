@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/shop";
 import CartDrawer from "./CartDrawer";
+import CurrencySwitcher from "./CurrencySwitcher";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Button from "./Button";
 import Link from "next/link";
@@ -23,7 +24,8 @@ export default function HeaderActions({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <CurrencySwitcher isNegative={isNegative} />
         <LanguageSwitcher isNegative={isNegative} />
 
         {/* Cart Trigger */}
@@ -50,16 +52,12 @@ export default function HeaderActions({
         </button>
 
         {!isMobile && (
-          isNegative ? (
-            <Link
-              href={GET_THE_APP_HREF}
-              className="flex h-9 items-center justify-center rounded-full bg-white px-4 text-btn-sm font-bold text-navy shadow-md hover:bg-sky transition-all active:scale-95"
-            >
-              <span>{t("nav.joinShort", "Join the list")}</span>
-            </Link>
-          ) : (
-            <Button href={GET_THE_APP_HREF} label={t("nav.joinShort", "Join the list")} size="s" />
-          )
+          <Link
+            href={GET_THE_APP_HREF}
+            className="flex h-9 items-center justify-center rounded-full bg-brand px-4 text-btn-sm font-bold text-white shadow-md hover:bg-navy-deep transition-all active:scale-95"
+          >
+            <span>{t("nav.joinShort", "Join")}</span>
+          </Link>
         )}
       </div>
 

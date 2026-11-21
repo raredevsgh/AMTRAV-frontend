@@ -16,7 +16,8 @@ import BagViewer from "../_components/BagViewer";
 interface ShellOption {
   id: string;
   name: string;
-  size: "Cabin 55" | "Check-In 68" | "Trunk 90";
+  tier: "Essential" | "Pro" | "Executive" | "Flagship";
+  size: "Cabin 55" | "Check-In 68" | "Both (The Pair)" | "Trunk 90";
   finish: string;
   finishColor: string;
   priceUsdMinor: number;
@@ -24,11 +25,27 @@ interface ShellOption {
 }
 
 const SHELLS: ShellOption[] = [
-  { id: "c55-silver", name: "Original Cabin 55", size: "Cabin 55", finish: "Brushed Aluminium", finishColor: "#b8c0cc", priceUsdMinor: 34900, image: "/images/trace/range-pro.png" },
-  { id: "c55-black", name: "Original Cabin 55", size: "Cabin 55", finish: "Executive Obsidian", finishColor: "#0d0f12", priceUsdMinor: 36900, image: "/images/trace/range-executive.png" },
-  { id: "c68-navy", name: "Essential Check-In 68", size: "Check-In 68", finish: "Navy Flagship", finishColor: "#001f4d", priceUsdMinor: 42900, image: "/images/trace/range-flagship.png" },
-  { id: "c68-silver", name: "Essential Check-In 68", size: "Check-In 68", finish: "Brushed Aluminium", finishColor: "#b8c0cc", priceUsdMinor: 44900, image: "/images/trace/range-pro.png" },
-  { id: "t90-silver", name: "Original Trunk 90", size: "Trunk 90", finish: "Brushed Aluminium", finishColor: "#b8c0cc", priceUsdMinor: 59000, image: "/images/trace/range-flagship.png" },
+  // Essential Collection (Photo 1 colors)
+  { id: "ess-c55-black", name: "Essential Cabin 55", tier: "Essential", size: "Cabin 55", finish: "Midnight Black", finishColor: "#1a1a1c", priceUsdMinor: 32900, image: "/images/trace/range-essential.png" },
+  { id: "ess-c55-grey", name: "Essential Cabin 55", tier: "Essential", size: "Cabin 55", finish: "Space Grey", finishColor: "#7d828a", priceUsdMinor: 32900, image: "/images/trace/range-pro.png" },
+  { id: "ess-c55-navy", name: "Essential Cabin 55", tier: "Essential", size: "Cabin 55", finish: "Navy Blue", finishColor: "#1e2d42", priceUsdMinor: 32900, image: "/images/trace/range-flagship.png" },
+  { id: "ess-c68-navy", name: "Essential Check-In 68", tier: "Essential", size: "Check-In 68", finish: "Navy Blue", finishColor: "#1e2d42", priceUsdMinor: 39900, image: "/images/trace/range-flagship.png" },
+  { id: "ess-both-pair", name: "Essential The Pair (Duo)", tier: "Essential", size: "Both (The Pair)", finish: "Matched Cabin + Check-In", finishColor: "#1e2d42", priceUsdMinor: 65900, image: "/images/trace/hero-pair.jpg" },
+
+  // Pro & Flagship Collection (Photo 2 colors)
+  { id: "pro-c55-silver", name: "AMTRAV Pro Cabin 55", tier: "Pro", size: "Cabin 55", finish: "Titanium Silver", finishColor: "#c5cbd3", priceUsdMinor: 38900, image: "/images/trace/range-pro.png" },
+  { id: "pro-c55-black", name: "AMTRAV Pro Cabin 55", tier: "Pro", size: "Cabin 55", finish: "Graphite Black", finishColor: "#2b2d2f", priceUsdMinor: 38900, image: "/images/trace/range-essential.png" },
+  { id: "pro-c55-blue", name: "AMTRAV Pro Cabin 55", tier: "Pro", size: "Cabin 55", finish: "Midnight Blue", finishColor: "#1d3356", priceUsdMinor: 38900, image: "/images/trace/range-flagship.png" },
+  { id: "pro-c55-white", name: "AMTRAV Pro Cabin 55", tier: "Pro", size: "Cabin 55", finish: "Pearl White", finishColor: "#f4f5f7", priceUsdMinor: 38900, image: "/images/trace/range-essential.png" },
+  { id: "pro-c55-gold", name: "AMTRAV Pro Cabin 55", tier: "Pro", size: "Cabin 55", finish: "Champagne Gold", finishColor: "#d8b888", priceUsdMinor: 38900, image: "/images/trace/range-executive.png" },
+  { id: "pro-c55-green", name: "AMTRAV Pro Cabin 55", tier: "Pro", size: "Cabin 55", finish: "Forest Green", finishColor: "#3e533e", priceUsdMinor: 38900, image: "/images/trace/range-flagship.png" },
+
+  // Pro Check-in & Duo
+  { id: "pro-c68-silver", name: "AMTRAV Pro Check-In 68", tier: "Pro", size: "Check-In 68", finish: "Titanium Silver", finishColor: "#c5cbd3", priceUsdMinor: 48900, image: "/images/trace/range-pro.png" },
+  { id: "pro-both-pair", name: "AMTRAV Pro The Pair (Duo)", tier: "Pro", size: "Both (The Pair)", finish: "Titanium Silver Duo Set", finishColor: "#c5cbd3", priceUsdMinor: 77900, image: "/images/trace/hero-pair.jpg" },
+
+  // Trunk
+  { id: "t90-silver", name: "AMTRAV Original Trunk 90", tier: "Executive", size: "Trunk 90", finish: "Brushed Aluminium", finishColor: "#c5cbd3", priceUsdMinor: 59000, image: "/images/trace/range-flagship.png" },
 ];
 
 const TAG_COLORS = [
@@ -66,6 +83,9 @@ export default function ConfiguratorClient() {
 
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedShell, setSelectedShell] = useState<ShellOption>(SHELLS[0]);
+  const [shellSizeFilter, setShellSizeFilter] = useState<"all" | "Cabin 55" | "Check-In 68" | "Both (The Pair)">("all");
+  const [customShellHex, setCustomShellHex] = useState("#c5cbd3");
+  const [isCustomShellColor, setIsCustomShellColor] = useState(false);
   const [selectedTag, setSelectedTag] = useState(TAG_COLORS[0]);
   const [monogramText, setMonogramText] = useState("AMT");
   const [monogramFoil, setMonogramFoil] = useState(FOIL_TYPES[1]);
@@ -87,8 +107,20 @@ export default function ConfiguratorClient() {
       return;
     }
     // Map to base SKU in catalog
-    const baseSku = selectedShell.size === "Cabin 55" ? "cabin-55" : selectedShell.size === "Check-In 68" ? "checkin-68" : "trunk-90";
-    addToCart(baseSku, 1);
+    const baseSku = selectedShell.size.includes("Pair")
+      ? "the-pair"
+      : selectedShell.size === "Cabin 55"
+      ? "cabin-55"
+      : selectedShell.size === "Check-In 68"
+      ? "checkin-68"
+      : "trunk-90";
+
+    const activeColorHex = isCustomShellColor ? customShellHex : selectedShell.finishColor;
+    const cleanHex = activeColorHex.replace("#", "");
+    const colorDesc = isCustomShellColor ? `Bespoke Custom (${customShellHex})` : selectedShell.finish;
+    const compoundSku = `${baseSku}__${encodeURIComponent(`${selectedShell.name} · ${colorDesc} [Tag: ${monogramText || "AMT"}]`)}__${cleanHex}`;
+
+    addToCart(compoundSku, 1);
     setCartOpen(true);
   };
 
@@ -154,7 +186,7 @@ export default function ConfiguratorClient() {
           <div className="lg:col-span-7 space-y-4 lg:sticky lg:top-28">
             <div className="overflow-hidden rounded-3xl border border-divider bg-white p-4 shadow-card">
               <BagViewer
-                defaultLuggageType={selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
+                defaultLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
                 className="w-full"
               />
 
@@ -202,19 +234,47 @@ export default function ConfiguratorClient() {
                   <span className="text-caption font-mono text-sky uppercase">Step 1 of 4</span>
                   <h3 className="text-h3-m font-bold text-navy">Select Base Shell & Size</h3>
                   <p className="text-caption text-mid mt-0.5">
-                    Choose your case capacity and aerospace exterior finish.
+                    Choose your case capacity (Cabin, Check-In, or Both) and aerospace finish.
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  {SHELLS.map((shell) => {
-                    const isSelected = selectedShell.id === shell.id;
+                {/* Luggage Type Filter Tabs */}
+                <div className="grid grid-cols-4 gap-1 rounded-xl bg-surface p-1 border border-divider text-center">
+                  {[
+                    { id: "all", label: "All" },
+                    { id: "Cabin 55", label: "Cabin 55" },
+                    { id: "Check-In 68", label: "Check-In" },
+                    { id: "Both (The Pair)", label: "Both (Duo)" },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setShellSizeFilter(tab.id as typeof shellSizeFilter)}
+                      className={`rounded-lg py-1.5 text-[11px] font-semibold transition-all ${
+                        shellSizeFilter === tab.id
+                          ? "bg-navy text-white shadow-xs"
+                          : "text-mid hover:text-navy"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                  {SHELLS.filter(
+                    (s) => shellSizeFilter === "all" || s.size === shellSizeFilter
+                  ).map((shell) => {
+                    const isSelected = selectedShell.id === shell.id && !isCustomShellColor;
                     return (
                       <button
                         key={shell.id}
                         type="button"
-                        onClick={() => setSelectedShell(shell)}
-                        className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all ${
+                        onClick={() => {
+                          setSelectedShell(shell);
+                          setIsCustomShellColor(false);
+                        }}
+                        className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all ${
                           isSelected
                             ? "border-navy bg-navy/5 shadow-xs ring-1 ring-navy font-semibold"
                             : "border-divider bg-white hover:border-mid hover:bg-surface"
@@ -222,11 +282,16 @@ export default function ConfiguratorClient() {
                       >
                         <div className="flex items-center gap-3">
                           <span
-                            className="size-4.5 rounded-full border border-black/20"
+                            className="size-4.5 rounded-full border border-black/20 shrink-0"
                             style={{ backgroundColor: shell.finishColor }}
                           />
                           <div>
-                            <div className="text-small text-navy">{shell.name}</div>
+                            <div className="text-small text-navy flex items-center gap-2">
+                              <span>{shell.name}</span>
+                              <span className="rounded-full bg-navy/5 px-2 py-0.2 text-[10px] font-mono text-mid">
+                                {shell.size}
+                              </span>
+                            </div>
                             <div className="text-caption text-mid font-normal">{shell.finish}</div>
                           </div>
                         </div>
@@ -236,6 +301,34 @@ export default function ConfiguratorClient() {
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Bespoke Custom Color Picker */}
+                <div className="rounded-2xl border border-divider bg-surface/60 p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-navy">
+                      Bespoke Shell Hue
+                    </span>
+                    <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-divider bg-white px-2.5 py-1 text-xs font-mono font-bold text-navy hover:border-navy shadow-xs">
+                      <span
+                        className="size-3.5 rounded-full border border-black/20"
+                        style={{ backgroundColor: customShellHex }}
+                      />
+                      <span>{customShellHex.toUpperCase()}</span>
+                      <input
+                        type="color"
+                        value={customShellHex}
+                        onChange={(e) => {
+                          setCustomShellHex(e.target.value);
+                          setIsCustomShellColor(true);
+                        }}
+                        className="absolute inset-0 size-full cursor-pointer opacity-0"
+                      />
+                    </label>
+                  </div>
+                  <p className="text-[11px] text-mid">
+                    Click the color chip to choose any custom RAL/hex shade for your aerospace shell.
+                  </p>
                 </div>
               </div>
             )}

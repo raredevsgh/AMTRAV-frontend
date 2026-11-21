@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
-import { useCart, resolveProduct, formatPrice } from "@/lib/shop";
+import { useCart, resolveProduct } from "@/lib/shop";
+import { useRegion } from "@/lib/region";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function CartDrawer({
@@ -15,6 +16,7 @@ export default function CartDrawer({
   onClose: () => void;
 }) {
   const { t } = useI18n();
+  const { formatPrice, currency } = useRegion();
   const { cart, totalItems, subtotalMinor, addToCart, removeFromCart, clearCart } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderConfirmation, setOrderConfirmation] = useState<{ id: string; message: string } | null>(null);
@@ -41,7 +43,7 @@ export default function CartDrawer({
         },
         body: JSON.stringify({
           items: cart,
-          currency: "USD",
+          currency: currency.code,
         }),
       });
       const data = await res.json();

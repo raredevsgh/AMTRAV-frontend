@@ -13,7 +13,7 @@ export default function LanguageSwitcher({
   isNegative?: boolean;
 }) {
   const { locale, setLocale } = useI18n();
-  const { country, countryCode, setCountry } = useRegion();
+  const { country, countryCode, setCountry, currency } = useRegion();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"lang" | "region">("lang");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,11 +48,11 @@ export default function LanguageSwitcher({
         <span className="mr-0.5">{current.flag}</span>
         <span className="hidden sm:inline font-semibold">{current.label}</span>
         <span
-          className={`text-[11px] hidden md:inline ${
-            isNegative ? "text-white/70" : "text-mid"
+          className={`text-[11px] hidden md:inline font-mono ${
+            isNegative ? "text-white/80" : "text-mid"
           }`}
         >
-          ({country.currency})
+          ({currency.code})
         </span>
         <ChevronDown
           className={`size-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""} ${

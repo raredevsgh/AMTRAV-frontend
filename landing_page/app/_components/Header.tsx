@@ -16,14 +16,27 @@ export default function Header() {
     const updateContrast = () => {
       const header = document.getElementById("site-header");
       const darkSections = document.querySelectorAll<HTMLElement>('[data-theme="dark"]');
-      if (!darkSections.length) {
-        setIsNegative(false);
-        return;
-      }
 
       // Exact vertical midpoint of the floating header pill on screen
       const headerRect = header ? header.getBoundingClientRect() : { top: 20, height: 50 };
       const headerMidY = headerRect.top + (headerRect.height || 50) / 2;
+
+      // On homepage, the dark hero occupies the initial screen from top until scrolled past
+      if (pathname === "/") {
+        const hero = document.getElementById("hero-dark");
+        if (hero) {
+          const heroRect = hero.getBoundingClientRect();
+          if (heroRect.bottom > headerMidY) {
+            setIsNegative(true);
+            return;
+          }
+        }
+      }
+
+      if (!darkSections.length) {
+        setIsNegative(false);
+        return;
+      }
 
       let overDark = false;
       for (let i = 0; i < darkSections.length; i++) {

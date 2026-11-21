@@ -111,32 +111,31 @@ html[data-preloaded] .preloader {
 /* Header glass: genuine transparent liquid glass matching the Figma prototype.
    Translucent specular gradient, soft crystalline border, and high-transmission backdrop blur. */
 .glass {
-  background: rgba(255, 255, 255, 0.85); /* fallback */
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.88); /* fallback */
+  border: 1px solid rgba(11, 27, 61, 0.12);
   box-shadow:
-    0 8px 32px 0 rgba(0, 10, 31, 0.1),
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 1px 0 rgba(255, 255, 255, 0.2);
+    0 8px 30px 0 rgba(11, 27, 61, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass {
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.22) 100%
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(246, 248, 252, 0.72) 100%
     );
-    -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(105%);
-    backdrop-filter: blur(24px) saturate(190%) contrast(105%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
   }
 }
 
 /* Header glass-negative: genuine transparent obsidian liquid glass for dark hero backgrounds */
 .glass-negative {
-  background: rgba(11, 27, 61, 0.88); /* fallback */
+  background: rgba(7, 23, 57, 0.92); /* fallback */
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow:
-    0 12px 36px 0 rgba(0, 0, 0, 0.45),
+    0 16px 40px -10px rgba(0, 0, 0, 0.5),
     inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.35),
     inset 0 -1px 1px 0 rgba(255, 255, 255, 0.1);
 }
@@ -145,8 +144,8 @@ html[data-preloaded] .preloader {
   .glass-negative {
     background: linear-gradient(
       180deg,
-      rgba(11, 27, 61, 0.62) 0%,
-      rgba(5, 15, 36, 0.78) 100%
+      rgba(9, 26, 64, 0.75) 0%,
+      rgba(5, 16, 42, 0.85) 100%
     );
     -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(105%);
     backdrop-filter: blur(24px) saturate(190%) contrast(105%);

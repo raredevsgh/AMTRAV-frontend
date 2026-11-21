@@ -5,11 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, Lock, RotateCcw, SlidersHorizontal, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
+import { useRegion } from "@/lib/region";
 
 type SizeKey = "cabin" | "checkinM" | "checkinL" | "trunk";
 
 export default function LuxurySpecs() {
   const { t } = useI18n();
+  const { formatPrice } = useRegion();
   const [activeSize, setActiveSize] = useState<SizeKey>("cabin");
   const [initials, setInitials] = useState("AM");
   const [tagColor, setTagColor] = useState<"cognac" | "black" | "navy">("cognac");
@@ -23,6 +25,7 @@ export default function LuxurySpecs() {
     tripDuration: string;
     overheadCompliant: boolean;
     sku: string;
+    priceUsdMinor: number;
   }> = {
     cabin: {
       name: t("landing.sizeCabinName", "Cabin 55"),
@@ -33,6 +36,7 @@ export default function LuxurySpecs() {
       tripDuration: "2 – 4 Days",
       overheadCompliant: true,
       sku: "cabin-55",
+      priceUsdMinor: 34900,
     },
     checkinM: {
       name: t("landing.sizeCheckInMName", "Check-In M"),
@@ -43,6 +47,7 @@ export default function LuxurySpecs() {
       tripDuration: "5 – 8 Days",
       overheadCompliant: false,
       sku: "check-in-68",
+      priceUsdMinor: 42900,
     },
     checkinL: {
       name: t("landing.sizeCheckInLName", "Check-In 76"),
@@ -53,6 +58,7 @@ export default function LuxurySpecs() {
       tripDuration: "10 – 14 Days",
       overheadCompliant: false,
       sku: "check-in-76",
+      priceUsdMinor: 46900,
     },
     trunk: {
       name: t("landing.sizeTrunkName", "Trunk"),
@@ -63,6 +69,7 @@ export default function LuxurySpecs() {
       tripDuration: "2+ Weeks",
       overheadCompliant: false,
       sku: "trunk-90",
+      priceUsdMinor: 59000,
     },
   };
 
@@ -149,7 +156,12 @@ export default function LuxurySpecs() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <h4 className="text-h2-m font-bold text-navy xl:text-h2">{current.name}</h4>
-                <span className="font-mono text-caption font-semibold text-brand">{current.capacity}</span>
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-caption font-bold text-navy bg-surface px-2.5 py-0.5 rounded-full border border-divider">
+                    From {formatPrice(current.priceUsdMinor)}
+                  </span>
+                  <span className="font-mono text-caption font-semibold text-brand">{current.capacity}</span>
+                </div>
               </div>
               <p className="text-body-m text-mid xl:text-body">{current.desc}</p>
             </div>

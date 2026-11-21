@@ -55,10 +55,10 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
               active
                 ? isNegative
                   ? "bg-white/20 text-white border border-white/30 shadow-xs"
-                  : "bg-blue-pale text-brand shadow-xs"
+                  : "bg-brand/10 text-brand font-bold border border-brand/20 shadow-xs"
                 : isNegative
-                ? "text-white/90 hover:text-white hover:bg-white/10"
-                : "text-ink hover:text-brand hover:bg-white/40"
+                ? "text-white/85 hover:text-white hover:bg-white/10"
+                : "text-navy hover:text-brand hover:bg-navy/5"
             }`}
           >
             {label}
@@ -76,17 +76,17 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
             dropdownOpen || pathname.startsWith("/services") || pathname.startsWith("/customise")
               ? isNegative
                 ? "bg-white/20 text-white border border-white/30 shadow-xs"
-                : "bg-blue-pale text-brand shadow-xs"
+                : "bg-brand/10 text-brand font-bold border border-brand/20 shadow-xs"
               : isNegative
-              ? "text-white/90 hover:text-white hover:bg-white/10"
-              : "text-ink hover:text-brand hover:bg-white/40"
+              ? "text-white/85 hover:text-white hover:bg-white/10"
+              : "text-navy hover:text-brand hover:bg-navy/5"
           }`}
         >
           <span>Services</span>
           <ChevronDown
             className={`size-3.5 transition-transform duration-200 ${
               dropdownOpen ? "rotate-180" : ""
-            } ${isNegative ? "text-white/80" : "text-mid"}`}
+            } ${isNegative ? "text-white/80" : "text-navy/70"}`}
           />
         </button>
 
