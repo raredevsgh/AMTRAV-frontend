@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Lock, RotateCcw, SlidersHorizontal, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Lock, RotateCcw, SlidersHorizontal, ArrowRight, CheckCircle2, Rotate3d } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 import { useRegion } from "@/lib/region";
 
@@ -82,7 +82,7 @@ export default function LuxurySpecs() {
   };
 
   return (
-    <section className="flex flex-col gap-10 overflow-clip rounded-3xl bg-surface px-5 py-10 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section className="flex flex-col gap-10 overflow-hidden rounded-3xl bg-surface px-5 py-10 xl:rounded-[32px] xl:px-14 xl:py-16">
       {/* Section Header */}
       <div data-reveal className="flex flex-col items-center gap-3 text-center">
         <p className="text-caption-m text-brand font-semibold tracking-wider uppercase xl:text-caption">
@@ -108,8 +108,8 @@ export default function LuxurySpecs() {
             </p>
           </div>
 
-          {/* Size Pills Tabs */}
-          <div className="flex flex-wrap gap-2">
+          {/* Size Pills Tabs - Mobile smooth scroll */}
+          <div className="flex gap-2 overflow-x-auto pb-1.5 sm:flex-wrap [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
             {(Object.keys(SIZES) as SizeKey[]).map((key) => {
               const active = key === activeSize;
               return (
@@ -117,7 +117,7 @@ export default function LuxurySpecs() {
                   key={key}
                   type="button"
                   onClick={() => setActiveSize(key)}
-                  className={`rounded-full px-4 py-2 text-caption font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand ${
+                  className={`rounded-full px-4 py-2 text-caption font-semibold shrink-0 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand ${
                     active
                       ? "bg-navy text-white shadow-sm scale-105"
                       : "bg-surface text-mid hover:bg-stale/40 hover:text-navy"
@@ -133,7 +133,7 @@ export default function LuxurySpecs() {
         {/* Selected Size Visual & Specs Breakdown */}
         <div className="grid grid-cols-1 items-center gap-8 pt-8 lg:grid-cols-12">
           {/* Visual Showcase */}
-          <div className="relative flex min-h-[300px] items-center justify-center rounded-2xl bg-gradient-to-b from-blue-pale/40 to-surface p-6 lg:col-span-5">
+          <div className="relative flex min-h-[320px] flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-blue-pale/40 to-surface p-6 lg:col-span-5">
             <div className="relative h-64 w-48 transition-transform duration-500 hover:scale-105">
               <Image
                 src={current.image}
@@ -143,6 +143,16 @@ export default function LuxurySpecs() {
                 className="object-contain drop-shadow-xl"
               />
             </div>
+
+            {/* 3D Spin Link / Pill */}
+            <Link
+              href={`/customise?model=${activeSize === "cabin" ? "carry-on" : "check-in"}`}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3.5 py-1.5 text-[11px] font-semibold text-navy shadow-xs border border-divider hover:bg-white hover:text-brand transition-all backdrop-blur-sm active:scale-95"
+            >
+              <Rotate3d className="size-3.5 text-brand" />
+              <span>Spin 3D in UNIQUE Studio &rarr;</span>
+            </Link>
+
             {current.overheadCompliant && (
               <span className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-[12px] font-semibold text-brand">
                 <CheckCircle2 className="size-3.5" />
@@ -288,9 +298,9 @@ export default function LuxurySpecs() {
           </div>
 
           {/* Interactive Tag Customizer */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 rounded-2xl bg-white/5 border border-white/10 p-5 backdrop-blur-md">
+          <div className="flex w-full max-w-md flex-col sm:flex-row items-center justify-center gap-6 rounded-2xl bg-white/5 border border-white/10 p-5 sm:p-6 backdrop-blur-md mx-auto xl:mx-0">
             {/* Visual Leather Tag */}
-            <div className={`relative flex h-32 w-24 flex-col items-center justify-between rounded-xl border-2 p-3 shadow-lg transition-colors duration-300 ${TAG_COLORS[tagColor]}`}>
+            <div className={`relative flex h-32 w-24 shrink-0 flex-col items-center justify-between rounded-xl border-2 p-3 shadow-lg transition-colors duration-300 ${TAG_COLORS[tagColor]}`}>
               <div className="size-3 rounded-full border border-black/30 bg-white/40 shadow-inner" />
               <div className="font-mono text-2xl font-black tracking-widest uppercase">
                 {initials.slice(0, 3) || "AM"}
@@ -299,7 +309,7 @@ export default function LuxurySpecs() {
             </div>
 
             {/* Controls */}
-            <div className="flex flex-col gap-3">
+            <div className="flex w-full sm:w-auto flex-col gap-3">
               <label className="flex flex-col gap-1 text-[12px] font-medium text-blue-pale">
                 Monogram Initials (up to 3 letters)
                 <input
@@ -307,22 +317,22 @@ export default function LuxurySpecs() {
                   maxLength={3}
                   value={initials}
                   onChange={(e) => setInitials(e.target.value.toUpperCase())}
-                  className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 font-mono text-sm uppercase text-white outline-none focus:border-sky"
+                  className="w-full sm:w-48 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 font-mono text-sm uppercase text-white outline-none focus:border-sky"
                 />
               </label>
 
               <div className="flex flex-col gap-1 text-[12px] font-medium text-blue-pale">
                 Tag Leather Color
-                <div className="flex gap-2">
+                <div className="flex items-center gap-3 pt-1">
                   {(["cognac", "black", "navy"] as const).map((color) => (
                     <button
                       key={color}
                       type="button"
                       onClick={() => setTagColor(color)}
                       aria-label={`Select ${color} tag`}
-                      className={`size-6 rounded-full border-2 transition-transform ${
+                      className={`size-7 rounded-full border-2 transition-transform ${
                         color === "cognac" ? "bg-[#8D5B38]" : color === "black" ? "bg-black" : "bg-[#0B1B3D]"
-                      } ${tagColor === color ? "scale-125 border-sky shadow-md" : "border-white/30"}`}
+                      } ${tagColor === color ? "scale-125 border-sky shadow-md" : "border-white/30 hover:scale-110"}`}
                     />
                   ))}
                 </div>

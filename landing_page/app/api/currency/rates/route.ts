@@ -8,7 +8,7 @@ export interface CurrencyRateData {
 }
 
 // Baseline live market exchange rates against USD
-export const BASE_RATES: Record<string, number> = {
+const BASE_RATES: Record<string, number> = {
   USD: 1.0,
   EUR: 0.925,
   GBP: 0.792,

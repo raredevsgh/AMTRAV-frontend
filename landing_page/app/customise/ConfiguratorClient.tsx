@@ -239,7 +239,7 @@ export default function ConfiguratorClient() {
                 </div>
 
                 {/* Luggage Type Filter Tabs */}
-                <div className="grid grid-cols-4 gap-1 rounded-xl bg-surface p-1 border border-divider text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 rounded-xl bg-surface p-1 border border-divider text-center">
                   {[
                     { id: "all", label: "All" },
                     { id: "Cabin 55", label: "Cabin 55" },

@@ -12,6 +12,7 @@ import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import FilmModal from "./_components/FilmModal";
 import LuxurySpecs from "./_components/LuxurySpecs";
+import InteractiveBagHeroSimulation from "./_components/InteractiveBagHeroSimulation";
 import { GET_THE_APP_HREF } from "./_components/nav";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -71,6 +72,11 @@ function Hero({ onWatchFilm }: { onWatchFilm: () => void }) {
             <Play className="size-4 fill-white" />
             <span>{t("landing.watch", "Watch the film")}</span>
           </button>
+
+          {/* Real 3D Bag Interactive Simulation for Mobile */}
+          <div className="w-full pt-3">
+            <InteractiveBagHeroSimulation />
+          </div>
         </div>
         <div data-enter className="hidden w-full flex-wrap items-center gap-3 xl:flex">
           <Button href={GET_THE_APP_HREF} label={t("landing.heroGetApp", "Get the app")} style="sky" size="l" arrow />
@@ -111,7 +117,7 @@ function RouteTicker() {
   const { t } = useI18n();
 
   return (
-    <div className="ticker overflow-clip rounded-full bg-white py-4 [--ticker-duration:30s] xl:[--ticker-duration:45s]">
+    <div className="ticker overflow-hidden max-w-full rounded-full bg-white py-4 [--ticker-duration:30s] xl:[--ticker-duration:45s]">
       <p className="sr-only">{t("landing.routesSr", "Example routes: {routes}", { routes: ROUTES.join(", ") })}</p>
       <div aria-hidden className="ticker-track flex w-max">
         {[0, 1].map((copy) => (
@@ -188,8 +194,8 @@ function Experience() {
   ];
 
   return (
-    <section data-backdrop="blue-pale" className="flex flex-col items-center overflow-clip px-5 py-8 xl:px-[140px] xl:py-2.5">
-      <div className="flex w-full flex-col items-center gap-6 xl:gap-8 xl:py-[66px]">
+    <section data-backdrop="blue-pale" className="flex flex-col items-center overflow-hidden max-w-full px-4 sm:px-5 py-8 xl:px-[140px] xl:py-2.5">
+      <div className="flex w-full max-w-full flex-col items-center gap-6 xl:gap-8 xl:py-[66px]">
         <div data-reveal className="flex w-full flex-col items-center gap-2 text-center xl:w-auto xl:min-w-[505px] xl:gap-5 xl:whitespace-nowrap">
           <p className="text-caption-m text-brand font-semibold uppercase xl:text-small">
             {t("landing.expEyebrow", "THE EXPERIENCE")}
@@ -198,7 +204,7 @@ function Experience() {
             {t("landing.expTitle", "Know where things stand")}
           </h2>
         </div>
-        <div data-stagger className="-mx-5 flex w-[calc(100%+40px)] gap-4 overflow-x-auto px-5 pb-4 pt-1 snap-x snap-mandatory [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:mx-0 md:w-full md:grid md:grid-cols-2 xl:grid-cols-3 xl:gap-6 xl:overflow-visible xl:p-0">
+        <div data-stagger className="-mx-4 sm:-mx-5 flex w-[calc(100%+32px)] sm:w-[calc(100%+40px)] max-w-[100vw] gap-4 overflow-x-auto px-4 sm:px-5 pb-4 pt-1 snap-x snap-mandatory [scrollbar-width:none] [-webkit-overflow-scrolling:touch] md:mx-0 md:w-full md:grid md:grid-cols-2 xl:grid-cols-3 xl:gap-6 xl:overflow-visible xl:p-0">
           {cards.map(({ kind, title, text }) => (
             <div
               key={kind}
@@ -222,7 +228,7 @@ function Travel() {
   const { t } = useI18n();
 
   return (
-    <section data-backdrop="navy" className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="navy" className="flex flex-col gap-6 overflow-hidden rounded-3xl bg-white px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <div data-reveal className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between xl:gap-8">
         <h2 className="text-h1-m font-bold text-navy xl:w-[620px] xl:text-h1">
           {t("landing.travelTitle", "Built for the walk to the gate.")}
@@ -289,7 +295,7 @@ function Explore() {
   ];
 
   return (
-    <section data-backdrop="surface" className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
+    <section data-backdrop="surface" className="flex flex-col gap-6 overflow-hidden px-5 py-8 xl:gap-8 xl:rounded-[32px] xl:px-14 xl:py-16">
       <h2 data-reveal className="text-h1-m font-bold text-navy xl:text-h1">
         {t("landing.exploreTitle", "Find more about AMORTRAV")}
       </h2>
@@ -298,7 +304,7 @@ function Explore() {
           <div
             key={href}
             data-reveal
-            className={`group relative flex flex-col items-start gap-4 overflow-clip rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
+            className={`group relative flex flex-col items-start gap-4 overflow-hidden rounded-3xl p-6 xl:h-[407px] xl:flex-1 xl:rounded-[28px] xl:p-7 ${dark ? "bg-navy" : "bg-white shadow-card"} ${CARD_HOVER}`}
           >
             <p className={`text-caption-m xl:text-caption ${dark ? "text-blue-faint" : "text-brand"}`}>{label}</p>
             <h3 className={`text-h2-m font-semibold xl:text-h2 ${dark ? "text-white" : "text-navy"}`}>{title}</h3>
@@ -340,7 +346,7 @@ function Faq() {
   ];
 
   return (
-    <section id="faq" className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:gap-[34px] xl:px-10 xl:py-12">
+    <section id="faq" className="flex flex-col gap-6 overflow-hidden px-5 py-8 xl:gap-[34px] xl:px-10 xl:py-12">
       <h2 data-reveal className="text-h2-m font-semibold text-navy xl:text-h2">
         {t("landing.faqTitle", "Frequently Asked Questions")}
       </h2>

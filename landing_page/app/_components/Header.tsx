@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
-import SiteNav from "./SiteNav";
+import SiteNav, { ShopLink } from "./SiteNav";
 import HeaderActions from "./HeaderActions";
 
 export default function Header() {
@@ -41,7 +41,6 @@ export default function Header() {
       let overDark = false;
       for (let i = 0; i < darkSections.length; i++) {
         const rect = darkSections[i].getBoundingClientRect();
-        // If the header's vertical center is within this dark section's bounds
         if (rect.top <= headerMidY && rect.bottom >= headerMidY) {
           overDark = true;
           break;
@@ -61,11 +60,11 @@ export default function Header() {
 
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-40">
-      <div className="mx-auto max-w-[1440px] px-3 pt-[max(12px,env(safe-area-inset-top))] xl:px-5 xl:pt-5">
+      <div className="mx-auto max-w-[1440px] px-3 pt-[max(12px,env(safe-area-inset-top))] sm:px-4 xl:px-5 xl:pt-5">
         <header
           id="site-header"
-          className={`pointer-events-auto relative flex items-center justify-between gap-2 rounded-full py-2 pr-2 pl-5 transition-all duration-300 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-7 xl:py-2.5 xl:pr-2.5 xl:pl-7 ${
-            isNegative ? "glass-negative text-white" : "glass text-navy"
+          className={`pointer-events-auto relative flex items-center justify-between gap-3 rounded-full py-2 pr-2.5 pl-4 transition-all duration-300 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:gap-7 xl:py-2.5 xl:pr-2.5 xl:pl-7 ${
+            isNegative ? "glass-negative text-white shadow-lifted" : "glass text-navy shadow-card"
           }`}
         >
           {/* Brand Logo with Negative UI Invert Filter */}
@@ -90,9 +89,9 @@ export default function Header() {
             <SiteNav isNegative={isNegative} />
           </div>
 
-          {/* Mobile Actions & Menu */}
+          {/* Mobile Actions: Clean Classic AMTRAV Style (Shop Icon + Hamburger Menu Only) */}
           <div className="flex items-center gap-2 xl:hidden">
-            <HeaderActions isMobile isNegative={isNegative} />
+            <ShopLink isNegative={isNegative} />
             <MobileMenu isNegative={isNegative} />
           </div>
 

@@ -81,7 +81,7 @@ export default function AppSignup() {
   return (
     <section
       id="signup"
-      className="relative flex scroll-mt-[88px] flex-col items-center gap-6 overflow-clip rounded-3xl bg-navy px-5 py-10 xl:scroll-mt-[108px] xl:gap-5 xl:rounded-[32px] xl:px-14 xl:py-20"
+      className="relative flex scroll-mt-[88px] flex-col items-center gap-6 overflow-hidden rounded-3xl bg-navy px-5 py-10 xl:scroll-mt-[108px] xl:gap-5 xl:rounded-[32px] xl:px-14 xl:py-20"
     >
       {/* Mobile Animated Sky Background */}
       <svg

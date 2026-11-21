@@ -128,7 +128,7 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
   );
 }
 
-export function ShopLink({ onClick }: { onClick?: () => void }) {
+export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void; isNegative?: boolean }) {
   const active = usePathname() === SHOP_LINK.href;
   const { t } = useI18n();
   const { totalItems } = useCart();
@@ -139,8 +139,14 @@ export function ShopLink({ onClick }: { onClick?: () => void }) {
       onClick={onClick}
       aria-label={t("nav.shop", "Shop")}
       aria-current={active ? "page" : undefined}
-      className={`relative group flex size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-        active ? "bg-blue-pale" : "border-[1.5px] border-ink"
+      className={`relative group flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+        active
+          ? isNegative
+            ? "bg-white/20 border border-white/40 text-white shadow-xs"
+            : "bg-blue-pale border border-brand/30 shadow-xs"
+          : isNegative
+          ? "border border-white/25 bg-white/10 hover:border-white/50 text-white"
+          : "border-[1.5px] border-ink/80 bg-surface/80 hover:border-ink hover:bg-surface text-navy"
       }`}
     >
       <Image
@@ -150,8 +156,12 @@ export function ShopLink({ onClick }: { onClick?: () => void }) {
         height={22}
         loading="eager"
         className={`transition-transform duration-300 ease-out-soft group-hover:scale-110 group-hover:-rotate-6 ${
-          active ? "" : "brightness-50"
-        } group-hover:brightness-0 group-hover:invert`}
+          isNegative
+            ? "brightness-0 invert"
+            : active
+            ? ""
+            : "brightness-50 group-hover:brightness-0 group-hover:invert"
+        }`}
       />
       {totalItems > 0 && (
         <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white shadow-xs">
