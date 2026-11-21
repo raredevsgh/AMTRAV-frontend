@@ -102,9 +102,9 @@ function HowItWorksHero() {
             {/* Secondary Action Link with clean high contrast */}
             <a
               href="#steps"
-              className="inline-flex h-12 items-center gap-2 rounded-full border-2 border-[#0B1B3D]/20 bg-white/80 px-6 text-[15px] font-semibold text-[#0B1B3D] shadow-xs hover:border-[#0B1B3D] hover:bg-[#0B1B3D] hover:text-white active:scale-95 transition-all group"
+              className="inline-flex h-12 items-center gap-2 rounded-full border-2 border-[#0B1B3D] bg-white px-6 text-[15px] font-bold text-[#0B1B3D] shadow-xs hover:bg-[#0B1B3D] hover:text-white active:scale-95 transition-all group"
             >
-              <span>Explore the 3 steps</span>
+              <span>See the steps</span>
               <svg
                 width="16"
                 height="16"
@@ -153,8 +153,8 @@ function HowItWorksHero() {
             </g>
           </svg>
 
-          {/* Precision Phone Frame */}
-          <div className="absolute top-0 right-[2%] aspect-[9/18] w-[50%] sm:w-[48%] overflow-hidden rounded-[26px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)] flex flex-col justify-between p-3 sm:p-4 pt-2 sm:pt-2.5">
+          {/* Precision Phone Frame - Positioned with ample breathing room */}
+          <div className="absolute top-0 right-[4%] aspect-[9/18] w-[46%] sm:w-[45%] overflow-hidden rounded-[26px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)] flex flex-col justify-between p-3 sm:p-4 pt-2 sm:pt-2.5 z-0">
             {/* Speaker Slit */}
             <div className="mx-auto h-1 w-12 rounded-full bg-[#0B1B3D]/30" />
 
@@ -201,7 +201,7 @@ function HowItWorksHero() {
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button - Fully unobstructed and centered */}
               <button
                 type="button"
                 className="w-full rounded-lg bg-[#0B1B3D] py-2 text-center text-[10px] sm:text-[11px] font-bold text-white shadow-xs hover:bg-[#0047AD] transition-colors"
@@ -214,8 +214,8 @@ function HowItWorksHero() {
             <div className="mt-1 mx-auto h-1 w-10 sm:w-12 rounded-full bg-[#0B1B3D]/30" />
           </div>
 
-          {/* 3D Floating Metal Claim Card with Natural Organic Overlap */}
-          <div className="animate-float absolute bottom-[4%] left-0 flex aspect-[1.586] w-[56%] sm:w-[58%] -rotate-6 flex-col justify-between rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#102754] to-[#061229] p-3 sm:p-4 text-white shadow-[0_25px_50px_-15px_rgba(11,27,61,0.65)] border border-white/20 z-10 backdrop-blur-md">
+          {/* 3D Floating Metal Claim Card - Positioned gracefully without blocking phone text */}
+          <div className="animate-float absolute bottom-[2%] left-0 flex aspect-[1.586] w-[52%] sm:w-[50%] -rotate-6 flex-col justify-between rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#102754] to-[#061229] p-3 sm:p-4 text-white shadow-[0_25px_50px_-15px_rgba(11,27,61,0.65)] border border-white/20 z-10 backdrop-blur-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Image

@@ -125,14 +125,14 @@ export default function ConfiguratorClient() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
+    <div className="min-h-screen bg-surface/30 pt-24 sm:pt-28 xl:pt-32 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Studio Header */}
         <div className="border-b border-divider pb-6 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 px-3 py-1 text-caption font-bold uppercase tracking-widest text-navy border border-navy/10">
-            <span className="size-2 rounded-full bg-sky inline-block" /> AMTRAV UNIQUE Studio
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 px-3.5 py-1 text-caption font-bold uppercase tracking-widest text-navy border border-navy/10">
+            <span className="size-2 rounded-full bg-sky inline-block animate-pulse" /> AMTRAV UNIQUE Studio
           </span>
-          <h1 className="mt-2 text-display-m font-bold text-navy md:text-h1">
+          <h1 className="mt-3 text-display-m font-bold text-navy md:text-h1 tracking-tight">
             Build Your Bespoke Silhouette
           </h1>
           <p className="mt-2 text-small text-mid max-w-xl mx-auto">
@@ -191,10 +191,10 @@ export default function ConfiguratorClient() {
               />
 
               {/* Monogram Overlay Badge Preview */}
-              <div className="mt-4 flex items-center justify-between rounded-2xl bg-surface border border-divider p-4">
-                <div className="flex items-center gap-3">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface border border-divider p-4">
+                <div className="flex items-center gap-3.5">
                   <div
-                    className="flex size-11 items-center justify-center rounded-lg border border-white/20 shadow-xs font-serif font-bold text-lg"
+                    className="relative flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/20 shadow-md font-serif font-bold text-lg"
                     style={{
                       backgroundColor: selectedTag.hex,
                       color:
@@ -205,7 +205,8 @@ export default function ConfiguratorClient() {
                           : "rgba(0,0,0,0.45)",
                     }}
                   >
-                    {monogramText || "AMT"}
+                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-black/40 border border-white/20" />
+                    <span className="drop-shadow-sm tracking-wider">{monogramText || "AMT"}</span>
                   </div>
                   <div>
                     <span className="text-[11px] uppercase font-bold tracking-wider text-mid">
@@ -219,7 +220,7 @@ export default function ConfiguratorClient() {
 
                 <div className="text-right">
                   <span className="text-caption font-mono text-mid">Initial Stamp</span>
-                  <p className="text-small font-bold text-navy uppercase">{monogramText}</p>
+                  <p className="text-small font-bold text-navy uppercase tracking-widest">{monogramText || "AMT"}</p>
                 </div>
               </div>
             </div>
@@ -274,28 +275,28 @@ export default function ConfiguratorClient() {
                           setSelectedShell(shell);
                           setIsCustomShellColor(false);
                         }}
-                        className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all ${
+                        className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3.5 text-left transition-all ${
                           isSelected
                             ? "border-navy bg-navy/5 shadow-xs ring-1 ring-navy font-semibold"
                             : "border-divider bg-white hover:border-mid hover:bg-surface"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           <span
                             className="size-4.5 rounded-full border border-black/20 shrink-0"
                             style={{ backgroundColor: shell.finishColor }}
                           />
-                          <div>
-                            <div className="text-small text-navy flex items-center gap-2">
-                              <span>{shell.name}</span>
-                              <span className="rounded-full bg-navy/5 px-2 py-0.2 text-[10px] font-mono text-mid">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-small text-navy flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <span className="truncate">{shell.name}</span>
+                              <span className="rounded-full bg-navy/5 px-2 py-0.5 text-[10px] font-mono text-mid shrink-0">
                                 {shell.size}
                               </span>
                             </div>
-                            <div className="text-caption text-mid font-normal">{shell.finish}</div>
+                            <div className="text-caption text-mid font-normal truncate">{shell.finish}</div>
                           </div>
                         </div>
-                        <span className="text-small font-bold text-navy">
+                        <span className="text-small font-bold text-navy shrink-0 ml-2">
                           {formatPrice(shell.priceUsdMinor)}
                         </span>
                       </button>

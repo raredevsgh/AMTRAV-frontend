@@ -77,11 +77,15 @@ export default function InteractiveBagHeroSimulation() {
     Promise.all([
       import("three"),
       import("three/addons/loaders/GLTFLoader.js"),
+      import("three/addons/libs/meshopt_decoder.module.js"),
       import("three/addons/environments/RoomEnvironment.js"),
-    ]).then(async ([THREE, { GLTFLoader }, { RoomEnvironment }]) => {
+    ]).then(async ([THREE, { GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }]) => {
       if (cancelled) return;
 
-      const loader = new GLTFLoader();
+      if (MeshoptDecoder?.ready) {
+        await MeshoptDecoder.ready;
+      }
+      const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       const modelUrl = activeModel === "carry-on" ? "/models/carry-on.glb" : "/models/check-in.glb";
 
       try {

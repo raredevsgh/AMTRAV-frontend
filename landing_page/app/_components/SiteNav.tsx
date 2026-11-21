@@ -28,7 +28,6 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
   const links = [
     { href: "/features", label: t("nav.features", "Features") },
     { href: "/how-it-works", label: t("nav.how", "How it works") },
-    { href: "/shop", label: t("nav.shop", "Shop") },
     { href: "/for-brands", label: t("nav.brands", "For brands") },
   ];
 
@@ -129,26 +128,23 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
 }
 
 export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void; isNegative?: boolean }) {
-  const active = usePathname() === SHOP_LINK.href;
+  const pathname = usePathname();
+  const active = pathname === SHOP_LINK.href;
   const { t } = useI18n();
   const { totalItems } = useCart();
 
-  return (
-    <Link
-      href={SHOP_LINK.href}
-      onClick={onClick}
-      aria-label={t("nav.shop", "Shop")}
-      aria-current={active ? "page" : undefined}
-      className={`relative group flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-        active
-          ? isNegative
-            ? "bg-white/20 border border-white/40 text-white shadow-xs"
-            : "bg-blue-pale border border-brand/30 shadow-xs"
-          : isNegative
-          ? "border border-white/25 bg-white/10 hover:border-white/50 text-white"
-          : "border-[1.5px] border-ink/80 bg-surface/80 hover:border-ink hover:bg-surface text-navy"
-      }`}
-    >
+  const className = `relative group flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+    active
+      ? isNegative
+        ? "bg-white/20 border border-white/40 text-white shadow-xs"
+        : "bg-blue-pale border border-brand/30 shadow-xs"
+      : isNegative
+      ? "border border-white/25 bg-white/10 hover:border-white/50 text-white"
+      : "border-[1.5px] border-ink/80 bg-surface/80 hover:border-ink hover:bg-surface text-navy"
+  }`;
+
+  const content = (
+    <>
       <Image
         src="/icons/shop-cart.svg"
         alt=""
@@ -168,6 +164,30 @@ export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void
           {totalItems}
         </span>
       )}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={t("nav.cart", "Cart & Shop")}
+        className={className}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={SHOP_LINK.href}
+      aria-label={t("nav.shop", "Shop")}
+      aria-current={active ? "page" : undefined}
+      className={className}
+    >
+      {content}
     </Link>
   );
 }

@@ -735,19 +735,19 @@ export default function ShopView() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {/* 1. Signature Suede Duffel Bag (When filter allows) */}
           {showDuffel && activeCollection === "all" && (
-            <article className="group flex flex-col justify-between rounded-3xl bg-white p-4 shadow-card transition-all duration-300 hover:shadow-xl border border-divider">
+            <article className="group flex flex-col justify-between rounded-3xl bg-white p-4 shadow-card transition-all duration-300 hover:shadow-xl border border-divider h-full">
               <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-surface/50 p-4 transition-colors group-hover:bg-surface/80">
                 <Image
-                  src="/images/trace/duffel-side-bag.jpg"
+                  src="/images/trace/duffel-side-bag-studio.jpg"
                   alt="AMTRAV Premium Suede & Aluminium Duffel Side Bag"
                   fill
                   sizes="(min-width: 1024px) 380px, 90vw"
-                  className="object-contain transition-transform duration-300 group-hover:scale-104"
+                  className="object-cover transition-transform duration-300 group-hover:scale-104"
                 />
-                <span className="absolute top-3 left-3 rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy">
+                <span className="absolute top-3 left-3 rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
                   New Arrival
                 </span>
-                <span className="absolute top-3 right-3 font-mono text-[11px] text-mid bg-white/80 px-2 py-0.5 rounded-full border border-divider">
+                <span className="absolute top-3 right-3 font-mono text-[11px] text-mid bg-white/80 px-2 py-0.5 rounded-full border border-divider backdrop-blur-sm">
                   32L
                 </span>
               </div>

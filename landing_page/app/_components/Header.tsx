@@ -7,10 +7,12 @@ import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
 import SiteNav, { ShopLink } from "./SiteNav";
 import HeaderActions from "./HeaderActions";
+import CartDrawer from "./CartDrawer";
 
 export default function Header() {
   const pathname = usePathname();
   const [isNegative, setIsNegative] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   useEffect(() => {
     const updateContrast = () => {
@@ -91,15 +93,18 @@ export default function Header() {
 
           {/* Mobile Actions: Clean Classic AMTRAV Style (Shop Icon + Hamburger Menu Only) */}
           <div className="flex items-center gap-2 xl:hidden">
-            <ShopLink isNegative={isNegative} />
+            <ShopLink isNegative={isNegative} onClick={() => setCartOpen(true)} />
             <MobileMenu isNegative={isNegative} />
           </div>
 
           {/* Desktop Header Actions */}
           <div className="hidden items-center gap-3 justify-self-end xl:flex">
-            <HeaderActions isNegative={isNegative} />
+            <HeaderActions isNegative={isNegative} onOpenCart={() => setCartOpen(true)} />
           </div>
         </header>
+
+        {/* Global Cart Slide-Over Drawer */}
+        <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       </div>
     </div>
   );

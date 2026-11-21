@@ -2,12 +2,13 @@
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { Rotate3d, Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, Eye, Layers } from "lucide-react";
+import { Rotate3d, Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, Eye, Layers, User, Camera, Sparkles } from "lucide-react";
 import type * as Three from "three";
 import type { GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { addToCart } from "@/lib/shop";
 import { useRegion } from "@/lib/region";
 import CartDrawer from "./CartDrawer";
+import ARProjectionModal from "./ARProjectionModal";
 
 export type LuggageTier = "essential" | "pro" | "executive" | "flagship";
 export type LuggageType = "cabin" | "checkin" | "both";
@@ -161,6 +162,8 @@ export default function BagViewer({
   const [touched, setTouched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
+  const [showHumanScale, setShowHumanScale] = useState(false);
+  const [arRoomOpen, setArRoomOpen] = useState(false);
 
   const rotateActionRef = useRef<((delta: number) => void) | null>(null);
   const shellMaterialsRef = useRef<Three.MeshPhysicalMaterial[]>([]);
@@ -443,33 +446,67 @@ export default function BagViewer({
           : "border border-white/10 bg-navy text-white shadow-2xl"
       } ${className}`}
     >
-      {/* Top Header: Collection & Luggage Type Selectors + Studio Theme Toggle */}
+      {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
       <div
-        className={`flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b pb-4 ${
+        className={`flex flex-wrap items-center justify-between gap-3.5 border-b pb-4 ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
-        {/* Collection / Tier Tabs */}
-        <div>
-          <span
-            className={`block text-[11px] font-mono uppercase tracking-wider mb-1 ${
-              isLight ? "text-brand" : "text-sky"
-            }`}
-          >
-            Luggage Collection
-          </span>
-          <div
-            className={`flex items-center gap-1 rounded-full p-1 border ${
-              isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
-            }`}
-          >
-            {(["essential", "pro", "executive", "flagship"] as LuggageTier[]).map((tier) => (
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          {/* Collection / Tier Tabs */}
+          <div>
+            <span
+              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 ${
+                isLight ? "text-brand" : "text-sky"
+              }`}
+            >
+              Luggage Collection
+            </span>
+            <div
+              className={`flex items-center gap-1 rounded-full p-1 border ${
+                isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+              }`}
+            >
+              {(["essential", "pro", "executive", "flagship"] as LuggageTier[]).map((tier) => (
+                <button
+                  key={tier}
+                  type="button"
+                  onClick={() => setSelectedTier(tier)}
+                  className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold capitalize transition-all ${
+                    selectedTier === tier
+                      ? isLight
+                        ? "bg-navy text-white shadow-xs"
+                        : "bg-sky text-navy shadow-sm"
+                      : isLight
+                      ? "text-mid hover:text-navy"
+                      : "text-blue-pale hover:text-white"
+                  }`}
+                >
+                  {tier}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Luggage Type: Cabin, Check-In, Both */}
+          <div>
+            <span
+              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 ${
+                isLight ? "text-brand" : "text-sky"
+              }`}
+            >
+              Luggage Type
+            </span>
+            <div
+              className={`flex items-center gap-1 rounded-full p-1 border ${
+                isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+              }`}
+            >
               <button
-                key={tier}
                 type="button"
-                onClick={() => setSelectedTier(tier)}
-                className={`rounded-full px-3.5 py-1 text-caption-m font-semibold capitalize transition-all ${
-                  selectedTier === tier
+                onClick={() => handleLuggageTypeSelect("cabin")}
+                className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold transition-all ${
+                  selectedLuggageType === "cabin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
                       : "bg-sky text-navy shadow-sm"
@@ -478,106 +515,127 @@ export default function BagViewer({
                     : "text-blue-pale hover:text-white"
                 }`}
               >
-                {tier}
+                Cabin 55
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => handleLuggageTypeSelect("checkin")}
+                className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold transition-all ${
+                  selectedLuggageType === "checkin"
+                    ? isLight
+                      ? "bg-navy text-white shadow-xs"
+                      : "bg-sky text-navy shadow-sm"
+                    : isLight
+                    ? "text-mid hover:text-navy"
+                    : "text-blue-pale hover:text-white"
+                }`}
+              >
+                Check-In 68
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLuggageTypeSelect("both")}
+                className={`rounded-full px-3 py-1 text-[11px] sm:text-caption-m font-semibold transition-all ${
+                  selectedLuggageType === "both"
+                    ? isLight
+                      ? "bg-navy text-white shadow-xs"
+                      : "bg-sky text-navy shadow-sm"
+                    : isLight
+                    ? "text-mid hover:text-navy"
+                    : "text-blue-pale hover:text-white"
+                }`}
+              >
+                Both (Duo)
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Center: Luggage Type: Cabin, Check-In, Both */}
-        <div>
-          <span
-            className={`block text-[11px] font-mono uppercase tracking-wider mb-1 sm:text-center ${
-              isLight ? "text-brand" : "text-sky"
-            }`}
-          >
-            Luggage Type
-          </span>
-          <div
-            className={`flex items-center gap-1 rounded-full p-1 border ${
-              isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() => handleLuggageTypeSelect("cabin")}
-              className={`rounded-full px-3.5 py-1 text-caption-m font-semibold transition-all ${
-                selectedLuggageType === "cabin"
-                  ? isLight
-                    ? "bg-navy text-white shadow-xs"
-                    : "bg-sky text-navy shadow-sm"
-                  : isLight
-                  ? "text-mid hover:text-navy"
-                  : "text-blue-pale hover:text-white"
+        {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Human Scale Anthropometric Reality Anchor */}
+          <div>
+            <span
+              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 text-right ${
+                isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
-              Cabin 55
-            </button>
+              HCI Scale
+            </span>
             <button
               type="button"
-              onClick={() => handleLuggageTypeSelect("checkin")}
-              className={`rounded-full px-3.5 py-1 text-caption-m font-semibold transition-all ${
-                selectedLuggageType === "checkin"
-                  ? isLight
-                    ? "bg-navy text-white shadow-xs"
-                    : "bg-sky text-navy shadow-sm"
+              onClick={() => setShowHumanScale(!showHumanScale)}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border transition-all ${
+                showHumanScale
+                  ? "bg-brand text-white border-brand shadow-xs"
                   : isLight
-                  ? "text-mid hover:text-navy"
-                  : "text-blue-pale hover:text-white"
+                  ? "border-divider bg-surface text-navy hover:border-mid"
+                  : "border-white/10 bg-navy-deep text-white hover:border-white/30"
               }`}
+              title="Toggle Human Scale Silhouette & Overhead Bin Clearance"
             >
-              Check-In 68
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLuggageTypeSelect("both")}
-              className={`rounded-full px-3.5 py-1 text-caption-m font-semibold transition-all ${
-                selectedLuggageType === "both"
-                  ? isLight
-                    ? "bg-navy text-white shadow-xs"
-                    : "bg-sky text-navy shadow-sm"
-                  : isLight
-                  ? "text-mid hover:text-navy"
-                  : "text-blue-pale hover:text-white"
-              }`}
-            >
-              Both (Duo Set)
+              <User className="size-3.5" />
+              <span>Human Scale</span>
             </button>
           </div>
-        </div>
 
-        {/* Right: Studio Environment Switcher */}
-        <div>
-          <span
-            className={`block text-[11px] font-mono uppercase tracking-wider mb-1 sm:text-right ${
-              isLight ? "text-mid" : "text-blue-pale"
-            }`}
-          >
-            Studio View
-          </span>
-          <div
-            className={`flex items-center gap-1 rounded-full p-1 border ${
-              isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() => setStudioTheme("light")}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                isLight ? "bg-white text-navy shadow-xs" : "text-blue-pale hover:text-white"
+          {/* WebAR Camera Room Projection */}
+          <div>
+            <span
+              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 text-right ${
+                isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
-              Studio Light
-            </button>
+              Room AR
+            </span>
             <button
               type="button"
-              onClick={() => setStudioTheme("dark")}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                !isLight ? "bg-sky text-navy shadow-xs" : "text-mid hover:text-navy"
+              onClick={() => setArRoomOpen(true)}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold border transition-all ${
+                isLight
+                  ? "border-divider bg-surface text-navy hover:border-navy hover:bg-navy hover:text-white shadow-xs"
+                  : "border-sky/40 bg-sky/15 text-sky hover:bg-sky hover:text-navy shadow-xs"
+              }`}
+              title="Project 3D suitcase in your room via Camera (WebAR)"
+            >
+              <Camera className="size-3.5" />
+              <span>In Room</span>
+            </button>
+          </div>
+
+          {/* Studio View */}
+          <div>
+            <span
+              className={`block text-[11px] font-mono uppercase tracking-wider mb-1 text-right ${
+                isLight ? "text-mid" : "text-blue-pale"
               }`}
             >
-              Midnight
-            </button>
+              Studio
+            </span>
+            <div
+              className={`flex items-center gap-0.5 rounded-full p-1 border ${
+                isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => setStudioTheme("light")}
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                  isLight ? "bg-white text-navy shadow-xs" : "text-blue-pale hover:text-white"
+                }`}
+              >
+                Light
+              </button>
+              <button
+                type="button"
+                onClick={() => setStudioTheme("dark")}
+                className={`rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                  !isLight ? "bg-sky text-navy shadow-xs" : "text-mid hover:text-navy"
+                }`}
+              >
+                Dark
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -702,6 +760,62 @@ export default function BagViewer({
             <ChevronRight className="size-5" />
           </button>
         </div>
+
+        {/* Human Scale Anthropometric Reality Anchor Graphic Overlay */}
+        {showHumanScale && (
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-end justify-between p-3 sm:p-5 overflow-hidden bg-black/5 backdrop-blur-[1px] animate-in fade-in duration-200">
+            {/* Left: Adult Human Silhouette & Height Scale Markers */}
+            <div className="relative h-full flex items-end">
+              <div className="relative h-[88%] w-20 sm:w-28 opacity-85 transition-opacity">
+                <svg viewBox="0 0 100 240" fill="none" className="size-full">
+                  <circle cx="50" cy="22" r="14" fill={isLight ? "#0B1B3D" : "#8FAECC"} opacity="0.45" />
+                  <path
+                    d="M32 46 C32 40, 68 40, 68 46 L76 100 L70 160 L65 235 L53 235 L50 165 L47 235 L35 235 L30 160 L24 100 Z"
+                    fill={isLight ? "#0B1B3D" : "#8FAECC"}
+                    opacity="0.35"
+                  />
+                  <circle cx="76" cy="98" r="4" fill={isLight ? "#2A4BD7" : "#38BDF8"} opacity="0.85" />
+                </svg>
+
+                {/* 178 cm Traveller Label */}
+                <div className="absolute top-0 left-full ml-1 whitespace-nowrap">
+                  <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs ${isLight ? "bg-white/95 text-navy border border-divider" : "bg-black/70 text-white border border-white/10"}`}>
+                    178 cm (5'10")
+                  </span>
+                </div>
+
+                {/* 105 cm Ergonomic Handle Label */}
+                <div className="absolute top-[41%] left-full ml-1 whitespace-nowrap">
+                  <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand text-white shadow-xs">
+                    105 cm Handle
+                  </span>
+                </div>
+
+                {/* Bag Height marker */}
+                <div className="absolute bottom-[28%] left-full ml-1 whitespace-nowrap">
+                  <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded border shadow-xs ${isLight ? "bg-white text-navy border-brand" : "bg-navy-deep text-sky border-sky"}`}>
+                    {activeModel === "carry-on" ? "55 cm Cabin" : "68 cm Check-In"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: IATA Overhead Bin Clearance & Specs Badge */}
+            <div className="flex flex-col gap-2 max-w-[190px] sm:max-w-[220px]">
+              <div className={`rounded-xl p-2.5 border shadow-lg backdrop-blur-md ${isLight ? "bg-white/95 border-divider text-navy" : "bg-navy-deep/95 border-white/10 text-white"}`}>
+                <div className="flex items-center gap-1.5 text-brand font-bold text-[9.5px] uppercase font-mono mb-1">
+                  <Check className="size-3 text-emerald-600" />
+                  <span>{activeModel === "carry-on" ? "Overhead Bin Compliant" : "Maximum Checked Standard"}</span>
+                </div>
+                <p className="text-[10.5px] leading-tight text-mid">
+                  {activeModel === "carry-on"
+                    ? "55 × 40 × 23 cm complies with IATA guidelines for global airlines (Lufthansa, British Airways, Air France, Delta & United)."
+                    : "68 × 45 × 28 cm full week capacity with 65L packing volume and built-in drop impact sensors."}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Color Selection Bar & Custom Palette Tool */}
@@ -928,6 +1042,16 @@ export default function BagViewer({
       </div>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {/* Real-World WebAR Camera Projection Modal */}
+      <ARProjectionModal
+        isOpen={arRoomOpen}
+        onClose={() => setArRoomOpen(false)}
+        activeModel={activeModel}
+        colorHex={activeColor}
+        metalness={selectedFinish.metalness}
+        roughness={selectedFinish.roughness}
+      />
     </div>
   );
 }
