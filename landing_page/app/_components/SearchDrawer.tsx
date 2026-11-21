@@ -19,16 +19,6 @@ export interface SearchProduct {
 
 const SEARCH_CATALOG: SearchProduct[] = [
   {
-    sku: "AMT-BAG-001",
-    name: "AMTRAV Premium Suede & Aluminium Duffel Side Bag",
-    category: "Bags",
-    tag: "New Signature",
-    priceUsdMinor: 48000,
-    image: "/images/trace/duffel-side-bag.jpg",
-    href: "/shop?product=duffel-side-bag",
-    description: "Premium Suede with Aluminium Stripes, RFID Protection, 5 colorways, 32L.",
-  },
-  {
     sku: "AMT-CABIN-55",
     name: "Cabin 55 Smart Carry-On",
     category: "Luggage",
@@ -91,9 +81,9 @@ const SEARCH_CATALOG: SearchProduct[] = [
 ];
 
 const POPULAR_SEARCHES = [
-  "Suede Duffel Bag",
   "Cabin 55",
   "Check-In 68",
+  "The Pair (Duo)",
   "RFID Protection",
   "Lifetime Guarantee",
   "Combination Lock Tutorial",
@@ -179,7 +169,7 @@ export default function SearchDrawer({ isOpen, onClose }: SearchDrawerProps) {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Search by keyword, size, or item no. (e.g. Suede Duffel, Cabin 55...)"
+            placeholder="Search by keyword, size, or item no. (e.g. Cabin 55, Check-In 68...)"
             className="flex-1 bg-transparent text-base sm:text-lg font-medium text-navy placeholder:text-mid/70 focus:outline-none"
           />
           {query && (
@@ -224,7 +214,7 @@ export default function SearchDrawer({ isOpen, onClose }: SearchDrawerProps) {
             <div className="py-12 text-center text-mid">
               <Luggage className="mx-auto size-10 opacity-30 mb-2" />
               <p className="text-small font-medium text-navy">No products match &ldquo;{query}&rdquo;</p>
-              <p className="text-caption mt-1">Try searching for &ldquo;Cabin 55&rdquo;, &ldquo;Duffel&rdquo;, or &ldquo;Lock&rdquo;</p>
+              <p className="text-caption mt-1">Try searching for &ldquo;Cabin 55&rdquo;, &ldquo;Check-In 68&rdquo;, or &ldquo;Lock&rdquo;</p>
             </div>
           ) : (
             filteredResults.map((item, idx) => {

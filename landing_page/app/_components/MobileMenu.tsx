@@ -71,7 +71,6 @@ function NavigationDialog({ pathname, close, restoreFocus }: {
     { href: "/how-it-works", label: t("nav.how", "How it works") },
     { href: "/for-brands", label: t("nav.brands", "For brands") },
     { href: "/shop", label: t("nav.shop", "Shop now") },
-    { href: "/shop?product=duffel-side-bag", label: "Suede Duffel Bag", badge: "New" },
     { href: "/customise", label: "AMTRAV UNIQUE Studio", badge: "3D" },
     { href: "/services", label: "Client Services" },
   ];

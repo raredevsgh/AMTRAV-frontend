@@ -181,8 +181,8 @@ export default function CurrencySwitcher({
               {[
                 { label: "Cabin 55", usd: "349" },
                 { label: "Check-In 68", usd: "429" },
-                { label: "Suede Duffel", usd: "480" },
-                { label: "The Pair", usd: "719" },
+                { label: "The Pair (Duo)", usd: "719" },
+                { label: "Trunk 90", usd: "590" },
               ].map((p) => (
                 <button
                   key={p.label}

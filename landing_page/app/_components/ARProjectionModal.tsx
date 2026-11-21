@@ -28,12 +28,11 @@ import {
 import type * as Three from "three";
 import type { Active3DModel } from "./BagViewer";
 import {
-  createUltraRealisticDuffel,
   createInteriorOpenSuitcase,
   playZipperAudio,
 } from "./Realistic3DModels";
 
-export type ARModelType = "carry-on" | "check-in" | "duffel";
+export type ARModelType = "carry-on" | "check-in";
 
 interface ARProjectionModalProps {
   isOpen: boolean;
@@ -43,14 +42,6 @@ interface ARProjectionModalProps {
   metalness?: number;
   roughness?: number;
 }
-
-const SUEDE_AR_SWATCHES = [
-  { name: "Cognac Brown", hex: "#6e3b1b" },
-  { name: "Onyx Black", hex: "#1a1a1a" },
-  { name: "Midnight Navy", hex: "#10213b" },
-  { name: "Sand Beige", hex: "#c2b29d" },
-  { name: "Charcoal Grey", hex: "#424449" },
-];
 
 const ANGLE_PRESETS = [
   { id: "front", label: "Front (3D)", pitch: 0, yaw: 0.2 },
@@ -92,8 +83,7 @@ export default function ARProjectionModal({
   metalness = 0.5,
   roughness = 0.35,
 }: ARProjectionModalProps) {
-  const [model, setModel] = useState<ARModelType>(initialModel);
-  const [suedeColorHex, setSuedeColorHex] = useState("#6e3b1b");
+  const [model, setModel] = useState<ARModelType>(initialModel === "check-in" ? "check-in" : "carry-on");
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
 
@@ -151,11 +141,10 @@ export default function ARProjectionModal({
   const shellMaterialsRef = useRef<any[]>([]);
   const closedBagRef = useRef<any>(null);
   const openSuitcaseRef = useRef<any>(null);
-  const duffelUpdateRef = useRef<((hex: string) => void) | null>(null);
 
   // Keep model updated if prop changes
   useEffect(() => {
-    setModel(initialModel);
+    setModel(initialModel === "check-in" ? "check-in" : "carry-on");
   }, [initialModel]);
 
   // Request rear environment camera
@@ -210,9 +199,7 @@ export default function ARProjectionModal({
 
   // Calculate Weights & Airline Compliance
   const baseTareKg = useMemo(() => {
-    if (model === "carry-on") return 3.8;
-    if (model === "check-in") return 4.6;
-    return 1.4; // Duffel
+    return model === "carry-on" ? 3.8 : 4.6;
   }, [model]);
 
   const packedAddedKg = useMemo(() => {
@@ -237,9 +224,7 @@ export default function ARProjectionModal({
   }, [selectedAirlineId]);
 
   const currentAllowanceKg = useMemo(() => {
-    if (model === "carry-on") return selectedAirline.cabinMaxKg;
-    if (model === "check-in") return selectedAirline.checkinMaxKg;
-    return 10.0; // Suede Duffel personal item allowance
+    return model === "carry-on" ? selectedAirline.cabinMaxKg : selectedAirline.checkinMaxKg;
   }, [model, selectedAirline]);
 
   const complianceStatus = useMemo(() => {
@@ -280,13 +265,6 @@ export default function ARProjectionModal({
   useEffect(() => {
     scaleRef.current = scale;
   }, [scale]);
-
-  // Live material color updates for Suede Duffel and Suitcase
-  useEffect(() => {
-    if (duffelUpdateRef.current) {
-      duffelUpdateRef.current(suedeColorHex);
-    }
-  }, [suedeColorHex]);
 
   useEffect(() => {
     if (openSuitcaseRef.current?.updateColor) {
@@ -403,21 +381,15 @@ export default function ARProjectionModal({
       let currentHandleExt = 0;
       let currentLiftingY = 0;
 
-      if (model === "duffel") {
-        // High-Fidelity Handcrafted Italian Suede Duffel 3D Model with sheen & PBR nap
-        const duffel = createUltraRealisticDuffel(THREE, suedeColorHex);
-        duffelUpdateRef.current = duffel.updateColor;
-        rootGroup.add(duffel.group);
-      } else {
-        // Build Photorealistic Clamshell Suitcase with Hinomoto wheels, fluted ribs,
-        // handles, TSA locks, OLED scale, and deep packing interior
-        const openSuitcase = createInteriorOpenSuitcase(THREE, colorHex, metalness, roughness);
-        openSuitcase.group.position.set(0, 0, 0);
-        rootGroup.add(openSuitcase.group);
-        openSuitcaseRef.current = openSuitcase;
-        handleGroupRef.current = openSuitcase;
+      // Build Photorealistic Clamshell Suitcase with Hinomoto wheels, fluted ribs,
+      // handles, TSA locks, OLED scale, and deep packing interior
+      const openSuitcase = createInteriorOpenSuitcase(THREE, colorHex, metalness, roughness);
+      openSuitcase.group.position.set(0, 0, 0);
+      rootGroup.add(openSuitcase.group);
+      openSuitcaseRef.current = openSuitcase;
+      handleGroupRef.current = openSuitcase;
 
-        // Also attempt loading GLTF closed model as alternative if desired
+      // Also attempt loading GLTF closed model as alternative if desired
         if (MeshoptDecoder?.ready) {
           await MeshoptDecoder.ready;
         }
@@ -466,7 +438,6 @@ export default function ARProjectionModal({
         } catch (err) {
           console.error("AR GLTF loading error:", err);
         }
-      }
 
       const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 20);
       camera.position.set(0, 0.25, 2.8);
@@ -705,10 +676,10 @@ export default function ARProjectionModal({
           <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 border border-white/20 backdrop-blur-md sm:ml-2">
             <span
               className="size-2.5 rounded-full border border-white/40 shadow-xs"
-              style={{ backgroundColor: model === "duffel" ? suedeColorHex : colorHex }}
+              style={{ backgroundColor: colorHex }}
             />
             <span className="text-[10px] font-mono text-white/90 uppercase font-semibold">
-              {model === "duffel" ? suedeColorHex : colorHex}
+              {colorHex}
             </span>
           </div>
 
@@ -723,7 +694,7 @@ export default function ARProjectionModal({
           </button>
         </div>
 
-        {/* Silhouette Model Toggle: Cabin 55 vs Check-In 68 vs Suede Duffel */}
+        {/* Silhouette Model Toggle: Cabin 55 vs Check-In 68 */}
         <div className="flex items-center justify-center gap-1 rounded-full bg-white/10 p-1 border border-white/20 backdrop-blur-md self-center sm:self-auto">
           <button
             type="button"
@@ -742,15 +713,6 @@ export default function ARProjectionModal({
             }`}
           >
             Check-In 68
-          </button>
-          <button
-            type="button"
-            onClick={() => setModel("duffel")}
-            className={`rounded-full px-3 py-1 text-[10.5px] sm:text-[11px] font-semibold transition-all ${
-              model === "duffel" ? "bg-white text-navy shadow-xs font-bold" : "text-white/75 hover:text-white"
-            }`}
-          >
-            Suede Duffel
           </button>
         </div>
 
@@ -948,77 +910,47 @@ export default function ARProjectionModal({
 
         {/* Interactive AR Feature Action Bar - Positioned responsively */}
         <div className="absolute bottom-[88px] sm:bottom-auto sm:top-36 inset-x-3 sm:inset-x-auto sm:left-6 z-30 flex flex-row sm:flex-col items-center sm:items-start justify-center gap-1.5 sm:gap-2 pointer-events-auto">
-          {model !== "duffel" && (
-            <>
-              {/* Clamshell Open/Close Toggle with Tactile Zipper Audio */}
-              <button
-                type="button"
-                onClick={handleToggleClamshell}
-                className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
-                  isCaseOpen
-                    ? "bg-sky text-navy border-sky font-extrabold"
-                    : "bg-black/70 text-white border-white/20 hover:bg-black/90"
-                }`}
-              >
-                <FolderOpen className="size-3 sm:size-3.5" />
-                <span>{isCaseOpen ? "Close Interior" : "Open Case (Zip)"}</span>
-              </button>
+          {/* Clamshell Open/Close Toggle with Tactile Zipper Audio */}
+          <button
+            type="button"
+            onClick={handleToggleClamshell}
+            className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
+              isCaseOpen
+                ? "bg-sky text-navy border-sky font-extrabold"
+                : "bg-black/70 text-white border-white/20 hover:bg-black/90"
+            }`}
+          >
+            <FolderOpen className="size-3 sm:size-3.5" />
+            <span>{isCaseOpen ? "Close Interior" : "Open Case (Zip)"}</span>
+          </button>
 
-              {/* Telescopic Handle Extension Toggle */}
-              <button
-                type="button"
-                onClick={() => setIsHandleExtended(!isHandleExtended)}
-                className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
-                  isHandleExtended
-                    ? "bg-sky text-navy border-sky font-extrabold"
-                    : "bg-black/70 text-white border-white/20 hover:bg-black/90"
-                }`}
-              >
-                <Maximize2 className="size-3 sm:size-3.5" />
-                <span>{isHandleExtended ? "Retract Handle" : "Extend Handle"}</span>
-              </button>
+          {/* Telescopic Handle Extension Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsHandleExtended(!isHandleExtended)}
+            className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
+              isHandleExtended
+                ? "bg-sky text-navy border-sky font-extrabold"
+                : "bg-black/70 text-white border-white/20 hover:bg-black/90"
+            }`}
+          >
+            <Maximize2 className="size-3 sm:size-3.5" />
+            <span>{isHandleExtended ? "Retract Handle" : "Extend Handle"}</span>
+          </button>
 
-              {/* Digital Scale Weighing HUD Toggle with Lift Simulation */}
-              <button
-                type="button"
-                onClick={handleToggleWeighing}
-                className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
-                  isWeighingActive
-                    ? "bg-emerald-500 text-white border-emerald-400 font-extrabold shadow-emerald-500/30"
-                    : "bg-black/70 text-white border-white/20 hover:bg-black/90"
-                }`}
-              >
-                <Scale className="size-3 sm:size-3.5" />
-                <span>{isWeighingActive ? "Hide Scale" : "Weigh Bag (TRACE)"}</span>
-              </button>
-            </>
-          )}
-
-          {/* Suede Duffel Color Switcher Pill */}
-          {model === "duffel" && (
-            <div className="flex items-center gap-2 rounded-2xl bg-black/80 px-3 py-1.5 border border-white/20 backdrop-blur-md text-white shadow-xl">
-              <span className="text-[10px] font-mono uppercase text-sky font-bold hidden sm:inline">
-                Suede:
-              </span>
-              <div className="flex items-center gap-1.5">
-                {SUEDE_AR_SWATCHES.map((sw) => (
-                  <button
-                    key={sw.name}
-                    type="button"
-                    onClick={() => setSuedeColorHex(sw.hex)}
-                    className={`size-5 sm:size-6 rounded-full border transition-all ${
-                      suedeColorHex === sw.hex
-                        ? "ring-2 ring-white ring-offset-2 scale-110 shadow-xs border-white"
-                        : "border-black/30 hover:scale-105"
-                    }`}
-                    style={{ backgroundColor: sw.hex }}
-                    title={sw.name}
-                    aria-label={`Select ${sw.name}`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Digital Scale Weighing HUD Toggle with Lift Simulation */}
+          <button
+            type="button"
+            onClick={handleToggleWeighing}
+            className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
+              isWeighingActive
+                ? "bg-emerald-500 text-white border-emerald-400 font-extrabold shadow-emerald-500/30"
+                : "bg-black/70 text-white border-white/20 hover:bg-black/90"
+            }`}
+          >
+            <Scale className="size-3 sm:size-3.5" />
+            <span>{isWeighingActive ? "Hide Scale" : "Weigh Bag (TRACE)"}</span>
+          </button>
         </div>
 
         {/* Bottom Floating Control Bar */}
@@ -1111,9 +1043,7 @@ export default function ARProjectionModal({
               <span className="text-[11px] text-white/75">
                 {model === "carry-on"
                   ? "Cabin 55 (55 × 40 × 23 cm)"
-                  : model === "check-in"
-                  ? "Check-In 68 (68 × 45 × 28 cm)"
-                  : "Handcrafted Suede Duffel (32L)"}{" "}
+                  : "Check-In 68 (68 × 45 × 28 cm)"}{" "}
                 in physical room scale
               </span>
               <a

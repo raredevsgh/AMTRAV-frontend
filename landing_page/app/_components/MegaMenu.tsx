@@ -99,38 +99,37 @@ export const MEGA_MENU_DATA: MegaMenuItem[] = [
     },
   },
   {
-    id: "bags",
-    label: "Bags",
-    href: "/shop?category=bags",
+    id: "sets",
+    label: "Duo Sets",
+    href: "/shop?filter=both",
     columns: [
       {
-        title: "Spotlight Innovation",
+        title: "Matched Combinations",
         links: [
           {
-            label: "AMTRAV Suede & Aluminium Duffel Side Bag",
-            href: "/shop?product=duffel-side-bag",
-            badge: "New Signature",
+            label: "Essential The Pair (Cabin 55 + Check-In 68)",
+            href: "/shop#range",
+            badge: "Best Value",
           },
-          { label: "RFID-Shielded Travel Compartments", href: "/shop?feature=rfid" },
-          { label: "Suede Colorways (5 Shades)", href: "/shop?product=duffel-side-bag#swatches" },
+          { label: "Pro Duo Titanium Silver Set", href: "/shop#range" },
+          { label: "Bespoke Duo Studio Custom Set", href: "/customise" },
         ],
       },
       {
-        title: "Everyday & Weekender",
+        title: "Travel Profiles",
         links: [
-          { label: "Executive Travel Backpacks", href: "/shop?category=backpacks" },
-          { label: "Aluminium Frame Crossbody Bags", href: "/shop?category=crossbody" },
-          { label: "Weekend Duffle Bags", href: "/shop?category=duffle" },
-          { label: "Briefcases & Work Totes", href: "/shop?category=briefcases" },
+          { label: "Solo & Business Travel (Cabin 55)", href: "/shop#range" },
+          { label: "Extended Holiday (Check-In 68)", href: "/shop#range" },
+          { label: "Long-Haul Expedition (Trunk 90)", href: "/shop#range" },
         ],
       },
     ],
     card: {
-      title: "AMTRAV Premium Duffel",
-      description: "Handcrafted suede with aerospace aluminium stripes and RFID security.",
-      image: "/images/trace/duffel-side-bag.jpg",
-      linkText: "Discover the Duffel",
-      linkHref: "/shop?product=duffel-side-bag",
+      title: "The Matched Travel Pair",
+      description: "Cabin 55 and Check-In 68 precision-matched in tone and finish.",
+      image: "/images/trace/hero-pair.jpg",
+      linkText: "Explore Duo Sets",
+      linkHref: "/shop#range",
     },
   },
   {
@@ -193,7 +192,7 @@ export const MEGA_MENU_DATA: MegaMenuItem[] = [
       {
         title: "Recent Drops",
         links: [
-          { label: "Suede & Aluminium Duffel Collection", href: "/shop?product=duffel-side-bag", badge: "New" },
+          { label: "Bespoke Custom Silhouette Studio", href: "/customise", badge: "3D" },
           { label: "Titanium Check-In 76", href: "/shop?product=Check-in+76" },
           { label: "Cognac Brown & Charcoal Grey Editions", href: "/shop?color=cognac" },
         ],

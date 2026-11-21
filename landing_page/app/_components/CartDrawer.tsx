@@ -132,7 +132,7 @@ export default function CartDrawer({
               </div>
               <p className="text-body font-bold text-navy">{t("shop.cartEmpty", "Your pre-order cart is empty")}</p>
               <p className="max-w-xs text-caption text-mid">
-                {t("shop.browse", "Explore our smart luggage range, configure sizes and colors, or reserve the handcrafted Suede Duffel.")}
+                {t("shop.browse", "Explore our smart luggage range, configure sizes and colors, or reserve your serialized case.")}
               </p>
               <Link
                 href="/shop"

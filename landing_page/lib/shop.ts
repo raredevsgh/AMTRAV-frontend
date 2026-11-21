@@ -19,7 +19,7 @@ export interface ShopProduct {
   available: number;
   category: "Luggage" | "Bags" | "Bundles";
   sizeCategory: "Cabin" | "Check-In" | "Trunk" | "Bag";
-  material: "Aluminium" | "Polycarbonate" | "Premium Suede";
+  material: "Aluminium" | "Polycarbonate";
   collection: "Essential" | "Pro" | "Executive" | "Flagship" | "Signature" | "Original" | "Classic";
   volumeL: number;
   volumeGal: number;
@@ -57,46 +57,7 @@ export const PRO_FLAGSHIP_SWATCHES: ColorSwatch[] = [
 ];
 
 export const CATALOG: ShopProduct[] = [
-  // 1. Signature Bag: Handcrafted Suede Duffel
-  {
-    sku: "duffel-side-bag",
-    name: "AMTRAV Premium Suede & Aluminium Duffel Side Bag",
-    subtitle: "Suede | Aluminium Accents",
-    description: "Handcrafted Italian suede with aerospace-grade ribbed aluminium stripes, RFID-shielded compartment, and ergonomic metal hardware.",
-    image: "/images/trace/duffel-side-bag-studio.jpg",
-    price_minor: 48000,
-    currency: "USD",
-    available: 35,
-    category: "Bags",
-    sizeCategory: "Bag",
-    material: "Premium Suede",
-    collection: "Signature",
-    volumeL: 32,
-    volumeGal: 8.5,
-    weightKg: 1.45,
-    weightLbs: 3.2,
-    dimensionsCm: { height: 28, width: 50, depth: 23 },
-    dimensionsInches: { height: 11.0, width: 19.7, depth: 9.1 },
-    features: [
-      "Luxury Suede Finish",
-      "Aluminium Signature Stripes",
-      "Aluminium Handle & Detailing",
-      "RFID Shielded Compartment",
-      "Spacious Main Cavity with Zippers",
-      "Detachable Padded Shoulder Strap",
-      "Durable & Water Resistant",
-    ],
-    swatches: [
-      { name: "Cognac Brown", color: "#6e3b1b", image: "/images/trace/duffel-side-bag-studio.jpg" },
-      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/duffel-side-bag-studio.jpg" },
-      { name: "Midnight Navy", color: "#10213b", image: "/images/trace/duffel-side-bag-studio.jpg" },
-      { name: "Sand Beige", color: "#c2b29d", image: "/images/trace/duffel-side-bag-studio.jpg" },
-      { name: "Charcoal Grey", color: "#424449", image: "/images/trace/duffel-side-bag-studio.jpg" },
-    ],
-    badge: "New",
-  },
-
-  // 2. Essential Collection (Photo 1 colors + Custom Palette)
+  // 1. Essential Collection (Photo 1 colors + Custom Palette)
   {
     sku: "essential-cabin-55",
     name: "Essential Cabin 55",

@@ -9,11 +9,10 @@ import { addToCart } from "@/lib/shop";
 import { useRegion } from "@/lib/region";
 import CartDrawer from "./CartDrawer";
 import ARProjectionModal from "./ARProjectionModal";
-import { createUltraRealisticDuffel } from "./Realistic3DModels";
 
 export type LuggageTier = "essential" | "pro" | "executive" | "flagship";
-export type LuggageType = "cabin" | "checkin" | "duffel" | "both";
-export type Active3DModel = "carry-on" | "check-in" | "duffel";
+export type LuggageType = "cabin" | "checkin" | "both";
+export type Active3DModel = "carry-on" | "check-in";
 
 export interface BagFinish {
   id: string;
@@ -23,15 +22,6 @@ export interface BagFinish {
   roughness: number;
   posterImage: string;
 }
-
-// Handcrafted Italian Suede Swatches
-export const SUEDE_SWATCHES: BagFinish[] = [
-  { id: "cognac-brown", name: "Cognac Brown", color: "#6e3b1b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-cognac-brown.jpg" },
-  { id: "onyx-black", name: "Onyx Black", color: "#1a1a1a", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-onyx-black.jpg" },
-  { id: "midnight-navy", name: "Midnight Navy", color: "#10213b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-midnight-navy.jpg" },
-  { id: "sand-beige", name: "Sand Beige", color: "#c2b29d", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-sand-beige.jpg" },
-  { id: "charcoal-grey", name: "Charcoal Grey", color: "#424449", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-charcoal-grey.jpg" },
-];
 
 // Photo 1: Essential Colors: Midnight Black, Space Grey, Navy Blue
 export const ESSENTIAL_SWATCHES: BagFinish[] = [
@@ -107,12 +97,6 @@ function getKit(): Promise<Kit> {
 
 const modelCache = new Map<Active3DModel, Promise<any>>();
 function getModel(name: Active3DModel): Promise<any> {
-  if (name === "duffel") {
-    return getKit().then(({ THREE }) => {
-      const duffel = createUltraRealisticDuffel(THREE, "#6e3b1b");
-      return { scene: duffel.group } as any;
-    });
-  }
   let model = modelCache.get(name);
   if (!model) {
     model = getKit().then(({ load }) => load(MODELS[name as "carry-on" | "check-in"]));
@@ -153,11 +137,10 @@ export default function BagViewer({
     defaultLuggageType === "checkin" ? "check-in" : "carry-on"
   );
 
-  // Active swatches based on collection or duffel bag
+  // Active swatches based on collection
   const availableSwatches = useMemo(() => {
-    if (selectedLuggageType === "duffel") return SUEDE_SWATCHES;
     return selectedTier === "essential" ? ESSENTIAL_SWATCHES : PRO_FLAGSHIP_SWATCHES;
-  }, [selectedTier, selectedLuggageType]);
+  }, [selectedTier]);
 
   // Selected Finish / Color
   const [selectedFinish, setSelectedFinish] = useState<BagFinish>(availableSwatches[0]);
@@ -180,7 +163,6 @@ export default function BagViewer({
       setSelectedLuggageType(externalLuggageType);
       if (externalLuggageType === "cabin") setActiveModel("carry-on");
       else if (externalLuggageType === "checkin") setActiveModel("check-in");
-      else if (externalLuggageType === "duffel") setActiveModel("duffel");
     }
   }, [externalLuggageType]);
 
@@ -202,7 +184,6 @@ export default function BagViewer({
     setSelectedLuggageType(type);
     if (type === "cabin") setActiveModel("carry-on");
     else if (type === "checkin") setActiveModel("check-in");
-    else if (type === "duffel") setActiveModel("duffel");
     // If 'both', keep the currently viewed model
   };
 
@@ -225,8 +206,8 @@ export default function BagViewer({
 
   // Compute active color and material properties
   const activeColor = isCustomColor ? customHex : selectedFinish.color;
-  const activeMetalness = selectedLuggageType === "duffel" ? 0.04 : selectedTier === "essential" ? 0.25 : 0.7;
-  const activeRoughness = selectedLuggageType === "duffel" ? 0.86 : selectedTier === "essential" ? 0.45 : 0.28;
+  const activeMetalness = selectedTier === "essential" ? 0.25 : 0.7;
+  const activeRoughness = selectedTier === "essential" ? 0.45 : 0.28;
 
   // Real-time material update without GLTF reloading
   useEffect(() => {
@@ -468,9 +449,6 @@ export default function BagViewer({
 
   // Pricing calculation
   const basePriceMinor = useMemo(() => {
-    if (selectedLuggageType === "duffel") {
-      return 44400; // 444 € / $480
-    }
     const tierMultiplier: Record<LuggageTier, number> = {
       essential: 32900,
       pro: 38900,
@@ -481,25 +459,17 @@ export default function BagViewer({
       cabin: 1.0,
       checkin: 1.25,
       both: 2.0, // Bundle pricing advantage
-      duffel: 1.0,
     };
     return Math.round(tierMultiplier[selectedTier] * sizeMultiplier[selectedLuggageType]);
   }, [selectedTier, selectedLuggageType]);
 
   // Add to cart handler
   const handleReserve = () => {
-    if (selectedLuggageType === "duffel") {
-      const colorName = isCustomColor ? `Custom Suede` : selectedFinish.name;
-      const cleanHex = activeColor.replace("#", "");
-      const compoundSku = `duffel-side-bag__${encodeURIComponent(colorName)}__${cleanHex}`;
-      addToCart(compoundSku, 1);
-    } else {
-      const sizeKey = selectedLuggageType === "both" ? "the-pair" : selectedLuggageType === "checkin" ? "checkin-68" : "cabin-55";
-      const colorName = isCustomColor ? `Custom Color` : selectedFinish.name;
-      const cleanHex = activeColor.replace("#", "");
-      const compoundSku = `${selectedTier}-${sizeKey}__${encodeURIComponent(colorName)}__${cleanHex}`;
-      addToCart(compoundSku, 1);
-    }
+    const sizeKey = selectedLuggageType === "both" ? "the-pair" : selectedLuggageType === "checkin" ? "checkin-68" : "cabin-55";
+    const colorName = isCustomColor ? `Custom Color` : selectedFinish.name;
+    const cleanHex = activeColor.replace("#", "");
+    const compoundSku = `${selectedTier}-${sizeKey}__${encodeURIComponent(colorName)}__${cleanHex}`;
+    addToCart(compoundSku, 1);
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 3000);
     setCartOpen(true);
@@ -556,7 +526,7 @@ export default function BagViewer({
             </div>
           </div>
 
-          {/* Luggage Type: Cabin, Check-In, Suede Duffel, Both */}
+          {/* Luggage Type: Cabin, Check-In, Both (Duo) */}
           <div className="flex flex-col items-start shrink-0">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
@@ -599,21 +569,6 @@ export default function BagViewer({
                 }`}
               >
                 Check-In 68
-              </button>
-              <button
-                type="button"
-                onClick={() => handleLuggageTypeSelect("duffel")}
-                className={`rounded-full px-2.5 sm:px-3 py-1 text-[10.5px] sm:text-caption-m font-semibold whitespace-nowrap transition-all ${
-                  selectedLuggageType === "duffel"
-                    ? isLight
-                      ? "bg-navy text-white shadow-xs"
-                      : "bg-sky text-navy shadow-sm"
-                    : isLight
-                    ? "text-mid hover:text-navy"
-                    : "text-blue-pale hover:text-white"
-                }`}
-              >
-                Suede Duffel
               </button>
               <button
                 type="button"
@@ -877,7 +832,7 @@ export default function BagViewer({
                 {/* Bag Height marker */}
                 <div className="absolute bottom-[28%] left-full ml-1 whitespace-nowrap">
                   <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded border shadow-xs ${isLight ? "bg-white text-navy border-brand" : "bg-navy-deep text-sky border-sky"}`}>
-                    {activeModel === "carry-on" ? "55 cm Cabin" : activeModel === "duffel" ? "32L Suede Duffel" : "68 cm Check-In"}
+                    {activeModel === "carry-on" ? "55 cm Cabin" : "68 cm Check-In"}
                   </span>
                 </div>
               </div>
@@ -888,13 +843,11 @@ export default function BagViewer({
               <div className={`rounded-xl p-2 sm:p-2.5 border shadow-lg backdrop-blur-md ${isLight ? "bg-white/95 border-divider text-navy" : "bg-navy-deep/95 border-white/10 text-white"}`}>
                 <div className="flex items-center gap-1.5 text-brand font-bold text-[9px] sm:text-[9.5px] uppercase font-mono mb-0.5 sm:mb-1">
                   <Check className="size-2.5 sm:size-3 text-emerald-600 shrink-0" />
-                  <span className="truncate">{activeModel === "carry-on" ? "Overhead Bin Compliant" : activeModel === "duffel" ? "Cabin & Underseat Carry" : "Maximum Checked Standard"}</span>
+                  <span className="truncate">{activeModel === "carry-on" ? "Overhead Bin Compliant" : "Maximum Checked Standard"}</span>
                 </div>
                 <p className="text-[9.5px] sm:text-[10.5px] leading-tight text-mid">
                   {activeModel === "carry-on"
                     ? "55 × 40 × 23 cm complies with IATA guidelines for global airlines (Lufthansa, British Airways, Air France, Delta & United)."
-                    : activeModel === "duffel"
-                    ? "Handcrafted Italian suede side bag designed to slot over luggage telescopic handle and fit under airline seats."
                     : "68 × 45 × 28 cm full week capacity with 65L packing volume and built-in drop impact sensors."}
                 </p>
               </div>
@@ -1095,15 +1048,13 @@ export default function BagViewer({
             </span>
           </div>
           <span className={`text-[12px] ${isLight ? "text-mid" : "text-light-white"}`}>
-            {selectedLuggageType === "duffel"
-              ? "ITALIAN SUEDE & ALUMINIUM · Suede Duffel Side Bag (32L) · Lifetime Guarantee"
-              : `${selectedTier.toUpperCase()} · ${
-                  selectedLuggageType === "both"
-                    ? "Cabin 55 + Check-In 68 Duo Set (100L)"
-                    : selectedLuggageType === "checkin"
-                    ? "Check-In 68 (65L)"
-                    : "Cabin 55 (35L)"
-                } · Lifetime Guarantee`}
+            {`${selectedTier.toUpperCase()} · ${
+              selectedLuggageType === "both"
+                ? "Cabin 55 + Check-In 68 Duo Set (100L)"
+                : selectedLuggageType === "checkin"
+                ? "Check-In 68 (65L)"
+                : "Cabin 55 (35L)"
+            } · Lifetime Guarantee`}
           </span>
         </div>
 
@@ -1124,11 +1075,7 @@ export default function BagViewer({
           >
             <ShoppingBag className="size-4" />
             <span>
-              {isEcommerce
-                ? selectedLuggageType === "duffel"
-                  ? "Reserve Suede Duffel"
-                  : "Reserve Luggage"
-                : "Inquire Now"}
+              {isEcommerce ? "Reserve Luggage" : "Inquire Now"}
             </span>
           </button>
         </div>

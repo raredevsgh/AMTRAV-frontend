@@ -32,7 +32,6 @@ export default function SiteNav({ isNegative = false }: { isNegative?: boolean }
   ];
 
   const serviceLinks = [
-    { href: "/shop?product=duffel-side-bag", label: "Suede Duffel Side Bag", desc: "Handcrafted suede with aluminium accents", badge: "New" },
     { href: "/customise", label: "AMTRAV UNIQUE Studio", desc: "Bespoke 3D luggage configurator", badge: "3D" },
     { href: "/services/registration", label: "Luggage Registration", desc: "Activate your Lifetime Guarantee" },
     { href: "/services/lock-tutorial", label: "TSA Lock Tutorial", desc: "Interactive combination dial guide" },

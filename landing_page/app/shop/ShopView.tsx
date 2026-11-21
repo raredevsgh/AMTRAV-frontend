@@ -22,7 +22,7 @@ import { useRegion } from "@/lib/region";
 import { useI18n } from "@/lib/i18n/context";
 
 type SizeOption = "cabin" | "checkin" | "both";
-type FilterType = "all" | "cabin" | "checkin" | "both" | "bags";
+type FilterType = "all" | "cabin" | "checkin" | "both";
 type SortOption = "top-sellers" | "price-asc" | "price-desc" | "volume";
 
 interface CollectionCardData {
@@ -536,15 +536,6 @@ export default function ShopView() {
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [activeCollection, setActiveCollection] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("top-sellers");
-  const [duffelColorIdx, setDuffelColorIdx] = useState(0);
-
-  const SUEDE_COLOR_OPTIONS = [
-    { name: "Cognac Brown", color: "#6e3b1b", image: "/images/trace/duffel-cognac-brown.jpg" },
-    { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/duffel-onyx-black.jpg" },
-    { name: "Midnight Navy", color: "#10213b", image: "/images/trace/duffel-midnight-navy.jpg" },
-    { name: "Sand Beige", color: "#c2b29d", image: "/images/trace/duffel-sand-beige.jpg" },
-    { name: "Charcoal Grey", color: "#424449", image: "/images/trace/duffel-charcoal-grey.jpg" },
-  ];
 
   const handleAddToCart = (compoundSku: string) => {
     if (!isEcommerce) {
@@ -552,13 +543,6 @@ export default function ShopView() {
       return;
     }
     addToCart(compoundSku, 1);
-    setCartOpen(true);
-  };
-
-  const handleBuyDuffel = () => {
-    const chosen = SUEDE_COLOR_OPTIONS[duffelColorIdx];
-    const sku = `duffel-${chosen.name.toLowerCase().replace(/\s+/g, "-")}`;
-    addToCart(sku, 1);
     setCartOpen(true);
   };
 
@@ -577,9 +561,6 @@ export default function ShopView() {
     }
     return list;
   }, [activeCollection, sortBy]);
-
-  const showDuffel = activeFilter === "all" || activeFilter === "bags";
-  const showLuggage = activeFilter !== "bags";
 
   return (
     <>
@@ -604,7 +585,7 @@ export default function ShopView() {
             </span>
           </h1>
           <p className="max-w-[660px] text-small text-light-white md:text-lead md:leading-normal">
-            Precision aerospace suitcases and handcrafted suede side bags. Every case weighs itself, records each journey and protects your essentials for life.
+            Precision aerospace suitcases. Every case weighs itself, records each journey and protects your essentials for life.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button href="#range" label={t("nav.shop", "Shop the range")} style="sky" arrow />
@@ -648,7 +629,7 @@ export default function ShopView() {
             Examine Every Angle Before You Fly
           </h2>
           <p className="max-w-xl text-body-m text-mid xl:text-body">
-            Rotate the bag in real-time 3D, compare Cabin 55, Check-In 68, Suede Duffel, or Both (Duo Sets), preview finishes, and configure custom bespoke colors live.
+            Rotate the bag in real-time 3D, compare Cabin 55, Check-In 68, or Both (The Pair Duo), preview finishes, and configure custom bespoke colors live.
           </p>
         </div>
         <BagViewer />
@@ -690,7 +671,6 @@ export default function ShopView() {
               { id: "cabin", label: "Cabin 55 (Carry-on)" },
               { id: "checkin", label: "Check-In 68" },
               { id: "both", label: "Complete Duo Sets (Both)" },
-              { id: "bags", label: "Suede Bags" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -750,139 +730,36 @@ export default function ShopView() {
 
         {/* Product Cards Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* 1. Signature Suede Duffel Bag (When filter allows) */}
-          {showDuffel && activeCollection === "all" && (
-            <article className="group flex flex-col justify-between rounded-3xl bg-white p-4 shadow-card transition-all duration-300 hover:shadow-xl border border-divider h-full">
-              <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-surface/50 p-4 transition-colors group-hover:bg-surface/80">
-                <Image
-                  key={SUEDE_COLOR_OPTIONS[duffelColorIdx].image}
-                  src={SUEDE_COLOR_OPTIONS[duffelColorIdx].image}
-                  alt={`AMTRAV Premium Suede & Aluminium Duffel Side Bag in ${SUEDE_COLOR_OPTIONS[duffelColorIdx].name}`}
-                  fill
-                  sizes="(min-width: 1024px) 380px, 90vw"
-                  className="object-cover transition-all duration-300 group-hover:scale-104 animate-in fade-in"
-                  priority
-                />
-                <span className="absolute top-3 left-3 rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
-                  New Arrival
-                </span>
-                <span className="absolute top-3 right-3 font-mono text-[11px] text-mid bg-white/80 px-2 py-0.5 rounded-full border border-divider backdrop-blur-sm">
-                  32L
-                </span>
-              </div>
+          {/* Interactive Luggage Collection Cards */}
+          {filteredCollections.map((col) => {
+            const initialSize: SizeOption =
+              activeFilter === "both" ? "both" : activeFilter === "checkin" ? "checkin" : "cabin";
 
-              <div className="flex flex-1 flex-col justify-between pt-4">
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
-                      Italian Suede & Aluminium
-                    </span>
-                    <span className="text-[10px] font-semibold text-brand font-mono">
-                      {SUEDE_COLOR_OPTIONS[duffelColorIdx].name}
-                    </span>
-                  </div>
-                  <h3 className="text-h3-m font-bold text-navy xl:text-[21px]">
-                    Suede Duffel Side Bag
-                  </h3>
-                  <p className="mt-1 text-caption text-mid line-clamp-2">
-                    Handcrafted Italian suede with aerospace-grade ribbed aluminium stripes, RFID-shielded compartment, and travel strap.
-                  </p>
-
-                  {/* Interactive Suede Swatches */}
-                  <div className="mt-3.5 flex items-center justify-between border-t border-divider/60 pt-3">
-                    <div className="flex items-center gap-2">
-                      {SUEDE_COLOR_OPTIONS.map((sw, idx) => (
-                        <button
-                          key={sw.name}
-                          type="button"
-                          onClick={() => setDuffelColorIdx(idx)}
-                          className={`size-5 rounded-full border transition-all ${
-                            duffelColorIdx === idx
-                              ? "ring-2 ring-navy ring-offset-2 scale-110 border-white shadow-xs"
-                              : "border-black/20 hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: sw.color }}
-                          title={sw.name}
-                          aria-label={`Select ${sw.name}`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-[11px] font-medium text-mid">
-                      {SUEDE_COLOR_OPTIONS[duffelColorIdx].name}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex items-center justify-between border-t border-divider/60 pt-3">
-                  <div>
-                    <span className="text-h3-m font-bold text-navy xl:text-[20px]">
-                      {formatPrice(48000)}
-                    </span>
-                    <span className="block text-[10px] text-mid">incl. tax & duties</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <a
-                      href="#3d-inspection"
-                      className="rounded-full border border-divider px-2.5 sm:px-3 py-1.5 text-caption font-semibold text-navy hover:bg-surface transition-colors"
-                      title="Inspect Suede Duffel in 3D & WebAR"
-                    >
-                      3D View
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedProductForSpecs(CATALOG[0]);
-                        document.getElementById("technical-specs")?.scrollIntoView({ behavior: "smooth" });
-                      }}
-                      className="rounded-full border border-divider px-2.5 sm:px-3 py-1.5 text-caption font-semibold text-navy hover:bg-surface transition-colors"
-                    >
-                      Specs
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleBuyDuffel}
-                      className="flex items-center gap-1.5 rounded-full bg-navy px-3.5 sm:px-4 py-1.5 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
-                    >
-                      <ShoppingBag className="size-3.5" />
-                      <span>Reserve</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </article>
-          )}
-
-          {/* 2. Interactive Luggage Collection Cards */}
-          {showLuggage &&
-            filteredCollections.map((col) => {
-              const initialSize: SizeOption =
-                activeFilter === "both" ? "both" : activeFilter === "checkin" ? "checkin" : "cabin";
-
-              return (
-                <InteractiveLuggageCard
-                  key={col.tier}
-                  collection={col}
-                  initialSize={initialSize}
-                  onSelectForSpecs={(prod) => setSelectedProductForSpecs(prod)}
-                  onAddToCart={handleAddToCart}
-                />
-              );
-            })}
+            return (
+              <InteractiveLuggageCard
+                key={col.tier}
+                collection={col}
+                initialSize={initialSize}
+                onSelectForSpecs={(prod) => setSelectedProductForSpecs(prod)}
+                onAddToCart={handleAddToCart}
+              />
+            );
+          })}
         </div>
       </section>
 
       {/* 4. Technical Blueprint CAD Dimensions Section */}
-      <section id="technical-specs" className="scroll-mt-28 px-5 py-8 xl:px-14 xl:py-10">
-        <div className="mx-auto max-w-4xl">
-          <TechnicalBlueprint product={selectedProductForSpecs} />
-        </div>
+      <section
+        id="technical-specs"
+        className="scroll-mt-28 my-8 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
+      >
+        <TechnicalBlueprint product={selectedProductForSpecs} />
       </section>
 
       {/* 5. How Pre-Ordering & Reservations Work */}
       <section
         aria-labelledby="preorder-heading"
-        className="mx-5 my-8 grid items-center gap-8 rounded-3xl border border-divider px-5 py-8 md:grid-cols-[1.2fr_1fr] md:gap-12 xl:mx-14 xl:rounded-[32px] xl:px-14 xl:py-14"
+        className="my-8 grid items-center gap-8 rounded-3xl border border-divider px-5 py-8 md:grid-cols-[1.2fr_1fr] md:gap-12 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-14"
       >
         <div>
           <h2 id="preorder-heading" className="text-h1-m font-bold text-navy xl:text-h1">
