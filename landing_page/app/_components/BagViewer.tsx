@@ -332,8 +332,10 @@ export default function BagViewer({
         };
 
         let angle = 0;
+        let pitchAngle = 0;
         let dragging = false;
         let lastX = 0;
+        let lastY = 0;
         let autoSpin = true;
         let spinResumeTimeout: ReturnType<typeof setTimeout> | undefined;
 
@@ -352,6 +354,7 @@ export default function BagViewer({
           dragging = true;
           autoSpin = false;
           lastX = e.clientX;
+          lastY = e.clientY;
           canvas.setPointerCapture(e.pointerId);
           canvas.style.cursor = "grabbing";
           clearTimeout(spinResumeTimeout);
@@ -361,8 +364,12 @@ export default function BagViewer({
         const onPointerMove = (e: PointerEvent) => {
           if (!dragging) return;
           const dx = e.clientX - lastX;
+          const dy = e.clientY - lastY;
           lastX = e.clientX;
+          lastY = e.clientY;
           angle += dx * RAD_PER_PX;
+          // Pitch: allows examining top handle (+85°) and wheels underneath (-85°)
+          pitchAngle = Math.max(-1.5, Math.min(1.5, pitchAngle + dy * RAD_PER_PX));
         };
 
         const onPointerUp = () => {
@@ -391,6 +398,7 @@ export default function BagViewer({
             angle += 0.25 * dt;
           }
           turntable.rotation.y = angle;
+          turntable.rotation.x = pitchAngle;
           renderer.render(scene, camera);
           animationFrameId = requestAnimationFrame(tick);
         };

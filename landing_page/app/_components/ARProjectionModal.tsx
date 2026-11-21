@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
   Camera,
   X,
@@ -18,10 +18,19 @@ import {
   Sliders,
   ChevronRight,
   ShieldCheck,
+  Compass,
+  CheckCircle2,
+  AlertTriangle,
+  Plane,
+  Eye,
 } from "lucide-react";
 import type * as Three from "three";
 import type { Active3DModel } from "./BagViewer";
-import { createUltraRealisticDuffel, createInteriorOpenSuitcase } from "./Realistic3DModels";
+import {
+  createUltraRealisticDuffel,
+  createInteriorOpenSuitcase,
+  playZipperAudio,
+} from "./Realistic3DModels";
 
 export type ARModelType = "carry-on" | "check-in" | "duffel";
 
@@ -42,6 +51,38 @@ const SUEDE_AR_SWATCHES = [
   { name: "Charcoal Grey", hex: "#424449" },
 ];
 
+const ANGLE_PRESETS = [
+  { id: "front", label: "Front (3D)", pitch: 0, yaw: 0.2 },
+  { id: "inside", label: "Inside Tub", pitch: 0.62, yaw: 0 },
+  { id: "handle", label: "Top Handle", pitch: 1.25, yaw: 0 },
+  { id: "wheels", label: "Wheels & Base", pitch: -1.15, yaw: 0.5 },
+  { id: "flat", label: "Lay Flat (Floor)", pitch: 1.57, yaw: 0 },
+];
+
+interface AirlineLimit {
+  id: string;
+  name: string;
+  cabinMaxKg: number;
+  checkinMaxKg: number;
+  excessFeeNote: string;
+}
+
+const AIRLINE_LIMITS: AirlineLimit[] = [
+  { id: "iata", name: "IATA Global Standard", cabinMaxKg: 8.0, checkinMaxKg: 23.0, excessFeeNote: "$65 fee" },
+  { id: "lufthansa", name: "Lufthansa / SAS", cabinMaxKg: 8.0, checkinMaxKg: 23.0, excessFeeNote: "€70 fee" },
+  { id: "ba", name: "British Airways", cabinMaxKg: 23.0, checkinMaxKg: 23.0, excessFeeNote: "£65 fee" },
+  { id: "emirates", name: "Emirates / Qatar", cabinMaxKg: 7.0, checkinMaxKg: 30.0, excessFeeNote: "$80 fee" },
+  { id: "delta", name: "Delta / United", cabinMaxKg: 99.0, checkinMaxKg: 23.0, excessFeeNote: "$75 fee" },
+];
+
+const PACK_TIERS = [
+  { id: "empty", label: "Empty (Tare)", addedKg: 0, desc: "Factory empty weight" },
+  { id: "weekend", label: "Weekend (+4.5kg)", addedKg: 4.5, desc: "Outfits & washkit" },
+  { id: "business", label: "Business (+7.2kg)", addedKg: 7.2, desc: "Laptop, suit, shoes" },
+  { id: "vacation", label: "Vacation (+14.8kg)", addedKg: 14.8, desc: "Full holiday packing" },
+  { id: "overweight", label: "Overweight (+21kg)", addedKg: 21.0, desc: "Stress test limit" },
+];
+
 export default function ARProjectionModal({
   isOpen,
   onClose,
@@ -55,33 +96,41 @@ export default function ARProjectionModal({
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
 
-  // Local state for UI controls
+  // Local state for 3D Viewport & Physics
   const [scale, setScale] = useState(1.0);
-  const [rotation, setRotation] = useState(0.2);
+  const [activeAnglePreset, setActiveAnglePreset] = useState("front");
   const [isCaseOpen, setIsCaseOpen] = useState(false);
   const [isHandleExtended, setIsHandleExtended] = useState(false);
+
+  // End-to-End TRACE Digital Scale States
   const [isWeighingActive, setIsWeighingActive] = useState(false);
-  const [liveWeightKg, setLiveWeightKg] = useState(14.2);
+  const [scaleCalibrating, setScaleCalibrating] = useState(false);
+  const [selectedPackTier, setSelectedPackTier] = useState("empty");
+  const [customPackKg, setCustomPackKg] = useState(0);
+  const [selectedAirlineId, setSelectedAirlineId] = useState("iata");
+  const [weightUnit, setWeightUnit] = useState<"kg" | "lbs">("kg");
+  const [tareOffsetKg, setTareOffsetKg] = useState(0);
+
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhotoUrl, setCapturedPhotoUrl] = useState<string | null>(null);
 
-  // Mutable refs for Three.js render loop (fixes stale closure)
-  const rotationRef = useRef(0.2);
+  // Mutable refs for Three.js render loop (fixes stale closures)
+  const pitchRef = useRef(0); // Vertical elevation in radians
+  const yawRef = useRef(0.2); // Horizontal azimuth in radians
+  const panXRef = useRef(0);
+  const panYRef = useRef(-0.35);
   const scaleRef = useRef(1.0);
-  const posXRef = useRef(0);
-  const posYRef = useRef(-0.35);
-  const targetClamshellRef = useRef(0); // 0 = closed, 1.85 = open
-  const targetHandleExtRef = useRef(0); // 0 = retracted, 0.42 = extended
+  const targetClamshellRef = useRef(0); // 0 = closed, 1.75 = open
+  const targetHandleExtRef = useRef(0); // 0 = retracted, 0.38 = extended
+  const isLiftingRef = useRef(false); // Bag hovers when weighed
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<any>(null);
   const sceneRef = useRef<any>(null);
   const bagGroupRef = useRef<any>(null);
-  const clamshellGroupRef = useRef<any>(null);
   const handleGroupRef = useRef<any>(null);
   const shellMaterialsRef = useRef<any[]>([]);
-  const duffelMaterialRef = useRef<any>(null);
   const closedBagRef = useRef<any>(null);
   const openSuitcaseRef = useRef<any>(null);
   const duffelUpdateRef = useRef<((hex: string) => void) | null>(null);
@@ -141,6 +190,66 @@ export default function ARProjectionModal({
     };
   }, [isOpen]);
 
+  // Calculate Weights & Airline Compliance
+  const baseTareKg = useMemo(() => {
+    if (model === "carry-on") return 3.8;
+    if (model === "check-in") return 4.6;
+    return 1.4; // Duffel
+  }, [model]);
+
+  const packedAddedKg = useMemo(() => {
+    if (customPackKg > 0) return customPackKg;
+    const tier = PACK_TIERS.find((p) => p.id === selectedPackTier);
+    return tier ? tier.addedKg : 0;
+  }, [selectedPackTier, customPackKg]);
+
+  const totalGrossKg = useMemo(() => {
+    return Math.max(0, baseTareKg + packedAddedKg - tareOffsetKg);
+  }, [baseTareKg, packedAddedKg, tareOffsetKg]);
+
+  const totalGrossDisplay = useMemo(() => {
+    if (weightUnit === "kg") {
+      return totalGrossKg.toFixed(1);
+    }
+    return (totalGrossKg * 2.20462).toFixed(1);
+  }, [totalGrossKg, weightUnit]);
+
+  const selectedAirline = useMemo(() => {
+    return AIRLINE_LIMITS.find((a) => a.id === selectedAirlineId) || AIRLINE_LIMITS[0];
+  }, [selectedAirlineId]);
+
+  const currentAllowanceKg = useMemo(() => {
+    if (model === "carry-on") return selectedAirline.cabinMaxKg;
+    if (model === "check-in") return selectedAirline.checkinMaxKg;
+    return 10.0; // Suede Duffel personal item allowance
+  }, [model, selectedAirline]);
+
+  const complianceStatus = useMemo(() => {
+    const diff = totalGrossKg - currentAllowanceKg;
+    if (diff > 0.05) {
+      return {
+        level: "overweight" as const,
+        label: `⛔ Overweight Warning (+${diff.toFixed(1)} kg over limit)`,
+        note: `Exceeds ${selectedAirline.name} limit (${currentAllowanceKg} kg). ${selectedAirline.excessFeeNote} applies.`,
+        badgeClass: "bg-rose-500/20 text-rose-300 border-rose-500/40",
+      };
+    }
+    if (diff >= -1.5) {
+      return {
+        level: "warning" as const,
+        label: `⚠️ Near Maximum Allowance (${Math.abs(diff).toFixed(1)} kg left)`,
+        note: `Pack carefully to avoid airport check-in repacking or excess fees.`,
+        badgeClass: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+      };
+    }
+    return {
+      level: "safe" as const,
+      label: `✓ Flight-Safe (${Math.abs(diff).toFixed(1)} kg headroom)`,
+      note: `Comfortably within ${selectedAirline.name} baggage allowance.`,
+      badgeClass: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+    };
+  }, [totalGrossKg, currentAllowanceKg, selectedAirline]);
+
   // Sync animation states to refs
   useEffect(() => {
     targetClamshellRef.current = isCaseOpen ? 1.75 : 0;
@@ -149,10 +258,6 @@ export default function ARProjectionModal({
   useEffect(() => {
     targetHandleExtRef.current = isHandleExtended ? 0.38 : 0;
   }, [isHandleExtended]);
-
-  useEffect(() => {
-    rotationRef.current = rotation;
-  }, [rotation]);
 
   useEffect(() => {
     scaleRef.current = scale;
@@ -179,11 +284,16 @@ export default function ARProjectionModal({
     }
   }, [colorHex, metalness, roughness]);
 
+  // Update OLED text on the 3D luggage handle
+  useEffect(() => {
+    if (openSuitcaseRef.current?.updateOledText) {
+      openSuitcaseRef.current.updateOledText(`TRACE ${totalGrossDisplay} ${weightUnit}`);
+    }
+  }, [totalGrossDisplay, weightUnit]);
+
   // 3D Canvas Lifecycle inside AR Viewport
   useEffect(() => {
     if (!isOpen) return;
-    const host = hostRef.current;
-    if (!host) return;
 
     let cancelled = false;
     let animationFrameId = 0;
@@ -191,10 +301,18 @@ export default function ARProjectionModal({
     Promise.all([
       import("three"),
       import("three/addons/loaders/GLTFLoader.js"),
-      import("three/addons/libs/meshopt_decoder.module.js"),
       import("three/addons/environments/RoomEnvironment.js"),
-    ]).then(async ([THREE, { GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }]) => {
+      import("three/addons/libs/meshopt_decoder.module.js"),
+    ]).then(async ([threeModule, gltfModule, roomEnvModule, meshoptModule]) => {
       if (cancelled) return;
+
+      const THREE = threeModule;
+      const { GLTFLoader } = gltfModule;
+      const { RoomEnvironment } = roomEnvModule;
+      const { MeshoptDecoder } = meshoptModule;
+
+      const host = hostRef.current;
+      if (!host) return;
 
       const width = host.clientWidth || window.innerWidth;
       const height = host.clientHeight || window.innerHeight;
@@ -203,9 +321,9 @@ export default function ARProjectionModal({
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.3;
+      renderer.toneMappingExposure = 1.35;
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.shadowMap.type = THREE.PCFShadowMap;
 
       const canvas = renderer.domElement;
       canvas.style.display = "block";
@@ -225,11 +343,11 @@ export default function ARProjectionModal({
       room.dispose();
       pmrem.dispose();
       scene.environment = environment.texture;
-      scene.environmentIntensity = 1.05;
+      scene.environmentIntensity = 1.1;
 
-      // Realistic directional sun/ceiling light casting soft ground shadow
-      const dirLight = new THREE.DirectionalLight(0xfffaed, 2.9);
-      dirLight.position.set(1.5, 3.8, 2.2);
+      // Realistic directional studio sunlight casting soft ground shadow
+      const dirLight = new THREE.DirectionalLight(0xfffaee, 2.9);
+      dirLight.position.set(1.6, 3.8, 2.2);
       dirLight.castShadow = true;
       dirLight.shadow.mapSize.width = 1024;
       dirLight.shadow.mapSize.height = 1024;
@@ -238,29 +356,34 @@ export default function ARProjectionModal({
       dirLight.shadow.bias = -0.001;
       scene.add(dirLight);
 
+      const fillLight = new THREE.DirectionalLight(0xdbeafe, 1.2);
+      fillLight.position.set(-2, 1.8, 1);
+      scene.add(fillLight);
+
       const ambLight = new THREE.AmbientLight(0xffffff, 0.85);
       scene.add(ambLight);
 
       // Floor shadow receiver plane
       const shadowPlaneGeo = new THREE.PlaneGeometry(10, 10);
-      const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.42 });
+      const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.45 });
       const shadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
       shadowPlane.rotation.x = -Math.PI / 2;
       shadowPlane.position.y = -0.55;
       shadowPlane.receiveShadow = true;
       scene.add(shadowPlane);
 
-      // Root model group
+      // Root model group (Controls 360° rotation & scale)
       const rootGroup = new THREE.Group();
-      rootGroup.position.set(posXRef.current, posYRef.current, 0);
-      rootGroup.rotation.y = rotationRef.current;
+      rootGroup.position.set(panXRef.current, panYRef.current, 0);
+      rootGroup.rotation.y = yawRef.current;
+      rootGroup.rotation.x = pitchRef.current;
       rootGroup.scale.setScalar(scaleRef.current);
       scene.add(rootGroup);
       bagGroupRef.current = rootGroup;
 
       let currentClamshell = 0;
       let currentHandleExt = 0;
-      let handleMeshGroup: any = null;
+      let currentLiftingY = 0;
 
       if (model === "duffel") {
         // High-Fidelity Handcrafted Italian Suede Duffel 3D Model with sheen & PBR nap
@@ -268,7 +391,15 @@ export default function ARProjectionModal({
         duffelUpdateRef.current = duffel.updateColor;
         rootGroup.add(duffel.group);
       } else {
-        // Load Real GLTF Luggage Model with Meshopt Decoder
+        // Build Photorealistic Clamshell Suitcase with Hinomoto wheels, fluted ribs,
+        // handles, TSA locks, OLED scale, and deep packing interior
+        const openSuitcase = createInteriorOpenSuitcase(THREE, colorHex, metalness, roughness);
+        openSuitcase.group.position.set(0, 0, 0);
+        rootGroup.add(openSuitcase.group);
+        openSuitcaseRef.current = openSuitcase;
+        handleGroupRef.current = openSuitcase;
+
+        // Also attempt loading GLTF closed model as alternative if desired
         if (MeshoptDecoder?.ready) {
           await MeshoptDecoder.ready;
         }
@@ -312,39 +443,8 @@ export default function ARProjectionModal({
           bag.scale.setScalar(baseNormScale);
           bag.position.set(-center.x * baseNormScale, -center.y * baseNormScale, -center.z * baseNormScale);
 
-          // Telescopic Handle Group (Procedural Extension Accessory)
-          const handleGroup = new THREE.Group();
-          const tubeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9, roughness: 0.2 });
-          const gripMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4, metalness: 0.1 });
-
-          const tubeGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.45, 16);
-          const leftTube = new THREE.Mesh(tubeGeo, tubeMat);
-          leftTube.position.set(-0.16, 0.65, -0.05);
-          handleGroup.add(leftTube);
-
-          const rightTube = new THREE.Mesh(tubeGeo, tubeMat);
-          rightTube.position.set(0.16, 0.65, -0.05);
-          handleGroup.add(rightTube);
-
-          const gripGeo = new THREE.BoxGeometry(0.38, 0.04, 0.04);
-          const grip = new THREE.Mesh(gripGeo, gripMat);
-          grip.position.set(0, 0.88, -0.05);
-          handleGroup.add(grip);
-
-          handleGroup.position.y = 0;
-          rootGroup.add(handleGroup);
-          handleMeshGroup = handleGroup;
-          handleGroupRef.current = handleGroup;
-
-          // Precision 3D Clamshell Open Suitcase with deep interior tub, luxury lining & butterfly straps
-          const openSuitcase = createInteriorOpenSuitcase(THREE, colorHex, metalness, roughness);
-          openSuitcase.group.position.set(0, 0, 0);
-          openSuitcase.group.visible = false;
-          rootGroup.add(openSuitcase.group);
-          openSuitcaseRef.current = openSuitcase;
-
+          // By default, openSuitcase handles full closed & open representation seamlessly
           closedBagRef.current = bag;
-          rootGroup.add(bag);
         } catch (err) {
           console.error("AR GLTF loading error:", err);
         }
@@ -363,28 +463,28 @@ export default function ARProjectionModal({
         lastTime = now;
 
         if (bagGroupRef.current) {
-          bagGroupRef.current.rotation.y = rotationRef.current;
+          // Full 360° Spherical Trackball Orbit Rotation (Yaw + Pitch)
+          bagGroupRef.current.rotation.y = yawRef.current;
+          bagGroupRef.current.rotation.x = pitchRef.current;
           bagGroupRef.current.scale.setScalar(scaleRef.current);
-          bagGroupRef.current.position.x = posXRef.current;
-          bagGroupRef.current.position.y = posYRef.current;
+
+          // Smooth lift effect when weighing
+          const targetLift = isLiftingRef.current ? 0.14 : 0;
+          currentLiftingY += (targetLift - currentLiftingY) * Math.min(dt * 7, 0.25);
+
+          bagGroupRef.current.position.x = panXRef.current;
+          bagGroupRef.current.position.y = panYRef.current + currentLiftingY;
 
           // Smoothly interpolate clamshell angle
           currentClamshell += (targetClamshellRef.current - currentClamshell) * Math.min(dt * 8, 0.3);
           if (openSuitcaseRef.current) {
             openSuitcaseRef.current.setClamshellAngle(currentClamshell);
-            if (currentClamshell > 0.04) {
-              openSuitcaseRef.current.group.visible = true;
-              if (closedBagRef.current) closedBagRef.current.visible = false;
-            } else {
-              openSuitcaseRef.current.group.visible = false;
-              if (closedBagRef.current) closedBagRef.current.visible = true;
-            }
           }
 
           // Smoothly interpolate handle extension
           currentHandleExt += (targetHandleExtRef.current - currentHandleExt) * Math.min(dt * 8, 0.3);
-          if (handleGroupRef.current) {
-            handleGroupRef.current.position.y = currentHandleExt;
+          if (openSuitcaseRef.current) {
+            openSuitcaseRef.current.setHandleExtension(currentHandleExt);
           }
         }
 
@@ -404,7 +504,7 @@ export default function ARProjectionModal({
       };
       window.addEventListener("resize", handleResize);
 
-      // Pointer drag interaction (Smooth 360 Pan + Rotate)
+      // True 360° Spherical Trackball Orbit (Yaw + Pitch + Pan + Zoom)
       let isPointerDown = false;
       let lastX = 0;
       let lastY = 0;
@@ -423,12 +523,17 @@ export default function ARProjectionModal({
         lastX = e.clientX;
         lastY = e.clientY;
 
-        // Smooth delta update to refs
-        rotationRef.current += deltaX * 0.012;
-        posYRef.current = Math.max(-0.95, Math.min(0.35, posYRef.current - deltaY * 0.0035));
-        posXRef.current = Math.max(-0.85, Math.min(0.85, posXRef.current + deltaX * 0.002));
-
-        setRotation(rotationRef.current);
+        if (e.buttons === 2 || e.shiftKey) {
+          // Pan on Right Click or Shift + Drag
+          panXRef.current += deltaX * 0.002;
+          panYRef.current = Math.max(-0.95, Math.min(0.55, panYRef.current - deltaY * 0.002));
+        } else {
+          // Full 360° Spherical Trackball Orbit:
+          // Yaw = horizontal 360° continuous rotation
+          yawRef.current += deltaX * 0.012;
+          // Pitch = vertical elevation from -89° (underneath wheels) to +89° (looking top-down inside packing tub)
+          pitchRef.current = Math.max(-1.55, Math.min(1.55, pitchRef.current + deltaY * 0.01));
+        }
       };
 
       const onPointerUp = (e: PointerEvent) => {
@@ -442,7 +547,7 @@ export default function ARProjectionModal({
       const onWheel = (e: WheelEvent) => {
         e.preventDefault();
         const zoomDelta = -e.deltaY * 0.001;
-        const nextScale = Math.max(0.65, Math.min(1.45, scaleRef.current + zoomDelta));
+        const nextScale = Math.max(0.65, Math.min(1.5, scaleRef.current + zoomDelta));
         scaleRef.current = nextScale;
         setScale(nextScale);
       };
@@ -472,70 +577,73 @@ export default function ARProjectionModal({
     };
   }, [isOpen, model]);
 
-  // Keep colors in sync
-  useEffect(() => {
-    if (shellMaterialsRef.current.length > 0) {
-      shellMaterialsRef.current.forEach((mat) => {
-        mat.color.set(colorHex);
-        mat.metalness = metalness;
-        mat.roughness = roughness;
-        mat.needsUpdate = true;
-      });
-    }
-  }, [colorHex, metalness, roughness]);
+  // Set Angle Preset
+  const handleSelectAnglePreset = (presetId: string) => {
+    setActiveAnglePreset(presetId);
+    const p = ANGLE_PRESETS.find((pr) => pr.id === presetId);
+    if (!p) return;
+    pitchRef.current = p.pitch;
+    yawRef.current = p.yaw;
+  };
 
-  useEffect(() => {
-    if (duffelMaterialRef.current) {
-      duffelMaterialRef.current.color.set(suedeColorHex);
-      duffelMaterialRef.current.needsUpdate = true;
-    }
-  }, [suedeColorHex]);
+  // Toggle Clamshell Open/Close with Tactile Zipper Audio
+  const handleToggleClamshell = () => {
+    const nextState = !isCaseOpen;
+    setIsCaseOpen(nextState);
+    playZipperAudio(nextState);
 
-  // Handle weighing sensor simulation
-  const toggleWeighing = () => {
-    if (!isWeighingActive) {
-      setIsWeighingActive(true);
-      // Realistic weight sensor jitter before settling
-      let count = 0;
-      const interval = setInterval(() => {
-        setLiveWeightKg(Number((13.5 + Math.random() * 1.4).toFixed(1)));
-        count++;
-        if (count > 6) {
-          clearInterval(interval);
-          setLiveWeightKg(model === "carry-on" ? 9.8 : model === "check-in" ? 18.4 : 4.6);
-        }
-      }, 120);
-    } else {
-      setIsWeighingActive(false);
+    // If opening and current pitch is flat, tilt slightly forward so interior is immediately visible
+    if (nextState && pitchRef.current < 0.2) {
+      pitchRef.current = 0.45;
+      setActiveAnglePreset("inside");
     }
   };
 
-  // Capture Photo composite (Camera video + 3D canvas)
+  // Toggle Digital Weighing Scale with Physical Lift Simulation
+  const handleToggleWeighing = () => {
+    if (isWeighingActive) {
+      setIsWeighingActive(false);
+      isLiftingRef.current = false;
+      setScaleCalibrating(false);
+    } else {
+      setIsWeighingActive(true);
+      isLiftingRef.current = true;
+      setScaleCalibrating(true);
+
+      // Play soft electronic calibration sequence
+      setTimeout(() => {
+        setScaleCalibrating(false);
+      }, 450);
+    }
+  };
+
+  // Handle Photo Capture
   const handleCapturePhoto = () => {
     setIsCapturing(true);
-    const canvas = document.createElement("canvas");
     const video = videoRef.current;
-    const webglCanvas = hostRef.current?.querySelector("canvas");
+    const renderer = rendererRef.current;
 
-    const w = 1280;
-    const h = 720;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
 
     if (ctx) {
-      if (video && cameraActive) {
+      if (cameraActive && video && video.readyState >= 2) {
         ctx.drawImage(video, 0, 0, w, h);
       } else {
-        // Fallback room interior background gradient
-        const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, "#151e2d");
-        grad.addColorStop(0.65, "#223147");
-        grad.addColorStop(1, "#0d131c");
-        ctx.fillStyle = grad;
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+        bgGrad.addColorStop(0, "#151e2d");
+        bgGrad.addColorStop(0.5, "#1f2d42");
+        bgGrad.addColorStop(1, "#0d131c");
+        ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, w, h);
       }
 
+      const webglCanvas = renderer?.domElement;
       if (webglCanvas) {
         ctx.drawImage(webglCanvas, 0, 0, w, h);
       }
@@ -661,31 +769,145 @@ export default function ARProjectionModal({
                   <span>Real-World Camera Simulation Mode</span>
                 </div>
                 <p className="text-[12px] text-white/80">
-                  Camera feed active in virtual testing mode. Use touch or mouse gestures to position, rotate 360°, extend the handle, and open the case directly in physical space.
+                  Camera feed active in virtual testing mode. Use touch or mouse gestures to position, rotate 360° (pitch & yaw), extend the handle, and open the case directly in physical space.
                 </p>
               </div>
             )}
           </div>
         )}
 
-        {/* Real-time Interactive Weighing Scale HUD Overlay */}
+        {/* 360° Spherical Angle Preset Quick Selector Pill Bar */}
+        <div className="absolute top-20 sm:top-24 z-30 flex items-center gap-1.5 p-1 rounded-full bg-black/75 border border-white/20 backdrop-blur-md text-white shadow-xl max-w-[95vw] overflow-x-auto">
+          <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-sky px-2 hidden sm:inline">
+            360° Angle:
+          </span>
+          {ANGLE_PRESETS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => handleSelectAnglePreset(p.id)}
+              className={`rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold transition-all whitespace-nowrap ${
+                activeAnglePreset === p.id
+                  ? "bg-white text-navy font-bold shadow-xs scale-102"
+                  : "text-white/75 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* End-to-End Functional TRACE Smart Core Scale HUD Overlay */}
         {isWeighingActive && (
-          <div className="absolute top-28 sm:top-24 z-30 animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="flex items-center gap-3 rounded-2xl border border-sky/40 bg-black/80 px-4 py-2.5 sm:px-5 sm:py-3 text-white backdrop-blur-md shadow-2xl">
-              <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-sky/20 text-sky">
-                <Scale className="size-4 sm:size-5 animate-pulse" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-base sm:text-lg font-black text-white">{liveWeightKg} kg</span>
-                  <span className="text-[11px] sm:text-xs text-white/60">({(liveWeightKg * 2.20462).toFixed(1)} lbs)</span>
-                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9.5px] sm:text-[10px] font-bold text-emerald-400">
-                    ✓ Flight-Safe
-                  </span>
+          <div className="absolute top-32 sm:top-34 z-30 max-w-md w-[92vw] sm:w-[440px] animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-auto">
+            <div className="flex flex-col gap-3 rounded-3xl border border-sky/40 bg-black/90 p-3.5 sm:p-4 text-white backdrop-blur-xl shadow-2xl">
+              {/* Header: Live Digital Weight & Unit Switcher */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex size-9 items-center justify-center rounded-xl bg-sky/20 text-sky">
+                    <Scale className={`size-4.5 ${scaleCalibrating ? "animate-spin" : "animate-pulse"}`} />
+                  </div>
+                  <div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="font-mono text-2xl font-black text-white tracking-tight">
+                        {scaleCalibrating ? "CALIBRATING..." : `${totalGrossDisplay} ${weightUnit}`}
+                      </span>
+                      <span className="text-[11px] text-white/50">
+                        {scaleCalibrating
+                          ? ""
+                          : weightUnit === "kg"
+                          ? `(${(totalGrossKg * 2.20462).toFixed(1)} lbs)`
+                          : `(${(totalGrossKg).toFixed(1)} kg)`}
+                      </span>
+                    </div>
+                    <span className="text-[9.5px] font-mono uppercase text-sky">
+                      TRACE Ergonomic Strain-Gauge Core · Tare: {baseTareKg} kg
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[9px] sm:text-[10px] font-mono uppercase text-sky">
-                  TRACE Smart Core · Under 23kg Allowance
+
+                {/* kg / lbs toggle & Tare button */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setWeightUnit(weightUnit === "kg" ? "lbs" : "kg")}
+                    className="rounded-lg bg-white/15 px-2 py-1 text-[10px] font-bold text-white hover:bg-white/25 active:scale-95"
+                    title="Switch Weight Unit"
+                  >
+                    {weightUnit.toUpperCase()}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTareOffsetKg(tareOffsetKg > 0 ? 0 : totalGrossKg)}
+                    className="rounded-lg bg-sky/20 border border-sky/40 px-2 py-1 text-[10px] font-bold text-sky hover:bg-sky/30 active:scale-95"
+                    title="Zero out or reset tare"
+                  >
+                    {tareOffsetKg > 0 ? "Reset Tare" : "Tare (0.0)"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Real-time Airline Allowance Validation Badge */}
+              <div className={`flex items-start gap-2 rounded-xl p-2.5 border text-caption ${complianceStatus.badgeClass}`}>
+                {complianceStatus.level === "safe" ? (
+                  <CheckCircle2 className="size-4 shrink-0 text-emerald-400 mt-0.5" />
+                ) : complianceStatus.level === "warning" ? (
+                  <AlertTriangle className="size-4 shrink-0 text-amber-400 mt-0.5" />
+                ) : (
+                  <AlertCircle className="size-4 shrink-0 text-rose-400 mt-0.5" />
+                )}
+                <div className="flex flex-col text-[11px] leading-tight">
+                  <span className="font-bold">{complianceStatus.label}</span>
+                  <span className="text-[10px] opacity-85 mt-0.5">{complianceStatus.note}</span>
+                </div>
+              </div>
+
+              {/* Interactive Packing Simulator Presets */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-white/70">
+                  Simulate Packing Contents:
                 </span>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                  {PACK_TIERS.map((tier) => (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedPackTier(tier.id);
+                        setCustomPackKg(0);
+                      }}
+                      className={`rounded-xl p-1.5 text-center border transition-all ${
+                        selectedPackTier === tier.id && customPackKg === 0
+                          ? "bg-sky text-navy border-sky font-bold shadow-xs"
+                          : "bg-white/5 text-white/80 border-white/10 hover:bg-white/15"
+                      }`}
+                    >
+                      <div className="text-[10px] font-bold truncate">{tier.label.split(" ")[0]}</div>
+                      <div className="text-[9px] opacity-75 font-mono">{tier.addedKg > 0 ? `+${tier.addedKg}kg` : "Tare"}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Airline Rule Comparison Selector */}
+              <div className="flex items-center justify-between border-t border-white/10 pt-2 text-[10px]">
+                <span className="font-mono text-white/60">Airline Limits:</span>
+                <div className="flex items-center gap-1">
+                  {AIRLINE_LIMITS.slice(0, 4).map((air) => (
+                    <button
+                      key={air.id}
+                      type="button"
+                      onClick={() => setSelectedAirlineId(air.id)}
+                      className={`rounded-md px-1.5 py-0.5 text-[9.5px] font-medium transition-all ${
+                        selectedAirlineId === air.id
+                          ? "bg-white text-navy font-bold"
+                          : "text-white/60 hover:text-white"
+                      }`}
+                    >
+                      {air.name.split(" ")[0]}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -695,13 +917,13 @@ export default function ARProjectionModal({
         <div ref={hostRef} className="absolute inset-0 size-full z-20 pointer-events-auto cursor-grab active:cursor-grabbing" />
 
         {/* Interactive AR Feature Action Bar - Positioned responsively */}
-        <div className="absolute bottom-[88px] sm:bottom-auto sm:top-24 inset-x-3 sm:inset-x-auto sm:left-6 z-30 flex flex-row sm:flex-col items-center sm:items-start justify-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute bottom-[88px] sm:bottom-auto sm:top-36 inset-x-3 sm:inset-x-auto sm:left-6 z-30 flex flex-row sm:flex-col items-center sm:items-start justify-center gap-1.5 sm:gap-2 pointer-events-auto">
           {model !== "duffel" && (
             <>
-              {/* Clamshell Open/Close Toggle */}
+              {/* Clamshell Open/Close Toggle with Tactile Zipper Audio */}
               <button
                 type="button"
-                onClick={() => setIsCaseOpen(!isCaseOpen)}
+                onClick={handleToggleClamshell}
                 className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
                   isCaseOpen
                     ? "bg-sky text-navy border-sky font-extrabold"
@@ -709,7 +931,7 @@ export default function ARProjectionModal({
                 }`}
               >
                 <FolderOpen className="size-3 sm:size-3.5" />
-                <span>{isCaseOpen ? "Close Interior" : "Open Case"}</span>
+                <span>{isCaseOpen ? "Close Interior" : "Open Case (Zip)"}</span>
               </button>
 
               {/* Telescopic Handle Extension Toggle */}
@@ -723,21 +945,21 @@ export default function ARProjectionModal({
                 }`}
               >
                 <Maximize2 className="size-3 sm:size-3.5" />
-                <span>{isHandleExtended ? "Retract" : "Extend Handle"}</span>
+                <span>{isHandleExtended ? "Retract Handle" : "Extend Handle"}</span>
               </button>
 
-              {/* Digital Scale Weighing HUD Toggle */}
+              {/* Digital Scale Weighing HUD Toggle with Lift Simulation */}
               <button
                 type="button"
-                onClick={toggleWeighing}
+                onClick={handleToggleWeighing}
                 className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-[11px] font-bold shadow-lg backdrop-blur-md border transition-all ${
                   isWeighingActive
-                    ? "bg-emerald-500 text-white border-emerald-400 font-extrabold"
+                    ? "bg-emerald-500 text-white border-emerald-400 font-extrabold shadow-emerald-500/30"
                     : "bg-black/70 text-white border-white/20 hover:bg-black/90"
                 }`}
               >
                 <Scale className="size-3 sm:size-3.5" />
-                <span>{isWeighingActive ? "Hide Scale" : "Weigh Bag"}</span>
+                <span>{isWeighingActive ? "Hide Scale" : "Weigh Bag (TRACE)"}</span>
               </button>
             </>
           )}
@@ -790,7 +1012,7 @@ export default function ARProjectionModal({
               className="flex-1 sm:w-32 accent-sky cursor-pointer"
             />
             <span className="font-mono text-[10.5px] sm:text-[11px] font-bold text-sky shrink-0">
-              {scale === 1.0 ? "1:1 Scale" : `${Math.round(scale * 100)}%`}
+              {scale === 1.0 ? "1:1 True Scale" : `${Math.round(scale * 100)}%`}
             </span>
           </div>
 
@@ -801,13 +1023,15 @@ export default function ARProjectionModal({
               onClick={() => {
                 scaleRef.current = 1.0;
                 setScale(1.0);
-                rotationRef.current = 0.2;
-                setRotation(0.2);
-                posXRef.current = 0;
-                posYRef.current = -0.35;
+                pitchRef.current = 0;
+                yawRef.current = 0.2;
+                panXRef.current = 0;
+                panYRef.current = -0.35;
                 setIsCaseOpen(false);
                 setIsHandleExtended(false);
                 setIsWeighingActive(false);
+                isLiftingRef.current = false;
+                setActiveAnglePreset("front");
               }}
               className="flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1.5 text-[10.5px] sm:text-[11px] font-semibold text-white hover:bg-white/20 active:scale-95 transition-all"
             >
