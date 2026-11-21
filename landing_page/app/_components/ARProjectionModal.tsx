@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import type * as Three from "three";
 import type { Active3DModel } from "./BagViewer";
+import { createUltraRealisticDuffel, createInteriorOpenSuitcase } from "./Realistic3DModels";
 
 export type ARModelType = "carry-on" | "check-in" | "duffel";
 
@@ -81,6 +82,9 @@ export default function ARProjectionModal({
   const handleGroupRef = useRef<any>(null);
   const shellMaterialsRef = useRef<any[]>([]);
   const duffelMaterialRef = useRef<any>(null);
+  const closedBagRef = useRef<any>(null);
+  const openSuitcaseRef = useRef<any>(null);
+  const duffelUpdateRef = useRef<((hex: string) => void) | null>(null);
 
   // Keep model updated if prop changes
   useEffect(() => {
@@ -153,6 +157,27 @@ export default function ARProjectionModal({
   useEffect(() => {
     scaleRef.current = scale;
   }, [scale]);
+
+  // Live material color updates for Suede Duffel and Suitcase
+  useEffect(() => {
+    if (duffelUpdateRef.current) {
+      duffelUpdateRef.current(suedeColorHex);
+    }
+  }, [suedeColorHex]);
+
+  useEffect(() => {
+    if (openSuitcaseRef.current?.updateColor) {
+      openSuitcaseRef.current.updateColor(colorHex, metalness, roughness);
+    }
+    if (shellMaterialsRef.current.length > 0) {
+      shellMaterialsRef.current.forEach((mat) => {
+        mat.color.set(colorHex);
+        mat.metalness = metalness ?? 0.65;
+        mat.roughness = roughness ?? 0.28;
+        mat.needsUpdate = true;
+      });
+    }
+  }, [colorHex, metalness, roughness]);
 
   // 3D Canvas Lifecycle inside AR Viewport
   useEffect(() => {
@@ -236,91 +261,12 @@ export default function ARProjectionModal({
       let currentClamshell = 0;
       let currentHandleExt = 0;
       let handleMeshGroup: any = null;
-      let lidMeshGroup: any = null;
 
       if (model === "duffel") {
-        // Build 3D Handcrafted Italian Suede Duffel Bag Procedurally
-        const duffelGroup = new THREE.Group();
-
-        // 1. Suede Cylindrical Barrel Body
-        const bodyGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.88, 32, 1);
-        bodyGeo.rotateZ(Math.PI / 2);
-        const suedeMat = new THREE.MeshPhysicalMaterial({
-          color: suedeColorHex,
-          roughness: 0.86,
-          metalness: 0.04,
-          clearcoat: 0.08,
-          clearcoatRoughness: 0.4,
-        });
-        duffelMaterialRef.current = suedeMat;
-        const bodyMesh = new THREE.Mesh(bodyGeo, suedeMat);
-        bodyMesh.castShadow = true;
-        bodyMesh.receiveShadow = true;
-        duffelGroup.add(bodyMesh);
-
-        // 2. Rounded Suede Endcaps
-        const endCapGeo = new THREE.SphereGeometry(0.32, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-        const endCapLeft = new THREE.Mesh(endCapGeo, suedeMat);
-        endCapLeft.rotation.z = Math.PI / 2;
-        endCapLeft.position.x = -0.44;
-        endCapLeft.castShadow = true;
-        duffelGroup.add(endCapLeft);
-
-        const endCapRight = new THREE.Mesh(endCapGeo, suedeMat);
-        endCapRight.rotation.z = -Math.PI / 2;
-        endCapRight.position.x = 0.44;
-        endCapRight.castShadow = true;
-        duffelGroup.add(endCapRight);
-
-        // 3. Leather Trim & Carry Handles
-        const leatherMat = new THREE.MeshStandardMaterial({
-          color: 0x181818,
-          roughness: 0.45,
-          metalness: 0.15,
-        });
-        const brassMat = new THREE.MeshStandardMaterial({
-          color: 0xd4af37,
-          roughness: 0.28,
-          metalness: 0.88,
-        });
-
-        // Twin Leather Reinforcing Straps around the body
-        const strapGeo = new THREE.TorusGeometry(0.326, 0.016, 16, 48);
-        strapGeo.rotateY(Math.PI / 2);
-        const strap1 = new THREE.Mesh(strapGeo, leatherMat);
-        strap1.position.x = -0.22;
-        duffelGroup.add(strap1);
-
-        const strap2 = new THREE.Mesh(strapGeo, leatherMat);
-        strap2.position.x = 0.22;
-        duffelGroup.add(strap2);
-
-        // Arched Handles
-        const handleArchGeo = new THREE.TorusGeometry(0.2, 0.02, 16, 32, Math.PI);
-        const handleFront = new THREE.Mesh(handleArchGeo, leatherMat);
-        handleFront.position.set(0, 0.32, 0.08);
-        handleFront.rotation.x = 0.15;
-        duffelGroup.add(handleFront);
-
-        const handleBack = new THREE.Mesh(handleArchGeo, leatherMat);
-        handleBack.position.set(0, 0.32, -0.08);
-        handleBack.rotation.x = -0.15;
-        duffelGroup.add(handleBack);
-
-        // Top Brass Zipper Track
-        const zipGeo = new THREE.BoxGeometry(0.72, 0.018, 0.04);
-        const zipMesh = new THREE.Mesh(zipGeo, brassMat);
-        zipMesh.position.set(0, 0.325, 0);
-        duffelGroup.add(zipMesh);
-
-        // AMTRAV Engraved Metal Plaque
-        const plaqueGeo = new THREE.BoxGeometry(0.12, 0.05, 0.008);
-        const plaqueMesh = new THREE.Mesh(plaqueGeo, brassMat);
-        plaqueMesh.position.set(0, 0.12, 0.325);
-        duffelGroup.add(plaqueMesh);
-
-        duffelGroup.position.set(0, 0.12, 0);
-        rootGroup.add(duffelGroup);
+        // High-Fidelity Handcrafted Italian Suede Duffel 3D Model with sheen & PBR nap
+        const duffel = createUltraRealisticDuffel(THREE, suedeColorHex);
+        duffelUpdateRef.current = duffel.updateColor;
+        rootGroup.add(duffel.group);
       } else {
         // Load Real GLTF Luggage Model with Meshopt Decoder
         if (MeshoptDecoder?.ready) {
@@ -390,43 +336,14 @@ export default function ARProjectionModal({
           handleMeshGroup = handleGroup;
           handleGroupRef.current = handleGroup;
 
-          // Clamshell Open / Interior Volume Group
-          const clamshellLid = new THREE.Group();
-          const interiorMat = new THREE.MeshStandardMaterial({
-            color: 0x1f2937,
-            roughness: 0.8,
-            metalness: 0.1,
-          });
-          const strapMat = new THREE.MeshStandardMaterial({
-            color: 0x2563eb,
-            roughness: 0.6,
-          });
+          // Precision 3D Clamshell Open Suitcase with deep interior tub, luxury lining & butterfly straps
+          const openSuitcase = createInteriorOpenSuitcase(THREE, colorHex, metalness, roughness);
+          openSuitcase.group.position.set(0, 0, 0);
+          openSuitcase.group.visible = false;
+          rootGroup.add(openSuitcase.group);
+          openSuitcaseRef.current = openSuitcase;
 
-          // Interior divider and butterfly compression straps
-          const dividerGeo = new THREE.PlaneGeometry(0.48, 0.72);
-          const divider = new THREE.Mesh(dividerGeo, interiorMat);
-          divider.position.set(0, 0.32, 0.01);
-          clamshellLid.add(divider);
-
-          const xStrap1Geo = new THREE.BoxGeometry(0.55, 0.025, 0.005);
-          const xStrap1 = new THREE.Mesh(xStrap1Geo, strapMat);
-          xStrap1.rotation.z = Math.PI / 4;
-          xStrap1.position.set(0, 0.32, 0.015);
-          clamshellLid.add(xStrap1);
-
-          const xStrap2Geo = new THREE.BoxGeometry(0.55, 0.025, 0.005);
-          const xStrap2 = new THREE.Mesh(xStrap2Geo, strapMat);
-          xStrap2.rotation.z = -Math.PI / 4;
-          xStrap2.position.set(0, 0.32, 0.015);
-          clamshellLid.add(xStrap2);
-
-          // Hinge placed on the left side of the case
-          clamshellLid.position.set(-0.25, 0, 0.12);
-          clamshellLid.visible = false;
-          rootGroup.add(clamshellLid);
-          lidMeshGroup = clamshellLid;
-          clamshellGroupRef.current = clamshellLid;
-
+          closedBagRef.current = bag;
           rootGroup.add(bag);
         } catch (err) {
           console.error("AR GLTF loading error:", err);
@@ -453,9 +370,15 @@ export default function ARProjectionModal({
 
           // Smoothly interpolate clamshell angle
           currentClamshell += (targetClamshellRef.current - currentClamshell) * Math.min(dt * 8, 0.3);
-          if (clamshellGroupRef.current) {
-            clamshellGroupRef.current.rotation.y = currentClamshell;
-            clamshellGroupRef.current.visible = currentClamshell > 0.05;
+          if (openSuitcaseRef.current) {
+            openSuitcaseRef.current.setClamshellAngle(currentClamshell);
+            if (currentClamshell > 0.04) {
+              openSuitcaseRef.current.group.visible = true;
+              if (closedBagRef.current) closedBagRef.current.visible = false;
+            } else {
+              openSuitcaseRef.current.group.visible = false;
+              if (closedBagRef.current) closedBagRef.current.visible = true;
+            }
           }
 
           // Smoothly interpolate handle extension

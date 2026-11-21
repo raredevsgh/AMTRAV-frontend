@@ -539,11 +539,11 @@ export default function ShopView() {
   const [duffelColorIdx, setDuffelColorIdx] = useState(0);
 
   const SUEDE_COLOR_OPTIONS = [
-    { name: "Cognac Brown", color: "#6e3b1b" },
-    { name: "Onyx Black", color: "#1a1a1a" },
-    { name: "Midnight Navy", color: "#10213b" },
-    { name: "Sand Beige", color: "#c2b29d" },
-    { name: "Charcoal Grey", color: "#424449" },
+    { name: "Cognac Brown", color: "#6e3b1b", image: "/images/trace/duffel-cognac-brown.jpg" },
+    { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/duffel-onyx-black.jpg" },
+    { name: "Midnight Navy", color: "#10213b", image: "/images/trace/duffel-midnight-navy.jpg" },
+    { name: "Sand Beige", color: "#c2b29d", image: "/images/trace/duffel-sand-beige.jpg" },
+    { name: "Charcoal Grey", color: "#424449", image: "/images/trace/duffel-charcoal-grey.jpg" },
   ];
 
   const handleAddToCart = (compoundSku: string) => {
@@ -755,11 +755,13 @@ export default function ShopView() {
             <article className="group flex flex-col justify-between rounded-3xl bg-white p-4 shadow-card transition-all duration-300 hover:shadow-xl border border-divider h-full">
               <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-surface/50 p-4 transition-colors group-hover:bg-surface/80">
                 <Image
-                  src="/images/trace/duffel-side-bag-studio.jpg"
-                  alt="AMTRAV Premium Suede & Aluminium Duffel Side Bag"
+                  key={SUEDE_COLOR_OPTIONS[duffelColorIdx].image}
+                  src={SUEDE_COLOR_OPTIONS[duffelColorIdx].image}
+                  alt={`AMTRAV Premium Suede & Aluminium Duffel Side Bag in ${SUEDE_COLOR_OPTIONS[duffelColorIdx].name}`}
                   fill
                   sizes="(min-width: 1024px) 380px, 90vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-104"
+                  className="object-cover transition-all duration-300 group-hover:scale-104 animate-in fade-in"
+                  priority
                 />
                 <span className="absolute top-3 left-3 rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
                   New Arrival

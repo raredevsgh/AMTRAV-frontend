@@ -9,6 +9,7 @@ import { addToCart } from "@/lib/shop";
 import { useRegion } from "@/lib/region";
 import CartDrawer from "./CartDrawer";
 import ARProjectionModal from "./ARProjectionModal";
+import { createUltraRealisticDuffel } from "./Realistic3DModels";
 
 export type LuggageTier = "essential" | "pro" | "executive" | "flagship";
 export type LuggageType = "cabin" | "checkin" | "duffel" | "both";
@@ -25,11 +26,11 @@ export interface BagFinish {
 
 // Handcrafted Italian Suede Swatches
 export const SUEDE_SWATCHES: BagFinish[] = [
-  { id: "cognac-brown", name: "Cognac Brown", color: "#6e3b1b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
-  { id: "onyx-black", name: "Onyx Black", color: "#1a1a1a", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
-  { id: "midnight-navy", name: "Midnight Navy", color: "#10213b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
-  { id: "sand-beige", name: "Sand Beige", color: "#c2b29d", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
-  { id: "charcoal-grey", name: "Charcoal Grey", color: "#424449", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-side-bag-studio.jpg" },
+  { id: "cognac-brown", name: "Cognac Brown", color: "#6e3b1b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-cognac-brown.jpg" },
+  { id: "onyx-black", name: "Onyx Black", color: "#1a1a1a", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-onyx-black.jpg" },
+  { id: "midnight-navy", name: "Midnight Navy", color: "#10213b", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-midnight-navy.jpg" },
+  { id: "sand-beige", name: "Sand Beige", color: "#c2b29d", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-sand-beige.jpg" },
+  { id: "charcoal-grey", name: "Charcoal Grey", color: "#424449", metalness: 0.05, roughness: 0.85, posterImage: "/images/trace/duffel-charcoal-grey.jpg" },
 ];
 
 // Photo 1: Essential Colors: Midnight Black, Space Grey, Navy Blue
@@ -108,102 +109,8 @@ const modelCache = new Map<Active3DModel, Promise<any>>();
 function getModel(name: Active3DModel): Promise<any> {
   if (name === "duffel") {
     return getKit().then(({ THREE }) => {
-      const duffelGroup = new THREE.Group();
-
-      // 1. Suede Cylindrical Barrel Body
-      const bodyGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.88, 32, 1);
-      bodyGeo.rotateZ(Math.PI / 2);
-      const suedeMat = new THREE.MeshPhysicalMaterial({
-        color: "#6e3b1b",
-        roughness: 0.86,
-        metalness: 0.04,
-        clearcoat: 0.08,
-        clearcoatRoughness: 0.4,
-      });
-      suedeMat.name = "Shell";
-      const bodyMesh = new THREE.Mesh(bodyGeo, suedeMat);
-      bodyMesh.castShadow = true;
-      bodyMesh.receiveShadow = true;
-      duffelGroup.add(bodyMesh);
-
-      // 2. Rounded Suede Endcaps
-      const endCapGeo = new THREE.SphereGeometry(0.32, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-      const endCapLeft = new THREE.Mesh(endCapGeo, suedeMat);
-      endCapLeft.rotation.z = Math.PI / 2;
-      endCapLeft.position.x = -0.44;
-      endCapLeft.castShadow = true;
-      duffelGroup.add(endCapLeft);
-
-      const endCapRight = new THREE.Mesh(endCapGeo, suedeMat);
-      endCapRight.rotation.z = -Math.PI / 2;
-      endCapRight.position.x = 0.44;
-      endCapRight.castShadow = true;
-      duffelGroup.add(endCapRight);
-
-      // 3. Leather Trim & Carry Handles
-      const leatherMat = new THREE.MeshStandardMaterial({
-        color: 0x181818,
-        roughness: 0.45,
-        metalness: 0.15,
-      });
-      const brassMat = new THREE.MeshStandardMaterial({
-        color: 0xd4af37,
-        roughness: 0.28,
-        metalness: 0.88,
-      });
-
-      // Twin Leather Reinforcing Straps
-      const strapGeo = new THREE.TorusGeometry(0.326, 0.016, 16, 48);
-      strapGeo.rotateY(Math.PI / 2);
-      const strap1 = new THREE.Mesh(strapGeo, leatherMat);
-      strap1.position.x = -0.22;
-      duffelGroup.add(strap1);
-
-      const strap2 = new THREE.Mesh(strapGeo, leatherMat);
-      strap2.position.x = 0.22;
-      duffelGroup.add(strap2);
-
-      // Aluminium Central Accent Stripe
-      const aluGeo = new THREE.BoxGeometry(0.04, 0.01, 0.86);
-      const aluMat = new THREE.MeshStandardMaterial({
-        color: 0xd0d5dd,
-        metalness: 0.95,
-        roughness: 0.15,
-      });
-      const aluStripe = new THREE.Mesh(aluGeo, aluMat);
-      aluStripe.position.set(0, 0.322, 0);
-      duffelGroup.add(aluStripe);
-
-      // Top Carry Handle Arc
-      const handleCurve = new THREE.QuadraticBezierCurve3(
-        new THREE.Vector3(-0.16, 0.32, 0),
-        new THREE.Vector3(0, 0.62, 0),
-        new THREE.Vector3(0.16, 0.32, 0)
-      );
-      const handleGeo = new THREE.TubeGeometry(handleCurve, 20, 0.022, 12, false);
-      const handleMesh = new THREE.Mesh(handleGeo, leatherMat);
-      duffelGroup.add(handleMesh);
-
-      // Brass Hardware Rings
-      const ringGeo = new THREE.TorusGeometry(0.035, 0.008, 12, 24);
-      const ringLeft = new THREE.Mesh(ringGeo, brassMat);
-      ringLeft.position.set(-0.16, 0.33, 0);
-      duffelGroup.add(ringLeft);
-
-      const ringRight = new THREE.Mesh(ringGeo, brassMat);
-      ringRight.position.set(0.16, 0.33, 0);
-      duffelGroup.add(ringRight);
-
-      // Engraved Brand Plate
-      const badgeGeo = new THREE.BoxGeometry(0.12, 0.005, 0.04);
-      const badgeMesh = new THREE.Mesh(badgeGeo, aluMat);
-      badgeMesh.position.set(0, 0.326, 0.15);
-      duffelGroup.add(badgeMesh);
-
-      // Center and lift to proper view height
-      duffelGroup.position.set(0, 0.34, 0);
-
-      return { scene: duffelGroup } as any;
+      const duffel = createUltraRealisticDuffel(THREE, "#6e3b1b");
+      return { scene: duffel.group } as any;
     });
   }
   let model = modelCache.get(name);
@@ -937,13 +844,13 @@ export default function BagViewer({
             </div>
 
             {/* Right: IATA Overhead Bin Clearance & Specs Badge */}
-            <div className="flex flex-col gap-2 max-w-[190px] sm:max-w-[220px]">
-              <div className={`rounded-xl p-2.5 border shadow-lg backdrop-blur-md ${isLight ? "bg-white/95 border-divider text-navy" : "bg-navy-deep/95 border-white/10 text-white"}`}>
-                <div className="flex items-center gap-1.5 text-brand font-bold text-[9.5px] uppercase font-mono mb-1">
-                  <Check className="size-3 text-emerald-600" />
-                  <span>{activeModel === "carry-on" ? "Overhead Bin Compliant" : activeModel === "duffel" ? "Cabin & Underseat Carry" : "Maximum Checked Standard"}</span>
+            <div className="absolute top-2.5 right-2.5 max-w-[155px] sm:relative sm:top-auto sm:right-auto sm:max-w-[220px] flex flex-col gap-2">
+              <div className={`rounded-xl p-2 sm:p-2.5 border shadow-lg backdrop-blur-md ${isLight ? "bg-white/95 border-divider text-navy" : "bg-navy-deep/95 border-white/10 text-white"}`}>
+                <div className="flex items-center gap-1.5 text-brand font-bold text-[9px] sm:text-[9.5px] uppercase font-mono mb-0.5 sm:mb-1">
+                  <Check className="size-2.5 sm:size-3 text-emerald-600 shrink-0" />
+                  <span className="truncate">{activeModel === "carry-on" ? "Overhead Bin Compliant" : activeModel === "duffel" ? "Cabin & Underseat Carry" : "Maximum Checked Standard"}</span>
                 </div>
-                <p className="text-[10.5px] leading-tight text-mid">
+                <p className="text-[9.5px] sm:text-[10.5px] leading-tight text-mid">
                   {activeModel === "carry-on"
                     ? "55 × 40 × 23 cm complies with IATA guidelines for global airlines (Lufthansa, British Airways, Air France, Delta & United)."
                     : activeModel === "duffel"
