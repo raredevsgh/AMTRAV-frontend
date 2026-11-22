@@ -103,6 +103,59 @@ body {
   position: relative;
 }
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *), @media (prefers-color-scheme: dark));
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #061533;
+    --color-divider: rgba(255, 255, 255, 0.15);
+  }
+  body {
+    background: #001f4d;
+    color: #ffffff;
+  }
+}
+
+:root[data-theme="dark"],
+:root.dark,
+[data-theme="dark"] {
+  --color-surface: #061533;
+  --color-divider: rgba(255, 255, 255, 0.15);
+}
+
+/* Comprehensive Negative UI high-contrast typography & surface rules for dark mode */
+@media (prefers-color-scheme: dark) {
+  .text-navy:not([class*="dark:text-"]) {
+    color: #ffffff !important;
+  }
+  .text-mid:not([class*="dark:text-"]) {
+    color: #94a3b8 !important;
+  }
+  .bg-surface:not([class*="dark:bg-"]) {
+    background-color: #061533 !important;
+  }
+  .border-divider:not([class*="dark:border-"]) {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+}
+
+.dark .text-navy:not([class*="dark:text-"]),
+[data-theme="dark"] .text-navy:not([class*="dark:text-"]) {
+  color: #ffffff !important;
+}
+.dark .text-mid:not([class*="dark:text-"]),
+[data-theme="dark"] .text-mid:not([class*="dark:text-"]) {
+  color: #94a3b8 !important;
+}
+.dark .bg-surface:not([class*="dark:bg-"]),
+[data-theme="dark"] .bg-surface:not([class*="dark:bg-"]) {
+  background-color: #061533 !important;
+}
+.dark .border-divider:not([class*="dark:border-"]),
+[data-theme="dark"] .border-divider:not([class*="dark:border-"]) {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
 /* Ensure no element unintentionally expands viewport horizontally on mobile */
 *, *::before, *::after {
   box-sizing: border-box;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -125,17 +126,24 @@ export default function ConfiguratorClient() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 pt-28 sm:pt-32 lg:pt-36 xl:pt-40 pb-16">
+    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-2 sm:pt-4 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-center sm:justify-start gap-2 text-caption text-mid dark:text-blue-pale/70">
+          <Link href="/" className="hover:text-navy dark:hover:text-white">Home</Link>
+          <span className="text-light-white dark:text-white/30">/</span>
+          <span className="font-semibold text-navy dark:text-white">Customise</span>
+        </div>
+
         {/* Studio Header */}
-        <div className="border-b border-divider pb-6 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 px-3.5 py-1 text-caption font-bold uppercase tracking-widest text-navy border border-navy/10">
+        <div className="border-b border-divider dark:border-white/15 pb-6 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3.5 py-1 text-caption font-bold uppercase tracking-widest text-navy dark:text-white border border-navy/10 dark:border-white/20">
             <span className="size-2 rounded-full bg-sky inline-block animate-pulse" /> AMTRAV UNIQUE Studio
           </span>
-          <h1 className="mt-3 text-display-m font-bold text-navy md:text-h1 tracking-tight">
+          <h1 className="mt-3 text-display-m font-bold text-navy dark:text-white md:text-h1 tracking-tight">
             Build Your Bespoke Silhouette
           </h1>
-          <p className="mt-2 text-small text-mid max-w-xl mx-auto">
+          <p className="mt-2 text-small text-mid dark:text-blue-pale/80 max-w-xl mx-auto">
             Configure your case shell, personalized leather tag monogram, handle accents, and customized Multiwheel® sets in real time.
           </p>
         </div>
@@ -160,17 +168,17 @@ export default function ConfiguratorClient() {
                 <div
                   className={`flex size-9 items-center justify-center rounded-full text-caption font-bold transition-all ${
                     isCurrent
-                      ? "bg-navy text-white shadow-md ring-2 ring-sky"
+                      ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-md ring-2 ring-sky"
                       : isCompleted
                       ? "bg-emerald-600 text-white"
-                      : "bg-surface border border-divider text-mid"
+                      : "bg-surface dark:bg-white/10 border border-divider dark:border-white/15 text-mid dark:text-blue-pale/70"
                   }`}
                 >
                   {isCompleted ? <Check className="size-4" /> : step.num}
                 </div>
                 <span
                   className={`text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-center max-w-[70px] sm:max-w-none leading-tight ${
-                    isCurrent ? "text-navy" : "text-mid"
+                    isCurrent ? "text-navy dark:text-white" : "text-mid dark:text-blue-pale/70"
                   }`}
                 >
                   {step.label}
@@ -193,7 +201,7 @@ export default function ConfiguratorClient() {
             />
 
             {/* Monogram Overlay Badge Preview */}
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface border border-divider p-4">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface dark:bg-[#071739] border border-divider dark:border-white/15 p-4">
                 <div className="flex items-center gap-3.5">
                   <div
                     className="relative flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/20 shadow-md font-serif font-bold text-lg"
@@ -211,37 +219,37 @@ export default function ConfiguratorClient() {
                     <span className="drop-shadow-sm tracking-wider">{monogramText || "AMT"}</span>
                   </div>
                   <div>
-                    <span className="text-[11px] uppercase font-bold tracking-wider text-mid">
+                    <span className="text-[11px] uppercase font-bold tracking-wider text-mid dark:text-blue-pale/70">
                       Personalized Luggage Tag
                     </span>
-                    <p className="text-small font-semibold text-navy">
+                    <p className="text-small font-semibold text-navy dark:text-white">
                       {selectedTag.name} · {monogramFoil.name}
                     </p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-caption font-mono text-mid">Initial Stamp</span>
-                  <p className="text-small font-bold text-navy uppercase tracking-widest">{monogramText || "AMT"}</p>
+                  <span className="text-caption font-mono text-mid dark:text-blue-pale/70">Initial Stamp</span>
+                  <p className="text-small font-bold text-navy dark:text-white uppercase tracking-widest">{monogramText || "AMT"}</p>
                 </div>
               </div>
           </div>
 
           {/* Right: Step Options Panel (5 cols) */}
-          <div className="lg:col-span-5 rounded-3xl border border-divider bg-white p-6 sm:p-8 shadow-card space-y-6">
+          <div className="lg:col-span-5 rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-6 sm:p-8 shadow-card space-y-6">
             {/* Step 1: Base Shell & Silhouette */}
             {currentStep === 1 && (
               <div className="space-y-5 animate-in fade-in duration-200">
                 <div>
                   <span className="text-caption font-mono text-sky uppercase">Step 1 of 4</span>
-                  <h3 className="text-h3-m font-bold text-navy">Select Base Shell & Size</h3>
-                  <p className="text-caption text-mid mt-0.5">
+                  <h3 className="text-h3-m font-bold text-navy dark:text-white">Select Base Shell & Size</h3>
+                  <p className="text-caption text-mid dark:text-blue-pale/80 mt-0.5">
                     Choose your case capacity (Cabin, Check-In, or Both) and aerospace finish.
                   </p>
                 </div>
 
                 {/* Luggage Type Filter Tabs */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 rounded-xl bg-surface p-1 border border-divider text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 rounded-xl bg-surface dark:bg-[#0c1e45] p-1 border border-divider dark:border-white/15 text-center">
                   {[
                     { id: "all", label: "All" },
                     { id: "Cabin 55", label: "Cabin 55" },
@@ -254,8 +262,8 @@ export default function ConfiguratorClient() {
                       onClick={() => setShellSizeFilter(tab.id as typeof shellSizeFilter)}
                       className={`rounded-lg py-1.5 text-[11px] font-semibold transition-all ${
                         shellSizeFilter === tab.id
-                          ? "bg-navy text-white shadow-xs"
-                          : "text-mid hover:text-navy"
+                          ? "bg-navy dark:bg-sky text-white dark:text-navy font-bold shadow-xs"
+                          : "text-mid dark:text-blue-pale/70 hover:text-navy dark:hover:text-white"
                       }`}
                     >
                       {tab.label}
@@ -278,8 +286,8 @@ export default function ConfiguratorClient() {
                         }}
                         className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3.5 text-left transition-all ${
                           isSelected
-                            ? "border-navy bg-navy/5 shadow-xs ring-1 ring-navy font-semibold"
-                            : "border-divider bg-white hover:border-mid hover:bg-surface"
+                            ? "border-navy dark:border-sky bg-navy/5 dark:bg-sky/15 shadow-xs ring-1 ring-navy dark:ring-sky font-semibold"
+                            : "border-divider dark:border-white/15 bg-white dark:bg-[#0c1e45] hover:border-mid hover:bg-surface dark:hover:bg-[#122858]"
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -288,16 +296,16 @@ export default function ConfiguratorClient() {
                             style={{ backgroundColor: shell.finishColor }}
                           />
                           <div className="min-w-0 flex-1">
-                            <div className="text-small text-navy flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <div className="text-small text-navy dark:text-white flex flex-wrap items-center gap-1.5 sm:gap-2">
                               <span className="truncate">{shell.name}</span>
-                              <span className="rounded-full bg-navy/5 px-2 py-0.5 text-[10px] font-mono text-mid shrink-0">
+                              <span className="rounded-full bg-navy/5 dark:bg-white/10 px-2 py-0.5 text-[10px] font-mono text-mid dark:text-blue-pale/70 shrink-0">
                                 {shell.size}
                               </span>
                             </div>
-                            <div className="text-caption text-mid font-normal truncate">{shell.finish}</div>
+                            <div className="text-caption text-mid dark:text-blue-pale/70 font-normal truncate">{shell.finish}</div>
                           </div>
                         </div>
-                        <span className="text-small font-bold text-navy shrink-0 ml-2">
+                        <span className="text-small font-bold text-navy dark:text-white shrink-0 ml-2">
                           {formatPrice(shell.priceUsdMinor)}
                         </span>
                       </button>
@@ -306,12 +314,12 @@ export default function ConfiguratorClient() {
                 </div>
 
                 {/* Bespoke Custom Color Picker */}
-                <div className="rounded-2xl border border-divider bg-surface/60 p-3.5 space-y-2">
+                <div className="rounded-2xl border border-divider dark:border-white/15 bg-surface/60 dark:bg-[#0c1e45] p-3.5 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-navy">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-navy dark:text-white">
                       Bespoke Shell Hue
                     </span>
-                    <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-divider bg-white px-2.5 py-1 text-xs font-mono font-bold text-navy hover:border-navy shadow-xs">
+                    <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-divider dark:border-white/20 bg-white dark:bg-[#071739] px-2.5 py-1 text-xs font-mono font-bold text-navy dark:text-white hover:border-navy dark:hover:border-sky shadow-xs">
                       <span
                         className="size-3.5 rounded-full border border-black/20"
                         style={{ backgroundColor: customShellHex }}
@@ -328,7 +336,7 @@ export default function ConfiguratorClient() {
                       />
                     </label>
                   </div>
-                  <p className="text-[11px] text-mid">
+                  <p className="text-[11px] text-mid dark:text-blue-pale/70">
                     Click the color chip to choose any custom RAL/hex shade for your aerospace shell.
                   </p>
                 </div>
@@ -357,13 +365,13 @@ export default function ConfiguratorClient() {
                     value={monogramText}
                     onChange={(e) => setMonogramText(e.target.value.toUpperCase())}
                     placeholder="AMT"
-                    className="w-full rounded-xl border border-divider px-4 py-2.5 text-center font-serif text-xl font-bold tracking-widest text-navy uppercase focus:border-navy focus:outline-none"
+                    className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-center font-serif text-xl font-bold tracking-widest text-navy dark:text-white uppercase focus:border-navy dark:focus:border-sky focus:outline-none"
                   />
                 </div>
 
                 {/* Foil Finish */}
                 <div>
-                  <label className="block text-caption-m font-semibold uppercase text-mid mb-2">
+                  <label className="block text-caption-m font-semibold uppercase text-mid dark:text-blue-pale/70 mb-2">
                     Embossing Foil
                   </label>
                   <div className="grid grid-cols-1 gap-2">
@@ -376,8 +384,8 @@ export default function ConfiguratorClient() {
                           onClick={() => setMonogramFoil(foil)}
                           className={`flex items-center justify-between rounded-xl border p-3 text-small text-left transition-all ${
                             isSelected
-                              ? "border-navy bg-navy text-white font-semibold shadow-xs"
-                              : "border-divider bg-white text-navy hover:bg-surface"
+                              ? "border-navy dark:border-sky bg-navy dark:bg-sky text-white dark:text-navy font-semibold shadow-xs"
+                              : "border-divider dark:border-white/15 bg-white dark:bg-[#0c1e45] text-navy dark:text-white hover:bg-surface dark:hover:bg-[#122858]"
                           }`}
                         >
                           <span>{foil.name}</span>
@@ -390,7 +398,7 @@ export default function ConfiguratorClient() {
 
                 {/* Tag Colorway */}
                 <div>
-                  <label className="block text-caption-m font-semibold uppercase text-mid mb-2">
+                  <label className="block text-caption-m font-semibold uppercase text-mid dark:text-blue-pale/70 mb-2">
                     Leather Color
                   </label>
                   <div className="grid grid-cols-1 gap-2">
@@ -403,8 +411,8 @@ export default function ConfiguratorClient() {
                           onClick={() => setSelectedTag(tag)}
                           className={`flex items-center justify-between rounded-xl border p-3 text-left transition-all ${
                             isSelected
-                              ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
-                              : "border-divider bg-white text-navy hover:bg-surface"
+                              ? "border-navy dark:border-sky bg-navy/5 dark:bg-sky/15 font-semibold text-navy dark:text-white ring-1 ring-navy dark:ring-sky"
+                              : "border-divider dark:border-white/15 bg-white dark:bg-[#0c1e45] text-navy dark:text-white hover:bg-surface dark:hover:bg-[#122858]"
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
@@ -414,7 +422,7 @@ export default function ConfiguratorClient() {
                             />
                             <span className="text-small">{tag.name}</span>
                           </div>
-                          <span className="text-caption font-bold text-navy">
+                          <span className="text-caption font-bold text-navy dark:text-white">
                             {tag.priceUsdMinor > 0 ? `+${formatPrice(tag.priceUsdMinor)}` : "Complimentary"}
                           </span>
                         </button>
@@ -430,8 +438,8 @@ export default function ConfiguratorClient() {
               <div className="space-y-5 animate-in fade-in duration-200">
                 <div>
                   <span className="text-caption font-mono text-sky uppercase">Step 3 of 4</span>
-                  <h3 className="text-h3-m font-bold text-navy">Handle Accent Colors</h3>
-                  <p className="text-caption text-mid mt-0.5">
+                  <h3 className="text-h3-m font-bold text-navy dark:text-white">Handle Accent Colors</h3>
+                  <p className="text-caption text-mid dark:text-blue-pale/80 mt-0.5">
                     Customize the top and side carrying handles with colored Italian leather.
                   </p>
                 </div>
@@ -446,8 +454,8 @@ export default function ConfiguratorClient() {
                         onClick={() => setSelectedHandle(handle)}
                         className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all ${
                           isSelected
-                            ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
-                            : "border-divider bg-white text-navy hover:bg-surface"
+                            ? "border-navy dark:border-sky bg-navy/5 dark:bg-sky/15 font-semibold text-navy dark:text-white ring-1 ring-navy dark:ring-sky"
+                            : "border-divider dark:border-white/15 bg-white dark:bg-[#0c1e45] text-navy dark:text-white hover:bg-surface dark:hover:bg-[#122858]"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -457,7 +465,7 @@ export default function ConfiguratorClient() {
                           />
                           <span className="text-small">{handle.name}</span>
                         </div>
-                        <span className="text-caption font-bold text-navy">
+                        <span className="text-caption font-bold text-navy dark:text-white">
                           {handle.priceUsdMinor > 0 ? `+${formatPrice(handle.priceUsdMinor)}` : "Included"}
                         </span>
                       </button>
@@ -472,8 +480,8 @@ export default function ConfiguratorClient() {
               <div className="space-y-5 animate-in fade-in duration-200">
                 <div>
                   <span className="text-caption font-mono text-sky uppercase">Step 4 of 4</span>
-                  <h3 className="text-h3-m font-bold text-navy">Multiwheel® Accent Set</h3>
-                  <p className="text-caption text-mid mt-0.5">
+                  <h3 className="text-h3-m font-bold text-navy dark:text-white">Multiwheel® Accent Set</h3>
+                  <p className="text-caption text-mid dark:text-blue-pale/80 mt-0.5">
                     Select matching or high-contrast ball-bearing wheel caps.
                   </p>
                 </div>
@@ -488,8 +496,8 @@ export default function ConfiguratorClient() {
                         onClick={() => setSelectedWheels(wheel)}
                         className={`flex w-full items-center justify-between rounded-2xl border p-3.5 text-left transition-all ${
                           isSelected
-                            ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
-                            : "border-divider bg-white text-navy hover:bg-surface"
+                            ? "border-navy dark:border-sky bg-navy/5 dark:bg-sky/15 font-semibold text-navy dark:text-white ring-1 ring-navy dark:ring-sky"
+                            : "border-divider dark:border-white/15 bg-white dark:bg-[#0c1e45] text-navy dark:text-white hover:bg-surface dark:hover:bg-[#122858]"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -499,7 +507,7 @@ export default function ConfiguratorClient() {
                           />
                           <span className="text-small">{wheel.name}</span>
                         </div>
-                        <span className="text-caption font-bold text-navy">
+                        <span className="text-caption font-bold text-navy dark:text-white">
                           {wheel.priceUsdMinor > 0 ? `+${formatPrice(wheel.priceUsdMinor)}` : "Standard"}
                         </span>
                       </button>
@@ -510,15 +518,15 @@ export default function ConfiguratorClient() {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between border-t border-divider pt-5">
+            <div className="flex items-center justify-between border-t border-divider dark:border-white/15 pt-5">
               <button
                 type="button"
                 disabled={currentStep === 1}
                 onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1) as typeof currentStep)}
                 className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-caption font-semibold transition-all ${
                   currentStep === 1
-                    ? "opacity-30 cursor-not-allowed text-mid"
-                    : "text-navy hover:bg-surface"
+                    ? "opacity-30 cursor-not-allowed text-mid dark:text-white/30"
+                    : "text-navy dark:text-white hover:bg-surface dark:hover:bg-white/10"
                 }`}
               >
                 <ChevronLeft className="size-4" /> Previous
@@ -528,31 +536,31 @@ export default function ConfiguratorClient() {
                 <button
                   type="button"
                   onClick={() => setCurrentStep((prev) => Math.min(4, prev + 1) as typeof currentStep)}
-                  className="flex items-center gap-1.5 rounded-full bg-navy px-5 py-2 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
+                  className="flex items-center gap-1.5 rounded-full bg-navy dark:bg-sky px-5 py-2 text-caption font-semibold text-white dark:text-navy shadow-xs hover:bg-navy-deep dark:hover:bg-white active:scale-95 transition-all"
                 >
                   Next Step <ChevronRight className="size-4" />
                 </button>
               ) : (
-                <span className="text-caption font-bold text-emerald-600">Configuration Ready ✓</span>
+                <span className="text-caption font-bold text-emerald-600 dark:text-emerald-400">Configuration Ready ✓</span>
               )}
             </div>
 
             {/* Configuration Summary & Add to Bag */}
-            <div className="rounded-2xl bg-surface p-4 border border-divider space-y-3">
+            <div className="rounded-2xl bg-surface dark:bg-[#0c1e45] p-4 border border-divider dark:border-white/15 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-caption text-mid">Total Custom Build</span>
-                <span className="text-h3-m font-bold text-navy">{formatPrice(totalMinor)}</span>
+                <span className="text-caption text-mid dark:text-blue-pale/70">Total Custom Build</span>
+                <span className="text-h3-m font-bold text-navy dark:text-white">{formatPrice(totalMinor)}</span>
               </div>
 
               <button
                 type="button"
                 onClick={handleAddCustomToBag}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-small font-semibold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-navy dark:bg-sky py-3 text-small font-semibold text-white dark:text-navy shadow-md hover:bg-navy-deep dark:hover:bg-white active:scale-95 transition-all"
               >
                 <ShoppingBag className="size-4" />
                 <span>{isEcommerce ? "Add Custom Build to Bag" : "Store Appointment"}</span>
               </button>
-              <p className="text-[10px] text-center text-mid">
+              <p className="text-[10px] text-center text-mid dark:text-blue-pale/60">
                 Includes Lifetime Guarantee & complimentary initial embossing.
               </p>
             </div>

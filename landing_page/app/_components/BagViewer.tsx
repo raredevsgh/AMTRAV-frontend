@@ -539,12 +539,12 @@ export default function BagViewer({
     >
       {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
       <div
-        className={`flex flex-col gap-3.5 border-b pb-4 lg:flex-row lg:items-end lg:justify-between ${
+        className={`flex flex-col gap-3.5 border-b pb-4 2xl:flex-row 2xl:items-end 2xl:justify-between flex-wrap ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
         {/* Left: Collection Tier & Luggage Type */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full 2xl:w-auto flex-wrap">
           {/* Collection / Tier Tabs */}
           <div className="flex flex-col items-start w-full sm:w-auto">
             <span
@@ -597,7 +597,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("cabin")}
-                className={`rounded-full px-1.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
+                className={`rounded-full px-1 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold truncate text-center transition-all ${
                   selectedLuggageType === "cabin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -612,7 +612,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("checkin")}
-                className={`rounded-full px-1.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
+                className={`rounded-full px-1 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold truncate text-center transition-all ${
                   selectedLuggageType === "checkin"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -627,7 +627,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("both")}
-                className={`rounded-full px-1.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold whitespace-nowrap text-center transition-all ${
+                className={`rounded-full px-1 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold truncate text-center transition-all ${
                   selectedLuggageType === "both"
                     ? isLight
                       ? "bg-navy text-white shadow-xs"
@@ -644,7 +644,7 @@ export default function BagViewer({
         </div>
 
         {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="w-full lg:w-auto pt-3 border-t border-divider/40 lg:border-0 lg:pt-0 flex flex-col sm:flex-row sm:items-center sm:justify-between lg:justify-end gap-2.5 sm:gap-4">
+        <div className="w-full 2xl:w-auto pt-3 border-t border-divider/40 2xl:border-0 2xl:pt-0 flex flex-wrap items-center justify-between sm:justify-end gap-2.5 sm:gap-4">
           {/* Action Tools: Size Guide & Room AR in equal 2-col grid on mobile */}
           <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center">
             {/* Traveller Size Guide */}

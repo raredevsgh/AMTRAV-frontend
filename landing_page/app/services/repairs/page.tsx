@@ -53,55 +53,55 @@ export default function RepairsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
+    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-6 sm:pt-8 pb-16">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-6 flex items-center gap-2 text-caption text-mid">
-          <Link href="/" className="hover:text-navy">Home</Link>
-          <span>/</span>
-          <Link href="/services" className="hover:text-navy">Services</Link>
-          <span>/</span>
-          <span className="font-semibold text-navy">Repair Request Portal</span>
+        <div className="mb-6 flex items-center gap-2 text-caption text-mid dark:text-blue-pale/70">
+          <Link href="/" className="hover:text-navy dark:hover:text-white">Home</Link>
+          <span className="text-light-white dark:text-white/30">/</span>
+          <Link href="/services" className="hover:text-navy dark:hover:text-white">Services</Link>
+          <span className="text-light-white dark:text-white/30">/</span>
+          <span className="font-semibold text-navy dark:text-white">Repair Request Portal</span>
         </div>
 
         {/* Header */}
-        <div className="border-b border-divider pb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 px-3.5 py-1 text-caption font-bold uppercase tracking-wider text-navy border border-navy/10 mb-3">
+        <div className="border-b border-divider dark:border-white/15 pb-8 text-center sm:text-left">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3.5 py-1 text-caption font-bold uppercase tracking-wider text-navy dark:text-white border border-navy/10 dark:border-white/20 mb-3 backdrop-blur-sm">
             <Wrench className="size-4 text-sky" /> Lifetime Repair Service
           </div>
-          <h1 className="text-display-m font-bold text-navy md:text-h1">
+          <h1 className="text-display-m font-bold text-navy dark:text-white md:text-h1">
             Request an Official Repair
           </h1>
-          <p className="mt-2 text-small text-mid max-w-2xl">
+          <p className="mt-2 text-small text-mid dark:text-blue-pale/80 max-w-2xl">
             Under the AMTRAV Lifetime Functional Guarantee, all damages to wheels, handles, locks, and cracked shells are serviced by our certified craft technicians free of charge.
           </p>
         </div>
 
         {claimResult ? (
           /* Claim Confirmed Card */
-          <div className="mt-8 rounded-3xl border border-emerald-200 bg-white p-8 shadow-xl text-center space-y-6">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+          <div className="mt-8 rounded-3xl border border-emerald-200 dark:border-emerald-500/30 bg-white dark:bg-[#071739] p-8 shadow-xl text-center space-y-6">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
               <Check className="size-8" />
             </div>
 
             <div className="space-y-2">
-              <span className="text-caption font-mono uppercase text-emerald-700 font-bold">
+              <span className="text-caption font-mono uppercase text-emerald-700 dark:text-emerald-400 font-bold">
                 Repair Claim Approved
               </span>
-              <h2 className="text-h2-m font-bold text-navy">Claim Reference: {claimResult.claimId}</h2>
-              <p className="text-small text-mid max-w-md mx-auto">
+              <h2 className="text-h2-m font-bold text-navy dark:text-white">Claim Reference: {claimResult.claimId}</h2>
+              <p className="text-small text-mid dark:text-blue-pale/80 max-w-md mx-auto">
                 {claimResult.message}
               </p>
             </div>
 
-            <div className="mx-auto max-w-md rounded-2xl bg-surface border border-divider p-5 text-left text-small space-y-2">
+            <div className="mx-auto max-w-md rounded-2xl bg-surface dark:bg-[#0c1e45] border border-divider dark:border-white/15 p-5 text-left text-small space-y-2">
               <div className="flex justify-between">
-                <span className="text-mid">Expected Turnaround:</span>
-                <span className="font-bold text-navy">{claimResult.estimatedTurnaround}</span>
+                <span className="text-mid dark:text-blue-pale/70">Expected Turnaround:</span>
+                <span className="font-bold text-navy dark:text-white">{claimResult.estimatedTurnaround}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-mid">Return Shipping:</span>
-                <span className="font-bold text-emerald-600">Free Insured Courier</span>
+                <span className="text-mid dark:text-blue-pale/70">Return Shipping:</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">Free Insured Courier</span>
               </div>
             </div>
 
@@ -109,13 +109,13 @@ export default function RepairsPage() {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="flex items-center gap-2 rounded-full border border-divider px-5 py-2.5 text-small font-semibold text-navy hover:bg-surface"
+                className="flex items-center gap-2 rounded-full border border-divider dark:border-white/20 px-5 py-2.5 text-small font-semibold text-navy dark:text-white hover:bg-surface dark:hover:bg-white/10 transition-colors"
               >
                 <Download className="size-4" /> Download Shipping Label (PDF)
               </button>
               <Link
                 href="/services/tracking"
-                className="rounded-full bg-navy px-6 py-2.5 text-small font-semibold text-white hover:bg-navy-deep"
+                className="rounded-full bg-navy dark:bg-sky px-6 py-2.5 text-small font-semibold text-white dark:text-navy hover:bg-navy-deep dark:hover:bg-white transition-colors"
               >
                 Track Repair Status
               </Link>
@@ -124,16 +124,16 @@ export default function RepairsPage() {
         ) : (
           /* Claim Form */
           <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
-            <form onSubmit={handleSubmit} className="lg:col-span-7 rounded-3xl border border-divider bg-white p-6 sm:p-8 shadow-card space-y-5">
+            <form onSubmit={handleSubmit} className="lg:col-span-7 rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-6 sm:p-8 shadow-card space-y-5">
               {error && (
-                <div className="flex items-center gap-2.5 rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-caption font-medium text-rose-800">
-                  <AlertCircle className="size-4 shrink-0 text-rose-600" />
+                <div className="flex items-center gap-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 p-3.5 text-caption font-medium text-rose-800 dark:text-rose-300">
+                  <AlertCircle className="size-4 shrink-0 text-rose-600 dark:text-rose-400" />
                   <span>{error}</span>
                 </div>
               )}
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
                   10-Digit Serial Number *
                 </label>
                 <input
@@ -142,29 +142,29 @@ export default function RepairsPage() {
                   value={serialNumber}
                   onChange={(e) => setSerialNumber(e.target.value.toUpperCase())}
                   placeholder="e.g. AMT-9255-3004"
-                  className="w-full rounded-xl border border-divider px-4 py-2.5 font-mono text-small text-navy placeholder:text-mid focus:border-navy focus:outline-none uppercase"
+                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 font-mono text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none uppercase"
                 />
               </div>
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
                   Affected Component *
                 </label>
                 <select
                   value={damageCategory}
                   onChange={(e) => setDamageCategory(e.target.value)}
-                  className="w-full rounded-xl border border-divider px-4 py-2.5 text-small text-navy focus:border-navy focus:outline-none"
+                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-small text-navy dark:text-white focus:border-navy dark:focus:border-sky focus:outline-none"
                 >
-                  <option value="Wheels">Multiwheel® System (Worn, stuck, or cracked wheel)</option>
-                  <option value="Handle">Telescopic Handle or Carrying Grip</option>
-                  <option value="Lock">TSA Combination Latch / Dial Mechanism</option>
-                  <option value="Shell">Aluminium or Polycarbonate Shell Dents / Cracks</option>
-                  <option value="Zipper">Zippers & Flex Divider Compression Straps</option>
+                  <option value="Wheels" className="text-navy dark:text-white dark:bg-[#0c1e45]">Multiwheel® System (Worn, stuck, or cracked wheel)</option>
+                  <option value="Handle" className="text-navy dark:text-white dark:bg-[#0c1e45]">Telescopic Handle or Carrying Grip</option>
+                  <option value="Lock" className="text-navy dark:text-white dark:bg-[#0c1e45]">TSA Combination Latch / Dial Mechanism</option>
+                  <option value="Shell" className="text-navy dark:text-white dark:bg-[#0c1e45]">Aluminium or Polycarbonate Shell Dents / Cracks</option>
+                  <option value="Zipper" className="text-navy dark:text-white dark:bg-[#0c1e45]">Zippers & Flex Divider Compression Straps</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
                   Description of Damage
                 </label>
                 <textarea
@@ -172,13 +172,13 @@ export default function RepairsPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Please describe how the damage occurred (e.g. airport handling impact, baggage belt collision)..."
-                  className="w-full rounded-xl border border-divider p-3 text-small text-navy placeholder:text-mid focus:border-navy focus:outline-none"
+                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] p-3 text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
+                  <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
                     Your Name *
                   </label>
                   <input
@@ -187,11 +187,11 @@ export default function RepairsPage() {
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="Henrik Ibsen"
-                    className="w-full rounded-xl border border-divider px-4 py-2.5 text-small text-navy focus:border-navy focus:outline-none"
+                    className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
+                  <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
                     Contact Email *
                   </label>
                   <input
@@ -200,13 +200,13 @@ export default function RepairsPage() {
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     placeholder="henrik@example.com"
-                    className="w-full rounded-xl border border-divider px-4 py-2.5 text-small text-navy focus:border-navy focus:outline-none"
+                    className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-2">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-2">
                   Service Method
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -215,24 +215,24 @@ export default function RepairsPage() {
                     onClick={() => setDropoffType("COURIER_PICKUP")}
                     className={`rounded-xl border p-3 text-left text-small transition-all ${
                       dropoffType === "COURIER_PICKUP"
-                        ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
-                        : "border-divider bg-white text-navy hover:bg-surface"
+                        ? "border-navy dark:border-sky bg-navy/5 dark:bg-sky/20 font-semibold text-navy dark:text-white ring-1 ring-navy dark:ring-sky"
+                        : "border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] text-navy dark:text-white hover:bg-surface dark:hover:bg-white/10"
                     }`}
                   >
-                    <div className="font-semibold">Courier Pick-Up</div>
-                    <div className="text-[11px] text-mid">Prepaid label emailed to you</div>
+                    <div className="font-semibold text-navy dark:text-white">Courier Pick-Up</div>
+                    <div className="text-[11px] text-mid dark:text-blue-pale/70">Prepaid label emailed to you</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setDropoffType("STORE_DROPOFF")}
                     className={`rounded-xl border p-3 text-left text-small transition-all ${
                       dropoffType === "STORE_DROPOFF"
-                        ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
-                        : "border-divider bg-white text-navy hover:bg-surface"
+                        ? "border-navy dark:border-sky bg-navy/5 dark:bg-sky/20 font-semibold text-navy dark:text-white ring-1 ring-navy dark:ring-sky"
+                        : "border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] text-navy dark:text-white hover:bg-surface dark:hover:bg-white/10"
                     }`}
                   >
-                    <div className="font-semibold">Boutique Drop-Off</div>
-                    <div className="text-[11px] text-mid">In-store quick repair service</div>
+                    <div className="font-semibold text-navy dark:text-white">Boutique Drop-Off</div>
+                    <div className="text-[11px] text-mid dark:text-blue-pale/70">In-store quick repair service</div>
                   </button>
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function RepairsPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-small font-semibold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-navy dark:bg-sky py-3 text-small font-semibold text-white dark:text-navy shadow-md hover:bg-navy-deep dark:hover:bg-white active:scale-95 transition-all disabled:opacity-50"
               >
                 {loading ? "Submitting Claim..." : "Submit Free Repair Request"}
                 <ArrowRight className="size-4" />
@@ -249,29 +249,29 @@ export default function RepairsPage() {
 
             {/* Global Repair Hubs */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-2xl border border-divider bg-white p-5 shadow-xs space-y-3">
-                <span className="flex items-center gap-2 font-semibold text-small text-navy">
+              <div className="rounded-2xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-5 shadow-xs space-y-3">
+                <span className="flex items-center gap-2 font-semibold text-small text-navy dark:text-white">
                   <MapPin className="size-4 text-sky" /> Global Certified Service Hubs
                 </span>
-                <ul className="text-caption text-mid space-y-2 divide-y divide-divider/60">
+                <ul className="text-caption text-mid dark:text-blue-pale/80 space-y-2 divide-y divide-divider/60 dark:divide-white/10">
                   <li className="pt-1.5 flex justify-between">
-                    <span className="font-semibold text-navy">Oslo Flagship Atelier</span>
+                    <span className="font-semibold text-navy dark:text-white">Oslo Flagship Atelier</span>
                     <span>Karl Johans gate 22</span>
                   </li>
                   <li className="pt-1.5 flex justify-between">
-                    <span className="font-semibold text-navy">London Mayfair</span>
+                    <span className="font-semibold text-navy dark:text-white">London Mayfair</span>
                     <span>15 Old Bond Street</span>
                   </li>
                   <li className="pt-1.5 flex justify-between">
-                    <span className="font-semibold text-navy">Paris Saint-Honoré</span>
+                    <span className="font-semibold text-navy dark:text-white">Paris Saint-Honoré</span>
                     <span>73 Rue du Faubourg</span>
                   </li>
                   <li className="pt-1.5 flex justify-between">
-                    <span className="font-semibold text-navy">New York Madison Ave</span>
+                    <span className="font-semibold text-navy dark:text-white">New York Madison Ave</span>
                     <span>535 Madison Avenue</span>
                   </li>
                   <li className="pt-1.5 flex justify-between">
-                    <span className="font-semibold text-navy">Tokyo Ginza</span>
+                    <span className="font-semibold text-navy dark:text-white">Tokyo Ginza</span>
                     <span>6-10-1 Ginza, Chuo-ku</span>
                   </li>
                 </ul>

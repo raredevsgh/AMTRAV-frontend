@@ -105,8 +105,23 @@ const organizationSchema = {
   ],
 };
 
-// Only gate preloader for reduced motion; cleans any legacy session storage key
-const preloaderScript = `try{if(matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-preloaded","");else sessionStorage.removeItem("amortrav-preloaded");}catch(e){}`;
+// Preloader and instant dark-mode / negative UI synchronization script
+const themeAndPreloaderScript = `try{
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.setAttribute("data-preloaded","");
+  else sessionStorage.removeItem("amortrav-preloaded");
+  var mql = window.matchMedia("(prefers-color-scheme: dark)");
+  function syncTheme(e) {
+    if (e.matches) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.setAttribute("data-theme","dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.setAttribute("data-theme","light");
+    }
+  }
+  syncTheme(mql);
+  if (mql.addEventListener) mql.addEventListener("change", syncTheme);
+}catch(e){}`;
 
 // Every page shares the header, the app signup and the footer (Figma "Page sections", 2020:497).
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -115,7 +130,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // suppressHydrationWarning: the preloader script sets data-preloaded before hydration.
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={`${jetbrainsMono.variable} antialiased`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: preloaderScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeAndPreloaderScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
