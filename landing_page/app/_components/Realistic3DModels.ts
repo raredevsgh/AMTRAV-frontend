@@ -220,7 +220,6 @@ export function createInteriorOpenSuitcase(
   const W = 0.45;
   const H = 0.68;
   const D = 0.125;
-  const radius = 0.035;
 
   // Helper to add fluted exterior ribs to a shell panel
   function addFlutedRibs(parent: Three.Group, zPos: number, isFront: boolean) {
@@ -617,13 +616,17 @@ export function createInteriorOpenSuitcase(
   };
 }
 
+export type InteriorOpenSuitcase = ReturnType<typeof createInteriorOpenSuitcase>;
+
 /**
  * Synthesizes a realistic tactile zipper opening/closing sound effect via Web Audio API
  */
-export function playZipperAudio(isOpen: boolean) {
+export function playZipperAudio(_isOpen?: boolean) {
   if (typeof window === "undefined") return;
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
     const duration = 0.38;

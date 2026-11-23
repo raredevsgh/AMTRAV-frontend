@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Plane, Check, ShieldCheck, Scale, Compass, Sparkles, Layers } from "lucide-react";
-import { ShopProduct, CATALOG } from "@/lib/shop";
+import React, { useState } from "react";
+import { Plane, Check, Scale, Compass } from "lucide-react";
+import { ShopProduct } from "@/lib/shop";
 import AirlineMatrixModal from "./AirlineMatrixModal";
 
 interface TechnicalBlueprintProps {
@@ -12,28 +12,24 @@ interface TechnicalBlueprintProps {
 type SilhouetteTab = "cabin" | "checkin" | "both";
 
 export default function TechnicalBlueprint({ product }: TechnicalBlueprintProps) {
-  const [selectedSilhouette, setSelectedSilhouette] = useState<SilhouetteTab>(
+  const defaultSilhouette: SilhouetteTab =
     product?.sizeCategory === "Check-In"
       ? "checkin"
       : product?.category === "Bundles"
       ? "both"
-      : "cabin"
-  );
+      : "cabin";
+
+  const [selectedSilhouette, setSelectedSilhouette] = useState<SilhouetteTab>(defaultSilhouette);
+  const [prevProduct, setPrevProduct] = useState(product);
+
+  // Sync when parent changes product (adjust state during render)
+  if (product !== prevProduct) {
+    setPrevProduct(product);
+    setSelectedSilhouette(defaultSilhouette);
+  }
+
   const [unit, setUnit] = useState<"metric" | "imperial">("metric");
   const [matrixOpen, setMatrixOpen] = useState(false);
-
-  // Sync when parent changes product
-  useEffect(() => {
-    if (product) {
-      if (product.category === "Bundles") {
-        setSelectedSilhouette("both");
-      } else if (product.sizeCategory === "Check-In") {
-        setSelectedSilhouette("checkin");
-      } else {
-        setSelectedSilhouette("cabin");
-      }
-    }
-  }, [product]);
 
   const isMetric = unit === "metric";
 

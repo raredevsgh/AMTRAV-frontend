@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Play, Pause, Volume2, VolumeX, Maximize } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -19,6 +19,23 @@ export default function FilmModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(78);
 
+  const togglePlay = useCallback(() => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      void videoRef.current.play();
+      setIsPlaying(true);
+    }
+  }, [isPlaying]);
+
+  const toggleMute = useCallback(() => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  }, [isMuted]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -34,7 +51,7 @@ export default function FilmModal({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, isPlaying, isMuted]);
+  }, [isOpen, onClose, togglePlay, toggleMute]);
 
   useEffect(() => {
     if (isOpen && videoRef.current) {
@@ -45,23 +62,6 @@ export default function FilmModal({
   }, [isOpen]);
 
   if (!isOpen) return null;
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      void videoRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {

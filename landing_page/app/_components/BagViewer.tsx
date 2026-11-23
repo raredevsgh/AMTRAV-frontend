@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { Rotate3d, Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, Eye, Layers, User, Camera, Sparkles } from "lucide-react";
+import { Rotate3d, Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, Layers, User, Camera } from "lucide-react";
 import type * as Three from "three";
 import type { GLTF } from "three/addons/loaders/GLTFLoader.js";
 import { addToCart } from "@/lib/shop";
@@ -95,8 +95,8 @@ function getKit(): Promise<Kit> {
   return kitPromise;
 }
 
-const modelCache = new Map<Active3DModel, Promise<any>>();
-function getModel(name: Active3DModel): Promise<any> {
+const modelCache = new Map<Active3DModel, Promise<GLTF>>();
+function getModel(name: Active3DModel): Promise<GLTF> {
   let model = modelCache.get(name);
   if (!model) {
     model = getKit().then(({ load }) => load(MODELS[name as "carry-on" | "check-in"]));
@@ -150,34 +150,35 @@ export default function BagViewer({
   const [studioTheme, setStudioTheme] = useState<"light" | "dark">("light");
   const isLight = studioTheme === "light";
 
-  // Sync external props when provided (e.g., from ConfiguratorClient)
-  useEffect(() => {
-    if (externalColorHex) {
-      setCustomHex(externalColorHex);
-      setIsCustomColor(true);
-    }
-  }, [externalColorHex]);
+  // Sync external props when provided (adjust state during render)
+  const [prevExtColor, setPrevExtColor] = useState(externalColorHex);
+  if (externalColorHex && externalColorHex !== prevExtColor) {
+    setPrevExtColor(externalColorHex);
+    setCustomHex(externalColorHex);
+    setIsCustomColor(true);
+  }
 
-  useEffect(() => {
-    if (externalLuggageType) {
-      setSelectedLuggageType(externalLuggageType);
-      if (externalLuggageType === "cabin") setActiveModel("carry-on");
-      else if (externalLuggageType === "checkin") setActiveModel("check-in");
-    }
-  }, [externalLuggageType]);
+  const [prevExtType, setPrevExtType] = useState(externalLuggageType);
+  if (externalLuggageType && externalLuggageType !== prevExtType) {
+    setPrevExtType(externalLuggageType);
+    setSelectedLuggageType(externalLuggageType);
+    if (externalLuggageType === "cabin") setActiveModel("carry-on");
+    else if (externalLuggageType === "checkin") setActiveModel("check-in");
+  }
 
-  useEffect(() => {
-    if (externalTier) {
-      setSelectedTier(externalTier);
-    }
-  }, [externalTier]);
+  const [prevExtTier, setPrevExtTier] = useState(externalTier);
+  if (externalTier && externalTier !== prevExtTier) {
+    setPrevExtTier(externalTier);
+    setSelectedTier(externalTier);
+  }
 
-  // Update selected finish if tier or luggage type changes
-  useEffect(() => {
+  const [prevTierForFinish, setPrevTierForFinish] = useState(selectedTier);
+  if (selectedTier !== prevTierForFinish) {
+    setPrevTierForFinish(selectedTier);
     if (!isCustomColor) {
       setSelectedFinish(availableSwatches[0]);
     }
-  }, [selectedTier, availableSwatches, isCustomColor]);
+  }
 
   // When luggage type changes:
   const handleLuggageTypeSelect = (type: LuggageType) => {
@@ -283,8 +284,8 @@ export default function BagViewer({
           const cabinBag = carryOnGLTF.scene.clone(true);
           const checkinBag = checkInGLTF.scene.clone(true);
 
-          const processMesh = (bagMesh: any) => {
-            bagMesh.traverse((child: any) => {
+          const processMesh = (bagMesh: Three.Object3D) => {
+            bagMesh.traverse((child: Three.Object3D) => {
               const mesh = child as Three.Mesh;
               if (!mesh.isMesh) return;
               const mat = mesh.material as Three.MeshPhysicalMaterial;
@@ -319,7 +320,7 @@ export default function BagViewer({
         } else {
           const [singleGLTF] = loadedModels;
           const bag = singleGLTF.scene.clone(true);
-          bag.traverse((child: any) => {
+          bag.traverse((child: Three.Object3D) => {
             const mesh = child as Three.Mesh;
             if (!mesh.isMesh) return;
             const mat = mesh.material as Three.MeshPhysicalMaterial;
@@ -830,7 +831,7 @@ export default function BagViewer({
                 {/* 178 cm Traveller Label */}
                 <div className="absolute top-0 left-full ml-1 whitespace-nowrap">
                   <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs ${isLight ? "bg-white/95 text-navy border border-divider" : "bg-black/70 text-white border border-white/10"}`}>
-                    178 cm (5'10")
+                    178 cm (5&apos;10&quot;)
                   </span>
                 </div>
 

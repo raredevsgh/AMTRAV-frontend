@@ -18,7 +18,7 @@ const HERO_ENTRANCES = "main > :first-child [data-enter]";
 const CLOSED = "inset(0% 0% 0% 0%)";
 const LIFTED = "inset(0% 0% 100% 0%)";
 
-export default function Preloader({ storageKey }: { storageKey?: string } = {}) {
+export default function Preloader({ storageKey: _storageKey }: { storageKey?: string } = {}) {
   const root = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
 
@@ -28,7 +28,9 @@ export default function Preloader({ storageKey }: { storageKey?: string } = {}) 
 
     // Skip only if the user explicitly prefers reduced motion or already preloaded
     if (html.hasAttribute("data-preloaded") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDone(true);
+      requestAnimationFrame(() => {
+        setDone(true);
+      });
       return;
     }
     if (!el) return;

@@ -1,35 +1,26 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import {
   Camera,
   X,
-  Rotate3d,
-  Check,
-  Sparkles,
   RefreshCw,
   Smartphone,
-  Layers,
   AlertCircle,
   Download,
   Scale,
   Maximize2,
   FolderOpen,
-  Sliders,
-  ChevronRight,
-  ShieldCheck,
-  Compass,
   CheckCircle2,
   AlertTriangle,
-  Plane,
-  Eye,
 } from "lucide-react";
 import type * as Three from "three";
 import type { Active3DModel } from "./BagViewer";
 import {
   createInteriorOpenSuitcase,
   playZipperAudio,
+  type InteriorOpenSuitcase,
 } from "./Realistic3DModels";
 
 export type ARModelType = "carry-on" | "check-in" | "both";
@@ -108,12 +99,11 @@ export default function ARProjectionModal({
 
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedPhotoUrl, setCapturedPhotoUrl] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -138,21 +128,23 @@ export default function ARProjectionModal({
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
-  const rendererRef = useRef<any>(null);
-  const sceneRef = useRef<any>(null);
-  const bagGroupRef = useRef<any>(null);
-  const handleGroupRef = useRef<any>(null);
-  const shellMaterialsRef = useRef<any[]>([]);
-  const closedBagRef = useRef<any>(null);
-  const openSuitcaseRef = useRef<any>(null);
-  const openSuitcasesRef = useRef<any[]>([]);
+  const rendererRef = useRef<Three.WebGLRenderer | null>(null);
+  const sceneRef = useRef<Three.Scene | null>(null);
+  const bagGroupRef = useRef<Three.Group | null>(null);
+  const handleGroupRef = useRef<Three.Group | null>(null);
+  const shellMaterialsRef = useRef<Three.MeshPhysicalMaterial[]>([]);
+  const closedBagRef = useRef<Three.Group | null>(null);
+  const openSuitcaseRef = useRef<InteriorOpenSuitcase | null>(null);
+  const openSuitcasesRef = useRef<InteriorOpenSuitcase[]>([]);
 
-  // Keep model updated if prop changes
-  useEffect(() => {
+  // Keep model updated if prop changes (adjust state during render)
+  const [prevInitialModel, setPrevInitialModel] = useState(initialModel);
+  if (initialModel !== prevInitialModel) {
+    setPrevInitialModel(initialModel);
     setModel(
       initialModel === "both" ? "both" : initialModel === "check-in" ? "check-in" : "carry-on"
     );
-  }, [initialModel]);
+  }
 
   // Request rear environment camera
   useEffect(() => {
@@ -186,10 +178,11 @@ export default function ARProjectionModal({
           setCameraActive(true);
           setCameraError(null);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errorObj = err as Error;
         console.warn("Camera access denied or unavailable:", err);
         setCameraActive(false);
-        setCameraError(err.message || "Camera access permission was denied or unavailable.");
+        setCameraError(errorObj.message || "Camera access permission was denied or unavailable.");
       }
     }
 
@@ -398,7 +391,7 @@ export default function ARProjectionModal({
 
       // Build Photorealistic Clamshell Suitcase with Hinomoto wheels, fluted ribs,
       // handles, TSA locks, OLED scale, and deep packing interior
-      const openSuitcases: any[] = [];
+      const openSuitcases: InteriorOpenSuitcase[] = [];
       if (model === "both") {
         const cabinSuitcase = createInteriorOpenSuitcase(THREE, colorHex, metalness, roughness);
         cabinSuitcase.group.position.set(-0.32, -0.04, 0.08);
@@ -1046,7 +1039,8 @@ export default function ARProjectionModal({
             <button
               type="button"
               onClick={handleCapturePhoto}
-              className="flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-[10.5px] sm:text-[11px] font-bold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all"
+              disabled={isCapturing}
+              className="flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-[10.5px] sm:text-[11px] font-bold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all disabled:opacity-50"
             >
               <Camera className="size-3.5" />
               <span>Capture Photo</span>

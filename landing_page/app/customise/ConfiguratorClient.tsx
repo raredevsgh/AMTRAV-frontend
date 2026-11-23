@@ -11,7 +11,7 @@ import {
 import { useRegion } from "@/lib/region";
 import { addToCart } from "@/lib/shop";
 import CartDrawer from "../_components/CartDrawer";
-import BagViewer from "../_components/BagViewer";
+import BagViewer, { type LuggageTier } from "../_components/BagViewer";
 
 interface ShellOption {
   id: string;
@@ -185,7 +185,7 @@ export default function ConfiguratorClient() {
               defaultLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
               externalLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
               externalColorHex={isCustomShellColor ? customShellHex : selectedShell.finishColor}
-              externalTier={selectedShell.tier.toLowerCase() as any}
+              externalTier={selectedShell.tier.toLowerCase() as LuggageTier}
               className="w-full"
             />
 
