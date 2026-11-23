@@ -131,7 +131,6 @@ export default function ARProjectionModal({
   const rendererRef = useRef<Three.WebGLRenderer | null>(null);
   const sceneRef = useRef<Three.Scene | null>(null);
   const bagGroupRef = useRef<Three.Group | null>(null);
-  const handleGroupRef = useRef<Three.Group | null>(null);
   const shellMaterialsRef = useRef<Three.MeshPhysicalMaterial[]>([]);
   const closedBagRef = useRef<Three.Group | null>(null);
   const openSuitcaseRef = useRef<InteriorOpenSuitcase | null>(null);
@@ -414,7 +413,6 @@ export default function ARProjectionModal({
       }
       openSuitcasesRef.current = openSuitcases;
       openSuitcaseRef.current = openSuitcases[0];
-      handleGroupRef.current = openSuitcases[0];
 
       // Also attempt loading GLTF closed model as alternative if desired
         if (MeshoptDecoder?.ready) {

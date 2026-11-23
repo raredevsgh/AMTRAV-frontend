@@ -621,7 +621,7 @@ export type InteriorOpenSuitcase = ReturnType<typeof createInteriorOpenSuitcase>
 /**
  * Synthesizes a realistic tactile zipper opening/closing sound effect via Web Audio API
  */
-export function playZipperAudio(_isOpen?: boolean) {
+export function playZipperAudio(isOpen: boolean = true) {
   if (typeof window === "undefined") return;
   try {
     const AudioCtx =

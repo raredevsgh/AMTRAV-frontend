@@ -159,7 +159,7 @@ export default function Preloader({ storageKey: _storageKey }: { storageKey?: st
       ctx.revert();
       html.style.overflow = "";
     };
-  }, [storageKey]);
+  }, []);
 
   if (done) return null;
 
