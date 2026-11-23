@@ -13,9 +13,8 @@ export const en = {
     resume: "Resume animations",
     reduced: "Reduced motion is on",
     close: "Close film",
-    filmLabel: "Product film",
-    filmDescription:
-      "Silent 15-second film: where your bag goes, how it’s handled and what it weighs, shown in the Amortrav app with sample data, then the bag in its four finishes.",
+    filmLabel: "Concept & Brand film",
+    filmDescription: "AMORTRAV TRACE · Concept & Brand Film",
     example: "Example journey",
     travelling: "On a journey",
     weight: "Weight",

@@ -644,14 +644,16 @@ export default function BagViewer({
         </div>
 
         {/* Row 2: Real-World Simulation Toggles (Size Guide, Room AR, Studio Lighting) */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-divider/40 dark:border-white/10 w-full">
+        <div className={`flex flex-wrap items-center justify-between gap-2 pt-2 border-t w-full ${
+          isLight ? "border-divider/40" : "border-white/10"
+        }`}>
           {/* Action Tools: Size Guide & Room AR */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Traveller Size Guide */}
             <button
               type="button"
               onClick={() => setShowHumanScale(!showHumanScale)}
-              className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold border transition-all ${
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold border transition-all ${
                 showHumanScale
                   ? "bg-brand text-white border-brand shadow-xs"
                   : isLight
@@ -660,7 +662,7 @@ export default function BagViewer({
               }`}
               title="Compare bag size against real traveller height (178 cm)"
             >
-              <User className="size-3.5 shrink-0" />
+              <User className="size-3 sm:size-3.5 shrink-0" />
               <span className="whitespace-nowrap">Size Guide</span>
             </button>
 
@@ -668,36 +670,36 @@ export default function BagViewer({
             <button
               type="button"
               onClick={() => setArRoomOpen(true)}
-              className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold border transition-all ${
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold border transition-all ${
                 isLight
                   ? "border-slate-200 bg-slate-100 text-slate-800 hover:border-[#001f4d] hover:bg-[#001f4d] hover:text-white shadow-xs"
                   : "border-sky/40 bg-sky/15 text-sky hover:bg-sky hover:text-navy shadow-xs"
               }`}
               title="Project 3D suitcase in your room via Camera (WebAR)"
             >
-              <Camera className="size-3.5 shrink-0" />
+              <Camera className="size-3 sm:size-3.5 shrink-0" />
               <span className="whitespace-nowrap">Room AR</span>
             </button>
           </div>
 
           {/* Studio View Lighting Toggle */}
-          <div className="flex items-center gap-1.5 ml-auto">
+          <div className="flex items-center gap-1 sm:gap-1.5 ml-auto">
             <span
-              className={`text-[10px] font-mono uppercase tracking-wider ${
+              className={`text-[9.5px] sm:text-[10px] font-mono uppercase tracking-wider ${
                 isLight ? "text-slate-600 font-semibold" : "text-blue-pale"
               }`}
             >
               Studio:
             </span>
             <div
-              className={`flex items-center gap-0.5 rounded-full p-1 border ${
+              className={`flex items-center gap-0.5 rounded-full p-0.5 sm:p-1 border ${
                 isLight ? "border-slate-200 bg-slate-100" : "border-white/15 bg-white/10"
               }`}
             >
               <button
                 type="button"
                 onClick={() => setStudioTheme("light")}
-                className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
+                className={`rounded-full px-2 sm:px-2.5 py-0.5 text-[9.5px] sm:text-[10px] font-semibold transition-all ${
                   isLight ? "bg-white text-slate-900 shadow-xs font-bold" : "text-blue-pale hover:text-white"
                 }`}
               >
@@ -706,7 +708,7 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => setStudioTheme("dark")}
-                className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
+                className={`rounded-full px-2 sm:px-2.5 py-0.5 text-[9.5px] sm:text-[10px] font-semibold transition-all ${
                   !isLight ? "bg-[#001f4d] text-white shadow-xs font-bold" : "text-slate-600 hover:text-slate-900"
                 }`}
               >

@@ -273,9 +273,9 @@ function InteractiveLuggageCard({
   };
 
   return (
-    <article className="group flex flex-col justify-between rounded-3xl bg-white dark:bg-[#071739] p-4 shadow-card transition-all duration-300 hover:shadow-xl border border-divider dark:border-white/15">
+    <article className="group flex flex-col justify-between rounded-3xl bg-white p-4 shadow-card transition-all duration-300 hover:shadow-xl border border-divider">
       {/* Product Image Frame */}
-      <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-surface/50 dark:bg-[#0a1836]/60 p-4 transition-colors group-hover:bg-surface/80 dark:group-hover:bg-[#0a1836]">
+      <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-surface/50 p-4 transition-colors group-hover:bg-surface/80">
         <Image
           src={displayImage}
           alt={`${collection.name} in ${activeColorName}`}
@@ -287,18 +287,18 @@ function InteractiveLuggageCard({
         {/* Badges */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
           {collection.badge && (
-            <span className="rounded-full bg-navy/5 dark:bg-white/10 border border-navy/10 dark:border-white/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy dark:text-white backdrop-blur-sm">
+            <span className="rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
               {collection.badge}
             </span>
           )}
           {isCustomColor && (
-            <span className="rounded-full bg-sky/30 border border-brand/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand dark:text-sky backdrop-blur-sm">
+            <span className="rounded-full bg-sky/30 border border-brand/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand backdrop-blur-sm">
               Custom Shade
             </span>
           )}
         </div>
 
-        <span className="absolute top-3 right-3 font-mono text-[11px] text-mid dark:text-blue-pale bg-white/80 dark:bg-[#0c1e45] px-2 py-0.5 rounded-full border border-divider dark:border-white/20">
+        <span className="absolute top-3 right-3 font-mono text-[11px] text-mid bg-white/80 px-2 py-0.5 rounded-full border border-divider">
           {currentVolume}L
         </span>
       </div>
@@ -309,40 +309,40 @@ function InteractiveLuggageCard({
           {/* Header & Material */}
           <div className="flex items-start justify-between gap-2">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-mid dark:text-sky">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
                 {collection.material}
               </span>
-              <h3 className="text-h3-m font-bold text-navy dark:text-white xl:text-[21px]">
+              <h3 className="text-h3-m font-bold text-navy xl:text-[21px]">
                 {collection.name}
               </h3>
             </div>
             <Link
               href="#3d-inspection"
-              className="flex items-center gap-1 rounded-full border border-divider dark:border-white/20 px-2.5 py-1 text-[11px] font-semibold text-mid dark:text-blue-pale hover:text-navy dark:hover:text-white hover:bg-surface dark:hover:bg-white/10 transition-colors"
+              className="flex items-center gap-1 rounded-full border border-divider px-2.5 py-1 text-[11px] font-semibold text-mid hover:text-navy hover:bg-surface transition-colors"
               title="Examine in 3D"
             >
-              <Rotate3d className="size-3 text-brand dark:text-sky" />
+              <Rotate3d className="size-3 text-brand" />
               <span>3D</span>
             </Link>
           </div>
 
-          <p className="mt-1 text-caption text-mid dark:text-blue-pale/75 line-clamp-2">
+          <p className="mt-1 text-caption text-mid line-clamp-2">
             {collection.tagline}
           </p>
 
           {/* Luggage Type Selector Pills (Cabin 55, Check-In 68, Both) */}
           <div className="mt-3.5">
-            <span className="block text-[10px] font-mono uppercase tracking-wider text-mid dark:text-blue-pale/70 mb-1.5">
+            <span className="block text-[10px] font-mono uppercase tracking-wider text-mid mb-1.5">
               Select Luggage Type
             </span>
-            <div className="grid grid-cols-3 gap-1 rounded-xl bg-surface dark:bg-[#0c1e45] p-1 border border-divider dark:border-white/15">
+            <div className="grid grid-cols-3 gap-1 rounded-xl bg-surface p-1 border border-divider">
               <button
                 type="button"
                 onClick={() => setSelectedSize("cabin")}
                 className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
                   selectedSize === "cabin"
-                    ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold"
-                    : "text-mid dark:text-blue-pale/75 hover:text-navy dark:hover:text-white"
+                    ? "bg-navy text-white shadow-xs"
+                    : "text-mid hover:text-navy"
                 }`}
               >
                 Cabin 55
@@ -352,8 +352,8 @@ function InteractiveLuggageCard({
                 onClick={() => setSelectedSize("checkin")}
                 className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
                   selectedSize === "checkin"
-                    ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold"
-                    : "text-mid dark:text-blue-pale/75 hover:text-navy dark:hover:text-white"
+                    ? "bg-navy text-white shadow-xs"
+                    : "text-mid hover:text-navy"
                 }`}
               >
                 Check-In 68
@@ -363,8 +363,8 @@ function InteractiveLuggageCard({
                 onClick={() => setSelectedSize("both")}
                 className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
                   selectedSize === "both"
-                    ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold"
-                    : "text-mid dark:text-blue-pale/75 hover:text-navy dark:hover:text-white"
+                    ? "bg-navy text-white shadow-xs"
+                    : "text-mid hover:text-navy"
                 }`}
               >
                 Both (Duo)
@@ -373,7 +373,7 @@ function InteractiveLuggageCard({
           </div>
 
           {/* Color Swatch Options + Custom Color Palette Trigger */}
-          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-divider/60 dark:border-white/15 pt-3">
+          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-divider/60 pt-3">
             <div className="flex items-center gap-1.5">
               {collection.swatches.map((swatch) => {
                 const isSelected = !isCustomColor && selectedSwatch.name === swatch.name;
@@ -390,8 +390,8 @@ function InteractiveLuggageCard({
                     }}
                     className={`relative flex size-6 items-center justify-center rounded-full border transition-all ${
                       isSelected
-                        ? "scale-120 border-navy dark:border-sky ring-2 ring-navy/20 dark:ring-sky/30 shadow-xs"
-                        : "border-black/20 dark:border-white/30 hover:scale-110"
+                        ? "scale-120 border-navy ring-2 ring-navy/20 shadow-xs"
+                        : "border-black/20 hover:scale-110"
                     }`}
                     style={{ backgroundColor: swatch.color }}
                   >
@@ -409,7 +409,7 @@ function InteractiveLuggageCard({
               {/* Custom Color Dot Indicator */}
               {isCustomColor && (
                 <span
-                  className="size-6 rounded-full border-2 border-brand dark:border-sky ring-2 ring-brand/30 shadow-xs flex items-center justify-center"
+                  className="size-6 rounded-full border-2 border-brand ring-2 ring-brand/30 shadow-xs flex items-center justify-center"
                   style={{ backgroundColor: customHex }}
                   title={`Custom Hex: ${customHex}`}
                 >
@@ -424,8 +424,8 @@ function InteractiveLuggageCard({
               onClick={() => setPaletteOpen(!paletteOpen)}
               className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all ${
                 isCustomColor || paletteOpen
-                  ? "border-navy dark:border-sky bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold"
-                  : "border-divider dark:border-white/20 bg-surface dark:bg-[#0c1e45] text-navy dark:text-white hover:border-mid dark:hover:border-white/40"
+                  ? "border-navy bg-navy text-white shadow-xs"
+                  : "border-divider bg-surface text-navy hover:border-mid"
               }`}
             >
               <Palette className="size-3" />
@@ -435,12 +435,12 @@ function InteractiveLuggageCard({
 
           {/* Expandable Custom Color Palette Popover */}
           {paletteOpen && (
-            <div className="mt-2.5 rounded-2xl border border-divider dark:border-white/20 bg-surface dark:bg-[#0a1836] p-3 shadow-md animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between gap-2 border-b border-divider dark:border-white/15 pb-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-navy dark:text-white">
+            <div className="mt-2.5 rounded-2xl border border-divider bg-surface p-3 shadow-md animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between gap-2 border-b border-divider pb-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-navy">
                   Bespoke Color
                 </span>
-                <label className="relative flex cursor-pointer items-center gap-1.5 rounded-lg border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-2 py-0.5 text-[11px] font-mono text-navy dark:text-white hover:border-navy dark:hover:border-sky">
+                <label className="relative flex cursor-pointer items-center gap-1.5 rounded-lg border border-divider bg-white px-2 py-0.5 text-[11px] font-mono text-navy hover:border-navy">
                   <span
                     className="size-3.5 rounded-full border border-black/20"
                     style={{ backgroundColor: customHex }}
@@ -471,8 +471,8 @@ function InteractiveLuggageCard({
                     }}
                     className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] transition-all ${
                       isCustomColor && customHex === p.hex
-                        ? "border-navy dark:border-sky bg-navy/10 dark:bg-sky/20 font-bold text-navy dark:text-sky"
-                        : "border-divider dark:border-white/15 text-mid dark:text-blue-pale/75 hover:text-navy dark:hover:text-white hover:bg-white dark:hover:bg-white/10"
+                        ? "border-navy bg-navy/10 font-bold text-navy"
+                        : "border-divider text-mid hover:text-navy hover:bg-white"
                     }`}
                   >
                     <span className="size-2 rounded-full" style={{ backgroundColor: p.hex }} />
@@ -484,28 +484,28 @@ function InteractiveLuggageCard({
           )}
 
           {/* Color & Size Label */}
-          <div className="mt-2 text-[11px] text-mid dark:text-blue-pale/75">
-            <span className="font-semibold text-navy dark:text-white">
+          <div className="mt-2 text-[11px] text-mid">
+            <span className="font-semibold text-navy">
               {selectedSize === "both" ? "Travel Duo Set" : selectedSize === "checkin" ? "Check-In 68" : "Cabin 55"}
             </span>{" "}
-            in <span className="text-navy dark:text-white">{activeColorName}</span> · {currentDimensions}
+            in <span className="text-navy">{activeColorName}</span> · {currentDimensions}
           </div>
         </div>
 
         {/* Price & Action Buttons */}
-        <div className="mt-5 flex items-center justify-between border-t border-divider/60 dark:border-white/15 pt-3">
+        <div className="mt-5 flex items-center justify-between border-t border-divider/60 pt-3">
           <div>
-            <span className="text-h3-m font-bold text-navy dark:text-white xl:text-[20px]">
+            <span className="text-h3-m font-bold text-navy xl:text-[20px]">
               {formatPrice(currentPrice)}
             </span>
-            <span className="block text-[10px] text-mid dark:text-blue-pale/60">incl. tax & global shipping</span>
+            <span className="block text-[10px] text-mid">incl. tax & global shipping</span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleSpecsClick}
-              className="rounded-full border border-divider dark:border-white/20 px-3 py-1.5 text-caption font-semibold text-navy dark:text-white hover:bg-surface dark:hover:bg-white/10 transition-colors"
+              className="rounded-full border border-divider px-3 py-1.5 text-caption font-semibold text-navy hover:bg-surface transition-colors"
             >
               Specs
             </button>
@@ -513,7 +513,7 @@ function InteractiveLuggageCard({
             <button
               type="button"
               onClick={handleReserve}
-              className="flex items-center gap-1.5 rounded-full bg-navy dark:bg-sky px-4 py-1.5 text-caption font-semibold text-white dark:text-navy shadow-xs hover:bg-navy-deep dark:hover:bg-white active:scale-95 transition-all"
+              className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-1.5 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
             >
               <ShoppingBag className="size-3.5" />
               <span>Reserve</span>
@@ -619,16 +619,16 @@ export default function ShopView() {
       {/* 2. Interactive 3D Model Explorer */}
       <section
         id="3d-inspection"
-        className="scroll-mt-28 my-8 flex flex-col gap-6 rounded-3xl border border-divider dark:border-white/15 bg-surface dark:bg-[#061533] px-3.5 py-6 sm:px-6 sm:py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
+        className="scroll-mt-28 my-8 flex flex-col gap-6 rounded-3xl border border-divider bg-surface px-3.5 py-6 sm:px-6 sm:py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
       >
         <div className="flex flex-col gap-2">
-          <span className="text-caption font-mono uppercase tracking-wider text-brand dark:text-sky font-bold">
+          <span className="text-caption font-mono uppercase tracking-wider text-brand">
             Real-Time 3D Inspection & Custom Color Studio
           </span>
-          <h2 className="text-h2-m font-bold text-navy dark:text-white xl:text-h2">
+          <h2 className="text-h2-m font-bold text-navy xl:text-h2">
             Examine Every Angle Before You Fly
           </h2>
-          <p className="max-w-xl text-body-m text-mid dark:text-blue-pale/80 xl:text-body">
+          <p className="max-w-xl text-body-m text-mid xl:text-body">
             Rotate the bag in real-time 3D, compare Cabin 55, Check-In 68, or Both (The Pair Duo), preview finishes, and configure custom bespoke colors live.
           </p>
         </div>
@@ -642,28 +642,28 @@ export default function ShopView() {
         className="scroll-mt-28 px-5 py-12 xl:px-14 xl:py-16"
       >
         {/* Section Header */}
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-divider dark:border-white/15 pb-4 mb-6">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-divider pb-4 mb-6">
           <div>
-            <h2 id="range-heading" className="text-h1-m font-bold text-navy dark:text-white xl:text-h1">
+            <h2 id="range-heading" className="text-h1-m font-bold text-navy xl:text-h1">
               Pick your silhouette.
             </h2>
-            <p className="mt-2 text-small text-mid dark:text-blue-pale/80">
+            <p className="mt-2 text-small text-mid">
               Engineered for global airlines. All smart features and lifetime guarantee included.
             </p>
           </div>
           <Link
             href="/customise"
-            className="text-small font-semibold text-brand dark:text-sky underline underline-offset-4 hover:text-navy dark:hover:text-white"
+            className="text-small font-semibold text-brand underline underline-offset-4 hover:text-navy"
           >
             Launch Full AMTRAV UNIQUE Studio Builder →
           </Link>
         </div>
 
         {/* RIMOWA-Inspired Horizontal Filter & Sort Bar */}
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-divider dark:border-white/15 bg-surface/60 dark:bg-[#071739]/80 p-3 backdrop-blur-sm">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-divider bg-surface/60 p-3 backdrop-blur-sm">
           {/* Left: Size & Category Filter Pills */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-mid dark:text-blue-pale/70 mr-1 hidden sm:inline">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-mid mr-1 hidden sm:inline">
               Filter:
             </span>
             {[
@@ -678,8 +678,8 @@ export default function ShopView() {
                 onClick={() => setActiveFilter(tab.id as FilterType)}
                 className={`rounded-full px-3 py-1.5 text-caption font-semibold transition-all ${
                   activeFilter === tab.id
-                    ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold"
-                    : "bg-white dark:bg-[#0c1e45] text-navy dark:text-white border border-divider dark:border-white/20 hover:bg-surface dark:hover:bg-white/10"
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-white text-navy border border-divider hover:bg-surface"
                 }`}
               >
                 {tab.label}
@@ -691,12 +691,12 @@ export default function ShopView() {
           <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
             {/* Collection Dropdown */}
             <div className="flex flex-1 sm:flex-initial items-center gap-1.5">
-              <span className="text-[11px] font-mono text-mid dark:text-blue-pale/70 hidden md:inline">Collection:</span>
+              <span className="text-[11px] font-mono text-mid hidden md:inline">Collection:</span>
               <div className="relative w-full sm:w-auto">
                 <select
                   value={activeCollection}
                   onChange={(e) => setActiveCollection(e.target.value)}
-                  className="appearance-none w-full sm:w-auto rounded-full border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] pl-3.5 pr-8 py-1.5 text-caption font-semibold text-navy dark:text-white focus:outline-none focus:ring-1 focus:ring-navy dark:focus:ring-sky cursor-pointer"
+                  className="appearance-none w-full sm:w-auto rounded-full border border-divider bg-white pl-3.5 pr-8 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                 >
                   <option value="all">All Collections</option>
                   <option value="essential">Essential (Polycarbonate)</option>
@@ -704,25 +704,25 @@ export default function ShopView() {
                   <option value="executive">Executive (Obsidian Alloy)</option>
                   <option value="flagship">Flagship (Signature Alloy)</option>
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60 dark:text-white/60" />
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60" />
               </div>
             </div>
 
             {/* Sort Dropdown - With single sleek chevron */}
             <div className="flex flex-1 sm:flex-initial items-center gap-1.5">
-              <span className="text-[11px] font-mono text-mid dark:text-blue-pale/70 hidden md:inline">Sort:</span>
+              <span className="text-[11px] font-mono text-mid hidden md:inline">Sort:</span>
               <div className="relative w-full sm:w-auto">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="appearance-none w-full sm:w-auto rounded-full border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] pl-3.5 pr-8 py-1.5 text-caption font-semibold text-navy dark:text-white focus:outline-none focus:ring-1 focus:ring-navy dark:focus:ring-sky cursor-pointer"
+                  className="appearance-none w-full sm:w-auto rounded-full border border-divider bg-white pl-3.5 pr-8 py-1.5 text-caption font-semibold text-navy focus:outline-none focus:ring-1 focus:ring-navy cursor-pointer"
                 >
                   <option value="top-sellers">Top Sellers</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
                   <option value="volume">Volume (Liters)</option>
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60 dark:text-white/60" />
+                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60" />
               </div>
             </div>
           </div>
@@ -751,7 +751,7 @@ export default function ShopView() {
       {/* 4. Technical Blueprint CAD Dimensions Section */}
       <section
         id="technical-specs"
-        className="scroll-mt-28 my-8 rounded-3xl border border-divider dark:border-white/15 bg-surface dark:bg-[#061533] px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
+        className="scroll-mt-28 my-8 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
       >
         <TechnicalBlueprint product={selectedProductForSpecs} />
       </section>
@@ -759,13 +759,13 @@ export default function ShopView() {
       {/* 5. How Pre-Ordering & Reservations Work */}
       <section
         aria-labelledby="preorder-heading"
-        className="my-8 grid items-center gap-8 rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] px-5 py-8 md:grid-cols-[1.2fr_1fr] md:gap-12 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-14"
+        className="my-8 grid items-center gap-8 rounded-3xl border border-divider px-5 py-8 md:grid-cols-[1.2fr_1fr] md:gap-12 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-14"
       >
         <div>
-          <h2 id="preorder-heading" className="text-h1-m font-bold text-navy dark:text-white xl:text-h1">
+          <h2 id="preorder-heading" className="text-h1-m font-bold text-navy xl:text-h1">
             How reservations work
           </h2>
-          <p className="mt-4 text-small text-mid dark:text-blue-pale/80">
+          <p className="mt-4 text-small text-mid">
             Reserve today and your bag is prioritized from the earliest serialized production run with complimentary initial monogramming.
           </p>
           <ol className="mt-6 flex flex-col gap-3">
@@ -776,7 +776,7 @@ export default function ShopView() {
             ].map(([name, detail], i) => (
               <li
                 key={name}
-                className="flex items-center gap-4 rounded-3xl bg-surface dark:bg-[#0c1e45] px-4 py-4 shadow-xs border border-divider dark:border-white/15"
+                className="flex items-center gap-4 rounded-3xl bg-white px-4 py-4 shadow-xs border border-divider"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy text-white font-mono font-bold">
                   0{i + 1}

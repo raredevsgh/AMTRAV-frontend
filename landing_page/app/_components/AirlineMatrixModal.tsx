@@ -72,22 +72,22 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
       role="dialog"
       aria-modal="true"
       aria-labelledby="airline-modal-title"
-      className="fixed inset-0 z-[99999] flex flex-col justify-end sm:justify-center items-center p-3 pt-[max(72px,calc(env(safe-area-inset-top)+20px))] pb-[max(20px,env(safe-area-inset-bottom))] sm:p-6"
+      className="fixed inset-0 z-[99999] flex flex-col justify-end sm:justify-center items-center p-3 pt-[max(88px,calc(env(safe-area-inset-top)+44px))] pb-[max(20px,env(safe-area-inset-bottom))] sm:p-6"
     >
-      <div className="fixed inset-0 bg-ink/80 backdrop-blur-md" onClick={onClose} />
+      <div className="fixed inset-0 bg-ink/75 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative flex flex-col w-full max-w-4xl max-h-[calc(100dvh-max(96px,calc(env(safe-area-inset-top)+36px)))] overflow-hidden rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative flex flex-col w-full max-w-4xl max-h-[calc(100dvh-max(104px,calc(env(safe-area-inset-top)+52px)))] overflow-hidden rounded-3xl border border-divider bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-start sm:items-center justify-between border-b border-divider dark:border-white/15 px-4 sm:px-6 pt-5 pb-4 sm:py-5 gap-3">
+        <div className="flex items-start sm:items-center justify-between border-b border-divider px-4 sm:px-6 pt-6 pb-4 sm:py-5 gap-3">
           <div className="flex items-start sm:items-center gap-3 min-w-0">
-            <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full bg-navy/5 dark:bg-white/10 text-navy dark:text-sky">
+            <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full bg-navy/5 text-navy">
               <Plane className="size-4 sm:size-5" />
             </div>
             <div className="min-w-0">
-              <h2 id="airline-modal-title" className="text-body font-bold text-navy dark:text-white sm:text-h3-m leading-tight">
+              <h2 id="airline-modal-title" className="text-body font-bold text-navy sm:text-h3-m leading-tight">
                 Airline Hand-Luggage Compatibility Matrix
               </h2>
-              <p className="text-[11px] sm:text-caption text-mid dark:text-blue-pale/80 line-clamp-2 mt-0.5">
+              <p className="text-[11px] sm:text-caption text-mid line-clamp-2 mt-0.5">
                 Compare AMTRAV Cabin 55 (55 × 40 × 23 cm) against global airline overhead bin restrictions.
               </p>
             </div>
@@ -95,7 +95,7 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-full bg-surface dark:bg-white/10 text-mid dark:text-white hover:bg-navy dark:hover:bg-white/25 hover:text-white transition-all active:scale-90"
+            className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-full bg-surface text-mid hover:bg-navy hover:text-white transition-all active:scale-90"
             aria-label="Close"
           >
             <X className="size-4 sm:size-5" />
@@ -103,24 +103,24 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
         </div>
 
         {/* Filter & Metric / Imperial Toggle */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-divider dark:border-white/15 bg-surface/50 dark:bg-[#0a1836] px-6 py-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-divider bg-surface/50 px-6 py-3.5">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-mid dark:text-blue-pale/60" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-mid" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search airline (e.g. SAS, Lufthansa, Delta, Emirates)..."
-              className="w-full rounded-full border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] py-2 pl-9 pr-4 text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-blue-pale/50 focus:border-navy dark:focus:border-sky focus:outline-none"
+              className="w-full rounded-full border border-divider bg-white py-2 pl-9 pr-4 text-small text-navy placeholder:text-mid focus:border-navy focus:outline-none"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full bg-white dark:bg-[#0c1e45] border border-divider dark:border-white/15 p-1">
+          <div className="flex items-center gap-1.5 rounded-full bg-white border border-divider p-1">
             <button
               type="button"
               onClick={() => setUnit("metric")}
               className={`rounded-full px-3 py-1 text-caption font-semibold transition-all ${
-                unit === "metric" ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold" : "text-mid dark:text-blue-pale/75 hover:text-navy dark:hover:text-white"
+                unit === "metric" ? "bg-navy text-white shadow-xs font-bold" : "text-mid hover:text-navy"
               }`}
             >
               Metric (cm / kg)
@@ -129,7 +129,7 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
               type="button"
               onClick={() => setUnit("imperial")}
               className={`rounded-full px-3 py-1 text-caption font-semibold transition-all ${
-                unit === "imperial" ? "bg-navy dark:bg-sky text-white dark:text-navy shadow-xs font-bold" : "text-mid dark:text-blue-pale/75 hover:text-navy dark:hover:text-white"
+                unit === "imperial" ? "bg-navy text-white shadow-xs font-bold" : "text-mid hover:text-navy"
               }`}
             >
               Imperial (in / lbs)
@@ -140,7 +140,7 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
         {/* Table Content */}
         <div className="max-h-[60vh] overflow-y-auto overflow-x-auto">
           <table className="w-full text-left border-collapse text-small">
-            <thead className="sticky top-0 bg-surface dark:bg-[#0a1836] border-b border-divider dark:border-white/15 text-caption-m uppercase tracking-wider text-mid dark:text-blue-pale/70 font-semibold">
+            <thead className="sticky top-0 bg-surface border-b border-divider text-caption-m uppercase tracking-wider text-mid font-semibold">
               <tr>
                 <th className="px-6 py-3">Airline</th>
                 <th className="px-4 py-3">Max Overhead Sizer</th>
@@ -149,31 +149,31 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
                 <th className="px-6 py-3">Guidelines</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-divider/70 dark:divide-white/10">
+            <tbody className="divide-y divide-divider/70">
               {filteredAirlines.map((airline) => (
-                <tr key={airline.name} className="hover:bg-surface/60 dark:hover:bg-white/5 transition-colors">
-                  <td className="px-6 py-3.5 font-semibold text-navy dark:text-white flex items-center gap-2">
+                <tr key={airline.name} className="hover:bg-surface/60 transition-colors">
+                  <td className="px-6 py-3.5 font-semibold text-navy flex items-center gap-2">
                     <span className="text-lg">{airline.flag}</span>
                     <span>{airline.name}</span>
                   </td>
-                  <td className="px-4 py-3.5 font-mono text-caption text-navy dark:text-blue-pale">
+                  <td className="px-4 py-3.5 font-mono text-caption text-navy">
                     {unit === "metric" ? airline.maxDimensionsCm : airline.maxDimensionsIn}
                   </td>
-                  <td className="px-4 py-3.5 font-mono text-caption text-navy dark:text-blue-pale">
+                  <td className="px-4 py-3.5 font-mono text-caption text-navy">
                     {airline.maxWeightKg}
                   </td>
                   <td className="px-4 py-3.5">
                     {airline.cabin55Compatible ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 px-2.5 py-1 text-caption font-semibold">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 text-caption font-semibold">
                         <CheckCircle className="size-3.5" /> Compliant
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2.5 py-1 text-caption font-semibold">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 text-caption font-semibold">
                         <AlertCircle className="size-3.5" /> Check sizer
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-3.5 text-caption text-mid dark:text-blue-pale/70">
+                  <td className="px-6 py-3.5 text-caption text-mid">
                     {airline.notes}
                   </td>
                 </tr>
@@ -183,9 +183,9 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
         </div>
 
         {/* Footer Note */}
-        <div className="border-t border-divider dark:border-white/15 bg-surface dark:bg-[#0a1836] px-6 py-3.5 flex items-center justify-between text-caption text-mid dark:text-blue-pale/70">
+        <div className="border-t border-divider bg-surface px-6 py-3.5 flex items-center justify-between text-caption text-mid">
           <span>Showing {filteredAirlines.length} international airlines</span>
-          <span className="font-medium text-navy dark:text-white">AMTRAV Travel Assurance</span>
+          <span className="font-medium text-navy">AMTRAV Travel Assurance</span>
         </div>
       </div>
     </div>,

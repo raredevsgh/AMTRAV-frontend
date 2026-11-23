@@ -106,26 +106,23 @@ export default function StoresPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-6 sm:pt-8 pb-16">
+    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-6 flex items-center gap-2 text-caption text-mid dark:text-blue-pale/70">
-          <Link href="/" className="hover:text-navy dark:hover:text-white">Home</Link>
-          <span className="text-light-white dark:text-white/30">/</span>
-          <Link href="/services" className="hover:text-navy dark:hover:text-white">Services</Link>
-          <span className="text-light-white dark:text-white/30">/</span>
-          <span className="font-semibold text-navy dark:text-white">Store Locator</span>
+        <div className="mb-6 flex items-center gap-2 text-caption text-mid">
+          <Link href="/" className="hover:text-navy">Home</Link>
+          <span>/</span>
+          <Link href="/services" className="hover:text-navy">Services</Link>
+          <span>/</span>
+          <span className="font-semibold text-navy">Store Locator</span>
         </div>
 
         {/* Header */}
-        <div className="border-b border-divider dark:border-white/15 pb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3.5 py-1 text-caption font-bold uppercase tracking-wider text-navy dark:text-white border border-navy/10 dark:border-white/20 mb-3 backdrop-blur-sm">
-            <MapPin className="size-4 text-sky" /> Worldwide Boutique Network
-          </div>
-          <h1 className="text-display-m font-bold text-navy dark:text-white md:text-h1">
+        <div className="border-b border-divider pb-8 text-center sm:text-left">
+          <h1 className="text-display-m font-bold text-navy md:text-h1">
             AMTRAV Boutiques & Service Hubs
           </h1>
-          <p className="mt-2 text-small text-mid dark:text-blue-pale/80 max-w-2xl">
+          <p className="mt-2 text-small text-mid max-w-2xl">
             Experience our suitcases in person, receive complimentary initial monogramming, or have your luggage inspected by certified craft technicians.
           </p>
         </div>
@@ -140,15 +137,15 @@ export default function StoresPage() {
                 onClick={() => setSelectedContinent(cont)}
                 className={`rounded-full px-4 py-1.5 text-caption font-semibold transition-all ${
                   selectedContinent === cont
-                    ? "bg-navy dark:bg-sky text-white dark:text-navy font-bold shadow-xs"
-                    : "bg-white dark:bg-white/10 border border-divider dark:border-white/20 text-navy dark:text-white hover:bg-surface dark:hover:bg-white/20"
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-white border border-divider text-navy hover:bg-surface"
                 }`}
               >
                 {cont}
               </button>
             ))}
           </div>
-          <span className="text-caption font-semibold text-mid dark:text-blue-pale/70">
+          <span className="text-caption font-semibold text-mid">
             {filteredStores.length} Boutique Locations
           </span>
         </div>
@@ -158,27 +155,27 @@ export default function StoresPage() {
           {filteredStores.map((store) => (
             <div
               key={store.id}
-              className="flex flex-col justify-between rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-6 shadow-card hover:shadow-lg transition-all"
+              className="flex flex-col justify-between rounded-3xl border border-divider bg-white p-6 shadow-card hover:shadow-lg transition-all"
             >
               <div className="space-y-4">
                 <div>
                   <span className="text-[11px] font-mono uppercase tracking-wider text-sky font-semibold">
                     {store.city}, {store.country}
                   </span>
-                  <h3 className="text-h3-m font-bold text-navy dark:text-white mt-1">{store.name}</h3>
+                  <h3 className="text-h3-m font-bold text-navy mt-1">{store.name}</h3>
                 </div>
 
-                <div className="space-y-2 text-caption text-mid dark:text-blue-pale/80">
+                <div className="space-y-2 text-caption text-mid">
                   <div className="flex items-start gap-2.5">
-                    <MapPin className="size-4 text-navy dark:text-sky shrink-0 mt-0.5" />
+                    <MapPin className="size-4 text-navy shrink-0 mt-0.5" />
                     <span>{store.address}</span>
                   </div>
                   <div className="flex items-center gap-2.5">
-                    <Clock className="size-4 text-navy dark:text-sky shrink-0" />
+                    <Clock className="size-4 text-navy shrink-0" />
                     <span>{store.hours}</span>
                   </div>
                   <div className="flex items-center gap-2.5">
-                    <Phone className="size-4 text-navy dark:text-sky shrink-0" />
+                    <Phone className="size-4 text-navy shrink-0" />
                     <span>{store.phone}</span>
                   </div>
                 </div>
@@ -187,7 +184,7 @@ export default function StoresPage() {
                   {store.services.map((srv) => (
                     <span
                       key={srv}
-                      className="rounded-full bg-surface dark:bg-white/10 px-2.5 py-1 text-[10px] font-medium text-navy dark:text-white border border-divider dark:border-white/15"
+                      className="rounded-full bg-surface px-2.5 py-1 text-[10px] font-medium text-navy border border-divider"
                     >
                       {srv}
                     </span>
@@ -195,14 +192,14 @@ export default function StoresPage() {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-divider dark:border-white/15">
+              <div className="mt-6 pt-4 border-t border-divider">
                 <button
                   type="button"
                   onClick={() => {
                     setBookingStore(store);
                     setBooked(false);
                   }}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-navy dark:bg-sky py-2.5 text-caption font-semibold text-white dark:text-navy shadow-xs hover:bg-navy-deep dark:hover:bg-white active:scale-95 transition-all"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-navy py-2.5 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
                 >
                   <Calendar className="size-3.5" />
                   <span>Book VIP In-Store Appointment</span>
@@ -219,21 +216,21 @@ export default function StoresPage() {
             aria-modal="true"
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/75 backdrop-blur-md"
           >
-            <div className="relative w-full max-w-lg rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-6 sm:p-8 shadow-2xl text-navy dark:text-white">
+            <div className="relative w-full max-w-lg rounded-3xl border border-divider bg-white p-6 sm:p-8 shadow-2xl">
               {booked ? (
                 <div className="text-center space-y-4 py-4">
-                  <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
+                  <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                     <Check className="size-7" />
                   </div>
-                  <h3 className="text-h3-m font-bold text-navy dark:text-white">Appointment Confirmed</h3>
-                  <p className="text-small text-mid dark:text-blue-pale/80">
+                  <h3 className="text-h3-m font-bold text-navy">Appointment Confirmed</h3>
+                  <p className="text-small text-mid">
                     We look forward to welcoming you at <strong>{bookingStore.name}</strong> on{" "}
                     <strong>{appointmentDate}</strong> for your {appointmentType}.
                   </p>
                   <button
                     type="button"
                     onClick={() => setBookingStore(null)}
-                    className="rounded-full bg-navy dark:bg-sky px-6 py-2.5 text-small font-semibold text-white dark:text-navy hover:bg-navy-deep dark:hover:bg-white transition-colors"
+                    className="rounded-full bg-navy px-6 py-2.5 text-small font-semibold text-white hover:bg-navy-deep"
                   >
                     Done
                   </button>
@@ -241,13 +238,13 @@ export default function StoresPage() {
               ) : (
                 <form onSubmit={handleBook} className="space-y-4">
                   <div>
-                    <span className="text-caption font-mono uppercase text-sky font-semibold">VIP Reservation</span>
-                    <h3 className="text-h3-m font-bold text-navy dark:text-white mt-1">Book at {bookingStore.city}</h3>
-                    <p className="text-caption text-mid dark:text-blue-pale/70 mt-0.5">{bookingStore.address}</p>
+                    <span className="text-caption font-mono uppercase text-sky">VIP Reservation</span>
+                    <h3 className="text-h3-m font-bold text-navy">Book at {bookingStore.city}</h3>
+                    <p className="text-caption text-mid mt-0.5">{bookingStore.address}</p>
                   </div>
 
                   <div>
-                    <label className="block text-caption-m font-semibold text-navy dark:text-white uppercase mb-1">
+                    <label className="block text-caption-m font-semibold text-navy uppercase mb-1">
                       Your Name *
                     </label>
                     <input
@@ -256,12 +253,12 @@ export default function StoresPage() {
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
                       placeholder="Henrik Ibsen"
-                      className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-3.5 py-2 text-small text-navy dark:text-white focus:border-navy dark:focus:border-sky focus:outline-none"
+                      className="w-full rounded-xl border border-divider px-3.5 py-2 text-small text-navy focus:border-navy focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-caption-m font-semibold text-navy dark:text-white uppercase mb-1">
+                    <label className="block text-caption-m font-semibold text-navy uppercase mb-1">
                       Email Address *
                     </label>
                     <input
@@ -270,18 +267,18 @@ export default function StoresPage() {
                       value={clientEmail}
                       onChange={(e) => setClientEmail(e.target.value)}
                       placeholder="henrik@example.com"
-                      className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-3.5 py-2 text-small text-navy dark:text-white focus:border-navy dark:focus:border-sky focus:outline-none"
+                      className="w-full rounded-xl border border-divider px-3.5 py-2 text-small text-navy focus:border-navy focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-caption-m font-semibold text-navy dark:text-white uppercase mb-1">
+                    <label className="block text-caption-m font-semibold text-navy uppercase mb-1">
                       Appointment Purpose
                     </label>
                     <select
                       value={appointmentType}
                       onChange={(e) => setAppointmentType(e.target.value)}
-                      className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-3.5 py-2 text-small text-navy dark:text-white focus:border-navy dark:focus:border-sky focus:outline-none"
+                      className="w-full rounded-xl border border-divider px-3.5 py-2 text-small text-navy focus:border-navy focus:outline-none"
                     >
                       <option value="Bespoke Sizing & Consultation">Bespoke Sizing & Range Consultation</option>
                       <option value="Hot Foil Monogramming Session">Hot Foil Leather Monogramming Session</option>
@@ -291,28 +288,28 @@ export default function StoresPage() {
                   </div>
 
                   <div>
-                    <label className="block text-caption-m font-semibold text-navy dark:text-white uppercase mb-1">
+                    <label className="block text-caption-m font-semibold text-navy uppercase mb-1">
                       Date & Preferred Slot
                     </label>
                     <input
                       type="date"
                       value={appointmentDate}
                       onChange={(e) => setAppointmentDate(e.target.value)}
-                      className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-3.5 py-2 text-small text-navy dark:text-white focus:border-navy dark:focus:border-sky focus:outline-none"
+                      className="w-full rounded-xl border border-divider px-3.5 py-2 text-small text-navy focus:border-navy focus:outline-none"
                     />
                   </div>
 
-                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-divider dark:border-white/15">
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-divider">
                     <button
                       type="button"
                       onClick={() => setBookingStore(null)}
-                      className="rounded-full px-4 py-2 text-caption font-semibold text-mid dark:text-blue-pale/80 hover:text-navy dark:hover:text-white"
+                      className="rounded-full px-4 py-2 text-caption font-semibold text-mid hover:text-navy"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="rounded-full bg-navy dark:bg-sky px-5 py-2 text-caption font-semibold text-white dark:text-navy shadow-xs hover:bg-navy-deep dark:hover:bg-white transition-colors"
+                      className="rounded-full bg-navy px-5 py-2 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep"
                     >
                       Confirm Appointment
                     </button>

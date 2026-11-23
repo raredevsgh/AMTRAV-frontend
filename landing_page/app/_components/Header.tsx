@@ -19,17 +19,6 @@ export default function Header() {
       const header = document.getElementById("site-header");
       const darkSections = document.querySelectorAll<HTMLElement>('[data-theme="dark"]');
 
-      // Check if global document or system prefers dark mode
-      const isSystemDark =
-        typeof window !== "undefined" &&
-        window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const isRootDark =
-        typeof document !== "undefined" &&
-        (document.documentElement.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark" ||
-          document.body?.getAttribute("data-theme") === "dark");
-
       // Exact vertical midpoint of the floating header pill on screen
       const headerRect = header ? header.getBoundingClientRect() : { top: 20, height: 50 };
       const headerMidY = headerRect.top + (headerRect.height || 50) / 2;
@@ -44,11 +33,6 @@ export default function Header() {
             return;
           }
         }
-      }
-
-      if (isRootDark || isSystemDark) {
-        setIsNegative(true);
-        return;
       }
 
       if (!darkSections.length) {
@@ -68,12 +52,9 @@ export default function Header() {
     };
 
     updateContrast();
-    const mediaQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-    mediaQuery?.addEventListener?.("change", updateContrast);
     window.addEventListener("scroll", updateContrast, { passive: true });
     window.addEventListener("resize", updateContrast, { passive: true });
     return () => {
-      mediaQuery?.removeEventListener?.("change", updateContrast);
       window.removeEventListener("scroll", updateContrast);
       window.removeEventListener("resize", updateContrast);
     };

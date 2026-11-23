@@ -47,49 +47,46 @@ export default function RegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-6 sm:pt-8 pb-16">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-6 flex items-center gap-2 text-caption text-mid dark:text-blue-pale/70">
-          <Link href="/" className="hover:text-navy dark:hover:text-white">Home</Link>
-          <span className="text-light-white dark:text-white/30">/</span>
-          <Link href="/services" className="hover:text-navy dark:hover:text-white">Services</Link>
-          <span className="text-light-white dark:text-white/30">/</span>
-          <span className="font-semibold text-navy dark:text-white">Luggage Registration</span>
+        <div className="mb-6 flex items-center gap-2 text-caption text-mid">
+          <Link href="/" className="hover:text-navy">Home</Link>
+          <span>/</span>
+          <Link href="/services" className="hover:text-navy">Services</Link>
+          <span>/</span>
+          <span className="font-semibold text-navy">Luggage Registration</span>
         </div>
 
         {/* Header */}
-        <div className="border-b border-divider dark:border-white/15 pb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3.5 py-1 text-caption font-bold uppercase tracking-wider text-navy dark:text-white border border-navy/10 dark:border-white/20 mb-3 backdrop-blur-sm">
-            <ShieldCheck className="size-4 text-emerald-600 dark:text-emerald-400" /> Lifetime Guarantee Activation
-          </div>
-          <h1 className="text-display-m font-bold text-navy dark:text-white md:text-h1">
+        <div className="border-b border-divider pb-8 text-center sm:text-left">
+          <h1 className="text-display-m font-bold text-navy md:text-h1">
             Register Your AMTRAV Luggage
           </h1>
-          <p className="mt-2 text-small text-mid dark:text-blue-pale/80 max-w-2xl">
+          <p className="mt-2 text-small text-mid max-w-2xl">
             Activate your Lifetime Functional Guarantee, associate your TRACE Smart Core digital passport, and ensure fast-track assistance at 100+ global repair centers.
           </p>
         </div>
 
         {successData ? (
           /* Success Certificate Card */
-          <div className="mt-8 rounded-3xl border border-emerald-200 dark:border-emerald-500/30 bg-white dark:bg-[#071739] p-8 shadow-xl text-center space-y-6">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
+          <div className="mt-8 rounded-3xl border border-emerald-200 bg-white p-8 shadow-xl text-center space-y-6">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
               <Check className="size-8" />
             </div>
 
             <div className="space-y-2">
-              <span className="text-caption font-mono uppercase text-emerald-700 dark:text-emerald-400 font-bold">
+              <span className="text-caption font-mono uppercase text-emerald-700 font-bold">
                 Lifetime Guarantee Activated
               </span>
-              <h2 className="text-h2-m font-bold text-navy dark:text-white">Registration Successful</h2>
-              <p className="text-small text-mid dark:text-blue-pale/80 max-w-md mx-auto">
-                Your suitcase is now permanently certified under registration ID <strong className="font-mono text-navy dark:text-sky">{successData.registrationId}</strong>.
+              <h2 className="text-h2-m font-bold text-navy">Registration Successful</h2>
+              <p className="text-small text-mid max-w-md mx-auto">
+                Your suitcase is now permanently certified under registration ID <strong className="font-mono text-navy">{successData.registrationId}</strong>.
               </p>
             </div>
 
             {/* Passport Card Visual */}
-            <div className="mx-auto max-w-md rounded-2xl bg-navy dark:bg-[#0c1e45] p-6 text-white text-left shadow-lg border border-line dark:border-white/15 space-y-4">
+            <div className="mx-auto max-w-md rounded-2xl bg-navy p-6 text-white text-left shadow-lg border border-line space-y-4">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <span className="text-caption font-mono tracking-widest text-sky">AMTRAV DIGITAL PASSPORT</span>
                 <QrCode className="size-5 text-white/70" />
@@ -114,13 +111,13 @@ export default function RegistrationPage() {
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="flex items-center gap-2 rounded-full border border-divider dark:border-white/20 px-5 py-2.5 text-small font-semibold text-navy dark:text-white hover:bg-surface dark:hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 rounded-full border border-divider px-5 py-2.5 text-small font-semibold text-navy hover:bg-surface"
               >
                 <Download className="size-4" /> Download Certificate (PDF)
               </button>
               <Link
                 href="/shop"
-                className="rounded-full bg-navy dark:bg-sky px-6 py-2.5 text-small font-semibold text-white dark:text-navy hover:bg-navy-deep dark:hover:bg-white transition-colors"
+                className="rounded-full bg-navy px-6 py-2.5 text-small font-semibold text-white hover:bg-navy-deep"
               >
                 Return to Shop
               </Link>
@@ -129,16 +126,16 @@ export default function RegistrationPage() {
         ) : (
           /* Registration Form */
           <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
-            <form onSubmit={handleSubmit} className="lg:col-span-7 rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-6 sm:p-8 shadow-card space-y-5">
+            <form onSubmit={handleSubmit} className="lg:col-span-7 rounded-3xl border border-divider bg-white p-6 sm:p-8 shadow-card space-y-5">
               {error && (
-                <div className="flex items-center gap-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 p-3.5 text-caption font-medium text-rose-800 dark:text-rose-300">
-                  <AlertCircle className="size-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                <div className="flex items-center gap-2.5 rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-caption font-medium text-rose-800">
+                  <AlertCircle className="size-4 shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
                   10-Digit Frame Serial Number *
                 </label>
                 <input
@@ -147,15 +144,15 @@ export default function RegistrationPage() {
                   value={serialNumber}
                   onChange={(e) => setSerialNumber(e.target.value.toUpperCase())}
                   placeholder="e.g. AMT-9255-3004"
-                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 font-mono text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none uppercase"
+                  className="w-full rounded-xl border border-divider px-4 py-2.5 font-mono text-small text-navy placeholder:text-mid focus:border-navy focus:outline-none uppercase"
                 />
-                <span className="mt-1 block text-[11px] text-mid dark:text-blue-pale/70">
+                <span className="mt-1 block text-[11px] text-mid">
                   Laser-engraved on the exterior aluminium hinge or inside the TRACE Smart Core pocket.
                 </span>
               </div>
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
                   Full Name *
                 </label>
                 <input
@@ -164,12 +161,12 @@ export default function RegistrationPage() {
                   value={ownerName}
                   onChange={(e) => setOwnerName(e.target.value)}
                   placeholder="e.g. Henrik Ibsen"
-                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none"
+                  className="w-full rounded-xl border border-divider px-4 py-2.5 text-small text-navy placeholder:text-mid focus:border-navy focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
                   Email Address *
                 </label>
                 <input
@@ -178,31 +175,31 @@ export default function RegistrationPage() {
                   value={ownerEmail}
                   onChange={(e) => setOwnerEmail(e.target.value)}
                   placeholder="e.g. henrik@example.com"
-                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-small text-navy dark:text-white placeholder:text-mid dark:placeholder:text-white/40 focus:border-navy dark:focus:border-sky focus:outline-none"
+                  className="w-full rounded-xl border border-divider px-4 py-2.5 text-small text-navy placeholder:text-mid focus:border-navy focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy dark:text-white mb-1.5">
+                <label className="block text-caption-m font-semibold uppercase tracking-wider text-navy mb-1.5">
                   Purchased From
                 </label>
                 <select
                   value={purchaseChannel}
                   onChange={(e) => setPurchaseChannel(e.target.value)}
-                  className="w-full rounded-xl border border-divider dark:border-white/20 bg-white dark:bg-[#0c1e45] px-4 py-2.5 text-small text-navy dark:text-white focus:border-navy dark:focus:border-sky focus:outline-none"
+                  className="w-full rounded-xl border border-divider px-4 py-2.5 text-small text-navy focus:border-navy focus:outline-none"
                 >
-                  <option value="AMTRAV Online Boutique" className="dark:bg-[#0c1e45]">AMTRAV Online Boutique</option>
-                  <option value="AMTRAV Oslo Flagship Store" className="dark:bg-[#0c1e45]">AMTRAV Oslo Flagship Store</option>
-                  <option value="AMTRAV London Mayfair Boutique" className="dark:bg-[#0c1e45]">AMTRAV London Mayfair Boutique</option>
-                  <option value="Authorized Luxury Department Store" className="dark:bg-[#0c1e45]">Authorized Luxury Department Store</option>
-                  <option value="Gift / Transfer of Ownership" className="dark:bg-[#0c1e45]">Gift / Transfer of Ownership</option>
+                  <option value="AMTRAV Online Boutique">AMTRAV Online Boutique</option>
+                  <option value="AMTRAV Oslo Flagship Store">AMTRAV Oslo Flagship Store</option>
+                  <option value="AMTRAV London Mayfair Boutique">AMTRAV London Mayfair Boutique</option>
+                  <option value="Authorized Luxury Department Store">Authorized Luxury Department Store</option>
+                  <option value="Gift / Transfer of Ownership">Gift / Transfer of Ownership</option>
                 </select>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-navy dark:bg-sky py-3 text-small font-semibold text-white dark:text-navy shadow-md hover:bg-navy-deep dark:hover:bg-white active:scale-95 transition-all disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-small font-semibold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all disabled:opacity-50"
               >
                 {loading ? "Activating Guarantee..." : "Activate Lifetime Guarantee"}
                 <ArrowRight className="size-4" />
@@ -211,22 +208,22 @@ export default function RegistrationPage() {
 
             {/* Right Information Column */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="rounded-2xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-5 shadow-xs space-y-3">
-                <div className="flex items-center gap-2.5 font-semibold text-small text-navy dark:text-white">
+              <div className="rounded-2xl border border-divider bg-white p-5 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 font-semibold text-small text-navy">
                   <ShieldCheck className="size-5 text-sky" />
                   <span>What Does the Lifetime Guarantee Cover?</span>
                 </div>
-                <p className="text-caption text-mid dark:text-blue-pale/80 leading-relaxed">
+                <p className="text-caption text-mid leading-relaxed">
                   Our guarantee covers all functional damage to the suitcase during travel: cracked shells, damaged wheels, broken handles, and TSA locks. Cosmetic wear (scratches, dents) is considered part of your luggage&apos;s travel patina.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-5 shadow-xs space-y-3">
-                <div className="flex items-center gap-2.5 font-semibold text-small text-navy dark:text-white">
+              <div className="rounded-2xl border border-divider bg-white p-5 shadow-xs space-y-3">
+                <div className="flex items-center gap-2.5 font-semibold text-small text-navy">
                   <QrCode className="size-5 text-sky" />
                   <span>Where to find your Serial Number</span>
                 </div>
-                <p className="text-caption text-mid dark:text-blue-pale/80 leading-relaxed">
+                <p className="text-caption text-mid leading-relaxed">
                   Every authentic AMTRAV case has a unique 10-digit number laser-engraved onto the outer rim of the case next to the central latch, and inside the companion app under TRACE settings.
                 </p>
               </div>

@@ -39,26 +39,23 @@ export default function LockTutorialPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-6 sm:pt-8 pb-16">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface/30 pt-6 sm:pt-8 pb-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-6 flex items-center gap-2 text-caption text-mid dark:text-blue-pale/70">
-          <Link href="/" className="hover:text-navy dark:hover:text-white">Home</Link>
-          <span className="text-light-white dark:text-white/30">/</span>
-          <Link href="/services" className="hover:text-navy dark:hover:text-white">Services</Link>
-          <span className="text-light-white dark:text-white/30">/</span>
-          <span className="font-semibold text-navy dark:text-white">TSA Lock Setup</span>
+        <div className="mb-6 flex items-center gap-2 text-caption text-mid">
+          <Link href="/" className="hover:text-navy">Home</Link>
+          <span>/</span>
+          <Link href="/services" className="hover:text-navy">Services</Link>
+          <span>/</span>
+          <span className="font-semibold text-navy">TSA Lock Setup</span>
         </div>
 
         {/* Header */}
-        <div className="border-b border-divider dark:border-white/15 pb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3.5 py-1 text-caption font-bold uppercase tracking-wider text-navy dark:text-white border border-navy/10 dark:border-white/20 mb-3 backdrop-blur-sm">
-            <KeyRound className="size-4 text-sky" /> Interactive Lock Simulator
-          </div>
-          <h1 className="text-display-m font-bold text-navy dark:text-white md:text-h1">
+        <div className="border-b border-divider pb-8 text-center sm:text-left">
+          <h1 className="text-display-m font-bold text-navy md:text-h1">
             Setting Your TSA Combination Lock
           </h1>
-          <p className="mt-2 text-small text-mid dark:text-blue-pale/80 max-w-2xl">
+          <p className="mt-2 text-small text-mid max-w-2xl">
             Follow this interactive 5-step tutorial to set or reset your personalized 3-digit combination on AMTRAV dual TSA-approved combination locks.
           </p>
         </div>
@@ -81,15 +78,15 @@ export default function LockTutorialPage() {
               <div
                 className={`flex size-8 items-center justify-center rounded-full text-caption font-bold transition-all ${
                   currentStep === st.num
-                    ? "bg-navy dark:bg-sky text-white dark:text-navy ring-2 ring-sky shadow-md"
+                    ? "bg-navy text-white ring-2 ring-sky shadow-md"
                     : currentStep > st.num
                     ? "bg-emerald-600 text-white"
-                    : "bg-surface dark:bg-white/10 border border-divider dark:border-white/15 text-mid dark:text-blue-pale/70"
+                    : "bg-surface border border-divider text-mid"
                 }`}
               >
                 {currentStep > st.num ? <Check className="size-3.5" /> : st.num}
               </div>
-              <span className={`text-[11px] font-semibold ${currentStep === st.num ? "text-navy dark:text-white" : "text-mid dark:text-blue-pale/70"}`}>
+              <span className={`text-[11px] font-semibold ${currentStep === st.num ? "text-navy" : "text-mid"}`}>
                 {st.label}
               </span>
             </button>
@@ -99,7 +96,7 @@ export default function LockTutorialPage() {
         {/* Main Simulator & Tutorial Card */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* Lock Visual Simulator (7 cols) */}
-          <div className="lg:col-span-7 rounded-3xl border border-divider dark:border-white/15 bg-navy p-6 sm:p-8 text-white shadow-hero space-y-6">
+          <div className="lg:col-span-7 rounded-3xl border border-divider bg-navy p-6 sm:p-8 text-white shadow-hero space-y-6">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <span className="text-caption font-mono uppercase text-sky">AMTRAV AEROSPACE TSA 007</span>
               <span
@@ -179,10 +176,10 @@ export default function LockTutorialPage() {
           </div>
 
           {/* Tutorial Step Instructions (5 cols) */}
-          <div className="lg:col-span-5 rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] p-6 sm:p-8 shadow-card space-y-5">
+          <div className="lg:col-span-5 rounded-3xl border border-divider bg-white p-6 sm:p-8 shadow-card space-y-5">
             <div>
               <span className="text-caption font-mono uppercase text-sky font-bold">Step {currentStep} Guide</span>
-              <h3 className="text-h3-m font-bold text-navy dark:text-white">
+              <h3 className="text-h3-m font-bold text-navy">
                 {currentStep === 1 && "Align to Factory Setting (0-0-0)"}
                 {currentStep === 2 && "Engage the Reset Button"}
                 {currentStep === 3 && "Dial Your Secret Combination"}
@@ -191,7 +188,7 @@ export default function LockTutorialPage() {
               </h3>
             </div>
 
-            <p className="text-small text-mid dark:text-blue-pale/80 leading-relaxed">
+            <p className="text-small text-mid leading-relaxed">
               {currentStep === 1 &&
                 "All new AMTRAV suitcases leave our manufacturing atelier with factory default combination 0-0-0. Use the arrows on the dials to line up 0 - 0 - 0 against the alignment notch."}
               {currentStep === 2 &&
@@ -204,11 +201,11 @@ export default function LockTutorialPage() {
                 "Turn the dials to any random numbers to lock the case. To open, return the dials to your secret combination and slide the latch!"}
             </p>
 
-            <div className="rounded-2xl bg-surface dark:bg-[#0c1e45] p-4 border border-divider dark:border-white/15 space-y-2">
-              <span className="flex items-center gap-1.5 text-caption font-semibold text-navy dark:text-white">
+            <div className="rounded-2xl bg-surface p-4 border border-divider space-y-2">
+              <span className="flex items-center gap-1.5 text-caption font-semibold text-navy">
                 <AlertCircle className="size-4 text-sky" /> Forgotten Your Combination?
               </span>
-              <p className="text-[12px] text-mid dark:text-blue-pale/70 leading-relaxed">
+              <p className="text-[12px] text-mid leading-relaxed">
                 If you ever forget your combination, visit any of our 100+ AMTRAV boutique stores or official repair centers with your registered luggage certificate. Our technicians can assist with certified reset keys.
               </p>
             </div>
@@ -216,7 +213,7 @@ export default function LockTutorialPage() {
             <div className="pt-2">
               <Link
                 href="/services/stores"
-                className="inline-flex items-center gap-1.5 text-small font-semibold text-brand dark:text-sky underline underline-offset-4 hover:text-navy dark:hover:text-white"
+                className="inline-flex items-center gap-1.5 text-small font-semibold text-brand underline underline-offset-4 hover:text-navy"
               >
                 Find nearest AMTRAV repair hub
               </Link>
