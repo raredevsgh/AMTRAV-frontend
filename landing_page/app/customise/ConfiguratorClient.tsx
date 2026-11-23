@@ -126,24 +126,24 @@ export default function ConfiguratorClient() {
   };
 
   return (
-    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-2 sm:pt-4 pb-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface/30 dark:bg-transparent pt-0 sm:pt-2 pb-16">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-4 sm:mb-6 flex items-center justify-center sm:justify-start gap-2 text-caption text-mid dark:text-blue-pale/70">
+        <div className="mb-2 sm:mb-4 flex items-center justify-center sm:justify-start gap-2 text-caption text-mid dark:text-blue-pale/70">
           <Link href="/" className="hover:text-navy dark:hover:text-white">Home</Link>
           <span className="text-light-white dark:text-white/30">/</span>
           <span className="font-semibold text-navy dark:text-white">Customise</span>
         </div>
 
         {/* Studio Header */}
-        <div className="border-b border-divider dark:border-white/15 pb-6 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3.5 py-1 text-caption font-bold uppercase tracking-widest text-navy dark:text-white border border-navy/10 dark:border-white/20">
+        <div className="border-b border-divider dark:border-white/15 pb-4 sm:pb-6 text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-navy/5 dark:bg-white/10 px-3 py-0.5 sm:px-3.5 sm:py-1 text-[11px] sm:text-caption font-bold uppercase tracking-widest text-navy dark:text-white border border-navy/10 dark:border-white/20">
             <span className="size-2 rounded-full bg-sky inline-block animate-pulse" /> AMTRAV UNIQUE Studio
           </span>
-          <h1 className="mt-3 text-display-m font-bold text-navy dark:text-white md:text-h1 tracking-tight">
+          <h1 className="mt-2 sm:mt-3 text-display-m font-bold text-navy dark:text-white md:text-h1 tracking-tight">
             Build Your Bespoke Silhouette
           </h1>
-          <p className="mt-2 text-small text-mid dark:text-blue-pale/80 max-w-xl mx-auto">
+          <p className="mt-1.5 text-caption sm:text-small text-mid dark:text-blue-pale/80 max-w-xl mx-auto">
             Configure your case shell, personalized leather tag monogram, handle accents, and customized Multiwheel® sets in real time.
           </p>
         </div>

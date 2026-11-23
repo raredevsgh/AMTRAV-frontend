@@ -7,9 +7,11 @@ import { useRegion, type CurrencyInfo } from "@/lib/region";
 export default function CurrencySwitcher({
   className = "",
   isNegative = false,
+  direction = "down",
 }: {
   className?: string;
   isNegative?: boolean;
+  direction?: "down" | "up";
 }) {
   const {
     currency,
@@ -106,7 +108,9 @@ export default function CurrencySwitcher({
         <div
           role="dialog"
           aria-label="Real-time currency converter"
-          className="absolute right-0 z-50 mt-2 w-[340px] sm:w-[420px] origin-top-right rounded-3xl border border-divider bg-white p-4 sm:p-5 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 text-navy"
+          className={`absolute right-0 z-50 ${
+            direction === "up" ? "bottom-full mb-2 origin-bottom-right" : "top-full mt-2 origin-top-right"
+          } w-[300px] sm:w-[400px] max-w-[90vw] rounded-3xl border border-divider bg-white p-4 sm:p-5 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 text-navy`}
         >
           {/* Header with Live Status */}
           <div className="flex items-center justify-between border-b border-divider pb-3">

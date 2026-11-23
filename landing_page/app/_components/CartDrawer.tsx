@@ -218,7 +218,7 @@ export default function CartDrawer({
             </div>
             <div className="mb-4 flex items-center gap-2 rounded-xl bg-blue-pale/60 p-2.5 text-[12px] text-brand">
               <ShieldCheck className="size-4 shrink-0" />
-              <span>Complimentary worldwide priority delivery & 5-year warranty included.</span>
+              <span>Complimentary worldwide priority delivery & Lifetime Functional Guarantee (Free Repairs Anytime) included.</span>
             </div>
             <button
               type="button"

@@ -7,9 +7,11 @@ import { useI18n, LOCALES, type Locale } from "@/lib/i18n/context";
 export default function LanguageSwitcher({
   className = "",
   isNegative = false,
+  direction = "down",
 }: {
   className?: string;
   isNegative?: boolean;
+  direction?: "down" | "up";
 }) {
   const { locale, setLocale } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +57,9 @@ export default function LanguageSwitcher({
         <div
           role="listbox"
           aria-label="Language options"
-          className="absolute right-0 z-50 mt-1.5 w-60 origin-top-right rounded-2xl border border-divider bg-white p-2.5 shadow-xl backdrop-blur-md transition-all animate-in fade-in zoom-in-95 duration-150"
+          className={`absolute right-0 z-50 ${
+            direction === "up" ? "bottom-full mb-2 origin-bottom-right" : "top-full mt-1.5 origin-top-right"
+          } w-60 rounded-2xl border border-divider bg-white p-2.5 shadow-xl backdrop-blur-md transition-all animate-in fade-in zoom-in-95 duration-150 text-navy`}
         >
           {/* Header */}
           <div className="border-b border-divider pb-2 px-2 mb-1.5 flex items-center justify-between">

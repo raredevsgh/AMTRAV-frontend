@@ -434,8 +434,8 @@ export default function BagViewer({
           lastX = e.clientX;
           lastY = e.clientY;
           angle += dx * RAD_PER_PX;
-          // Pitch: allows examining top handle (+85°) and wheels underneath (-85°)
-          pitchAngle = Math.max(-1.5, Math.min(1.5, pitchAngle + dy * RAD_PER_PX));
+          // Full unconstrained 360° pitch rotation: view top handle, side profile, wheels underneath, and flat on floor
+          pitchAngle += dy * RAD_PER_PX;
         };
 
         const onPointerUp = () => {
@@ -539,14 +539,14 @@ export default function BagViewer({
     >
       {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
       <div
-        className={`flex flex-col gap-3.5 border-b pb-4 2xl:flex-row 2xl:items-end 2xl:justify-between flex-wrap ${
+        className={`flex flex-col gap-3 border-b pb-4 ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
-        {/* Left: Collection Tier & Luggage Type */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full 2xl:w-auto flex-wrap">
+        {/* Row 1: Luggage Collection & Luggage Type */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 w-full">
           {/* Collection / Tier Tabs */}
-          <div className="flex flex-col items-start w-full sm:w-auto">
+          <div className="flex flex-col items-start w-full md:w-auto">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -555,8 +555,8 @@ export default function BagViewer({
               Luggage Collection
             </span>
             <div
-              className={`grid grid-cols-4 sm:flex items-center gap-1 rounded-full p-1 border w-full sm:w-auto ${
-                isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+              className={`grid grid-cols-4 gap-1 rounded-full p-1 border w-full sm:w-auto ${
+                isLight ? "border-slate-200 bg-slate-100/90" : "border-white/15 bg-white/10"
               }`}
             >
               {(["essential", "pro", "executive", "flagship"] as LuggageTier[]).map((tier) => (
@@ -564,14 +564,14 @@ export default function BagViewer({
                   key={tier}
                   type="button"
                   onClick={() => setSelectedTier(tier)}
-                  className={`rounded-full px-1.5 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold capitalize whitespace-nowrap text-center transition-all ${
+                  className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold capitalize whitespace-nowrap text-center transition-all ${
                     selectedTier === tier
                       ? isLight
-                        ? "bg-navy text-white shadow-xs"
-                        : "bg-sky text-navy shadow-sm"
+                        ? "bg-[#001f4d] text-white shadow-xs font-bold"
+                        : "bg-sky text-navy shadow-sm font-bold"
                       : isLight
-                      ? "text-mid hover:text-navy"
-                      : "text-blue-pale hover:text-white"
+                      ? "text-slate-600 hover:text-slate-950"
+                      : "text-blue-pale/80 hover:text-white"
                   }`}
                 >
                   {tier}
@@ -581,7 +581,7 @@ export default function BagViewer({
           </div>
 
           {/* Luggage Type: Cabin 55, Check-In 68, Both (Duo) */}
-          <div className="flex flex-col items-start w-full sm:w-auto">
+          <div className="flex flex-col items-start w-full md:w-auto">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -590,21 +590,21 @@ export default function BagViewer({
               Luggage Type
             </span>
             <div
-              className={`grid grid-cols-3 sm:flex items-center gap-1 rounded-full p-1 border w-full sm:w-auto ${
-                isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+              className={`grid grid-cols-3 gap-1 rounded-full p-1 border w-full sm:w-auto ${
+                isLight ? "border-slate-200 bg-slate-100/90" : "border-white/15 bg-white/10"
               }`}
             >
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("cabin")}
-                className={`rounded-full px-1 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold truncate text-center transition-all ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold truncate text-center transition-all ${
                   selectedLuggageType === "cabin"
                     ? isLight
-                      ? "bg-navy text-white shadow-xs"
-                      : "bg-sky text-navy shadow-sm"
+                      ? "bg-[#001f4d] text-white shadow-xs font-bold"
+                      : "bg-sky text-navy shadow-sm font-bold"
                     : isLight
-                    ? "text-mid hover:text-navy"
-                    : "text-blue-pale hover:text-white"
+                    ? "text-slate-600 hover:text-slate-950"
+                    : "text-blue-pale/80 hover:text-white"
                 }`}
               >
                 Cabin 55
@@ -612,14 +612,14 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("checkin")}
-                className={`rounded-full px-1 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold truncate text-center transition-all ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold truncate text-center transition-all ${
                   selectedLuggageType === "checkin"
                     ? isLight
-                      ? "bg-navy text-white shadow-xs"
-                      : "bg-sky text-navy shadow-sm"
+                      ? "bg-[#001f4d] text-white shadow-xs font-bold"
+                      : "bg-sky text-navy shadow-sm font-bold"
                     : isLight
-                    ? "text-mid hover:text-navy"
-                    : "text-blue-pale hover:text-white"
+                    ? "text-slate-600 hover:text-slate-950"
+                    : "text-blue-pale/80 hover:text-white"
                 }`}
               >
                 Check-In 68
@@ -627,14 +627,14 @@ export default function BagViewer({
               <button
                 type="button"
                 onClick={() => handleLuggageTypeSelect("both")}
-                className={`rounded-full px-1 sm:px-3 py-1 text-[9.5px] sm:text-caption-m font-semibold truncate text-center transition-all ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold truncate text-center transition-all ${
                   selectedLuggageType === "both"
                     ? isLight
-                      ? "bg-navy text-white shadow-xs"
-                      : "bg-sky text-navy shadow-sm"
+                      ? "bg-[#001f4d] text-white shadow-xs font-bold"
+                      : "bg-sky text-navy shadow-sm font-bold"
                     : isLight
-                    ? "text-mid hover:text-navy"
-                    : "text-blue-pale hover:text-white"
+                    ? "text-slate-600 hover:text-slate-950"
+                    : "text-blue-pale/80 hover:text-white"
                 }`}
               >
                 Both (Duo)
@@ -643,10 +643,10 @@ export default function BagViewer({
           </div>
         </div>
 
-        {/* Right: Human Scale, WebAR Room Projection & Studio Switcher */}
-        <div className="w-full 2xl:w-auto pt-3 border-t border-divider/40 2xl:border-0 2xl:pt-0 flex flex-wrap items-center justify-between sm:justify-end gap-2.5 sm:gap-4">
-          {/* Action Tools: Size Guide & Room AR in equal 2-col grid on mobile */}
-          <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center">
+        {/* Row 2: Real-World Simulation Toggles (Size Guide, Room AR, Studio Lighting) */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-divider/40 dark:border-white/10 w-full">
+          {/* Action Tools: Size Guide & Room AR */}
+          <div className="flex items-center gap-2">
             {/* Traveller Size Guide */}
             <button
               type="button"
@@ -655,8 +655,8 @@ export default function BagViewer({
                 showHumanScale
                   ? "bg-brand text-white border-brand shadow-xs"
                   : isLight
-                  ? "border-divider bg-surface text-navy hover:border-mid"
-                  : "border-white/10 bg-navy-deep text-white hover:border-white/30"
+                  ? "border-slate-200 bg-slate-100 text-slate-800 hover:border-slate-400 hover:bg-slate-200"
+                  : "border-white/15 bg-white/10 text-white hover:border-white/30"
               }`}
               title="Compare bag size against real traveller height (178 cm)"
             >
@@ -670,7 +670,7 @@ export default function BagViewer({
               onClick={() => setArRoomOpen(true)}
               className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold border transition-all ${
                 isLight
-                  ? "border-divider bg-surface text-navy hover:border-navy hover:bg-navy hover:text-white shadow-xs"
+                  ? "border-slate-200 bg-slate-100 text-slate-800 hover:border-[#001f4d] hover:bg-[#001f4d] hover:text-white shadow-xs"
                   : "border-sky/40 bg-sky/15 text-sky hover:bg-sky hover:text-navy shadow-xs"
               }`}
               title="Project 3D suitcase in your room via Camera (WebAR)"
@@ -681,24 +681,24 @@ export default function BagViewer({
           </div>
 
           {/* Studio View Lighting Toggle */}
-          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 ml-auto">
             <span
               className={`text-[10px] font-mono uppercase tracking-wider ${
-                isLight ? "text-mid" : "text-blue-pale"
+                isLight ? "text-slate-600 font-semibold" : "text-blue-pale"
               }`}
             >
               Studio:
             </span>
             <div
               className={`flex items-center gap-0.5 rounded-full p-1 border ${
-                isLight ? "border-divider bg-surface" : "border-white/10 bg-navy-deep"
+                isLight ? "border-slate-200 bg-slate-100" : "border-white/15 bg-white/10"
               }`}
             >
               <button
                 type="button"
                 onClick={() => setStudioTheme("light")}
                 className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
-                  isLight ? "bg-white text-navy shadow-xs" : "text-blue-pale hover:text-white"
+                  isLight ? "bg-white text-slate-900 shadow-xs font-bold" : "text-blue-pale hover:text-white"
                 }`}
               >
                 Light
@@ -707,7 +707,7 @@ export default function BagViewer({
                 type="button"
                 onClick={() => setStudioTheme("dark")}
                 className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
-                  !isLight ? "bg-navy-deep text-white shadow-xs font-bold" : "text-mid hover:text-navy"
+                  !isLight ? "bg-[#001f4d] text-white shadow-xs font-bold" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 Dark

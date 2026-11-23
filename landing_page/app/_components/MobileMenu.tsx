@@ -235,9 +235,9 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
                 {currency.code} ({currency.symbol}) · {country.name}
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <CurrencySwitcher isNegative={isNegative} />
-              <LanguageSwitcher isNegative={isNegative} />
+            <div className="flex items-center gap-1.5 shrink-0">
+              <CurrencySwitcher isNegative={isNegative} direction="up" />
+              <LanguageSwitcher isNegative={isNegative} direction="up" />
             </div>
           </div>
 

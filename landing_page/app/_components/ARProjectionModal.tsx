@@ -46,9 +46,11 @@ interface ARProjectionModalProps {
 const ANGLE_PRESETS = [
   { id: "front", label: "Front (3D)", pitch: 0, yaw: 0.2 },
   { id: "inside", label: "Inside Tub", pitch: 0.62, yaw: 0 },
-  { id: "handle", label: "Top Handle", pitch: 1.25, yaw: 0 },
+  { id: "handle", label: "Top-Down", pitch: 1.57, yaw: 0 },
   { id: "wheels", label: "Wheels & Base", pitch: -1.15, yaw: 0.5 },
-  { id: "flat", label: "Lay Flat (Floor)", pitch: 1.57, yaw: 0 },
+  { id: "under", label: "Underneath", pitch: -1.57, yaw: 0 },
+  { id: "flat", label: "Lay Flat (Floor)", pitch: 1.57, yaw: 1.57 },
+  { id: "back", label: "Back Ribs", pitch: 0, yaw: 3.14 },
 ];
 
 interface AirlineLimit {
@@ -549,11 +551,9 @@ export default function ARProjectionModal({
           panXRef.current += deltaX * 0.002;
           panYRef.current = Math.max(-0.95, Math.min(0.55, panYRef.current - deltaY * 0.002));
         } else {
-          // Full 360° Spherical Trackball Orbit:
-          // Yaw = horizontal 360° continuous rotation
+          // Full unconstrained 360° spherical trackball orbit (Yaw, Pitch, Top, Bottom, Underneath, Flat)
           yawRef.current += deltaX * 0.012;
-          // Pitch = vertical elevation from -89° (underneath wheels) to +89° (looking top-down inside packing tub)
-          pitchRef.current = Math.max(-1.55, Math.min(1.55, pitchRef.current + deltaY * 0.01));
+          pitchRef.current += deltaY * 0.01;
         }
       };
 

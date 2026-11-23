@@ -6,8 +6,9 @@ import { RETURNS_CONTACT, SUPPORT_CONTACT, type LegalDocument } from "./legal";
 export const POLICIES_UPDATED = "3 November 2026";
 /** Days after delivery in which an unused bag can be returned. */
 export const RETURN_DAYS = 30;
-/** Years the shell, wheels, handle and Smart Core are covered against defects. */
-export const WARRANTY_YEARS = 2;
+/** Warranty coverage: Unconditional Lifetime Functional Guarantee (All Years, never expires). */
+export const WARRANTY_DURATION = "Lifetime (All Years · Never Expires)";
+export const WARRANTY_YEARS = "Lifetime";
 
 export const cookiePolicy: LegalDocument = {
   title: "Cookies",
@@ -78,37 +79,38 @@ export const shippingPolicy: LegalDocument = {
 };
 
 export const warrantyPolicy: LegalDocument = {
-  title: "Warranty",
-  intro: `Every Amortrav bag is covered against defects in materials and workmanship for ${WARRANTY_YEARS} years from the day you add it to your account.`,
+  title: "Unconditional Lifetime Guarantee",
+  intro:
+    "Every AMORTRAV suitcase is protected by our unconditional Lifetime Functional Guarantee for all years — with no end date and no expiration. Free repairs, certified servicing, and genuine replacement parts are provided free of charge anytime throughout the life of your bag.",
   sections: [
     {
-      heading: "What’s covered",
+      heading: "What’s covered for all years",
       bullets: [
-        "The shell, wheels, handles, zips and locks.",
-        "The Smart Core: its sensors, battery, radios and charging.",
-        "Repairs or a replacement part, or a replacement bag if a repair isn’t possible, at no cost to you.",
+        "The aerospace shell, Hinomoto 360° Multiwheel® system, telescopic pull handle, perimeter zippers, and TSA locks — covered for life.",
+        "The TRACE Smart Core: sensors, battery management, wireless telemetry, and charging hardware.",
+        "100% free parts, professional craftsmanship repairs, or full replacement bag if repair is not viable — with zero service fees anytime.",
+        "Complimentary prepaid insured courier shipping or immediate drop-off at any of our global boutique ateliers.",
       ],
     },
     {
       heading: "What isn’t",
       bullets: [
-        "Normal wear: scuffs, scratches and dents from travel.",
-        "Damage from accidents, misuse, or repairs and changes not made by Amortrav.",
-        "Battery capacity that falls gradually with age, as every battery’s does.",
+        "Purely cosmetic surface patina, scratches, and character scuffs acquired through travels that do not impede mechanical function.",
+        "Third-party modifications or repairs attempted outside AMTRAV certified ateliers.",
         "Loss or theft of the bag.",
       ],
     },
     {
       heading: "Your registration",
       paragraphs: [
-        "There’s nothing to fill in: adding the bag in the app registers its warranty to your account, with its serial number. You can see it under Account → Support and warranty.",
+        "Your lifetime guarantee is active the moment your suitcase is crafted or paired in the AMTRAV app. There are no receipts to keep and no renewal deadlines — your luggage serial number holds your permanent lifetime service record.",
       ],
     },
     {
-      heading: "Making a claim",
+      heading: "Requesting free service anytime",
       paragraphs: [
-        `Open the app and go to Account → Support and warranty, then choose the bag; the email it opens already includes its serial and model. Or write to ${SUPPORT_CONTACT} with the serial number and what happened. We may ask for photos, and we’ll arrange collection if the bag needs to come back to us.`,
-        "This warranty is in addition to your rights under consumer law, which it doesn’t limit.",
+        `Submit a repair request anytime via our Repair Request Portal (/services/repairs), visit any AMTRAV Boutique Atelier worldwide, or email ${SUPPORT_CONTACT} with your bag's serial number. Our certified technicians will handle everything with white-glove priority.`,
+        "This lifetime guarantee is in addition to your statutory consumer rights, which remain fully protected.",
       ],
     },
   ],

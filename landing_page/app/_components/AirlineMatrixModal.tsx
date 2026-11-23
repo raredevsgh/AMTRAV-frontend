@@ -72,13 +72,13 @@ export default function AirlineMatrixModal({ isOpen, onClose }: AirlineMatrixMod
       role="dialog"
       aria-modal="true"
       aria-labelledby="airline-modal-title"
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 pt-[max(56px,env(safe-area-inset-top))] pb-[max(20px,env(safe-area-inset-bottom))] sm:p-6"
+      className="fixed inset-0 z-[99999] flex flex-col justify-end sm:justify-center items-center p-3 pt-[max(72px,calc(env(safe-area-inset-top)+20px))] pb-[max(20px,env(safe-area-inset-bottom))] sm:p-6"
     >
-      <div className="fixed inset-0 bg-ink/75 backdrop-blur-md" onClick={onClose} />
+      <div className="fixed inset-0 bg-ink/80 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative flex flex-col w-full max-w-4xl max-h-[calc(100vh-max(72px,env(safe-area-inset-top)))] overflow-hidden rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] shadow-2xl">
+      <div className="relative flex flex-col w-full max-w-4xl max-h-[calc(100dvh-max(96px,calc(env(safe-area-inset-top)+36px)))] overflow-hidden rounded-3xl border border-divider dark:border-white/15 bg-white dark:bg-[#071739] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-start sm:items-center justify-between border-b border-divider dark:border-white/15 px-4 sm:px-6 py-4 sm:py-5 gap-3">
+        <div className="flex items-start sm:items-center justify-between border-b border-divider dark:border-white/15 px-4 sm:px-6 pt-5 pb-4 sm:py-5 gap-3">
           <div className="flex items-start sm:items-center gap-3 min-w-0">
             <div className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full bg-navy/5 dark:bg-white/10 text-navy dark:text-sky">
               <Plane className="size-4 sm:size-5" />

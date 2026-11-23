@@ -211,7 +211,7 @@ export const en = {
     ctaBody:
       "Be first to know when the range is available, and have a say in what we build next.",
     ctaShop: "Shop the range",
-    warrantyLine: "{years}-year warranty on every bag",
+    warrantyLine: "Lifetime Functional Guarantee on every bag · Free anytime",
     questions: "Questions?",
     backToTop: "Back to top",
     getApp: "Get the app",
