@@ -3,43 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useId, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 
 type FooterLink = { label: string; href?: string };
-const GROUPS: readonly { title: string; links: readonly FooterLink[] }[] = [
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/" },
-      { label: "For brands", href: "/for-brands" },
-      { label: "Careers" },
-      { label: "Blog" },
-    ],
-  },
-  {
-    title: "Support",
-    links: [
-      { label: "FAQ", href: "/#faq" },
-      { label: "Pairing help", href: "/how-it-works" },
-      { label: "Shipping & returns" },
-      { label: "Warranty" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Terms of use" },
-      { label: "Privacy" },
-      { label: "Cookies" },
-    ],
-  },
-  {
-    title: "Contact",
-    links: [
-      { label: "hello@amortrav.com", href: "mailto:hello@amortrav.com" },
-      { label: "Partnerships", href: "/for-brands#signup" },
-    ],
-  },
-];
+type FooterGroup = { title: string; links: readonly FooterLink[] };
 
 const FOCUS = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
 const EASE = "duration-300 ease-out-soft motion-reduce:transition-none";
@@ -52,8 +19,6 @@ function Arrow({ className }: { className: string }) {
   );
 }
 
-// Hover: the label turns brand blue, an underline draws in from the left and, on links with a
-// destination, an arrow slides in. The others show the availability notice.
 function FooterLinks({
   links,
   shown = true,
@@ -78,7 +43,6 @@ function FooterLinks({
         );
         const className = `group/link inline-flex min-h-9 items-center gap-2 rounded-sm text-left text-small text-navy transition-colors xl:text-caption ${EASE} hover:text-brand ${FOCUS}`;
         return (
-          // When a mobile group opens, its links fade down in sequence.
           <li
             key={label}
             style={{ transitionDelay: shown ? `${80 + i * 45}ms` : "0ms" }}
@@ -100,14 +64,18 @@ function FooterLinks({
   );
 }
 
-// Mobile: one group open at a time. Panels stay in the DOM so their height can animate
-// (grid rows 0fr → 1fr, as in FaqList); a closed panel is inert.
-function FooterAccordion({ onUnavailable }: { onUnavailable: (name: string) => void }) {
+function FooterAccordion({
+  groups,
+  onUnavailable,
+}: {
+  groups: readonly FooterGroup[];
+  onUnavailable: (name: string) => void;
+}) {
   const [open, setOpen] = useState<string | null>(null);
   const id = useId();
   return (
     <div data-reveal className="border-t border-divider xl:hidden">
-      {GROUPS.map(({ title, links }, i) => {
+      {groups.map(({ title, links }, i) => {
         const isOpen = open === title;
         return (
           <div key={title} className="border-b border-divider">
@@ -148,38 +116,73 @@ function FooterAccordion({ onUnavailable }: { onUnavailable: (name: string) => v
   );
 }
 
-// Social destinations are not supplied. Preserve the exported artwork and show the
-// owner-approved availability notice rather than send visitors to invented profiles.
-const SOCIAL_STYLE = `relative size-11 shrink-0 rounded-full transition-[translate] ${EASE} motion-safe:hover:-translate-y-1 ${FOCUS}`;
+const SOCIAL_STYLE = `relative flex size-11 items-center justify-center shrink-0 rounded-full transition-[translate] ${EASE} motion-safe:hover:-translate-y-1 ${FOCUS}`;
 
 function Social({ onUnavailable }: { onUnavailable: (name: string) => void }) {
   return (
     <div className="flex items-center gap-2.5 xl:gap-3">
-      <button type="button" onClick={() => onUnavailable("Facebook")} aria-label="Facebook" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-facebook.svg" alt="" fill className="object-contain" />
+      <button type="button" onClick={() => onUnavailable("Facebook")} aria-label="Facebook" className={SOCIAL_STYLE} style={{ width: 44, height: 44 }}>
+        <Image src="/icons/social-facebook.svg" alt="" width={44} height={44} className="size-11 object-contain" />
       </button>
-      <button type="button" onClick={() => onUnavailable("Instagram")} aria-label="Instagram" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-instagram-bg.png" alt="" fill className="object-contain" />
-        <span className="absolute inset-[30%]">
-          <Image src="/icons/instagram-1.svg" alt="" fill />
+      <button type="button" onClick={() => onUnavailable("Instagram")} aria-label="Instagram" className={SOCIAL_STYLE} style={{ width: 44, height: 44 }}>
+        <Image src="/icons/social-instagram-bg.png" alt="" width={44} height={44} className="size-11 object-contain" />
+        <span className="absolute inset-[30%] pointer-events-none">
+          <Image src="/icons/instagram-1.svg" alt="" width={18} height={18} />
           <span className="absolute inset-[11.91%_11.91%_76.37%_76.37%]">
-            <Image src="/icons/instagram-2.svg" alt="" fill />
+            <Image src="/icons/instagram-2.svg" alt="" width={8} height={8} />
           </span>
           <span className="absolute inset-[23.63%]">
-            <Image src="/icons/instagram-3.svg" alt="" fill />
+            <Image src="/icons/instagram-3.svg" alt="" width={12} height={12} />
           </span>
         </span>
       </button>
-      <button type="button" onClick={() => onUnavailable("X")} aria-label="X" className={SOCIAL_STYLE}>
-        <Image src="/icons/social-x.svg" alt="" fill className="object-contain" />
+      <button type="button" onClick={() => onUnavailable("X")} aria-label="X" className={SOCIAL_STYLE} style={{ width: 44, height: 44 }}>
+        <Image src="/icons/social-x.svg" alt="" width={44} height={44} className="size-11 object-contain" />
       </button>
     </div>
   );
 }
 
 export default function Footer() {
+  const { t } = useI18n();
   const [notice, setNotice] = useState("");
   const unavailable = (name: string) => setNotice(`${name} details are coming soon. Contact hello@amortrav.com for help.`);
+
+  const groups: readonly FooterGroup[] = [
+    {
+      title: t("footer.company", "Company"),
+      links: [
+        { label: t("footer.about", "About"), href: "/" },
+        { label: t("nav.range", "The Range"), href: "/shop" },
+        { label: t("nav.brands", "For brands"), href: "/for-brands" },
+        { label: t("nav.how", "How it works"), href: "/how-it-works" },
+      ],
+    },
+    {
+      title: t("footer.support", "Support"),
+      links: [
+        { label: t("footer.faq", "FAQ"), href: "/#faq" },
+        { label: t("footer.pairing", "Pairing help"), href: "/how-it-works" },
+        { label: t("footer.shipping", "Shipping & returns"), href: "/shipping-returns" },
+        { label: t("footer.warranty", "Warranty"), href: "/warranty" },
+      ],
+    },
+    {
+      title: t("footer.legal", "Legal"),
+      links: [
+        { label: t("footer.terms", "Terms of use"), href: "/terms" },
+        { label: t("footer.privacy", "Privacy"), href: "/privacy" },
+        { label: t("footer.cookies", "Cookies"), href: "/cookies" },
+      ],
+    },
+    {
+      title: t("footer.contact", "Contact"),
+      links: [
+        { label: "hello@amortrav.com", href: "mailto:hello@amortrav.com" },
+        { label: t("footer.partnerships", "Partnerships"), href: "/for-brands#signup" },
+      ],
+    },
+  ];
 
   return (
     <footer className="relative overflow-clip rounded-3xl bg-white px-5 pt-8 shadow-card xl:rounded-[32px] xl:px-14 xl:pt-14">
@@ -188,21 +191,23 @@ export default function Footer() {
           <Link href="/" className={`inline-block rounded-sm ${FOCUS}`}>
             <Image src="/img/logo.png" alt="AMORTRAV home" width={140} height={29} className="h-auto w-[140px]" />
           </Link>
-          <p className="text-caption-m text-mid">Smart luggage, paired to your phone.</p>
+          <p className="text-caption-m text-mid">{t("footer.line", "Smart luggage, paired to your phone.")}</p>
         </div>
-        {GROUPS.map(({ title, links }) => (
+        {groups.map(({ title, links }) => (
           <nav key={title} data-reveal aria-label={`Footer ${title}`} className="hidden xl:block">
             <h2 className="mb-3 text-caption font-medium text-navy">{title}</h2>
             <FooterLinks links={links} onUnavailable={unavailable} />
           </nav>
         ))}
-        <FooterAccordion onUnavailable={unavailable} />
+        <FooterAccordion groups={groups} onUnavailable={unavailable} />
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4 xl:mt-14 xl:border-t xl:border-divider xl:pt-6">
         <p className="text-caption-m text-mid">
           <span className="xl:hidden">©2026 Amortrav</span>
-          <span className="hidden xl:inline">©2026 Amortrav. All rights reserved.</span>
+          <span className="hidden xl:inline">
+            {t("footer.rights", "©2026 Amortrav. All rights reserved.", { year: 2026, company: "Amortrav" })}
+          </span>
         </p>
         <Social onUnavailable={unavailable} />
       </div>

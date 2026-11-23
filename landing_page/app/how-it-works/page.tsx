@@ -1,21 +1,12 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import FaqList from "../_components/FaqList";
+"use client";
 
-export const metadata: Metadata = {
-  title: "How it works",
-  description:
-    "Box to boarding in three steps. Every AMORTRAV bag ships with a claim card. Scratch, pair in seconds, and toggle flight-safe mode at the gate.",
-  alternates: {
-    canonical: "/how-it-works",
-  },
-  openGraph: {
-    title: "How it works · AMORTRAV",
-    description:
-      "Box to boarding in three steps. Every AMORTRAV bag ships with a claim card. Scratch, pair in seconds, and toggle flight-safe mode at the gate.",
-    url: "/how-it-works",
-  },
-};
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Check, Plane, QrCode } from "lucide-react";
+import FaqList from "../_components/FaqList";
+import { GET_THE_APP_HREF } from "../_components/nav";
+import { useI18n } from "@/lib/i18n/context";
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -56,7 +47,6 @@ const faqSchema = {
   ],
 };
 
-// Answers come from each FAQ item's Answer property in the design (closed items hide them).
 const FAQ = [
   {
     question: "I lost the claim card. Now what?",
@@ -76,44 +66,282 @@ const FAQ = [
   },
 ] as const;
 
-function HowItWorksHero() {
+// Authentic AMTRAV iOS Mobile Companion App (Screenshot 4: Good morning, Ama)
+function AmortravCompanionAppPhone({ className = "" }: { className?: string }) {
   return (
-    <section className="relative pt-6 pb-12 sm:pt-10 sm:pb-16 xl:pt-14 xl:pb-20">
-      <div className="grid grid-cols-1 items-center gap-12 xl:grid-cols-2 xl:gap-14">
-        {/* Left Column: Copy & Actions */}
-        <div className="flex flex-col items-start gap-6">
-          <span className="flex items-center gap-3 text-xs font-semibold tracking-wider text-[#2A4BD7] uppercase">
-            <span aria-hidden="true" className="h-[2px] w-6 bg-[#2A4BD7]" />
-            How it works
-          </span>
-          <h1 className="text-4xl font-semibold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[56px] xl:leading-[1.05]">
-            Box to boarding in three steps.
+    <div
+      className={`relative mx-auto w-full max-w-[320px] sm:max-w-[340px] rounded-[36px] sm:rounded-[40px] border-[6px] sm:border-[7px] border-[#0B1B3D] bg-[#F6F7F9] p-3 shadow-2xl text-navy select-none overflow-hidden ${className}`}
+    >
+      {/* Dynamic Island / Speaker notch */}
+      <div className="relative mx-auto mb-2 flex h-5 w-full items-center justify-between px-3 text-[11px] font-bold text-navy">
+        <span>9:41</span>
+        <div className="h-3.5 w-20 sm:w-24 rounded-full bg-[#0B1B3D]" />
+        <div className="flex items-center gap-1.5 text-navy">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4 18.59 5.41 20l.98-.98C8.01 19.9 9.93 20.5 12 20.5s3.99-.6 5.61-1.48l.98.98L20 18.59l-.97-.98C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
+          </svg>
+          <div className="h-2.5 w-5 rounded-xs border border-navy p-0.5">
+            <div className="h-full w-3.5 bg-navy rounded-2xs" />
+          </div>
+        </div>
+      </div>
+
+      {/* App Top Bar */}
+      <div className="flex items-center justify-between px-1.5 py-1">
+        <div>
+          <span className="text-[10px] text-slate-500 font-medium">Wednesday 18 November</span>
+          <h3 className="text-xl font-extrabold tracking-tight text-[#0F172A] leading-tight">
+            Good morning,<br />Ama
+          </h3>
+        </div>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 shadow-xs border border-slate-200/60">
+            <span className="size-2 rounded-full bg-[#2A4BD7] animate-pulse" />
+            <span className="text-[11px] font-bold text-navy">Live</span>
+          </div>
+          <div className="relative flex size-8 items-center justify-center rounded-full bg-white shadow-xs border border-slate-200/60">
+            <svg className="size-4 text-navy" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-[#2A4BD7] text-[9px] font-bold text-white">
+              2
+            </span>
+          </div>
+          <div className="flex size-8 items-center justify-center rounded-full bg-[#0B1B3D] text-xs font-bold text-white shadow-xs">
+            A
+          </div>
+        </div>
+      </div>
+
+      {/* Twin Luggage Cards */}
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        {/* Card 1: Blue carry-on */}
+        <div className="relative flex flex-col items-center rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60 text-center">
+          <div className="relative my-1 size-14 sm:size-16 flex items-center justify-center">
+            <svg className="size-14 sm:size-16 -rotate-90" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" strokeWidth="4" />
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                fill="none"
+                stroke="#2A4BD7"
+                strokeWidth="4"
+                strokeDasharray="163.36"
+                strokeDashoffset="45"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="size-8 rounded-sm bg-[#1e3a6a] flex items-center justify-center text-white text-[9px] font-bold shadow-xs">
+                55
+              </div>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-[#0B1B3D] truncate w-full">Blue carry-on</span>
+          <div className="mt-1 flex items-center gap-1 rounded-full bg-[#2A4BD7] px-2 py-0.5 text-[8.5px] font-bold text-white">
+            <svg className="size-2.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L4 20h16L12 2z" />
+            </svg>
+            <span>Moving 72%</span>
+          </div>
+        </div>
+
+        {/* Card 2: Check-in 70 */}
+        <div className="relative flex flex-col items-center rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60 text-center">
+          <div className="relative my-1 size-14 sm:size-16 flex items-center justify-center">
+            <svg className="size-14 sm:size-16 -rotate-90" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" strokeWidth="4" />
+              <circle
+                cx="32"
+                cy="32"
+                r="26"
+                fill="none"
+                stroke="#4A91F2"
+                strokeWidth="4"
+                strokeDasharray="163.36"
+                strokeDashoffset="68"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="size-8 rounded-sm bg-[#224488] flex items-center justify-center text-white text-[9px] font-bold shadow-xs">
+                70
+              </div>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-[#0B1B3D] truncate w-full">Check-in 70</span>
+          <div className="mt-1 flex items-center gap-1 rounded-full bg-[#4A91F2]/20 px-2 py-0.5 text-[8.5px] font-bold text-[#2A4BD7]">
+            <Check className="size-2.5 stroke-[3]" />
+            <span>Ready 58%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Indicators Strip */}
+      <div className="mt-2.5 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl bg-white p-2 shadow-xs border border-slate-200/60 text-center">
+        <div className="flex flex-col items-center">
+          <div className="size-3.5 rounded-full border-2 border-[#4A91F2] mb-0.5" />
+          <span className="text-xs sm:text-sm font-extrabold text-[#0B1B3D]">2/2</span>
+          <span className="text-[9px] text-slate-400 font-medium">Ready</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-[11px] font-bold text-[#2A4BD7] mb-0.5">▲</span>
+          <span className="text-xs sm:text-sm font-extrabold text-[#2A4BD7]">1</span>
+          <span className="text-[9px] text-slate-400 font-medium">Moving</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-[11px] text-amber-500 mb-0.5">🔔</span>
+          <span className="text-xs sm:text-sm font-extrabold text-amber-500">1</span>
+          <span className="text-[9px] text-slate-400 font-medium">Alerts today</span>
+        </div>
+      </div>
+
+      {/* Flights Around You banner */}
+      <div className="mt-2 flex items-center justify-between rounded-xl bg-white p-2 shadow-xs border border-slate-200/60">
+        <div className="flex items-center gap-2">
+          <div className="flex size-6 sm:size-7 items-center justify-center rounded-full bg-[#4A91F2]/20 text-[#2A4BD7]">
+            <Plane className="size-3 sm:size-3.5" />
+          </div>
+          <span className="text-[10px] sm:text-[11px] font-bold text-[#0B1B3D]">Flights around you</span>
+        </div>
+        <span className="text-slate-400 text-xs">›</span>
+      </div>
+
+      {/* Distance Travelled Card with 7-Day Bar Chart */}
+      <div className="mt-2 rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60">
+        <div className="flex items-center justify-between text-[9.5px]">
+          <span className="text-slate-500">Distance travelled · 7 days</span>
+          <div className="flex items-center gap-1">
+            <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">This week ▾</span>
+            <span className="rounded-md bg-[#2A4BD7]/10 px-1.5 py-0.5 font-bold text-[#2A4BD7]">+18%</span>
+          </div>
+        </div>
+        <div className="mt-1 flex items-baseline gap-1.5">
+          <span className="text-base sm:text-lg font-black tracking-tight text-[#0B1B3D]">1,248 km</span>
+          <span className="text-[9.5px] text-slate-400">12 moves</span>
+        </div>
+        {/* Weekly Bar Chart */}
+        <div className="mt-1.5 grid grid-cols-7 items-end gap-1.5 h-10 pt-1 border-b border-slate-100 pb-1">
+          {[
+            { day: "M", height: "40%", active: false },
+            { day: "T", height: "65%", active: false },
+            { day: "W", height: "25%", active: false },
+            { day: "T", height: "80%", active: false },
+            { day: "F", height: "55%", active: false },
+            { day: "S", height: "70%", active: false },
+            { day: "S", height: "95%", active: true },
+          ].map((bar, i) => (
+            <div key={i} className="flex flex-col items-center gap-1 h-full justify-end">
+              <div
+                className={`w-full rounded-t-sm transition-all ${bar.active ? "bg-[#2A4BD7]" : "bg-slate-400/60"}`}
+                style={{ height: bar.height }}
+              />
+              <span className={`text-[8px] font-medium ${bar.active ? "text-[#2A4BD7] font-bold" : "text-slate-400"}`}>
+                {bar.day}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Tabs */}
+      <div className="mt-2.5 grid grid-cols-5 border-t border-slate-200/60 pt-1.5 text-center text-[8.5px] font-medium text-slate-400">
+        <div className="flex flex-col items-center gap-0.5 text-[#0B1B3D] font-bold">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
+          <span>Home</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="6" y="7" width="12" height="13" rx="2" />
+            <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+          </svg>
+          <span>Bags</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+          </svg>
+          <span>Map</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span>Activity</span>
+        </div>
+        <div className="flex flex-col items-center gap-0.5">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Account</span>
+        </div>
+      </div>
+      {/* Home bar */}
+      <div className="mx-auto mt-1.5 h-1 w-24 rounded-full bg-[#0B1B3D]" />
+    </div>
+  );
+}
+
+function HowItWorksHero() {
+  const { t } = useI18n();
+
+  return (
+    <section className="relative overflow-clip rounded-3xl bg-white border border-divider p-6 sm:p-10 xl:p-14 shadow-xs">
+      <div className="grid grid-cols-1 items-center gap-8 xl:grid-cols-2 xl:gap-14">
+        {/* Left Column: Breadcrumb, Copy & Actions */}
+        <div className="flex flex-col items-start gap-4 sm:gap-6">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-caption text-mid">
+            <Link href="/" className="hover:text-brand transition-colors">
+              Home
+            </Link>
+            <span className="text-line" aria-hidden>
+              /
+            </span>
+            <span className="text-navy font-semibold" aria-current="page">
+              How it works
+            </span>
+          </nav>
+
+          <h1 className="text-3xl font-bold tracking-tight text-[#0B1B3D] sm:text-5xl xl:text-[54px] xl:leading-[1.08]">
+            Box to boarding in three simple steps.
           </h1>
+
           <p className="max-w-lg text-base font-normal leading-relaxed text-[#4A5266] sm:text-lg">
-            A card in the box and the app do the work. No Bluetooth menus, no pairing dance.
+            An engraved metal claim card and our streamlined companion app eliminate Bluetooth pairing dances. No complex setup menus—just pure Swiss-German precision.
           </p>
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <a
-              href="#signup"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-[#0B1B3D] px-6 text-[15px] font-medium text-white transition-colors duration-200 hover:bg-navy-deep sm:h-[50px] sm:px-7 sm:text-base"
+
+          <div className="flex flex-wrap items-center gap-4 pt-1 w-full sm:w-auto">
+            {/* Primary Action Button */}
+            <Link
+              href={GET_THE_APP_HREF}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-md hover:bg-[#0047AD] active:scale-95 transition-all text-center"
             >
-              Get the app
-            </a>
+              <span>{t("landing.heroGetApp", "Get the app")}</span>
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+
+            {/* Secondary Action Link */}
             <a
               href="#steps"
-              className="inline-flex h-12 items-center gap-2 text-[15px] font-medium text-[#0B1B3D] transition-colors duration-200 hover:text-[#2A4BD7] sm:h-[50px] sm:text-base"
+              className="inline-flex h-12 items-center gap-2 rounded-full border-2 border-[#0B1B3D] bg-white px-6 text-[15px] font-bold text-[#0B1B3D] shadow-xs hover:bg-[#0B1B3D] hover:text-white active:scale-95 transition-all group"
             >
-              See the steps
+              <span>See the steps</span>
               <svg
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
+                className="transition-transform duration-200 group-hover:translate-y-0.5"
               >
                 <path d="M12 5v14M6 13l6 6 6-6" />
               </svg>
@@ -121,86 +349,127 @@ function HowItWorksHero() {
           </div>
         </div>
 
-        {/* Right Column: Visual Mockup with Phone & Floating Claim Card */}
-        <div
-          role="img"
-          aria-label="An Amortrav claim card next to a phone showing the Claim a bag screen"
-          className="relative mx-auto aspect-[540/460] w-full max-w-[520px]"
-        >
-          {/* Animated Flight Path SVG */}
-          <svg viewBox="0 0 540 480" aria-hidden="true" className="absolute inset-0 size-full overflow-visible">
-            <path
-              d="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
-              fill="none"
-              stroke="#9AAEDD"
-              strokeWidth="2"
-              strokeDasharray="2 9"
-              strokeLinecap="round"
-            />
-            <g>
+        {/* Right Column: Visual Mockup with Precision Box Sizing & Proportions */}
+        <div className="relative mx-auto w-full flex items-center justify-center">
+          <div
+            role="img"
+            aria-label="An Amortrav claim card next to a phone showing the Pair Luggage screen"
+            className="relative mx-auto aspect-[540/460] w-full max-w-[420px] sm:max-w-[480px] xl:max-w-[500px]"
+          >
+            {/* Subtle Ambient Flight Path SVG */}
+            <svg viewBox="0 0 540 460" aria-hidden="true" className="absolute inset-0 size-full overflow-hidden pointer-events-none opacity-70">
               <path
-                d="M12 0 C12 -1.5 10.5 -2 9 -2 L3 -2 L-4 -10 L-7 -10 L-3 -2 L-8 -2 L-10 -5 L-12 -5 L-11 0 L-12 5 L-10 5 L-8 2 L-3 2 L-7 10 L-4 10 L3 2 L9 2 C10.5 2 12 1.5 12 0 Z"
-                fill="#0B1B3D"
+                d="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
+                fill="none"
+                stroke="#B3C8EE"
+                strokeWidth="2"
+                strokeDasharray="2 9"
+                strokeLinecap="round"
               />
-              <animateMotion
-                dur="8s"
-                repeatCount="indefinite"
-                rotate="auto"
-                path="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
-              />
-            </g>
-          </svg>
+              <g>
+                <path
+                  d="M12 0 C12 -1.5 10.5 -2 9 -2 L3 -2 L-4 -10 L-7 -10 L-3 -2 L-8 -2 L-10 -5 L-12 -5 L-11 0 L-12 5 L-10 5 L-8 2 L-3 2 L-7 10 L-4 10 L3 2 L9 2 C10.5 2 12 1.5 12 0 Z"
+                  fill="#0B1B3D"
+                />
+                <animateMotion
+                  dur="8s"
+                  repeatCount="indefinite"
+                  rotate="auto"
+                  path="M-20 330 C 90 280, 170 130, 300 82 S 500 20, 560 -6"
+                />
+              </g>
+            </svg>
 
-          {/* Phone Frame */}
-          <div className="absolute top-0 right-[4%] aspect-[9/18] w-[46%] overflow-hidden rounded-[26px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)]">
-            {/* Sleek speaker slit */}
-            <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-[#0B1B3D]/25 sm:mt-2.5 sm:h-1.5 sm:w-14" />
+            {/* Precision Phone Frame */}
+            <div className="absolute top-0 right-[4%] aspect-[9/18] w-[48%] sm:w-[46%] overflow-hidden rounded-[26px] sm:rounded-[34px] border-[5px] sm:border-[6px] border-[#0B1B3D] bg-[#F6F7F9] shadow-[0_30px_60px_-36px_rgba(11,27,61,0.45)] flex flex-col justify-between p-3 sm:p-4 pt-2 sm:pt-2.5 z-0">
+              {/* Speaker Slit */}
+              <div className="mx-auto h-1 w-12 rounded-full bg-[#0B1B3D]/30" />
 
-            <div className="flex h-full flex-col gap-3 p-3 pt-2 sm:p-5 sm:pt-3">
-              <span className="text-xs sm:text-sm font-semibold tracking-tight text-[#0B1B3D]">Claim a bag</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                <span className="h-1 rounded-full bg-[#0B1B3D]" />
-                <span className="h-1 rounded-full bg-[#DCE1EA]" />
+              {/* Screen UI Matching Photo */}
+              <div className="flex flex-1 flex-col justify-between pt-1">
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-[#E8ECF2] pb-1.5">
+                  <span className="text-[11px] sm:text-xs font-bold tracking-tight text-[#0B1B3D]">
+                    Pair Luggage
+                  </span>
+                  <span className="rounded-full bg-[#2A4BD7]/10 px-2 py-0.5 text-[8px] sm:text-[9.5px] font-bold text-[#2A4BD7] whitespace-nowrap">
+                    Step 2 of 3
+                  </span>
+                </div>
+
+                {/* Form Fields */}
+                <div className="flex flex-col gap-2 my-auto">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[8.5px] sm:text-[9.5px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
+                      Case Serial Number
+                    </span>
+                    <div className="rounded-lg border border-[#DCE1EA] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold text-[#0B1B3D]">
+                      AMT-C055-80F3A1
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[8.5px] sm:text-[9.5px] font-mono font-bold tracking-wider text-[#4A5266] uppercase">
+                      Encrypted Claim Code
+                    </span>
+                    <div className="rounded-lg border border-[#0B1B3D] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-[11px] font-bold tracking-widest text-[#0B1B3D]">
+                      7KQ2-••••••••
+                    </div>
+                  </div>
+
+                  {/* Cryptographic Verification Badge */}
+                  <div className="flex items-center gap-1 text-[8px] sm:text-[9px] font-medium text-[#2A4BD7]">
+                    <svg className="size-2.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
+                    </svg>
+                    <span className="truncate uppercase font-mono font-semibold text-[8px]">
+                      Cryptographically verified
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <button
+                  type="button"
+                  className="w-full rounded-lg bg-[#0B1B3D] py-2 text-center text-[10px] sm:text-[11px] font-bold text-white shadow-xs hover:bg-[#0047AD] transition-colors"
+                >
+                  Add to My Account
+                </button>
               </div>
-              <div className="mt-1 flex flex-col gap-1 sm:mt-2">
-                <span className="text-[10px] sm:text-xs font-medium text-[#4A5266]">Serial number</span>
-                <span className="overflow-hidden rounded-lg border border-[#DCE1EA] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs text-[#0B1B3D] whitespace-nowrap">
-                  AMT-C055-00F3A1
+
+              {/* Home Indicator */}
+              <div className="mt-1 mx-auto h-1 w-10 sm:w-12 rounded-full bg-[#0B1B3D]/30" />
+            </div>
+
+            {/* 3D Floating Metal Claim Card */}
+            <div className="animate-float absolute bottom-[2%] left-0 flex aspect-[1.586] w-[52%] sm:w-[50%] -rotate-6 flex-col justify-between rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#102754] to-[#061229] p-3 sm:p-4 text-white shadow-[0_25px_50px_-15px_rgba(11,27,61,0.65)] border border-white/20 z-10 backdrop-blur-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Image
+                    src="/img/cta-mark.png"
+                    alt="AMORTRAV"
+                    width={20}
+                    height={18}
+                    className="h-3.5 sm:h-4 w-auto object-contain brightness-0 invert"
+                  />
+                  <span className="font-mono text-[8.5px] sm:text-[9.5px] font-bold tracking-wider text-white uppercase">
+                    AMORTRAV
+                  </span>
+                </div>
+                <span className="text-[8px] sm:text-[9px] font-mono font-medium text-[#A9B6D3] uppercase tracking-wider">
+                  Claim Card
                 </span>
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] sm:text-xs font-medium text-[#4A5266]">Claim code</span>
-                <span className="overflow-hidden rounded-lg border border-[#0B1B3D] bg-white px-2.5 py-1.5 font-mono text-[10px] sm:text-xs tracking-wider text-[#0B1B3D] whitespace-nowrap">
-                  7KQ2-••••-••••
-                </span>
-              </div>
-              <span className="mt-auto mb-3 flex h-8 sm:h-9 items-center justify-center rounded-xl bg-[#0B1B3D] text-[10px] sm:text-xs font-medium text-white whitespace-nowrap">
-                Claim this bag
-              </span>
-            </div>
-            {/* Home indicator */}
-            <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-20">
-              <span className="block h-1 w-14 rounded-full bg-[#0B1B3D]/30" />
-            </div>
-          </div>
 
-          {/* 3D Floating Claim Card with Real AMORTRAV Brand Logo */}
-          <div className="animate-float absolute bottom-[8%] left-0 flex aspect-[1.586] w-[62%] -rotate-7 flex-col justify-between rounded-2xl bg-[#0B1B3D] p-4 sm:p-5 text-white shadow-[0_30px_50px_-28px_rgba(11,27,61,0.6)]">
-            <div className="flex items-center justify-between">
-              {/* Actual Brand Logo */}
-              <Image
-                src="/img/cta-mark.png"
-                alt="AMORTRAV"
-                width={28}
-                height={23}
-                className="h-5 sm:h-6 w-auto object-contain"
-              />
-              <span className="text-[10px] sm:text-xs font-medium text-[#A9B6D3]">Claim card</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] sm:text-[10px] font-medium text-[#A9B6D3]">Serial</span>
-              <span className="font-mono text-xs sm:text-sm tracking-wider text-white">AMT-C055-00F3A1</span>
-              <div className="mt-1 sm:mt-2 h-4 sm:h-5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)]" />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[7.5px] sm:text-[8.5px] font-mono text-[#A9B6D3] uppercase tracking-wider">
+                  Unique Serial
+                </span>
+                <span className="font-mono text-[10px] sm:text-xs font-bold tracking-wider text-white">
+                  AMT-C055-80F3A1
+                </span>
+                <div className="mt-1 h-3 sm:h-3.5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)] shadow-inner border border-white/10" />
+              </div>
             </div>
           </div>
         </div>
@@ -210,7 +479,6 @@ function HowItWorksHero() {
 }
 
 // Half-phone mockup emerging from the bottom edge.
-// Premium, spacious, and ultra-clean without crammed status-bar clutter.
 function HalfPhoneMockup({
   children,
   className = "",
@@ -226,61 +494,16 @@ function HalfPhoneMockup({
       <div className="mx-auto mb-3 sm:mb-4 h-1 sm:h-1.5 w-12 sm:w-14 rounded-full bg-[#0B1B3D]/20" />
 
       {/* Screen Content */}
-      <div className="flex flex-1 flex-col">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// "Steps · sticky stack": each step sticks to the top and the next one slides over it.
-// Placed directly on the page background (bg-surface) with no card containers, maintaining the sticky animation from main.
-function Step({
-  number,
-  title,
-  badge,
-  text,
-  wrapper,
-  children,
-}: {
-  number: string;
-  title: string;
-  badge?: string;
-  text: string;
-  wrapper: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={`sticky top-[72px] xl:top-[80px] ${wrapper}`}>
-      <div className="flex min-h-[460px] sm:min-h-[490px] flex-col justify-between overflow-hidden bg-surface px-4 pt-6 pb-0 xl:h-[360px] xl:flex-row xl:items-end xl:justify-center xl:gap-20 xl:px-14 xl:py-0">
-        <div data-reveal className="flex flex-col px-2 pt-2 pb-4 xl:h-full xl:w-[460px] xl:shrink-0 xl:justify-center xl:px-0 xl:py-0">
-          <div className="flex flex-col gap-2.5 sm:gap-3 xl:gap-4">
-            <span className="font-mono text-xs font-semibold tracking-wider text-[#2A4BD7]">{number}</span>
-            <div className="flex items-center gap-3">
-              <h3 className="text-2xl font-bold tracking-tight text-[#0B1B3D] sm:text-3xl xl:text-4xl">{title}</h3>
-              {badge && (
-                <span className="rounded-full bg-[#E6E9EF] px-2.5 py-0.5 text-xs font-semibold text-[#4A5266]">
-                  {badge}
-                </span>
-              )}
-            </div>
-            <p className="text-sm leading-relaxed text-[#4A5266] sm:text-base xl:text-lg">{text}</p>
-          </div>
-        </div>
-        <div
-          aria-hidden="true"
-          className="flex flex-1 items-end justify-center xl:h-full xl:w-[460px] xl:flex-none"
-        >
-          {children}
-        </div>
-      </div>
+      <div className="flex flex-1 flex-col">{children}</div>
     </div>
   );
 }
 
 function Steps() {
+  const [flightSafe, setFlightSafe] = useState(true);
+
   return (
-    <section id="steps" className="flex flex-col gap-6 pt-6 pb-12 xl:gap-8 xl:py-16">
+    <section id="steps" className="scroll-mt-24 flex flex-col gap-8 pt-8 pb-16 xl:gap-10 xl:py-20 border-t border-divider">
       <div className="flex flex-col gap-3">
         <span className="flex items-center gap-3 text-xs font-semibold tracking-wider text-[#2A4BD7] uppercase">
           <span aria-hidden="true" className="h-[2px] w-6 bg-[#2A4BD7]" />
@@ -289,118 +512,156 @@ function Steps() {
         <h2 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-4xl xl:text-[42px]">
           From the box to the airport.
         </h2>
+        <p className="max-w-lg text-base text-[#4A5266]">
+          Three simple steps to effortless ownership, permanent security, and flight compliance.
+        </p>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-8 xl:gap-10">
         {/* Step 1: Unbox */}
-        <Step
-          number="01"
-          title="Unbox"
-          text="Every bag ships with a claim card. The one-time code hides under a scratch strip."
-          wrapper="z-[1] -mb-8 pt-3 pb-6 xl:-mb-[52px] xl:pt-6 xl:pb-8"
-        >
-          <div className="flex h-full w-full items-center justify-center py-6 xl:pb-12">
-            <div className="animate-float flex h-[150px] w-[230px] sm:h-[164px] sm:w-[260px] -rotate-4 flex-col justify-between rounded-2xl bg-[#0B1B3D] p-4 sm:p-5 text-white shadow-[0_24px_48px_-16px_rgba(11,27,61,0.5)]">
+        <article className="flex min-h-[380px] flex-col justify-between overflow-hidden rounded-3xl border border-divider bg-white p-6 sm:p-8 xl:min-h-[360px] xl:flex-row xl:items-center xl:gap-16 xl:p-12 shadow-sm transition-all hover:shadow-md">
+          <div className="flex flex-col gap-3 xl:max-w-[480px]">
+            <span className="font-mono text-xs font-bold tracking-wider text-[#2A4BD7]">01</span>
+            <div className="flex items-center gap-3">
+              <h3 className="text-2xl font-bold tracking-tight text-[#0B1B3D] sm:text-3xl xl:text-4xl">Unbox</h3>
+            </div>
+            <p className="text-base leading-relaxed text-[#4A5266] sm:text-lg">
+              Every bag ships with an engraved serialized claim card. The one-time cryptographic code hides securely under a scratch strip.
+            </p>
+          </div>
+
+          <div className="flex flex-1 items-center justify-center py-6 xl:py-0">
+            <div className="animate-float flex h-[150px] w-[230px] sm:h-[164px] sm:w-[260px] -rotate-3 flex-col justify-between rounded-2xl bg-[#0B1B3D] p-4 sm:p-5 text-white shadow-xl border border-white/10">
               <div className="flex items-center justify-between">
-                {/* Real AMORTRAV Brand Logo */}
                 <Image
                   src="/img/cta-mark.png"
                   alt="AMORTRAV"
                   width={28}
                   height={23}
-                  className="h-4.5 sm:h-5 w-auto object-contain"
+                  className="h-4.5 sm:h-5 w-auto object-contain brightness-0 invert"
                 />
-                <span className="text-[10px] sm:text-[11px] font-medium text-[#A9B6D3]">Claim card</span>
+                <span className="text-[10px] sm:text-[11px] font-mono font-medium text-[#A9B6D3]">Claim card</span>
               </div>
               <div className="flex flex-col gap-1">
+                <span className="text-[9px] font-mono text-[#A9B6D3] uppercase">Serial</span>
                 <span className="font-mono text-xs sm:text-sm tracking-wide text-white">AMT-C055-00F3A1</span>
-                <div className="mt-1.5 sm:mt-2 h-4 sm:h-5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)]" />
+                <div className="mt-1.5 sm:mt-2 h-4 sm:h-5 rounded bg-[repeating-linear-gradient(135deg,#2B4479_0_6px,#1A2F60_6px_12px)] shadow-inner" />
               </div>
             </div>
           </div>
-        </Step>
+        </article>
 
         {/* Step 2: Pair */}
-        <Step
-          number="02"
-          title="Pair"
-          text="Sign in with Google and enter both. The bag is yours, and the code stops working for good."
-          wrapper="z-[2] -mb-8 pt-6 pb-3 xl:-mb-[52px] xl:pt-10 xl:pb-4"
-        >
-          <HalfPhoneMockup>
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between border-b border-[#E4E7EE] pb-2.5">
-                <span className="text-sm font-bold tracking-tight text-[#0B1B3D]">Claim a bag</span>
-                <span className="rounded-full bg-[#EEF2FB] px-2.5 py-0.5 text-[11px] font-semibold text-[#2A4BD7]">
-                  Pairing
-                </span>
-              </div>
-              <div className="flex flex-col gap-1 pt-0.5">
-                <span className="text-[11px] font-medium text-[#5A6377]">Serial number</span>
-                <span className="rounded-xl border border-[#DCE1EA] bg-[#F6F7F9] px-3.5 py-2 font-mono text-xs font-medium text-[#0B1B3D]">
-                  AMT-C055-00F3A1
-                </span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium text-[#5A6377]">Claim code</span>
-                <span className="rounded-xl border border-[#DCE1EA] bg-[#F6F7F9] px-3.5 py-2 font-mono text-xs font-medium tracking-wider text-[#0B1B3D]">
-                  7KQ2-9XHM-4RTA
-                </span>
-              </div>
-              <div className="mt-1 flex items-center">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E3F5EA] px-3 py-1.5 text-xs font-semibold text-[#11683B]">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12.5l4.5 4.5L19 7.5" />
-                  </svg>
-                  Paired to you
-                </span>
-              </div>
+        <article className="flex min-h-[420px] flex-col justify-between overflow-hidden rounded-3xl border border-divider bg-white p-6 sm:p-8 xl:min-h-[380px] xl:flex-row xl:items-end xl:gap-16 xl:p-12 shadow-sm transition-all hover:shadow-md">
+          <div className="flex flex-col gap-3 xl:max-w-[480px] xl:pb-8">
+            <span className="font-mono text-xs font-bold tracking-wider text-[#2A4BD7]">02</span>
+            <div className="flex items-center gap-3">
+              <h3 className="text-2xl font-bold tracking-tight text-[#0B1B3D] sm:text-3xl xl:text-4xl">Pair</h3>
             </div>
-          </HalfPhoneMockup>
-        </Step>
+            <p className="text-base leading-relaxed text-[#4A5266] sm:text-lg">
+              Sign in with your account and enter both serial and code. The bag is permanently yours, and the setup key is deactivated forever.
+            </p>
+          </div>
 
-        {/* Step 3: Fly */}
-        <Step
-          number="03"
-          title="Fly"
-          badge="Coming soon"
-          text="Switch to flight-safe at the gate. Radios sleep until you land."
-          wrapper="z-[3] pt-9 pb-3 xl:pt-14 xl:pb-6"
-        >
-          <HalfPhoneMockup>
-            <div className="flex flex-col gap-3.5">
-              <div className="flex items-center justify-between border-b border-[#E4E7EE] pb-2.5">
-                <span className="text-sm font-bold tracking-tight text-[#0B1B3D]">Blue carry-on</span>
-                <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#11683B]">
-                  <span className="size-2 rounded-full bg-[#11683B]" />
-                  Connected
-                </span>
-              </div>
-
-              {/* Flight-safe card */}
-              <div className="flex flex-col gap-2 rounded-2xl bg-[#0B1B3D] p-4 text-white shadow-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-white/10">
-                      <Image src="/icons/plane.svg" alt="" width={15} height={15} className="brightness-200" />
-                    </span>
-                    <span className="text-sm font-bold text-white">Flight-safe</span>
-                  </div>
-                  {/* Real Toggle Switch */}
-                  <span className="relative h-5 w-9 rounded-full bg-[#B9CBFF] p-0.5 shadow-inner">
-                    <span className="block size-4 translate-x-4 rounded-full bg-[#0B1B3D] shadow-xs" />
+          <div className="flex flex-1 items-end justify-center pt-6 xl:pt-0">
+            <HalfPhoneMockup>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between border-b border-[#E4E7EE] pb-2.5">
+                  <span className="text-sm font-bold tracking-tight text-[#0B1B3D]">Claim a bag</span>
+                  <span className="rounded-full bg-[#EEF2FB] px-2.5 py-0.5 text-[11px] font-semibold text-[#2A4BD7]">
+                    Pairing
                   </span>
                 </div>
-                <span className="text-[11px] text-[#A9B6D3]">Radios sleep until you land.</span>
+                <div className="flex flex-col gap-1 pt-0.5">
+                  <span className="text-[11px] font-medium text-[#5A6377]">Serial number</span>
+                  <span className="rounded-xl border border-[#DCE1EA] bg-[#F6F7F9] px-3.5 py-2 font-mono text-xs font-medium text-[#0B1B3D]">
+                    AMT-C055-00F3A1
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[11px] font-medium text-[#5A6377]">Claim code</span>
+                  <span className="rounded-xl border border-[#DCE1EA] bg-[#F6F7F9] px-3.5 py-2 font-mono text-xs font-medium tracking-wider text-[#0B1B3D]">
+                    7KQ2-9XHM-4RTA
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E3F5EA] px-3 py-1.5 text-xs font-semibold text-[#11683B]">
+                    <Check className="size-3.5 stroke-[3]" />
+                    Paired to you
+                  </span>
+                </div>
               </div>
+            </HalfPhoneMockup>
+          </div>
+        </article>
 
-              <div className="flex items-center justify-between rounded-xl bg-[#F6F7F9] px-3.5 py-2 text-xs text-[#5A6377]">
-                <span>Status</span>
-                <span className="font-semibold text-[#11683B]">Active standby</span>
-              </div>
+        {/* Step 3: Fly */}
+        <article className="flex min-h-[420px] flex-col justify-between overflow-hidden rounded-3xl border border-divider bg-white p-6 sm:p-8 xl:min-h-[380px] xl:flex-row xl:items-end xl:gap-16 xl:p-12 shadow-sm transition-all hover:shadow-md">
+          <div className="flex flex-col gap-3 xl:max-w-[480px] xl:pb-8">
+            <span className="font-mono text-xs font-bold tracking-wider text-[#2A4BD7]">03</span>
+            <div className="flex items-center gap-3">
+              <h3 className="text-2xl font-bold tracking-tight text-[#0B1B3D] sm:text-3xl xl:text-4xl">Fly</h3>
+              <span className="rounded-full bg-blue-pale px-3 py-0.5 text-xs font-semibold text-brand">
+                Flight-Safe
+              </span>
             </div>
-          </HalfPhoneMockup>
-        </Step>
+            <p className="text-base leading-relaxed text-[#4A5266] sm:text-lg">
+              Switch to flight-safe at the departure gate. Cellular and wireless radios sleep automatically until you touch down.
+            </p>
+          </div>
+
+          <div className="flex flex-1 items-end justify-center pt-6 xl:pt-0">
+            <HalfPhoneMockup>
+              <div className="flex flex-col gap-3.5">
+                <div className="flex items-center justify-between border-b border-[#E4E7EE] pb-2.5">
+                  <span className="text-sm font-bold tracking-tight text-[#0B1B3D]">Cabin 55</span>
+                  <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${flightSafe ? "text-[#11683B]" : "text-mid"}`}>
+                    <span className={`size-2 rounded-full ${flightSafe ? "bg-[#11683B] animate-pulse" : "bg-mid/40"}`} />
+                    {flightSafe ? "Flight-Safe On" : "Standby Active"}
+                  </span>
+                </div>
+
+                {/* Interactive Flight-Safe Toggle Card */}
+                <div className="flex flex-col gap-2 rounded-2xl bg-[#0B1B3D] p-4 text-white shadow-md">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                        <Plane className="size-4 text-white" />
+                      </span>
+                      <span className="text-sm font-bold text-white">Flight-safe</span>
+                    </div>
+
+                    {/* Interactive Switch */}
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={flightSafe}
+                      aria-label="Toggle flight-safe mode"
+                      onClick={() => setFlightSafe(!flightSafe)}
+                      className={`relative h-6 w-11 rounded-full p-0.5 transition-colors focus-visible:outline-2 focus-visible:outline-sky ${
+                        flightSafe ? "bg-[#4a91f2]" : "bg-white/20"
+                      }`}
+                    >
+                      <span
+                        className={`block size-5 rounded-full bg-white shadow-md transition-transform duration-200 ${
+                          flightSafe ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <span className="text-[11px] text-[#A9B6D3]">
+                    {flightSafe ? "Radios sleeping until you land." : "Cellular & GPS tracking online."}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between rounded-xl bg-[#F6F7F9] px-3.5 py-2 text-xs text-[#5A6377]">
+                  <span>Status</span>
+                  <span className="font-semibold text-[#11683B]">FAA & ICAO Compliant</span>
+                </div>
+              </div>
+            </HalfPhoneMockup>
+          </div>
+        </article>
       </div>
     </section>
   );
@@ -455,7 +716,7 @@ const HOOD_POINTS = [
 
 function UnderTheHood() {
   return (
-    <section className="flex flex-col gap-8 border-t border-[#E4E7EE] py-12 xl:py-20">
+    <section className="flex flex-col gap-8 border-t border-divider py-12 xl:py-20">
       <div className="flex flex-col gap-3">
         <span className="flex items-center gap-3 text-xs font-semibold tracking-wider text-[#2A4BD7] uppercase">
           <span aria-hidden="true" className="h-[2px] w-6 bg-[#2A4BD7]" />
@@ -464,25 +725,33 @@ function UnderTheHood() {
         <h2 className="text-3xl font-semibold tracking-tight text-[#0B1B3D] sm:text-4xl xl:text-[42px]">
           Built so the bag stays yours.
         </h2>
+        <p className="max-w-lg text-base text-[#4A5266]">
+          Zero-knowledge cryptographic security engineered directly into the hardware and pairing protocol.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-x-12 gap-y-6 pt-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 pt-4 md:grid-cols-2 lg:gap-8">
         {HOOD_POINTS.map((pt) => (
-          <div key={pt.title} className="flex flex-col gap-2.5 border-t border-[#E4E7EE] pt-6">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#2A4BD7"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              {pt.icon}
-            </svg>
-            <h3 className="text-lg font-semibold tracking-tight text-[#0B1B3D]">{pt.title}</h3>
+          <div
+            key={pt.title}
+            className="flex flex-col gap-3 rounded-2xl border border-divider bg-white p-6 sm:p-7 shadow-xs hover:border-[#2A4BD7]/40 transition-colors"
+          >
+            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-pale text-[#2A4BD7]">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                {pt.icon}
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold tracking-tight text-[#0B1B3D]">{pt.title}</h3>
             <p className="text-base font-normal leading-relaxed text-[#4A5266]">{pt.text}</p>
           </div>
         ))}
@@ -493,13 +762,16 @@ function UnderTheHood() {
 
 function Faq() {
   return (
-    <section className="flex flex-col gap-6 overflow-clip px-5 py-8 xl:flex-row xl:items-start xl:gap-10 xl:rounded-[32px] xl:p-14">
-      <h2 data-reveal className="text-h1-m font-bold text-navy xl:hidden">
-        Questions people actually ask
-      </h2>
-      <h2 data-reveal className="hidden w-[442px] shrink-0 text-h1 font-bold text-navy xl:block">
-        Questions you may want to ask
-      </h2>
+    <section className="flex flex-col gap-6 overflow-clip rounded-3xl bg-white border border-divider p-6 sm:p-10 xl:flex-row xl:items-start xl:gap-12 xl:p-14 shadow-sm mb-12">
+      <div className="flex flex-col gap-2 xl:w-[400px] xl:shrink-0">
+        <span className="text-xs font-mono font-bold tracking-wider text-[#2A4BD7] uppercase">Support & Questions</span>
+        <h2 className="text-2xl font-bold tracking-tight text-[#0B1B3D] sm:text-3xl xl:text-4xl">
+          Questions people actually ask
+        </h2>
+        <p className="text-sm text-[#4A5266] mt-1">
+          Everything you need to know about the claim card, pairing, and second-hand transfers.
+        </p>
+      </div>
       <FaqList items={FAQ} initialOpen={0} className="xl:min-w-0 xl:flex-1" />
     </section>
   );
@@ -507,7 +779,7 @@ function Faq() {
 
 export default function HowItWorksPage() {
   return (
-    <>
+    <div className="flex flex-col gap-4 xl:gap-5 w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -516,6 +788,6 @@ export default function HowItWorksPage() {
       <Steps />
       <UnderTheHood />
       <Faq />
-    </>
+    </div>
   );
 }

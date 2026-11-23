@@ -77,7 +77,7 @@ function Features() {
             <div className="flex h-[156px] w-full shrink-0 flex-col justify-center gap-2.5 rounded-[20px] bg-surface p-5">
               <div className="flex items-start justify-between whitespace-nowrap">
                 <span className="text-caption-m text-navy xl:text-caption">Firmware update</span>
-                <span className="font-mono text-mono-m font-medium text-mid xl:text-mono">[VERSION]</span>
+                <span className="font-mono text-mono-m font-medium text-mid xl:text-mono">v2.4.1-signed</span>
               </div>
               <div className="h-2.5 w-full overflow-clip rounded-full bg-blue-pale">
                 <div data-reveal="grow" className="h-2.5 w-[62%] rounded-full bg-brand [--motion-delay:300ms]" />

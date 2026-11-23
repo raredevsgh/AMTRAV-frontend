@@ -1,16 +1,48 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS, SHOP_LINK } from "./nav";
+import { ChevronDown } from "lucide-react";
+import { SHOP_LINK } from "./nav";
+import { useI18n } from "@/lib/i18n/context";
+import { useCart } from "@/lib/shop";
 
-// Figma "Nav link" (2018:537, 124:776): State=Active marks current page with rounded-full light-blue pill badge.
-export default function SiteNav() {
+export default function SiteNav({ isNegative = false }: { isNegative?: boolean }) {
   const pathname = usePathname();
+  const { t } = useI18n();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const links = [
+    { href: "/features", label: t("nav.features", "Features") },
+    { href: "/how-it-works", label: t("nav.how", "How it works") },
+    { href: "/for-brands", label: t("nav.brands", "For brands") },
+  ];
+
+  const serviceLinks = [
+    { href: "/customise", label: "AMTRAV UNIQUE Studio", desc: "Bespoke 3D luggage configurator", badge: "3D" },
+    { href: "/services/registration", label: "Luggage Registration", desc: "Activate your Lifetime Guarantee" },
+    { href: "/services/lock-tutorial", label: "TSA Lock Tutorial", desc: "Interactive combination dial guide" },
+    { href: "/services/tracking", label: "Order & Return Tracking", desc: "DHL luxury logistics milestones" },
+    { href: "/services/repairs", label: "Repair Service Portal", desc: "Certified global repair hubs" },
+    { href: "/services/stores", label: "Boutique Store Locator", desc: "VIP in-store appointments" },
+  ];
+
   return (
-    <nav aria-label="Main navigation" className="flex h-11 items-center gap-2 xl:gap-3 px-1">
-      {NAV_LINKS.map(({ href, label }) => {
+    <nav aria-label={t("nav.main", "Main navigation")} className="flex h-11 items-center gap-1.5 xl:gap-2 px-1">
+      {links.map(({ href, label }) => {
         const active = pathname === href;
         return (
           <Link
@@ -19,36 +51,147 @@ export default function SiteNav() {
             aria-current={active ? "page" : undefined}
             className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-btn font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
               active
-                ? "bg-blue-pale text-brand shadow-xs"
-                : "text-ink hover:text-brand hover:bg-white/30"
+                ? isNegative
+                  ? "bg-white/20 text-white border border-white/30 shadow-xs"
+                  : "bg-brand/10 text-brand font-bold border border-brand/20 shadow-xs"
+                : isNegative
+                ? "text-white/85 hover:text-white hover:bg-white/10"
+                : "text-navy hover:text-brand hover:bg-navy/5"
             }`}
           >
             {label}
           </Link>
         );
       })}
+
+      {/* Services & Bespoke Dropdown */}
+      <div ref={dropdownRef} className="relative">
+        <button
+          type="button"
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          aria-expanded={dropdownOpen}
+          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-btn font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+            dropdownOpen || pathname.startsWith("/services") || pathname.startsWith("/customise")
+              ? isNegative
+                ? "bg-white/20 text-white border border-white/30 shadow-xs"
+                : "bg-brand/10 text-brand font-bold border border-brand/20 shadow-xs"
+              : isNegative
+              ? "text-white/85 hover:text-white hover:bg-white/10"
+              : "text-navy hover:text-brand hover:bg-navy/5"
+          }`}
+        >
+          <span>Services</span>
+          <ChevronDown
+            className={`size-3.5 transition-transform duration-200 ${
+              dropdownOpen ? "rotate-180" : ""
+            } ${isNegative ? "text-white/80" : "text-navy/70"}`}
+          />
+        </button>
+
+        {dropdownOpen && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-80 rounded-2xl border border-divider bg-white p-3 shadow-xl backdrop-blur-md z-50 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <div className="border-b border-divider pb-2 px-2.5 mb-1.5">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-mid">
+                Atelier & Client Care
+              </span>
+            </div>
+            <div className="space-y-1">
+              {serviceLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-start justify-between rounded-xl px-2.5 py-2 hover:bg-surface transition-colors"
+                >
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-small font-semibold text-navy">{item.label}</span>
+                      {item.badge && (
+                        <span className="rounded-full bg-navy/5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-navy">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-mid mt-0.5">{item.desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
 
-// Recreated from the supplied header screenshot with the owner's approval; not a Figma export.
-export function ShopLink() {
-  const active = usePathname() === SHOP_LINK.href;
+export function ShopLink({ onClick, isNegative = false }: { onClick?: () => void; isNegative?: boolean }) {
+  const pathname = usePathname();
+  const isShop = pathname === SHOP_LINK.href || pathname.startsWith("/shop");
+  const active = isShop;
+  const { t } = useI18n();
+  const { totalItems } = useCart();
+
+  const className = `relative group flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+    active
+      ? isNegative
+        ? "bg-white/20 border border-white/40 text-white shadow-xs"
+        : "bg-blue-pale border border-brand/30 shadow-xs"
+      : isNegative
+      ? "border border-white/25 bg-white/10 hover:border-white/50 text-white"
+      : "border-[1.5px] border-ink/80 bg-surface/80 hover:border-ink hover:bg-surface text-navy"
+  }`;
+
+  const handleClick = (e: React.MouseEvent) => {
+    // If user is already on /shop and clicks the cart/shop icon, open the cart drawer!
+    if (isShop && onClick) {
+      e.preventDefault();
+      onClick();
+    }
+    // If not on /shop, Link navigates naturally to /shop so user sees the shop screen!
+  };
+
+  const handleBadgeClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    }
+  };
+
   return (
     <Link
       href={SHOP_LINK.href}
-      aria-label={SHOP_LINK.label}
+      onClick={handleClick}
+      aria-label={active ? t("nav.cart", "Cart") : t("nav.shop", "Shop")}
       aria-current={active ? "page" : undefined}
-      className={`group flex size-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out-soft hover:bg-sky hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${active ? "bg-blue-pale" : "border-[1.5px] border-ink"}`}
+      className={className}
+      title={isShop ? "View Pre-Order Cart" : "Explore Luggage Shop"}
     >
       <Image
         src="/icons/shop-cart.svg"
         alt=""
-        width={24}
-        height={24}
+        width={22}
+        height={22}
         loading="eager"
-        className={`transition-transform duration-300 ease-out-soft group-hover:scale-110 group-hover:-rotate-6 ${active ? "" : "brightness-50"} group-hover:brightness-0 group-hover:invert`}
+        className={`transition-transform duration-300 ease-out-soft group-hover:scale-110 group-hover:-rotate-6 ${
+          isNegative
+            ? "brightness-0 invert"
+            : active
+            ? ""
+            : "brightness-50 group-hover:brightness-0 group-hover:invert"
+        }`}
       />
+      {totalItems > 0 && (
+        <span
+          onClick={handleBadgeClick}
+          className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white shadow-xs cursor-pointer hover:scale-115 transition-transform"
+          title="Open Cart"
+        >
+          {totalItems}
+        </span>
+      )}
     </Link>
   );
 }
