@@ -670,6 +670,9 @@ export default function ShopView() {
   // Filters
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [activeCollection, setActiveCollection] = useState<string>("all");
+  const [activeAccessoryCategory, setActiveAccessoryCategory] = useState<
+    "all" | "everyday" | "executive" | "hardware" | "bundles"
+  >("all");
   const [sortBy, setSortBy] = useState<SortOption>("top-sellers");
 
   const handleAddToCart = (compoundSku: string) => {
@@ -696,6 +699,48 @@ export default function ShopView() {
     }
     return list;
   }, [activeCollection, sortBy]);
+
+  // Filtered accessories
+  const filteredAccessories = useMemo(() => {
+    if (activeAccessoryCategory === "all") return ACCESSORIES_CATALOG;
+    if (activeAccessoryCategory === "hardware") {
+      return ACCESSORIES_CATALOG.filter(
+        (a) => a.sku === "accessory-pet-carrier" || a.sku === "accessory-duffel-side-bag"
+      );
+    }
+    if (activeAccessoryCategory === "everyday") {
+      return ACCESSORIES_CATALOG.filter((a) =>
+        [
+          "accessory-compression-cubes",
+          "accessory-luggage-cover",
+          "accessory-toiletry-organiser",
+          "accessory-tech-organiser",
+          "accessory-shoe-laundry-set",
+          "accessory-passport-wallet",
+          "accessory-leather-tag",
+          "accessory-foldable-day-bag",
+        ].includes(a.sku)
+      );
+    }
+    if (activeAccessoryCategory === "executive") {
+      return ACCESSORIES_CATALOG.filter((a) =>
+        [
+          "accessory-jewellery-case",
+          "accessory-watch-case",
+          "accessory-valuables-case",
+          "accessory-cross-body",
+          "accessory-luxury-pouch",
+          "accessory-vanity-case",
+          "accessory-sunglasses-case",
+          "accessory-executive-briefcase",
+        ].includes(a.sku)
+      );
+    }
+    if (activeAccessoryCategory === "bundles") {
+      return ACCESSORIES_CATALOG.filter((a) => a.sku.startsWith("bundle-"));
+    }
+    return ACCESSORIES_CATALOG;
+  }, [activeAccessoryCategory]);
 
   return (
     <>
@@ -885,7 +930,7 @@ export default function ShopView() {
         </div>
       </section>
 
-      {/* 4. AMTRAV Premium Accessories */}
+      {/* 4. AMTRAV Official Accessories & Travel Collection */}
       <section
         id="accessories"
         className="scroll-mt-28 my-8 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
@@ -893,25 +938,126 @@ export default function ShopView() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-divider pb-6">
           <div>
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-brand">
-              AMTRAV Exclusive
+              AMTRAV Official Collection
             </span>
             <h2 className="text-display-m font-bold text-navy md:text-h1 tracking-tight mt-1">
-              Premium Accessories
+              Accessories & Travel Essentials
             </h2>
             <p className="mt-2 text-small text-mid max-w-xl">
-              Engineered to complement your AMTRAV luggage — from intelligent pet travel with built-in TRACE™ tracking, to luxury suede duffels with aluminium signature detailing.
+              Everyday travel essentials, premium valuables cases, executive business accessories, and smart hardware with built-in TRACE™ telemetry.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-navy/5 border border-divider px-3 py-1 text-caption font-mono text-navy font-semibold">
-              {ACCESSORIES_CATALOG.length} Premium Accessories
+              {ACCESSORIES_CATALOG.length} Official Products
             </span>
           </div>
         </div>
 
+        {/* 3 Featured Category Banners (Reference Inspiration) */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div
+            onClick={() => setActiveAccessoryCategory("everyday")}
+            className={`cursor-pointer group relative overflow-hidden rounded-2xl p-5 text-white transition-all shadow-card border ${
+              activeAccessoryCategory === "everyday"
+                ? "bg-navy-deep ring-2 ring-brand"
+                : "bg-navy hover:bg-navy-deep"
+            }`}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-sky">
+              Everyday Travel Essentials
+            </span>
+            <h3 className="text-small font-bold mt-1 text-white group-hover:text-sky transition-colors">
+              Organisers & Protection
+            </h3>
+            <p className="text-caption text-white/70 mt-1 line-clamp-2">
+              Compression packing cubes, tech organisers, hanging wash kits, passport wallets, and scuff covers.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-sky">
+              Explore Essentials →
+            </span>
+          </div>
+
+          <div
+            onClick={() => setActiveAccessoryCategory("executive")}
+            className={`cursor-pointer group relative overflow-hidden rounded-2xl p-5 text-white transition-all shadow-card border ${
+              activeAccessoryCategory === "executive"
+                ? "bg-navy-deep ring-2 ring-brand"
+                : "bg-navy hover:bg-navy-deep"
+            }`}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-sky">
+              Biometric Aluminium Range
+            </span>
+            <h3 className="text-small font-bold mt-1 text-white group-hover:text-sky transition-colors">
+              Executive & Valuables
+            </h3>
+            <p className="text-caption text-white/70 mt-1 line-clamp-2">
+              Fingerprint biometric watch cases, executive valuables vaults, jewellery cases, and briefcases.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-sky">
+              Explore Executive →
+            </span>
+          </div>
+
+          <div
+            onClick={() => setActiveAccessoryCategory("hardware")}
+            className={`cursor-pointer group relative overflow-hidden rounded-2xl p-5 text-white transition-all shadow-card border ${
+              activeAccessoryCategory === "hardware"
+                ? "bg-navy-deep ring-2 ring-brand"
+                : "bg-navy hover:bg-navy-deep"
+            }`}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-sky">
+              TRACE™ Smart Core
+            </span>
+            <h3 className="text-small font-bold mt-1 text-white group-hover:text-sky transition-colors">
+              Smart Bags & Carriers
+            </h3>
+            <p className="text-caption text-white/70 mt-1 line-clamp-2">
+              AMTRAV Pet Carrier with real-time GPS tracking and Italian luxury suede duffel side bags.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-sky">
+              Explore Carriers →
+            </span>
+          </div>
+        </div>
+
+        {/* Category Filter Tabs */}
+        <div className="mt-6 flex flex-wrap items-center gap-2 border-b border-divider pb-4">
+          {[
+            { id: "all", label: "All Items", count: ACCESSORIES_CATALOG.length },
+            { id: "everyday", label: "Everyday Essentials", count: 8 },
+            { id: "executive", label: "Executive Range", count: 8 },
+            { id: "hardware", label: "Smart Carriers", count: 2 },
+            { id: "bundles", label: "Launch Bundles", count: 2 },
+          ].map((tab) => {
+            const isActive = activeAccessoryCategory === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveAccessoryCategory(tab.id as typeof activeAccessoryCategory)}
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-caption font-semibold transition-all ${
+                  isActive
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-white text-navy border border-divider hover:bg-surface"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  isActive ? "bg-white/20 text-white" : "bg-navy/5 text-mid"
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Accessories Grid */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {ACCESSORIES_CATALOG.map((accessory) => (
+          {filteredAccessories.map((accessory) => (
             <AccessoryCard
               key={accessory.sku}
               product={accessory}
