@@ -17,10 +17,10 @@ export interface ShopProduct {
   price_minor: number;
   currency: string;
   available: number;
-  category: "Luggage" | "Bags" | "Bundles";
-  sizeCategory: "Cabin" | "Check-In" | "Trunk" | "Bag";
-  material: "Aluminium" | "Polycarbonate";
-  collection: "Essential" | "Pro" | "Executive" | "Flagship" | "Signature" | "Original" | "Classic";
+  category: "Luggage" | "Bags" | "Bundles" | "Accessories";
+  sizeCategory: "Cabin" | "Check-In" | "Trunk" | "Bag" | "Accessory";
+  material: "Aluminium" | "Polycarbonate" | "Leather" | "Ripstop Nylon" | "Ballistic Nylon" | "Jacquard Webbing";
+  collection: "Essential" | "Pro" | "Executive" | "Flagship" | "Signature" | "Original" | "Classic" | "Accessories";
   volumeL: number;
   volumeGal: number;
   weightKg: number;
@@ -30,7 +30,7 @@ export interface ShopProduct {
   features: string[];
   swatches: ColorSwatch[];
   hasCustomPalette?: boolean;
-  badge?: "New" | "Customise" | "Bestseller" | "Signature" | "Duo Set";
+  badge?: "New" | "Customise" | "Bestseller" | "Signature" | "Duo Set" | "Bespoke";
 }
 
 export type CartItems = Record<string, number>;
@@ -476,7 +476,84 @@ export const CATALOG: ShopProduct[] = [
     swatches: PRO_FLAGSHIP_SWATCHES,
     hasCustomPalette: true,
   },
+
+  // 6. AMTRAV Real Accessories
+  {
+    sku: "accessory-pet-carrier",
+    name: "Pet Carrier with AMTRAV TRACE™",
+    subtitle: "Intelligent Lost, Theft & Asset Protection",
+    description: "Aerospace-grade aluminium pet carrier with built-in AMTRAV TRACE Smart Core for real-time GPS tracking, geofencing, theft alerts, and tamper detection. Airline approved, ventilated comfort, and Trolley Sleeve for effortless travel.",
+    image: "/images/trace/accessories/pet-carrier-clean.jpg",
+    price_minor: 35000,
+    currency: "USD",
+    available: 50,
+    category: "Accessories",
+    sizeCategory: "Accessory",
+    material: "Aluminium",
+    collection: "Accessories",
+    volumeL: 0,
+    volumeGal: 0,
+    weightKg: 2.4,
+    weightLbs: 5.3,
+    dimensionsCm: { height: 48, width: 30, depth: 32 },
+    dimensionsInches: { height: 18.9, width: 11.8, depth: 12.6 },
+    features: [
+      "AMTRAV TRACE Smart Core",
+      "4G LTE Cat-M1 & GNSS/GPS",
+      "Tamper Detection & Theft Mode",
+      "Breathable Ventilation Mesh",
+      "Soft Removable Cushion",
+      "Trolley Sleeve for Suitcase Handle",
+      "Airline Approved",
+      "Up to 14-Day Battery Life",
+    ],
+    swatches: [
+      { name: "Space Grey · Small (5kg)", color: "#6b7280", image: "/images/trace/accessories/pet-carrier-front.jpg" },
+      { name: "Space Grey · Medium (10kg)", color: "#4b5563", image: "/images/trace/accessories/pet-carrier-side.jpg" },
+      { name: "Space Grey · Large (15kg)", color: "#374151", image: "/images/trace/accessories/pet-carrier-clean.jpg" },
+    ],
+    badge: "New",
+  },
+  {
+    sku: "accessory-duffel-side-bag",
+    name: "Premium Duffel Side Bag",
+    subtitle: "Suede · Aluminium Accents · RFID Protected",
+    description: "Luxury suede duffel with signature aluminium stripe detailing, premium metal hardware, and RFID protection. Spacious main compartment, internal zipped pockets, and detachable shoulder strap for versatile carry.",
+    image: "/images/trace/duffel-side-bag-studio.jpg",
+    price_minor: 28000,
+    currency: "USD",
+    available: 80,
+    category: "Accessories",
+    sizeCategory: "Accessory",
+    material: "Leather",
+    collection: "Accessories",
+    volumeL: 18,
+    volumeGal: 4.8,
+    weightKg: 1.49,
+    weightLbs: 3.3,
+    dimensionsCm: { height: 26, width: 50, depth: 23 },
+    dimensionsInches: { height: 10.2, width: 19.7, depth: 9.1 },
+    features: [
+      "Luxury Suede Finish",
+      "Aluminium Signature Stripes",
+      "Premium Metal Hardware",
+      "RFID Protection",
+      "Spacious Main Compartment",
+      "Internal Zipped Pockets",
+      "Detachable Shoulder Strap",
+    ],
+    swatches: [
+      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/duffel-onyx-black.jpg" },
+      { name: "Cognac Brown", color: "#7a411f", image: "/images/trace/duffel-cognac-brown.jpg" },
+      { name: "Midnight Navy", color: "#1e2d42", image: "/images/trace/duffel-midnight-navy.jpg" },
+      { name: "Sand Beige", color: "#c2b69d", image: "/images/trace/duffel-sand-beige.jpg" },
+      { name: "Charcoal Grey", color: "#4b5563", image: "/images/trace/duffel-charcoal-grey.jpg" },
+    ],
+    badge: "New",
+  },
 ];
+
+export const ACCESSORIES_CATALOG: ShopProduct[] = CATALOG.filter((p) => p.category === "Accessories");
 
 export interface ResolvedCartProduct {
   sku: string;
@@ -485,8 +562,9 @@ export interface ResolvedCartProduct {
   image: string;
   selectedColorName: string;
   selectedColorHex: string;
-  selectedSize: "Cabin 55" | "Check-In 68" | "Both (Duo Set)" | "Standard";
+  selectedSize: "Cabin 55" | "Check-In 68" | "Both (Duo Set)" | "Standard" | "One Size";
   isCustomColor: boolean;
+  category?: "Luggage" | "Bags" | "Bundles" | "Accessories";
 }
 
 export function resolveProduct(compoundSku: string): ResolvedCartProduct {
@@ -499,7 +577,9 @@ export function resolveProduct(compoundSku: string): ResolvedCartProduct {
   const product = CATALOG.find((p) => p.sku === baseSku) || CATALOG[1];
 
   let selectedSize: ResolvedCartProduct["selectedSize"] = "Standard";
-  if (baseSku.includes("the-pair") || baseSku.includes("pair")) {
+  if (product.category === "Accessories") {
+    selectedSize = "One Size";
+  } else if (baseSku.includes("the-pair") || baseSku.includes("pair")) {
     selectedSize = "Both (Duo Set)";
   } else if (baseSku.includes("cabin")) {
     selectedSize = "Cabin 55";
@@ -520,6 +600,7 @@ export function resolveProduct(compoundSku: string): ResolvedCartProduct {
     selectedColorHex,
     selectedSize,
     isCustomColor,
+    category: product.category,
   };
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Wrench, Check, AlertCircle, Download, ArrowRight, MapPin } from "lucide-react";
+import { Check, AlertCircle, Download, ArrowRight, MapPin } from "lucide-react";
 
 export default function RepairsPage() {
   const [serialNumber, setSerialNumber] = useState("");

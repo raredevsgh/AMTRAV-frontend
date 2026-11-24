@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Package, Search, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, CheckCircle, AlertCircle } from "lucide-react";
 
 interface Milestone {
   step: string;

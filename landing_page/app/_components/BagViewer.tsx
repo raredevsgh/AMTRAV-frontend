@@ -5,10 +5,10 @@ import Image from "next/image";
 import { Rotate3d, Check, ChevronLeft, ChevronRight, Palette, ShoppingBag, Layers, User, Camera } from "lucide-react";
 import type * as Three from "three";
 import type { GLTF } from "three/addons/loaders/GLTFLoader.js";
-import { addToCart } from "@/lib/shop";
 import { useRegion } from "@/lib/region";
 import CartDrawer from "./CartDrawer";
 import ARProjectionModal from "./ARProjectionModal";
+import ReservationModal from "./ReservationModal";
 
 export type LuggageTier = "essential" | "pro" | "executive" | "flagship";
 export type LuggageType = "cabin" | "checkin" | "both";
@@ -518,16 +518,34 @@ export default function BagViewer({
     return Math.round(tierMultiplier[selectedTier] * sizeMultiplier[selectedLuggageType]);
   }, [selectedTier, selectedLuggageType]);
 
-  // Add to cart handler
-  const handleReserve = () => {
+  // Reservation modal state
+  const [reservationOpen, setReservationOpen] = useState(false);
+
+  // Reservation product definition
+  const reservationProduct = useMemo(() => {
     const sizeKey = selectedLuggageType === "both" ? "the-pair" : selectedLuggageType === "checkin" ? "checkin-68" : "cabin-55";
-    const colorName = isCustomColor ? `Custom Color` : selectedFinish.name;
-    const cleanHex = activeColor.replace("#", "");
-    const compoundSku = `${selectedTier}-${sizeKey}__${encodeURIComponent(colorName)}__${cleanHex}`;
-    addToCart(compoundSku, 1);
-    setAddedNotice(true);
-    setTimeout(() => setAddedNotice(false), 3000);
-    setCartOpen(true);
+    const sizeName = selectedLuggageType === "both"
+      ? "Cabin 55 + Check-In 68 Duo Set (100L)"
+      : selectedLuggageType === "checkin"
+      ? "Check-In 68 (65L)"
+      : "Cabin 55 (35L)";
+    const colorName = isCustomColor ? "Custom Color" : selectedFinish.name;
+    const tierName = selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1);
+
+    return {
+      sku: `${selectedTier}-${sizeKey}`,
+      name: `AMTRAV ${tierName} ${selectedLuggageType === "both" ? "The Pair" : selectedLuggageType === "checkin" ? "Check-In 68" : "Cabin 55"}`,
+      subtitle: `${tierName} Collection · Aerospace Precision`,
+      sizeName,
+      colorName,
+      colorHex: activeColor,
+      priceMinor: basePriceMinor,
+    };
+  }, [selectedTier, selectedLuggageType, selectedFinish, isCustomColor, activeColor, basePriceMinor]);
+
+  // Add to cart / reserve handler
+  const handleReserve = () => {
+    setReservationOpen(true);
   };
 
   return (
@@ -1116,6 +1134,17 @@ export default function BagViewer({
         colorHex={activeColor}
         metalness={selectedFinish.metalness}
         roughness={selectedFinish.roughness}
+      />
+
+      {/* Luggage Reservation & Delivery Modal */}
+      <ReservationModal
+        isOpen={reservationOpen}
+        onClose={() => setReservationOpen(false)}
+        product={reservationProduct}
+        onSuccess={() => {
+          setAddedNotice(true);
+          setTimeout(() => setAddedNotice(false), 3000);
+        }}
       />
     </div>
   );

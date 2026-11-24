@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Plane, QrCode } from "lucide-react";
+import { Check, Plane } from "lucide-react";
 import FaqList from "../_components/FaqList";
 import { GET_THE_APP_HREF } from "../_components/nav";
 import { useI18n } from "@/lib/i18n/context";

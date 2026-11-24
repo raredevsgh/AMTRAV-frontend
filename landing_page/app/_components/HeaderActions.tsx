@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "@/lib/shop";
+// useCart removed – cart icon is rendered via ShopLink
 import CurrencySwitcher from "./CurrencySwitcher";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { ShopLink } from "./SiteNav";

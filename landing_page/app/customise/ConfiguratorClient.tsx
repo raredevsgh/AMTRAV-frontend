@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -9,9 +9,9 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useRegion } from "@/lib/region";
-import { addToCart } from "@/lib/shop";
 import CartDrawer from "../_components/CartDrawer";
 import BagViewer, { type LuggageTier } from "../_components/BagViewer";
+import ReservationModal from "../_components/ReservationModal";
 
 interface ShellOption {
   id: string;
@@ -49,11 +49,11 @@ const SHELLS: ShellOption[] = [
 ];
 
 const TAG_COLORS = [
-  { id: "cognac", name: "Cognac Leather", hex: "#7a411f", priceUsdMinor: 0 },
-  { id: "black", name: "Onyx Black", hex: "#1a1a1a", priceUsdMinor: 0 },
-  { id: "papaya", name: "Papaya Orange", hex: "#e05a2b", priceUsdMinor: 3000 },
-  { id: "emerald", name: "Emerald Green", hex: "#1c5d3f", priceUsdMinor: 3000 },
-  { id: "ocean", name: "Ocean Cobalt", hex: "#133863", priceUsdMinor: 3000 },
+  { id: "cognac", name: "Cognac Leather", hex: "#7a411f", priceUsdMinor: 3500 },
+  { id: "black", name: "Onyx Black", hex: "#1a1a1a", priceUsdMinor: 3500 },
+  { id: "papaya", name: "Papaya Orange", hex: "#e05a2b", priceUsdMinor: 4500 },
+  { id: "emerald", name: "Emerald Green", hex: "#1c5d3f", priceUsdMinor: 4500 },
+  { id: "ocean", name: "Ocean Cobalt", hex: "#133863", priceUsdMinor: 4500 },
 ];
 
 const FOIL_TYPES = [
@@ -86,6 +86,7 @@ export default function ConfiguratorClient() {
   const [shellSizeFilter, setShellSizeFilter] = useState<"all" | "Cabin 55" | "Check-In 68" | "Both (The Pair)">("all");
   const [customShellHex, setCustomShellHex] = useState("#c5cbd3");
   const [isCustomShellColor, setIsCustomShellColor] = useState(false);
+  const [includeTag, setIncludeTag] = useState(true);
   const [selectedTag, setSelectedTag] = useState(TAG_COLORS[0]);
   const [monogramText, setMonogramText] = useState("AMT");
   const [monogramFoil, setMonogramFoil] = useState(FOIL_TYPES[1]);
@@ -93,35 +94,50 @@ export default function ConfiguratorClient() {
   const [selectedWheels, setSelectedWheels] = useState(WHEEL_SETS[0]);
 
   const [cartOpen, setCartOpen] = useState(false);
+  const [reservationOpen, setReservationOpen] = useState(false);
 
   // Total price computation
   const totalMinor =
     selectedShell.priceUsdMinor +
-    selectedTag.priceUsdMinor +
+    (includeTag ? selectedTag.priceUsdMinor : 0) +
     selectedHandle.priceUsdMinor +
     selectedWheels.priceUsdMinor;
+
+  const configuredProductForReservation = useMemo(() => {
+    const tierPrefix = selectedShell.tier.toLowerCase();
+    const sizeSuffix = selectedShell.size.includes("Pair")
+      ? "the-pair"
+      : selectedShell.size === "Cabin 55"
+      ? "cabin-55"
+      : selectedShell.size === "Check-In 68"
+      ? "checkin-68"
+      : "cabin-55";
+    const baseSku = `${tierPrefix}-${sizeSuffix}`;
+    const activeColorHex = isCustomShellColor ? customShellHex : selectedShell.finishColor;
+    const colorDesc = isCustomShellColor ? `Bespoke Custom (${customShellHex})` : selectedShell.finish;
+
+    return {
+      sku: baseSku,
+      name: `AMTRAV ${selectedShell.tier} ${selectedShell.size} (Custom Build)`,
+      subtitle: `${selectedShell.name} · Custom Configuration`,
+      sizeName: selectedShell.size,
+      colorName: colorDesc,
+      colorHex: activeColorHex,
+      priceMinor: totalMinor - (includeTag ? selectedTag.priceUsdMinor : 0),
+      initialTagAddon: includeTag,
+      initialTagInitials: monogramText || "AMT",
+      initialTagFoil: monogramFoil.name,
+      initialTagColor: selectedTag.name,
+      initialTagHex: selectedTag.hex,
+    };
+  }, [selectedShell, isCustomShellColor, customShellHex, totalMinor, includeTag, selectedTag, monogramText, monogramFoil]);
 
   const handleAddCustomToBag = () => {
     if (!isEcommerce) {
       router.push("/services/stores");
       return;
     }
-    // Map to base SKU in catalog
-    const baseSku = selectedShell.size.includes("Pair")
-      ? "the-pair"
-      : selectedShell.size === "Cabin 55"
-      ? "cabin-55"
-      : selectedShell.size === "Check-In 68"
-      ? "checkin-68"
-      : "trunk-90";
-
-    const activeColorHex = isCustomShellColor ? customShellHex : selectedShell.finishColor;
-    const cleanHex = activeColorHex.replace("#", "");
-    const colorDesc = isCustomShellColor ? `Bespoke Custom (${customShellHex})` : selectedShell.finish;
-    const compoundSku = `${baseSku}__${encodeURIComponent(`${selectedShell.name} · ${colorDesc} [Tag: ${monogramText || "AMT"}]`)}__${cleanHex}`;
-
-    addToCart(compoundSku, 1);
-    setCartOpen(true);
+    setReservationOpen(true);
   };
 
   return (
@@ -190,38 +206,77 @@ export default function ConfiguratorClient() {
             />
 
             {/* Monogram Overlay Badge Preview */}
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface border border-divider p-4">
-                <div className="flex items-center gap-3.5">
-                  <div
-                    className="relative flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/20 shadow-md font-serif font-bold text-lg"
-                    style={{
-                      backgroundColor: selectedTag.hex,
-                      color:
-                        monogramFoil.id === "gold"
-                          ? "#f3d178"
-                          : monogramFoil.id === "silver"
-                          ? "#e2e8f0"
-                          : "rgba(0,0,0,0.45)",
-                    }}
-                  >
-                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-black/40 border border-white/20" />
-                    <span className="drop-shadow-sm tracking-wider">{monogramText || "AMT"}</span>
+            <div className="mt-4 rounded-2xl bg-surface border border-divider p-4">
+              {includeTag ? (
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3.5">
+                    <div
+                      className="relative flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/20 shadow-md font-serif font-bold text-lg"
+                      style={{
+                        backgroundColor: selectedTag.hex,
+                        color:
+                          monogramFoil.id === "gold"
+                            ? "#f3d178"
+                            : monogramFoil.id === "silver"
+                            ? "#e2e8f0"
+                            : "rgba(0,0,0,0.45)",
+                      }}
+                    >
+                      <span className="absolute -top-1 left-1/2 -translate-x-1/2 size-1.5 rounded-full bg-black/40 border border-white/20" />
+                      <span className="drop-shadow-sm tracking-wider">{monogramText || "AMT"}</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] uppercase font-bold tracking-wider text-mid">
+                          Personalized Luggage Tag (Add-On Accessory)
+                        </span>
+                        <span className="rounded-full bg-brand/10 text-brand px-2 py-0.5 text-[10px] font-mono font-bold">
+                          +{formatPrice(selectedTag.priceUsdMinor)}
+                        </span>
+                      </div>
+                      <p className="text-small font-semibold text-navy">
+                        {selectedTag.name} · {monogramFoil.name}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-[11px] uppercase font-bold tracking-wider text-mid">
-                      Personalized Luggage Tag
-                    </span>
-                    <p className="text-small font-semibold text-navy">
-                      {selectedTag.name} · {monogramFoil.name}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="text-right">
-                  <span className="text-caption font-mono text-mid">Initial Stamp</span>
-                  <p className="text-small font-bold text-navy uppercase tracking-widest">{monogramText || "AMT"}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <span className="text-caption font-mono text-mid">Initial Stamp</span>
+                      <p className="text-small font-bold text-navy uppercase tracking-widest">{monogramText || "AMT"}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIncludeTag(false)}
+                      className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-colors ml-1"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-[11px] uppercase font-bold tracking-wider text-mid block">
+                      Optional Luggage Tag Add-On
+                    </span>
+                    <span className="text-small font-semibold text-navy">
+                      No personalized luggage tag selected
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIncludeTag(true);
+                      setCurrentStep(2);
+                    }}
+                    className="inline-flex items-center justify-center rounded-full bg-navy px-4 py-1.5 text-caption font-bold text-white hover:bg-navy-deep active:scale-95 transition-all shadow-xs"
+                  >
+                    + Add Leather Tag (+{formatPrice(selectedTag.priceUsdMinor)})
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right: Step Options Panel (5 cols) */}
@@ -339,86 +394,120 @@ export default function ConfiguratorClient() {
                   <span className="text-caption font-mono text-sky uppercase">Step 2 of 4</span>
                   <h3 className="text-h3-m font-bold text-navy">Leather Tag & Monogram</h3>
                   <p className="text-caption text-mid mt-0.5">
-                    Italian leather luggage tag embossed with your initials.
+                    Optional Italian calfskin luggage tag with custom monogram debossing.
                   </p>
                 </div>
 
-                {/* Monogram Input */}
-                <div>
-                  <label className="block text-caption-m font-semibold uppercase text-mid mb-1">
-                    Your Initials (Up to 3 letters)
+                {/* Include Tag Toggle Card */}
+                <div className="flex items-center justify-between rounded-2xl bg-surface border border-divider p-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-small font-bold text-navy">
+                        Include Leather Luggage Tag
+                      </span>
+                      <span className="rounded-full bg-brand/10 text-brand px-2 py-0.5 text-[10px] font-mono font-bold">
+                        +{formatPrice(selectedTag.priceUsdMinor)}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-mid mt-0.5">
+                      Handcrafted in Florence with solid titanium screw clasp.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={includeTag}
+                      onChange={(e) => setIncludeTag(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-navy"></div>
                   </label>
-                  <input
-                    type="text"
-                    maxLength={3}
-                    value={monogramText}
-                    onChange={(e) => setMonogramText(e.target.value.toUpperCase())}
-                    placeholder="AMT"
-                    className="w-full rounded-xl border border-divider px-4 py-2.5 text-center font-serif text-xl font-bold tracking-widest text-navy uppercase focus:border-navy focus:outline-none"
-                  />
                 </div>
 
-                {/* Foil Finish */}
-                <div>
-                  <label className="block text-caption-m font-semibold uppercase text-mid mb-2">
-                    Embossing Foil
-                  </label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {FOIL_TYPES.map((foil) => {
-                      const isSelected = monogramFoil.id === foil.id;
-                      return (
-                        <button
-                          key={foil.id}
-                          type="button"
-                          onClick={() => setMonogramFoil(foil)}
-                          className={`flex items-center justify-between rounded-xl border p-3 text-small text-left transition-all ${
-                            isSelected
-                              ? "border-navy bg-navy text-white font-semibold shadow-xs"
-                              : "border-divider bg-white text-navy hover:bg-surface"
-                          }`}
-                        >
-                          <span>{foil.name}</span>
-                          {isSelected && <Check className="size-4" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                {includeTag ? (
+                  <>
+                    {/* Monogram Input */}
+                    <div>
+                      <label className="block text-caption-m font-semibold uppercase text-mid mb-1">
+                        Your Initials (Up to 3 letters)
+                      </label>
+                      <input
+                        type="text"
+                        maxLength={3}
+                        value={monogramText}
+                        onChange={(e) => setMonogramText(e.target.value.toUpperCase())}
+                        placeholder="AMT"
+                        className="w-full rounded-xl border border-divider px-4 py-2.5 text-center font-serif text-xl font-bold tracking-widest text-navy uppercase focus:border-navy focus:outline-none"
+                      />
+                    </div>
 
-                {/* Tag Colorway */}
-                <div>
-                  <label className="block text-caption-m font-semibold uppercase text-mid mb-2">
-                    Leather Color
-                  </label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {TAG_COLORS.map((tag) => {
-                      const isSelected = selectedTag.id === tag.id;
-                      return (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          onClick={() => setSelectedTag(tag)}
-                          className={`flex items-center justify-between rounded-xl border p-3 text-left transition-all ${
-                            isSelected
-                              ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
-                              : "border-divider bg-white text-navy hover:bg-surface"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <span
-                              className="size-4.5 rounded-full border border-black/20"
-                              style={{ backgroundColor: tag.hex }}
-                            />
-                            <span className="text-small">{tag.name}</span>
-                          </div>
-                          <span className="text-caption font-bold text-navy">
-                            {tag.priceUsdMinor > 0 ? `+${formatPrice(tag.priceUsdMinor)}` : "Complimentary"}
-                          </span>
-                        </button>
-                      );
-                    })}
+                    {/* Foil Finish */}
+                    <div>
+                      <label className="block text-caption-m font-semibold uppercase text-mid mb-2">
+                        Embossing Foil
+                      </label>
+                      <div className="grid grid-cols-1 gap-2">
+                        {FOIL_TYPES.map((foil) => {
+                          const isSelected = monogramFoil.id === foil.id;
+                          return (
+                            <button
+                              key={foil.id}
+                              type="button"
+                              onClick={() => setMonogramFoil(foil)}
+                              className={`flex items-center justify-between rounded-xl border p-3 text-small text-left transition-all ${
+                                isSelected
+                                  ? "border-navy bg-navy text-white font-semibold shadow-xs"
+                                  : "border-divider bg-white text-navy hover:bg-surface"
+                              }`}
+                            >
+                              <span>{foil.name}</span>
+                              {isSelected && <Check className="size-4" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Tag Colorway */}
+                    <div>
+                      <label className="block text-caption-m font-semibold uppercase text-mid mb-2">
+                        Leather Color
+                      </label>
+                      <div className="grid grid-cols-1 gap-2">
+                        {TAG_COLORS.map((tag) => {
+                          const isSelected = selectedTag.id === tag.id;
+                          return (
+                            <button
+                              key={tag.id}
+                              type="button"
+                              onClick={() => setSelectedTag(tag)}
+                              className={`flex items-center justify-between rounded-xl border p-3 text-left transition-all ${
+                                isSelected
+                                  ? "border-navy bg-navy/5 font-semibold text-navy ring-1 ring-navy"
+                                  : "border-divider bg-white text-navy hover:bg-surface"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <span
+                                  className="size-4.5 rounded-full border border-black/20"
+                                  style={{ backgroundColor: tag.hex }}
+                                />
+                                <span className="text-small">{tag.name}</span>
+                              </div>
+                              <span className="text-caption font-bold text-navy">
+                                +{formatPrice(tag.priceUsdMinor)}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-divider p-6 text-center text-mid text-caption">
+                    Luggage tag omitted. Your case will be delivered with its native aerospace aesthetic. Toggle ON above to personalize.
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -547,10 +636,10 @@ export default function ConfiguratorClient() {
                 className="flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-small font-semibold text-white shadow-md hover:bg-navy-deep active:scale-95 transition-all"
               >
                 <ShoppingBag className="size-4" />
-                <span>{isEcommerce ? "Add Custom Build to Bag" : "Store Appointment"}</span>
+                <span>{isEcommerce ? "Reserve Custom Build" : "Store Appointment"}</span>
               </button>
               <p className="text-[10px] text-center text-mid">
-                Includes Lifetime Guarantee & complimentary initial embossing.
+                Includes Lifetime Functional Guarantee & priority atelier allocation.
               </p>
             </div>
           </div>
@@ -558,6 +647,16 @@ export default function ConfiguratorClient() {
       </div>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {/* Custom Build Reservation Modal */}
+      <ReservationModal
+        isOpen={reservationOpen}
+        onClose={() => setReservationOpen(false)}
+        product={configuredProductForReservation}
+        onSuccess={() => {
+          setCartOpen(true);
+        }}
+      />
     </div>
   );
 }
