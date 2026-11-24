@@ -13,7 +13,7 @@ import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import FilmModal from "./_components/FilmModal";
 import LuxurySpecs from "./_components/LuxurySpecs";
 import InteractiveBagHeroSimulation from "./_components/InteractiveBagHeroSimulation";
-import { GET_THE_APP_HREF } from "./_components/nav";
+import { AppleAppStoreBadge, GooglePlayBadge } from "./_components/AppStoreBadges";
 import { useI18n } from "@/lib/i18n/context";
 
 const ROUTES = [
@@ -62,24 +62,31 @@ function Hero({ onWatchFilm }: { onWatchFilm: () => void }) {
           {t("landing.heroSubhead", "Amortrav bags pair to your account in seconds, stay flight-safe on the plane and keep their papers right in the app.")}
         </p>
         <div data-enter className="flex w-full flex-col gap-3 xl:hidden">
-          <Button href={GET_THE_APP_HREF} label={t("landing.heroGetApp", "Get the app")} style="sky" size="m" arrow className="w-full" />
-          <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="m" className="w-full" />
-          <button
-            type="button"
-            onClick={onWatchFilm}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
-          >
-            <Play className="size-4 fill-white" />
-            <span>{t("landing.watch", "Watch the film")}</span>
-          </button>
+          {/* Authentic App Store & Google Play Download Badges */}
+          <div className="flex w-full items-center justify-between gap-2.5 sm:justify-start">
+            <AppleAppStoreBadge variant="hero" size="sm" className="flex-1 sm:flex-initial" />
+            <GooglePlayBadge variant="hero" size="sm" className="flex-1 sm:flex-initial" />
+          </div>
+          <div className="flex w-full gap-2.5">
+            <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="m" className="flex-1" />
+            <button
+              type="button"
+              onClick={onWatchFilm}
+              className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
+            >
+              <Play className="size-4 fill-white" />
+              <span>{t("landing.watch", "Watch film")}</span>
+            </button>
+          </div>
 
           {/* Real 3D Bag Interactive Simulation for Mobile */}
           <div className="w-full pt-3">
             <InteractiveBagHeroSimulation />
           </div>
         </div>
-        <div data-enter className="hidden w-full flex-wrap items-center gap-3 xl:flex">
-          <Button href={GET_THE_APP_HREF} label={t("landing.heroGetApp", "Get the app")} style="sky" size="l" arrow />
+        <div data-enter className="hidden w-full flex-wrap items-center gap-3.5 xl:flex">
+          <AppleAppStoreBadge variant="hero" size="md" />
+          <GooglePlayBadge variant="hero" size="md" />
           <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="l" />
           <button
             type="button"

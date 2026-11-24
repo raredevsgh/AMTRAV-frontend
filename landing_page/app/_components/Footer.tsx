@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
+import { AppleAppStoreBadge, GooglePlayBadge } from "./AppStoreBadges";
 
 type FooterLink = { label: string; href?: string };
 type FooterGroup = { title: string; links: readonly FooterLink[] };
@@ -192,6 +193,16 @@ export default function Footer() {
             <Image src="/img/logo.png" alt="AMORTRAV home" width={140} height={29} className="h-auto w-[140px]" />
           </Link>
           <p className="text-caption-m text-mid">{t("footer.line", "Smart luggage, paired to your phone.")}</p>
+
+          <div className="mt-2 flex flex-col gap-2">
+            <span className="text-[11px] font-bold tracking-wide text-navy uppercase">
+              Download Companion App
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <AppleAppStoreBadge variant="dark" size="sm" />
+              <GooglePlayBadge variant="dark" size="sm" />
+            </div>
+          </div>
         </div>
         {groups.map(({ title, links }) => (
           <nav key={title} data-reveal aria-label={`Footer ${title}`} className="hidden xl:block">

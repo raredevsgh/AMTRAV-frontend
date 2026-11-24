@@ -4,6 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GET_THE_APP_HREF } from "./nav";
+import { AppleAppStoreBadge, GooglePlayBadge } from "./AppStoreBadges";
 import { useI18n } from "@/lib/i18n/context";
 
 // Figma "App signup / Desktop" (2020:591) and "/ Mobile" (2020:619): email capture shared by all
@@ -217,6 +218,17 @@ export default function AppSignup() {
           {statusMessage}
         </p>
       )}
+
+      {/* App Store & Google Play Badges */}
+      <div data-reveal className="relative mt-2 flex flex-col items-center gap-2.5">
+        <span className="text-[12px] font-medium text-blue-pale/80">
+          Also available on mobile platforms
+        </span>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <AppleAppStoreBadge variant="hero" size="sm" />
+          <GooglePlayBadge variant="hero" size="sm" />
+        </div>
+      </div>
     </section>
   );
 }

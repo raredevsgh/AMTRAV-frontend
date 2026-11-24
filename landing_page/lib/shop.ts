@@ -524,6 +524,8 @@ export const CATALOG: ShopProduct[] = [
       { name: "Space Grey · Small (5kg)", color: "#6b7280", image: "/images/trace/accessories/pet-carrier-clean.jpg" },
       { name: "Space Grey · Medium (10kg)", color: "#4b5563", image: "/images/trace/accessories/pet-carrier-clean.jpg" },
       { name: "Space Grey · Large (15kg)", color: "#374151", image: "/images/trace/accessories/pet-carrier-clean.jpg" },
+      { name: "Stealth Obsidian · Small (5kg)", color: "#1a1a1a", image: "/images/trace/accessories/pet-carrier-black.jpg" },
+      { name: "Stealth Obsidian · Medium (10kg)", color: "#111827", image: "/images/trace/accessories/pet-carrier-black.jpg" },
     ],
     badge: "Smart Carrier",
   },
@@ -593,8 +595,8 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/packing-cubes.jpg" },
-      { name: "Slate Graphite", color: "#2b2d2f", image: "/images/trace/accessories/collection/packing-cubes.jpg" },
-      { name: "Sandstone Khaki", color: "#c2b69d", image: "/images/trace/accessories/collection/packing-cubes.jpg" },
+      { name: "Slate Graphite", color: "#2b2d2f", image: "/images/trace/accessories/collection/packing-cubes-graphite.jpg" },
+      { name: "Sandstone Khaki", color: "#c2b69d", image: "/images/trace/accessories/collection/packing-cubes-khaki.jpg" },
     ],
     badge: "Bestseller",
   },
@@ -625,7 +627,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/luggage-cover.jpg" },
-      { name: "Stealth Obsidian", color: "#111827", image: "/images/trace/accessories/collection/luggage-cover.jpg" },
+      { name: "Stealth Obsidian", color: "#111827", image: "/images/trace/accessories/collection/luggage-cover-obsidian.jpg" },
     ],
     badge: "Essential",
   },
@@ -656,7 +658,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/toiletry-organiser.jpg" },
-      { name: "Charcoal Grey", color: "#4b5563", image: "/images/trace/accessories/collection/toiletry-organiser.jpg" },
+      { name: "Charcoal Grey", color: "#4b5563", image: "/images/trace/accessories/collection/toiletry-organiser-charcoal.jpg" },
     ],
   },
   {
@@ -686,7 +688,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/tech-organiser.jpg" },
-      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/tech-organiser.jpg" },
+      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/tech-organiser-black.jpg" },
     ],
   },
   {
@@ -716,7 +718,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/shoe-laundry-bags.jpg" },
-      { name: "Heather Grey", color: "#6b7280", image: "/images/trace/accessories/collection/shoe-laundry-bags.jpg" },
+      { name: "Heather Grey", color: "#6b7280", image: "/images/trace/accessories/collection/shoe-laundry-bags-grey.jpg" },
     ],
   },
   {
@@ -746,8 +748,8 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/passport-wallet.jpg" },
-      { name: "Cognac Brown", color: "#7a411f", image: "/images/trace/accessories/collection/passport-wallet.jpg" },
-      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/passport-wallet.jpg" },
+      { name: "Cognac Brown", color: "#7a411f", image: "/images/trace/accessories/collection/passport-wallet-cognac.jpg" },
+      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/passport-wallet-black.jpg" },
     ],
   },
   {
@@ -776,9 +778,9 @@ export const CATALOG: ShopProduct[] = [
       "Complimentary Atelier Monogram Debossing",
     ],
     swatches: [
-      { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/tags-personalisation.jpg" },
       { name: "Cognac Brown", color: "#7a411f", image: "/images/trace/accessories/collection/tags-personalisation.jpg" },
-      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/tags-personalisation.jpg" },
+      { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/tags-personalisation-navy.jpg" },
+      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/tags-personalisation-black.jpg" },
     ],
     badge: "Bespoke",
   },
@@ -809,7 +811,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/foldable-day-bag.jpg" },
-      { name: "Olive Green", color: "#3e533e", image: "/images/trace/accessories/collection/foldable-day-bag.jpg" },
+      { name: "Olive Green", color: "#3e533e", image: "/images/trace/accessories/collection/foldable-day-bag-olive.jpg" },
     ],
   },
 
@@ -841,7 +843,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Brushed Silver", color: "#c5cbd3", image: "/images/trace/accessories/collection/jewellery-case.jpg" },
-      { name: "Champagne Gold", color: "#d8b888", image: "/images/trace/accessories/collection/jewellery-case.jpg" },
+      { name: "Champagne Gold", color: "#d8b888", image: "/images/trace/accessories/collection/jewellery-case-gold.jpg" },
     ],
     badge: "Executive",
   },
@@ -872,7 +874,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Brushed Titanium", color: "#c5cbd3", image: "/images/trace/accessories/collection/watch-case.jpg" },
-      { name: "Stealth Obsidian", color: "#1a1a1a", image: "/images/trace/accessories/collection/watch-case.jpg" },
+      { name: "Stealth Obsidian", color: "#1a1a1a", image: "/images/trace/accessories/collection/watch-case-obsidian.jpg" },
     ],
     badge: "Biometric",
   },
@@ -903,6 +905,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Brushed Silver", color: "#c5cbd3", image: "/images/trace/accessories/collection/valuables-case.jpg" },
+      { name: "Stealth Obsidian", color: "#1a1a1a", image: "/images/trace/accessories/collection/valuables-case-obsidian.jpg" },
     ],
     badge: "Biometric",
   },
@@ -933,7 +936,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/cross-body-bag.jpg" },
-      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/cross-body-bag.jpg" },
+      { name: "Onyx Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/cross-body-bag-black.jpg" },
     ],
   },
   {
@@ -963,7 +966,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/luxury-pouch.jpg" },
-      { name: "Cognac Brown", color: "#7a411f", image: "/images/trace/accessories/collection/luxury-pouch.jpg" },
+      { name: "Cognac Brown", color: "#7a411f", image: "/images/trace/accessories/collection/luxury-pouch-cognac.jpg" },
     ],
   },
   {
@@ -993,7 +996,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Brushed Silver", color: "#c5cbd3", image: "/images/trace/accessories/collection/vanity-case.jpg" },
-      { name: "Rose Titanium", color: "#d8b888", image: "/images/trace/accessories/collection/vanity-case.jpg" },
+      { name: "Rose Titanium", color: "#d8b888", image: "/images/trace/accessories/collection/vanity-case-rose.jpg" },
     ],
   },
   {
@@ -1023,7 +1026,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy & Silver", color: "#1d3356", image: "/images/trace/accessories/collection/sunglasses-case.jpg" },
-      { name: "Obsidian Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/sunglasses-case.jpg" },
+      { name: "Obsidian Black", color: "#1a1a1a", image: "/images/trace/accessories/collection/sunglasses-case-black.jpg" },
     ],
   },
   {
@@ -1053,7 +1056,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Brushed Silver Aluminium", color: "#c5cbd3", image: "/images/trace/accessories/collection/executive-briefcase.jpg" },
-      { name: "Stealth Obsidian", color: "#1a1a1a", image: "/images/trace/accessories/collection/executive-briefcase.jpg" },
+      { name: "Stealth Obsidian", color: "#1a1a1a", image: "/images/trace/accessories/collection/executive-briefcase-black.jpg" },
     ],
     badge: "Executive",
   },
@@ -1086,7 +1089,7 @@ export const CATALOG: ShopProduct[] = [
     ],
     swatches: [
       { name: "Midnight Navy", color: "#1d3356", image: "/images/trace/accessories/collection/bundle-packing-essentials.jpg" },
-      { name: "Slate Graphite", color: "#2b2d2f", image: "/images/trace/accessories/collection/bundle-packing-essentials.jpg" },
+      { name: "Slate Graphite", color: "#2b2d2f", image: "/images/trace/accessories/collection/bundle-packing-essentials-graphite.jpg" },
     ],
     badge: "Bundle & Save",
   },

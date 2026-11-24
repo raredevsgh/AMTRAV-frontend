@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check, Plane } from "lucide-react";
 import FaqList from "../_components/FaqList";
-import { GET_THE_APP_HREF } from "../_components/nav";
+import { AppleAppStoreBadge, GooglePlayBadge } from "../_components/AppStoreBadges";
 import { useI18n } from "@/lib/i18n/context";
 
 const faqSchema = {
@@ -288,8 +288,6 @@ export function AmortravCompanionAppPhone({ className = "" }: { className?: stri
 }
 
 function HowItWorksHero() {
-  const { t } = useI18n();
-
   return (
     <section className="relative overflow-clip rounded-3xl bg-white border border-divider p-6 sm:p-10 xl:p-14 shadow-xs">
       <div className="grid grid-cols-1 items-center gap-8 xl:grid-cols-2 xl:gap-14">
@@ -315,20 +313,15 @@ function HowItWorksHero() {
             An engraved metal claim card and our streamlined companion app eliminate Bluetooth pairing dances. No complex setup menus—just pure Swiss-German precision.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-1 w-full sm:w-auto">
-            {/* Primary Action Button */}
-            <Link
-              href={GET_THE_APP_HREF}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-md hover:bg-[#0047AD] active:scale-95 transition-all text-center"
-            >
-              <span>{t("landing.heroGetApp", "Get the app")}</span>
-              <span aria-hidden="true">&rarr;</span>
-            </Link>
+          <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
+            {/* Authentic App Store & Play Store Badges */}
+            <AppleAppStoreBadge variant="dark" size="md" />
+            <GooglePlayBadge variant="dark" size="md" />
 
             {/* Secondary Action Link */}
             <a
               href="#steps"
-              className="inline-flex h-12 items-center gap-2 rounded-full border-2 border-[#0B1B3D] bg-white px-6 text-[15px] font-bold text-[#0B1B3D] shadow-xs hover:bg-[#0B1B3D] hover:text-white active:scale-95 transition-all group"
+              className="inline-flex h-12 items-center gap-2 rounded-xl border border-divider bg-white px-5 text-[14px] font-bold text-navy shadow-xs hover:bg-surface hover:text-[#0047AD] active:scale-95 transition-all group"
             >
               <span>See the steps</span>
               <svg
