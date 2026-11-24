@@ -67,7 +67,7 @@ const FAQ = [
 ] as const;
 
 // Authentic AMTRAV iOS Mobile Companion App (Screenshot 4: Good morning, Ama)
-function AmortravCompanionAppPhone({ className = "" }: { className?: string }) {
+export function AmortravCompanionAppPhone({ className = "" }: { className?: string }) {
   return (
     <div
       className={`relative mx-auto w-full max-w-[320px] sm:max-w-[340px] rounded-[36px] sm:rounded-[40px] border-[6px] sm:border-[7px] border-[#0B1B3D] bg-[#F6F7F9] p-3 shadow-2xl text-navy select-none overflow-hidden ${className}`}
