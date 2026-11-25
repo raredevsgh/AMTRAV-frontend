@@ -12,8 +12,6 @@ import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import FilmModal from "./_components/FilmModal";
 import LuxurySpecs from "./_components/LuxurySpecs";
-import InteractiveBagHeroSimulation from "./_components/InteractiveBagHeroSimulation";
-import { AppleAppStoreBadge, GooglePlayBadge } from "./_components/AppStoreBadges";
 import { useI18n } from "@/lib/i18n/context";
 
 const ROUTES = [
@@ -61,33 +59,52 @@ function Hero({ onWatchFilm }: { onWatchFilm: () => void }) {
         <p data-enter className="text-small text-blue-pale xl:w-[500px] xl:text-lead xl:tracking-normal">
           {t("landing.heroSubhead", "Amortrav bags pair to your account in seconds, stay flight-safe on the plane and keep their papers right in the app.")}
         </p>
-        <div data-enter className="flex w-full flex-col gap-3 xl:hidden">
-          {/* Authentic App Store & Google Play Download Badges */}
-          <div className="flex w-full items-center justify-between gap-2.5 sm:justify-start">
-            <AppleAppStoreBadge variant="hero" size="sm" className="flex-1 sm:flex-initial" />
-            <GooglePlayBadge variant="hero" size="sm" className="flex-1 sm:flex-initial" />
-          </div>
-          <div className="flex w-full gap-2.5">
-            <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="m" className="flex-1" />
+        {/* Mobile Action Buttons: Strict HCI Hierarchy (Primary + Secondary only) */}
+        <div data-enter className="flex w-full flex-col gap-4 xl:hidden">
+          <div className="flex w-full items-center gap-3">
+            <Button
+              href="/shop"
+              label={t("nav.range", "Explore the Range")}
+              style="sky"
+              size="m"
+              arrow
+              className="flex-1 text-center"
+            />
             <button
               type="button"
               onClick={onWatchFilm}
-              className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
+              className="flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
             >
               <Play className="size-4 fill-white" />
               <span>{t("landing.watch", "Watch film")}</span>
             </button>
           </div>
 
-          {/* Real 3D Bag Interactive Simulation for Mobile */}
-          <div className="w-full pt-3">
-            <InteractiveBagHeroSimulation />
+          {/* Clean Mobile Hero Visual - Luxury Photo Presentation without Clutter */}
+          <div className="relative mt-2 w-full aspect-[4/3] max-w-[380px] sm:max-w-[420px] mx-auto overflow-hidden rounded-[24px] border-4 border-white bg-navy-deep shadow-hero transition-transform duration-500 ease-out-soft">
+            <div className="absolute inset-0 bg-[#bcd5fa]">
+              <Image
+                src="/img/hero-photo.png"
+                alt="A traveller sitting on his AMORTRAV suitcase"
+                fill
+                sizes="(max-width: 640px) 90vw, 420px"
+                className="object-cover"
+                priority
+              />
+            </div>
+            <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[rgba(0,31,77,0.45)] pointer-events-none" />
           </div>
         </div>
-        <div data-enter className="hidden w-full flex-wrap items-center gap-3.5 xl:flex">
-          <AppleAppStoreBadge variant="hero" size="md" />
-          <GooglePlayBadge variant="hero" size="md" />
-          <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="l" />
+
+        {/* Desktop Action Buttons: Strict HCI Hierarchy (Primary + Secondary only) */}
+        <div data-enter className="hidden w-full items-center gap-4 xl:flex">
+          <Button
+            href="/shop"
+            label={t("nav.range", "Explore the Range")}
+            style="sky"
+            size="l"
+            arrow
+          />
           <button
             type="button"
             onClick={onWatchFilm}
