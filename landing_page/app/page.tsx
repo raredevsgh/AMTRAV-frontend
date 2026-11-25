@@ -60,40 +60,23 @@ function Hero({ onWatchFilm }: { onWatchFilm: () => void }) {
           {t("landing.heroSubhead", "Amortrav bags pair to your account in seconds, stay flight-safe on the plane and keep their papers right in the app.")}
         </p>
         {/* Mobile Action Buttons: Strict HCI Hierarchy (Primary + Secondary only) */}
-        <div data-enter className="flex w-full flex-col gap-4 xl:hidden">
-          <div className="flex w-full items-center gap-3">
-            <Button
-              href="/shop"
-              label={t("nav.range", "Explore the Range")}
-              style="sky"
-              size="m"
-              arrow
-              className="flex-1 text-center"
-            />
-            <button
-              type="button"
-              onClick={onWatchFilm}
-              className="flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
-            >
-              <Play className="size-4 fill-white" />
-              <span>{t("landing.watch", "Watch film")}</span>
-            </button>
-          </div>
-
-          {/* Clean Mobile Hero Visual - Luxury Photo Presentation without Clutter */}
-          <div className="relative mt-2 w-full aspect-[4/3] max-w-[380px] sm:max-w-[420px] mx-auto overflow-hidden rounded-[24px] border-4 border-white bg-navy-deep shadow-hero transition-transform duration-500 ease-out-soft">
-            <div className="absolute inset-0 bg-[#bcd5fa]">
-              <Image
-                src="/img/hero-photo.png"
-                alt="A traveller sitting on his AMORTRAV suitcase"
-                fill
-                sizes="(max-width: 640px) 90vw, 420px"
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[rgba(0,31,77,0.45)] pointer-events-none" />
-          </div>
+        <div data-enter className="flex w-full items-center gap-3 xl:hidden">
+          <Button
+            href="/shop"
+            label={t("nav.range", "Explore the Range")}
+            style="sky"
+            size="m"
+            arrow
+            className="flex-1 text-center"
+          />
+          <button
+            type="button"
+            onClick={onWatchFilm}
+            className="flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
+          >
+            <Play className="size-4 fill-white" />
+            <span>{t("landing.watch", "Watch film")}</span>
+          </button>
         </div>
 
         {/* Desktop Action Buttons: Strict HCI Hierarchy (Primary + Secondary only) */}
