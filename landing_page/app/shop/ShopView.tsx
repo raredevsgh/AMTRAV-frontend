@@ -573,7 +573,7 @@ function AccessoryCard({
   return (
     <article className="group flex flex-col justify-between rounded-3xl bg-white p-5 shadow-card transition-all duration-300 hover:shadow-xl border border-divider">
       {/* Real Product Image */}
-      <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-surface/50 transition-colors group-hover:bg-surface/80">
+      <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-white">
         <AccessoryVisual
           image={product.image}
           swatchImage={selectedSwatch.image}

@@ -149,8 +149,13 @@ export default function CartDrawer({
                 const item = resolveProduct(sku);
                 return (
                   <div key={sku} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-line bg-surface">
-                      <Image src={item.image} alt={item.name} fill className="object-contain p-2" />
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-line bg-white p-1.5">
+                      <Image
+                        src={item.image.startsWith("/images/") && !item.image.includes("?") ? `${item.image}?v=20261125b` : item.image}
+                        alt={item.name}
+                        fill
+                        className="object-contain p-1.5"
+                      />
                     </div>
                     <div className="flex flex-1 flex-col justify-between min-w-0">
                       <div className="flex items-start justify-between gap-2">

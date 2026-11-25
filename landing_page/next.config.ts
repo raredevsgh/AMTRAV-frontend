@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [75],
+    localPatterns: [
+      {
+        pathname: "/images/**",
+      },
+      {
+        pathname: "/icons/**",
+      },
+      {
+        pathname: "/img/**",
+      },
+    ],
   },
 };
 
