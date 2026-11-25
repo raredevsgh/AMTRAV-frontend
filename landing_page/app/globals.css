@@ -274,6 +274,117 @@ html[data-preloaded] .preloader {
     opacity: 1;
   }
 }
+
+/* Mobile Navigation Drawer Choreography */
+@keyframes mobile-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes mobile-sheet-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  }
+}
+@keyframes mobile-header-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes mobile-close-spin {
+  from {
+    opacity: 0;
+    transform: rotate(-60deg) scale(0.75);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+@keyframes mobile-nav-item-in {
+  from {
+    opacity: 0;
+    transform: translate3d(-6px, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes mobile-dock-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+@keyframes mobile-content-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+.mobile-menu-sheet {
+  animation: mobile-sheet-in 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+.mobile-menu-sheet[data-closing="true"] {
+  animation: mobile-sheet-out 230ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.mobile-menu-header {
+  animation: mobile-header-in 380ms cubic-bezier(0.16, 1, 0.3, 1) 35ms backwards;
+}
+.mobile-menu-close {
+  animation: mobile-close-spin 420ms cubic-bezier(0.16, 1, 0.3, 1) 80ms backwards;
+}
+.mobile-menu-link {
+  animation: mobile-nav-item-in 480ms cubic-bezier(0.16, 1, 0.3, 1) var(--item-delay, 80ms) backwards;
+  will-change: opacity, transform;
+}
+.mobile-menu-dock {
+  animation: mobile-dock-in 500ms cubic-bezier(0.16, 1, 0.3, 1) var(--dock-delay, 340ms) backwards;
+  will-change: opacity, transform;
+}
+.mobile-menu-sheet[data-closing="true"] .mobile-menu-header,
+.mobile-menu-sheet[data-closing="true"] .mobile-menu-link,
+.mobile-menu-sheet[data-closing="true"] .mobile-menu-dock {
+  animation: mobile-content-out 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-sheet,
+  .mobile-menu-sheet[data-closing="true"],
+  .mobile-menu-header,
+  .mobile-menu-close,
+  .mobile-menu-link,
+  .mobile-menu-dock {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}
 @keyframes ticker {
   to {
     translate: -50% 0;

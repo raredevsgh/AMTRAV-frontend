@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { GET_THE_APP_HREF } from "./nav";
 import { useI18n } from "@/lib/i18n/context";
@@ -32,7 +32,7 @@ function NavigationMenu({ pathname, isNegative = false }: { pathname: string; is
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen(true)}
-        className={`flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+        className={`flex size-9 sm:size-11 shrink-0 items-center justify-center rounded-full transition-all duration-200 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
           isNegative
             ? "border border-white/25 bg-white/10 text-white hover:bg-white/20 shadow-xs"
             : "bg-surface hover:bg-stale/40 text-navy"
@@ -44,7 +44,7 @@ function NavigationMenu({ pathname, isNegative = false }: { pathname: string; is
           width={20}
           height={20}
           loading="eager"
-          className={isNegative ? "brightness-0 invert" : ""}
+          className={`transition-transform duration-200 ${open ? "scale-90 opacity-75" : ""} ${isNegative ? "brightness-0 invert" : ""}`}
         />
       </button>
       {open && createPortal(
@@ -66,6 +66,21 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
   const dialog = useRef<HTMLDialogElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const focusReturn = useRef(restoreFocus);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const requestClose = useCallback(() => {
+    if (isClosing) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      close();
+      return;
+    }
+    setIsClosing(true);
+    closeTimer.current = setTimeout(() => {
+      close();
+    }, 230);
+  }, [close, isClosing]);
 
   const links = [
     { href: "/features", label: t("nav.features", "Features") },
@@ -92,6 +107,7 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
     const onResize = () => { if (desktop.matches) close(); };
     desktop.addEventListener("change", onResize);
     return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
       desktop.removeEventListener("change", onResize);
       element?.close();
       document.body.style.overflow = overflow;
@@ -104,6 +120,7 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
       ref={dialog}
       id="mobile-menu"
       aria-labelledby="mobile-menu-title"
+      data-closing={isClosing ? "true" : undefined}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
         const controls = event.currentTarget.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
@@ -117,21 +134,30 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
           first?.focus();
         }
       }}
-      onCancel={(event) => { event.preventDefault(); close(); }}
-      onClick={(event) => { if (event.target === event.currentTarget) close(); }}
-      className={`fixed inset-0 m-0 z-50 h-dvh max-h-none w-screen max-w-none border-0 p-0 backdrop:bg-transparent open:flex open:flex-col overflow-y-auto transition-colors ${
+      onCancel={(event) => { event.preventDefault(); requestClose(); }}
+      onClick={(event) => { if (event.target === event.currentTarget) requestClose(); }}
+      className={`mobile-menu-sheet fixed inset-0 m-0 z-50 h-dvh max-h-none w-screen max-w-none border-0 p-0 backdrop:bg-transparent open:flex open:flex-col overflow-y-auto transition-colors ${
         isNegative ? "bg-[#061533] text-white" : "bg-[#F4F6F8] text-navy"
       }`}
     >
       <div className="flex min-h-dvh w-full flex-col justify-between px-5 pt-[max(16px,env(safe-area-inset-top))] pb-[max(20px,env(safe-area-inset-bottom))]">
         {/* Top Header Bar */}
         <div
-          className={`flex items-center justify-between rounded-full px-5 py-3 shadow-xs border transition-colors ${
+          className={`mobile-menu-header flex items-center justify-between rounded-full px-5 py-3 shadow-xs border transition-colors ${
             isNegative ? "bg-[#0B1B3D] border-white/15" : "bg-white border-gray-100"
           }`}
         >
           <p id="mobile-menu-title" className="sr-only">Navigation menu</p>
-          <Link href="/" onClick={close} className="relative h-6 w-[116px] shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (pathname === "/") {
+                e.preventDefault();
+                requestClose();
+              }
+            }}
+            className="relative h-6 w-[116px] shrink-0 rounded-sm transition-transform duration-150 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+          >
             <Image
               src="/img/logo.png"
               alt="AMORTRAV"
@@ -144,8 +170,8 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
             ref={closeButton}
             type="button"
             aria-label="Close menu"
-            onClick={close}
-            className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
+            onClick={requestClose}
+            className={`mobile-menu-close flex size-10 shrink-0 items-center justify-center rounded-full transition-all duration-200 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
               isNegative
                 ? "bg-white/10 hover:bg-white/20 text-white border border-white/20"
                 : "bg-surface hover:bg-slate-200 text-navy"
@@ -156,28 +182,46 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
               alt=""
               width={16}
               height={16}
-              className={isNegative ? "brightness-0 invert" : ""}
+              className={`transition-transform duration-200 ${isClosing ? "rotate-90 scale-75" : ""} ${isNegative ? "brightness-0 invert" : ""}`}
             />
           </button>
         </div>
 
-        {/* Links List */}
+        {/* Staggered Links List */}
         <nav aria-label={t("nav.mobile", "Mobile navigation")} className="my-auto flex flex-col py-6">
-          {links.map(({ href, label, badge }) => {
+          {links.map(({ href, label, badge }, index) => {
             const isShop = href === "/shop";
+            const isActive = pathname === href;
+            const itemStyle = {
+              "--item-delay": `${75 + index * 48}ms`,
+            } as CSSProperties;
             return (
               <Link
                 key={href}
                 href={href}
-                onClick={close}
-                aria-current={pathname === href ? "page" : undefined}
-                className={`flex items-center justify-between border-b py-4 text-[20px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-brand ${
+                style={itemStyle}
+                onClick={(e) => {
+                  if (isActive) {
+                    e.preventDefault();
+                    requestClose();
+                  } else {
+                    setIsClosing(true);
+                  }
+                }}
+                aria-current={isActive ? "page" : undefined}
+                className={`mobile-menu-link group flex items-center justify-between border-b py-4 text-[20px] font-bold transition-all duration-200 active:scale-[0.985] focus-visible:outline-2 focus-visible:outline-brand ${
                   isNegative
-                    ? "border-white/15 text-white hover:text-sky"
-                    : "border-[#E2E8F0] text-navy hover:text-brand"
+                    ? `border-white/15 hover:text-sky ${isActive ? "text-sky" : "text-white"}`
+                    : `border-[#E2E8F0] hover:text-brand ${isActive ? "text-brand" : "text-navy"}`
                 }`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5 transition-transform duration-200 group-hover:translate-x-1">
+                  {isActive && (
+                    <span
+                      aria-hidden="true"
+                      className={`size-2 rounded-full ${isNegative ? "bg-sky" : "bg-brand"}`}
+                    />
+                  )}
                   <span>{label}</span>
                   {badge && (
                     <span
@@ -192,7 +236,7 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
                   )}
                 </div>
                 {/* Fixed-width icon slot for vertical alignment */}
-                <div className="flex size-7 shrink-0 items-center justify-center">
+                <div className="flex size-7 shrink-0 items-center justify-center transition-transform duration-200 group-hover:translate-x-1 group-active:translate-x-1.5">
                   {isShop ? (
                     <Image
                       src="/icons/shop-cart.svg"
@@ -219,7 +263,8 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
         {/* Bottom CTA, Region & Footer */}
         <div className="flex flex-col items-center gap-3 pt-4">
           <div
-            className={`flex w-full items-center justify-between gap-3 rounded-2xl p-3 border shadow-xs transition-colors ${
+            style={{ "--dock-delay": "345ms" } as CSSProperties}
+            className={`mobile-menu-dock flex w-full items-center justify-between gap-3 rounded-2xl p-3 border shadow-xs transition-colors ${
               isNegative ? "bg-[#0B1B3D] border-white/15" : "bg-white border-divider"
             }`}
           >
@@ -243,8 +288,9 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
 
           <Link
             href={GET_THE_APP_HREF}
-            onClick={close}
-            className={`flex h-13 w-full items-center justify-center gap-2 rounded-full text-base font-semibold shadow-sm transition-opacity hover:opacity-95 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 ${
+            onClick={requestClose}
+            style={{ "--dock-delay": "400ms" } as CSSProperties}
+            className={`mobile-menu-dock group flex h-13 w-full items-center justify-center gap-2 rounded-full text-base font-semibold shadow-sm transition-all duration-200 hover:opacity-95 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 ${
               isNegative
                 ? "bg-sky text-navy font-bold hover:bg-sky/90 focus-visible:outline-sky"
                 : "bg-brand text-white focus-visible:outline-brand"
@@ -256,10 +302,15 @@ function NavigationDialog({ pathname, close, restoreFocus, isNegative = false }:
               alt=""
               width={16}
               height={16}
-              className={isNegative ? "brightness-0" : ""}
+              className={`transition-transform duration-200 group-hover:translate-x-1 ${isNegative ? "brightness-0" : ""}`}
             />
           </Link>
-          <p className={`text-caption ${isNegative ? "text-blue-pale/60" : "text-mid"}`}>©2026 Amortrav</p>
+          <p
+            style={{ "--dock-delay": "450ms" } as CSSProperties}
+            className={`mobile-menu-dock text-caption ${isNegative ? "text-blue-pale/60" : "text-mid"}`}
+          >
+            ©2026 Amortrav
+          </p>
         </div>
       </div>
     </dialog>
