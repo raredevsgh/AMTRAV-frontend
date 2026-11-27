@@ -106,28 +106,47 @@ function getModel(name: Active3DModel): Promise<GLTF> {
   return model;
 }
 
+export type ShellMaterial = "Aluminium" | "Polycarbonate";
+
 export interface BagViewerProps {
   defaultTier?: LuggageTier;
   defaultLuggageType?: LuggageType;
+  defaultMaterial?: ShellMaterial;
   className?: string;
   externalColorHex?: string;
   externalLuggageType?: LuggageType;
   externalTier?: LuggageTier;
+  externalMaterial?: ShellMaterial;
+  onMaterialChange?: (material: ShellMaterial) => void;
 }
 
 export default function BagViewer({
   defaultTier = "essential",
   defaultLuggageType = "cabin",
+  defaultMaterial,
   className = "",
   externalColorHex,
   externalLuggageType,
   externalTier,
+  externalMaterial,
+  onMaterialChange,
 }: BagViewerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const { formatPrice, isEcommerce } = useRegion();
 
   // Tier (Essential, Pro, Executive, Flagship)
   const [selectedTier, setSelectedTier] = useState<LuggageTier>(defaultTier);
+
+  // Shell Material: Essential is Polycarbonate only; others can toggle between Aluminium and Polycarbonate
+  const [selectedMaterial, setSelectedMaterial] = useState<ShellMaterial>(
+    externalMaterial || defaultMaterial || (defaultTier === "essential" ? "Polycarbonate" : "Aluminium")
+  );
+
+  const [prevExtMaterial, setPrevExtMaterial] = useState(externalMaterial);
+  if (externalMaterial && externalMaterial !== prevExtMaterial) {
+    setPrevExtMaterial(externalMaterial);
+    setSelectedMaterial(externalMaterial);
+  }
 
   // Luggage Type: Cabin, Check-In, or Both
   const [selectedLuggageType, setSelectedLuggageType] = useState<LuggageType>(defaultLuggageType);
@@ -206,9 +225,11 @@ export default function BagViewer({
   }, []);
 
   // Compute active color and material properties
+  // Essential is locked to Polycarbonate; other collections allow toggling between Aluminium and Polycarbonate
+  const activeMaterial: ShellMaterial = selectedTier === "essential" ? "Polycarbonate" : selectedMaterial;
   const activeColor = isCustomColor ? customHex : selectedFinish.color;
-  const activeMetalness = selectedTier === "essential" ? 0.25 : 0.7;
-  const activeRoughness = selectedTier === "essential" ? 0.45 : 0.28;
+  const activeMetalness = activeMaterial === "Polycarbonate" ? 0.25 : 0.7;
+  const activeRoughness = activeMaterial === "Polycarbonate" ? 0.45 : 0.28;
 
   // Real-time material update without GLTF reloading
   useEffect(() => {
@@ -533,15 +554,15 @@ export default function BagViewer({
     const tierName = selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1);
 
     return {
-      sku: `${selectedTier}-${sizeKey}`,
-      name: `AMTRAV ${tierName} ${selectedLuggageType === "both" ? "The Pair" : selectedLuggageType === "checkin" ? "Check-In 68" : "Cabin 55"}`,
-      subtitle: `${tierName} Collection · Aerospace Precision`,
+      sku: `${selectedTier}-${sizeKey}__mat-${activeMaterial.toLowerCase()}`,
+      name: `AMTRAV ${tierName} ${selectedLuggageType === "both" ? "The Pair" : selectedLuggageType === "checkin" ? "Check-In 68" : "Cabin 55"} (${activeMaterial})`,
+      subtitle: `${tierName} · ${activeMaterial} · Aerospace Precision`,
       sizeName,
-      colorName,
+      colorName: `${colorName} · ${activeMaterial}`,
       colorHex: activeColor,
       priceMinor: basePriceMinor,
     };
-  }, [selectedTier, selectedLuggageType, selectedFinish, isCustomColor, activeColor, basePriceMinor]);
+  }, [selectedTier, selectedLuggageType, selectedFinish, isCustomColor, activeColor, activeMaterial, basePriceMinor]);
 
   // Add to cart / reserve handler
   const handleReserve = () => {
@@ -556,16 +577,16 @@ export default function BagViewer({
           : "border border-white/10 bg-navy text-white shadow-2xl"
       } ${className}`}
     >
-      {/* Top Header: Collection & Luggage Type Selectors + Real-World Simulation Toggles */}
+      {/* Top Header: Collection, Type & Material Selectors + Real-World Simulation Toggles */}
       <div
         className={`flex flex-col gap-3 border-b pb-4 ${
           isLight ? "border-divider" : "border-white/10"
         }`}
       >
-        {/* Row 1: Luggage Collection & Luggage Type */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 w-full">
+        {/* Row 1: Luggage Collection, Luggage Type, and Shell Material */}
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 w-full">
           {/* Collection / Tier Tabs */}
-          <div className="flex flex-col items-start w-full md:w-auto">
+          <div className="flex flex-col items-start w-full xl:w-auto">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -600,7 +621,7 @@ export default function BagViewer({
           </div>
 
           {/* Luggage Type: Cabin 55, Check-In 68, Both (Duo) */}
-          <div className="flex flex-col items-start w-full md:w-auto">
+          <div className="flex flex-col items-start w-full sm:w-auto">
             <span
               className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
                 isLight ? "text-brand" : "text-sky"
@@ -659,6 +680,73 @@ export default function BagViewer({
                 Both (Duo)
               </button>
             </div>
+          </div>
+
+          {/* Shell Material: Essential is fixed to Polycarbonate; others choose between Aluminium and Polycarbonate */}
+          <div className="flex flex-col items-start w-full sm:w-auto">
+            <span
+              className={`block text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-1 ${
+                isLight ? "text-brand" : "text-sky"
+              }`}
+            >
+              Shell Material
+            </span>
+            {selectedTier === "essential" ? (
+              <div
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 border text-[10px] sm:text-caption-m font-bold ${
+                  isLight
+                    ? "border-slate-200 bg-slate-100/90 text-navy"
+                    : "border-white/15 bg-white/10 text-white"
+                }`}
+                title="The Essential collection is exclusively constructed from high-impact resilient polycarbonate"
+              >
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                <span>Polycarbonate</span>
+              </div>
+            ) : (
+              <div
+                className={`grid grid-cols-2 gap-1 rounded-full p-1 border w-full sm:w-auto ${
+                  isLight ? "border-slate-200 bg-slate-100/90" : "border-white/15 bg-white/10"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMaterial("Aluminium");
+                    onMaterialChange?.("Aluminium");
+                  }}
+                  className={`rounded-full px-2.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold text-center transition-all ${
+                    activeMaterial === "Aluminium"
+                      ? isLight
+                        ? "bg-[#001f4d] text-white shadow-xs font-bold"
+                        : "bg-sky text-navy shadow-sm font-bold"
+                      : isLight
+                      ? "text-slate-600 hover:text-slate-950"
+                      : "text-blue-pale/80 hover:text-white"
+                  }`}
+                >
+                  Aluminium
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMaterial("Polycarbonate");
+                    onMaterialChange?.("Polycarbonate");
+                  }}
+                  className={`rounded-full px-2.5 sm:px-3 py-1 text-[10px] sm:text-caption-m font-semibold text-center transition-all ${
+                    activeMaterial === "Polycarbonate"
+                      ? isLight
+                        ? "bg-[#001f4d] text-white shadow-xs font-bold"
+                        : "bg-sky text-navy shadow-sm font-bold"
+                      : isLight
+                      ? "text-slate-600 hover:text-slate-950"
+                      : "text-blue-pale/80 hover:text-white"
+                  }`}
+                >
+                  Polycarbonate
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1091,7 +1179,7 @@ export default function BagViewer({
             </span>
           </div>
           <span className={`text-[12px] ${isLight ? "text-mid" : "text-light-white"}`}>
-            {`${selectedTier.toUpperCase()} · ${
+            {`${selectedTier.toUpperCase()} · ${activeMaterial.toUpperCase()} · ${
               selectedLuggageType === "both"
                 ? "Cabin 55 + Check-In 68 Duo Set (100L)"
                 : selectedLuggageType === "checkin"

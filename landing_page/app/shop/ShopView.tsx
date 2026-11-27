@@ -32,7 +32,8 @@ interface CollectionCardData {
   tier: "essential" | "pro" | "executive" | "flagship";
   name: string;
   tagline: string;
-  material: "Polycarbonate" | "Aluminium";
+  material: "Polycarbonate" | "Aluminium" | "Aluminium & Polycarbonate";
+  availableMaterials?: ("Aluminium" | "Polycarbonate")[];
   swatches: ColorSwatch[];
   badge?: "Bestseller" | "Customise" | "Signature";
   baseSkus: {
@@ -70,6 +71,7 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
     name: "AMTRAV Essential",
     tagline: "High-impact resilient polycarbonate with ultra-silent Multiwheels and built-in TRACE Smart Core.",
     material: "Polycarbonate",
+    availableMaterials: ["Polycarbonate"],
     swatches: ESSENTIAL_SWATCHES,
     badge: "Bestseller",
     baseSkus: {
@@ -110,8 +112,9 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
   {
     tier: "pro",
     name: "AMTRAV Pro",
-    tagline: "Aerospace-grade grooved aluminium-magnesium alloy with reinforced corners and impact verification.",
-    material: "Aluminium",
+    tagline: "Available in Aerospace Aluminium or High-Impact Polycarbonate with reinforced corners and impact verification.",
+    material: "Aluminium & Polycarbonate",
+    availableMaterials: ["Aluminium", "Polycarbonate"],
     swatches: PRO_FLAGSHIP_SWATCHES,
     badge: "Customise",
     baseSkus: {
@@ -140,7 +143,7 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
       both: "Matched 55 + 68 cm Duo",
     },
     features: [
-      "Aerospace Aluminium-Magnesium Alloy",
+      "Aerospace Aluminium or Polycarbonate Shell",
       "Reinforced Anodized Corner Caps",
       "Stage-Free Telescopic Handle",
       "Dual TSA-Approved Latches",
@@ -152,8 +155,9 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
   {
     tier: "executive",
     name: "AMTRAV Executive",
-    tagline: "Obsidian anodized aluminium architecture designed for seamless high-frequency global executive transit.",
-    material: "Aluminium",
+    tagline: "Obsidian anodized alloy or stealth resilient polycarbonate designed for seamless high-frequency global executive transit.",
+    material: "Aluminium & Polycarbonate",
+    availableMaterials: ["Aluminium", "Polycarbonate"],
     swatches: PRO_FLAGSHIP_SWATCHES,
     baseSkus: {
       cabin: "executive-cabin-55",
@@ -181,7 +185,7 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
       both: "Matched 55 + 68 cm Duo",
     },
     features: [
-      "Diamond-Cut Grooved Anodized Alloy",
+      "Choice of Obsidian Alloy or Polycarbonate",
       "Impact Timestamp Logging",
       "Reinforced Structural Rivets",
       "Dual TSA-Approved Latches",
@@ -193,8 +197,9 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
   {
     tier: "flagship",
     name: "AMTRAV Flagship",
-    tagline: "Our peak engineering achievement with luxury custom milled hardware, integrated load cells, and lifetime VIP service.",
-    material: "Aluminium",
+    tagline: "Our peak engineering achievement with luxury custom milled hardware, integrated load cells, in hand-finished alloy or ultra-light resilient polycarbonate.",
+    material: "Aluminium & Polycarbonate",
+    availableMaterials: ["Aluminium", "Polycarbonate"],
     swatches: PRO_FLAGSHIP_SWATCHES,
     badge: "Signature",
     baseSkus: {
@@ -247,10 +252,15 @@ function InteractiveLuggageCard({
 }) {
   const { formatPrice } = useRegion();
   const [selectedSize, setSelectedSize] = useState<SizeOption>(initialSize);
+  const [selectedMaterial, setSelectedMaterial] = useState<"Aluminium" | "Polycarbonate">("Aluminium");
   const [selectedSwatch, setSelectedSwatch] = useState<ColorSwatch>(collection.swatches[0]);
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [customHex, setCustomHex] = useState("#c2a87d");
   const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // Essential is locked to Polycarbonate; others can toggle between Aluminium and Polycarbonate
+  const currentMaterial: "Aluminium" | "Polycarbonate" =
+    collection.tier === "essential" ? "Polycarbonate" : selectedMaterial;
 
   const currentPrice = collection.prices[selectedSize];
   const currentVolume = collection.volumes[selectedSize];
@@ -273,11 +283,11 @@ function InteractiveLuggageCard({
 
     if (onReserve) {
       onReserve({
-        sku: baseSku,
+        sku: `${baseSku}__mat-${currentMaterial.toLowerCase()}`,
         name: `${collection.name} (${selectedSize === "both" ? "The Pair" : selectedSize === "checkin" ? "Check-In 68" : "Cabin 55"})`,
-        subtitle: `${collection.material} Precision · TRACE Smart Core`,
+        subtitle: `${currentMaterial} Precision · TRACE Smart Core`,
         sizeName,
-        colorName: activeColorName,
+        colorName: `${activeColorName} · ${currentMaterial}`,
         colorHex: activeColorHex,
         priceMinor: currentPrice,
       });
@@ -285,14 +295,14 @@ function InteractiveLuggageCard({
     }
 
     const cleanHex = activeColorHex.replace("#", "");
-    const compoundSku = `${baseSku}__${encodeURIComponent(activeColorName)}__${cleanHex}`;
+    const compoundSku = `${baseSku}__${encodeURIComponent(`${activeColorName} · ${currentMaterial}`)}__${cleanHex}__${currentMaterial.toLowerCase()}`;
     onAddToCart(compoundSku);
   };
 
   const handleSpecsClick = () => {
     const baseSku = collection.baseSkus[selectedSize];
     const resolved = CATALOG.find((p) => p.sku === baseSku) || CATALOG[1];
-    onSelectForSpecs(resolved);
+    onSelectForSpecs({ ...resolved, material: currentMaterial });
     document.getElementById("technical-specs")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -333,9 +343,20 @@ function InteractiveLuggageCard({
           {/* Header & Material */}
           <div className="flex items-start justify-between gap-2">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
-                {collection.material}
-              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
+                  {currentMaterial} Precision
+                </span>
+                {collection.tier === "essential" ? (
+                  <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.2 text-[9.5px] font-mono font-bold text-navy">
+                    Polycarbonate Only
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-brand/10 border border-brand/20 px-2 py-0.2 text-[9.5px] font-mono font-bold text-brand">
+                    Choice of Material
+                  </span>
+                )}
+              </div>
               <h3 className="text-h3-m font-bold text-navy xl:text-[21px]">
                 {collection.name}
               </h3>
@@ -394,6 +415,52 @@ function InteractiveLuggageCard({
                 Both (Duo)
               </button>
             </div>
+          </div>
+
+          {/* Shell Material Selection: Essential is fixed to Polycarbonate; Pro/Executive/Flagship allows choice */}
+          <div className="mt-3.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-mid">
+                Shell Material
+              </span>
+              <span className="text-[10px] font-mono font-semibold text-navy">
+                {currentMaterial}
+              </span>
+            </div>
+            {collection.tier === "essential" ? (
+              <div className="flex items-center justify-between rounded-xl bg-surface p-2 border border-divider">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-navy shrink-0" />
+                  <span className="text-[11px] font-semibold text-navy">High-Impact Resilient Polycarbonate</span>
+                </div>
+                <span className="text-[10px] font-mono text-mid font-medium">Standard</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-surface p-1 border border-divider">
+                <button
+                  type="button"
+                  onClick={() => setSelectedMaterial("Aluminium")}
+                  className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
+                    selectedMaterial === "Aluminium"
+                      ? "bg-navy text-white shadow-xs"
+                      : "text-mid hover:text-navy"
+                  }`}
+                >
+                  Aluminium Alloy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMaterial("Polycarbonate")}
+                  className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
+                    selectedMaterial === "Polycarbonate"
+                      ? "bg-navy text-white shadow-xs"
+                      : "text-mid hover:text-navy"
+                  }`}
+                >
+                  Polycarbonate
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Color Swatch Options + Custom Color Palette Trigger */}
@@ -507,12 +574,12 @@ function InteractiveLuggageCard({
             </div>
           )}
 
-          {/* Color & Size Label */}
+          {/* Color, Material & Size Label */}
           <div className="mt-2 text-[11px] text-mid">
             <span className="font-semibold text-navy">
               {selectedSize === "both" ? "Travel Duo Set" : selectedSize === "checkin" ? "Check-In 68" : "Cabin 55"}
             </span>{" "}
-            in <span className="text-navy">{activeColorName}</span> · {currentDimensions}
+            in <span className="text-navy">{activeColorName}</span> · <span className="font-semibold text-navy">{currentMaterial}</span> · {currentDimensions}
           </div>
         </div>
 
@@ -881,9 +948,9 @@ export default function ShopView() {
                 >
                   <option value="all">All Collections</option>
                   <option value="essential">Essential (Polycarbonate)</option>
-                  <option value="pro">Pro (Aluminium)</option>
-                  <option value="executive">Executive (Obsidian Alloy)</option>
-                  <option value="flagship">Flagship (Signature Alloy)</option>
+                  <option value="pro">Pro (Aluminium & Polycarbonate)</option>
+                  <option value="executive">Executive (Aluminium & Polycarbonate)</option>
+                  <option value="flagship">Flagship (Aluminium & Polycarbonate)</option>
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60" />
               </div>

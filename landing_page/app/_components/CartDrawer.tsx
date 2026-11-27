@@ -161,10 +161,15 @@ export default function CartDrawer({
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <h4 className="text-caption font-bold text-navy truncate">{item.name}</h4>
-                          <div className="mt-1 flex items-center gap-2 flex-wrap">
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                             <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.5 text-[10px] font-semibold text-navy">
                               {item.selectedSize}
                             </span>
+                            {item.selectedMaterial && (
+                              <span className="rounded-full bg-brand/10 border border-brand/20 px-2 py-0.5 text-[10px] font-semibold text-brand">
+                                {item.selectedMaterial}
+                              </span>
+                            )}
                             <div className="flex items-center gap-1 text-[11px] text-mid">
                               <span
                                 className="size-2.5 rounded-full border border-black/20 shrink-0 shadow-xs"

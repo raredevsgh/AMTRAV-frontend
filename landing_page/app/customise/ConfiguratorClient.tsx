@@ -83,6 +83,7 @@ export default function ConfiguratorClient() {
 
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedShell, setSelectedShell] = useState<ShellOption>(SHELLS[0]);
+  const [selectedMaterial, setSelectedMaterial] = useState<"Aluminium" | "Polycarbonate">("Aluminium");
   const [shellSizeFilter, setShellSizeFilter] = useState<"all" | "Cabin 55" | "Check-In 68" | "Both (The Pair)">("all");
   const [customShellHex, setCustomShellHex] = useState("#c5cbd3");
   const [isCustomShellColor, setIsCustomShellColor] = useState(false);
@@ -95,6 +96,10 @@ export default function ConfiguratorClient() {
 
   const [cartOpen, setCartOpen] = useState(false);
   const [reservationOpen, setReservationOpen] = useState(false);
+
+  // Essential is locked to Polycarbonate; other collections allow choosing material
+  const activeMaterial: "Aluminium" | "Polycarbonate" =
+    selectedShell.tier === "Essential" ? "Polycarbonate" : selectedMaterial;
 
   // Total price computation
   const totalMinor =
@@ -112,16 +117,16 @@ export default function ConfiguratorClient() {
       : selectedShell.size === "Check-In 68"
       ? "checkin-68"
       : "cabin-55";
-    const baseSku = `${tierPrefix}-${sizeSuffix}`;
+    const baseSku = `${tierPrefix}-${sizeSuffix}__mat-${activeMaterial.toLowerCase()}`;
     const activeColorHex = isCustomShellColor ? customShellHex : selectedShell.finishColor;
     const colorDesc = isCustomShellColor ? `Bespoke Custom (${customShellHex})` : selectedShell.finish;
 
     return {
       sku: baseSku,
-      name: `AMTRAV ${selectedShell.tier} ${selectedShell.size} (Custom Build)`,
-      subtitle: `${selectedShell.name} · Custom Configuration`,
+      name: `AMTRAV ${selectedShell.tier} ${selectedShell.size} (${activeMaterial})`,
+      subtitle: `${selectedShell.name} · ${activeMaterial} · Custom Configuration`,
       sizeName: selectedShell.size,
-      colorName: colorDesc,
+      colorName: `${colorDesc} · ${activeMaterial}`,
       colorHex: activeColorHex,
       priceMinor: totalMinor - (includeTag ? selectedTag.priceUsdMinor : 0),
       initialTagAddon: includeTag,
@@ -130,7 +135,7 @@ export default function ConfiguratorClient() {
       initialTagColor: selectedTag.name,
       initialTagHex: selectedTag.hex,
     };
-  }, [selectedShell, isCustomShellColor, customShellHex, totalMinor, includeTag, selectedTag, monogramText, monogramFoil]);
+  }, [selectedShell, activeMaterial, isCustomShellColor, customShellHex, totalMinor, includeTag, selectedTag, monogramText, monogramFoil]);
 
   const handleAddCustomToBag = () => {
     if (!isEcommerce) {
@@ -202,6 +207,8 @@ export default function ConfiguratorClient() {
               externalLuggageType={selectedShell.size.includes("Pair") ? "both" : selectedShell.size === "Cabin 55" ? "cabin" : "checkin"}
               externalColorHex={isCustomShellColor ? customShellHex : selectedShell.finishColor}
               externalTier={selectedShell.tier.toLowerCase() as LuggageTier}
+              externalMaterial={activeMaterial}
+              onMaterialChange={setSelectedMaterial}
               className="w-full"
             />
 
@@ -355,6 +362,60 @@ export default function ConfiguratorClient() {
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Shell Material Selection: Essential = Polycarbonate Only; Pro/Executive/Flagship = Choice */}
+                <div className="rounded-2xl border border-divider bg-surface/60 p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-navy">
+                      Shell Material Architecture
+                    </span>
+                    {selectedShell.tier === "Essential" ? (
+                      <span className="rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-mono font-bold text-navy">
+                        Polycarbonate (Fixed)
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono font-bold text-brand">
+                        {selectedMaterial}
+                      </span>
+                    )}
+                  </div>
+
+                  {selectedShell.tier === "Essential" ? (
+                    <p className="text-[11px] text-mid">
+                      The Essential collection is exclusively engineered in high-impact virgin polycarbonate for lightweight durability and flex.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-[11px] text-mid">
+                        Select between aerospace aluminium alloy and high-impact resilient polycarbonate for your custom build:
+                      </p>
+                      <div className="grid grid-cols-2 gap-1.5 rounded-xl bg-white p-1 border border-divider">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedMaterial("Aluminium")}
+                          className={`rounded-lg py-2 text-center text-caption font-semibold transition-all ${
+                            activeMaterial === "Aluminium"
+                              ? "bg-navy text-white shadow-xs"
+                              : "text-mid hover:text-navy hover:bg-surface"
+                          }`}
+                        >
+                          Aerospace Aluminium
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedMaterial("Polycarbonate")}
+                          className={`rounded-lg py-2 text-center text-caption font-semibold transition-all ${
+                            activeMaterial === "Polycarbonate"
+                              ? "bg-navy text-white shadow-xs"
+                              : "text-mid hover:text-navy hover:bg-surface"
+                          }`}
+                        >
+                          High-Impact Polycarbonate
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Bespoke Custom Color Picker */}

@@ -1135,6 +1135,7 @@ export interface ResolvedCartProduct {
   selectedColorName: string;
   selectedColorHex: string;
   selectedSize: "Cabin 55" | "Check-In 68" | "Both (Duo Set)" | "Standard" | "One Size";
+  selectedMaterial?: "Aluminium" | "Polycarbonate";
   isCustomColor: boolean;
   category?: "Luggage" | "Bags" | "Bundles" | "Accessories";
 }
@@ -1163,6 +1164,17 @@ export function resolveProduct(compoundSku: string): ResolvedCartProduct {
   const selectedColorHex = customColorHex || product.swatches[0]?.color || "#2b2d2f";
   const isCustomColor = customColorName?.toLowerCase().includes("custom") || !!customColorHex;
 
+  const selectedMaterial: "Aluminium" | "Polycarbonate" | undefined =
+    product.category === "Luggage" || product.category === "Bundles"
+      ? product.collection === "Essential"
+        ? "Polycarbonate"
+        : compoundSku.toLowerCase().includes("polycarbonate")
+        ? "Polycarbonate"
+        : compoundSku.toLowerCase().includes("aluminium")
+        ? "Aluminium"
+        : (product.material as "Aluminium" | "Polycarbonate") || "Aluminium"
+      : undefined;
+
   return {
     sku: compoundSku,
     name: product.name,
@@ -1171,6 +1183,7 @@ export function resolveProduct(compoundSku: string): ResolvedCartProduct {
     selectedColorName,
     selectedColorHex,
     selectedSize,
+    selectedMaterial,
     isCustomColor,
     category: product.category,
   };
