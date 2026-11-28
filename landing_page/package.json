@@ -20,15 +20,15 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.5",
     "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "0.187.0",
-    "eslint": "^9",
+    "eslint": "^10",
     "eslint-config-next": "16.4.6",
     "postcss": "^8.5.33",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^7"
   },
   "packageManager": "pnpm@11.20.0"
 }
