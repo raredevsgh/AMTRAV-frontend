@@ -6,17 +6,17 @@ import { addToCart } from "@/lib/shop";
 import CartDrawer from "../_components/CartDrawer";
 
 const SKU_MAP: Record<string, string> = {
-  "Cabin 55": "cabin-55",
-  "Check-in 68": "checkin-68",
-  "Check-in 76": "checkin-76",
-  "The Pair": "the-pair",
+  "Cabin 55": "essential-cabin-55",
+  "Check-in 68": "essential-checkin-68",
+  "Check-in 76": "flagship-checkin-68",
+  "The Pair": "essential-the-pair",
 };
 
 export default function PreorderButton({ product }: { product: string }) {
   const [added, setAdded] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const sku = SKU_MAP[product] || "cabin-55";
+  const sku = SKU_MAP[product] || "essential-cabin-55";
 
   const handleAdd = () => {
     addToCart(sku, 1);

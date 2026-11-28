@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { KeyRound, Check, ChevronUp, ChevronDown, RefreshCw, AlertCircle } from "lucide-react";
+import { Check, ChevronUp, ChevronDown, RefreshCw, AlertCircle } from "lucide-react";
 
 export default function LockTutorialPage() {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);

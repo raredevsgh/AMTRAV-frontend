@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Plane, QrCode } from "lucide-react";
+import { Check, Plane } from "lucide-react";
 import FaqList from "../_components/FaqList";
-import { GET_THE_APP_HREF } from "../_components/nav";
-import { useI18n } from "@/lib/i18n/context";
+import { AppleAppStoreBadge, GooglePlayBadge } from "../_components/AppStoreBadges";
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -66,230 +65,7 @@ const FAQ = [
   },
 ] as const;
 
-// Authentic AMTRAV iOS Mobile Companion App (Screenshot 4: Good morning, Ama)
-function AmortravCompanionAppPhone({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={`relative mx-auto w-full max-w-[320px] sm:max-w-[340px] rounded-[36px] sm:rounded-[40px] border-[6px] sm:border-[7px] border-[#0B1B3D] bg-[#F6F7F9] p-3 shadow-2xl text-navy select-none overflow-hidden ${className}`}
-    >
-      {/* Dynamic Island / Speaker notch */}
-      <div className="relative mx-auto mb-2 flex h-5 w-full items-center justify-between px-3 text-[11px] font-bold text-navy">
-        <span>9:41</span>
-        <div className="h-3.5 w-20 sm:w-24 rounded-full bg-[#0B1B3D]" />
-        <div className="flex items-center gap-1.5 text-navy">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4 18.59 5.41 20l.98-.98C8.01 19.9 9.93 20.5 12 20.5s3.99-.6 5.61-1.48l.98.98L20 18.59l-.97-.98C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
-          </svg>
-          <div className="h-2.5 w-5 rounded-xs border border-navy p-0.5">
-            <div className="h-full w-3.5 bg-navy rounded-2xs" />
-          </div>
-        </div>
-      </div>
-
-      {/* App Top Bar */}
-      <div className="flex items-center justify-between px-1.5 py-1">
-        <div>
-          <span className="text-[10px] text-slate-500 font-medium">Wednesday 18 November</span>
-          <h3 className="text-xl font-extrabold tracking-tight text-[#0F172A] leading-tight">
-            Good morning,<br />Ama
-          </h3>
-        </div>
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 shadow-xs border border-slate-200/60">
-            <span className="size-2 rounded-full bg-[#2A4BD7] animate-pulse" />
-            <span className="text-[11px] font-bold text-navy">Live</span>
-          </div>
-          <div className="relative flex size-8 items-center justify-center rounded-full bg-white shadow-xs border border-slate-200/60">
-            <svg className="size-4 text-navy" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-[#2A4BD7] text-[9px] font-bold text-white">
-              2
-            </span>
-          </div>
-          <div className="flex size-8 items-center justify-center rounded-full bg-[#0B1B3D] text-xs font-bold text-white shadow-xs">
-            A
-          </div>
-        </div>
-      </div>
-
-      {/* Twin Luggage Cards */}
-      <div className="mt-2.5 grid grid-cols-2 gap-2">
-        {/* Card 1: Blue carry-on */}
-        <div className="relative flex flex-col items-center rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60 text-center">
-          <div className="relative my-1 size-14 sm:size-16 flex items-center justify-center">
-            <svg className="size-14 sm:size-16 -rotate-90" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" strokeWidth="4" />
-              <circle
-                cx="32"
-                cy="32"
-                r="26"
-                fill="none"
-                stroke="#2A4BD7"
-                strokeWidth="4"
-                strokeDasharray="163.36"
-                strokeDashoffset="45"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="size-8 rounded-sm bg-[#1e3a6a] flex items-center justify-center text-white text-[9px] font-bold shadow-xs">
-                55
-              </div>
-            </div>
-          </div>
-          <span className="text-[11px] font-bold text-[#0B1B3D] truncate w-full">Blue carry-on</span>
-          <div className="mt-1 flex items-center gap-1 rounded-full bg-[#2A4BD7] px-2 py-0.5 text-[8.5px] font-bold text-white">
-            <svg className="size-2.5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L4 20h16L12 2z" />
-            </svg>
-            <span>Moving 72%</span>
-          </div>
-        </div>
-
-        {/* Card 2: Check-in 70 */}
-        <div className="relative flex flex-col items-center rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60 text-center">
-          <div className="relative my-1 size-14 sm:size-16 flex items-center justify-center">
-            <svg className="size-14 sm:size-16 -rotate-90" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="#E2E8F0" strokeWidth="4" />
-              <circle
-                cx="32"
-                cy="32"
-                r="26"
-                fill="none"
-                stroke="#4A91F2"
-                strokeWidth="4"
-                strokeDasharray="163.36"
-                strokeDashoffset="68"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="size-8 rounded-sm bg-[#224488] flex items-center justify-center text-white text-[9px] font-bold shadow-xs">
-                70
-              </div>
-            </div>
-          </div>
-          <span className="text-[11px] font-bold text-[#0B1B3D] truncate w-full">Check-in 70</span>
-          <div className="mt-1 flex items-center gap-1 rounded-full bg-[#4A91F2]/20 px-2 py-0.5 text-[8.5px] font-bold text-[#2A4BD7]">
-            <Check className="size-2.5 stroke-[3]" />
-            <span>Ready 58%</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 3 Indicators Strip */}
-      <div className="mt-2.5 grid grid-cols-3 divide-x divide-slate-100 rounded-2xl bg-white p-2 shadow-xs border border-slate-200/60 text-center">
-        <div className="flex flex-col items-center">
-          <div className="size-3.5 rounded-full border-2 border-[#4A91F2] mb-0.5" />
-          <span className="text-xs sm:text-sm font-extrabold text-[#0B1B3D]">2/2</span>
-          <span className="text-[9px] text-slate-400 font-medium">Ready</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[11px] font-bold text-[#2A4BD7] mb-0.5">▲</span>
-          <span className="text-xs sm:text-sm font-extrabold text-[#2A4BD7]">1</span>
-          <span className="text-[9px] text-slate-400 font-medium">Moving</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[11px] text-amber-500 mb-0.5">🔔</span>
-          <span className="text-xs sm:text-sm font-extrabold text-amber-500">1</span>
-          <span className="text-[9px] text-slate-400 font-medium">Alerts today</span>
-        </div>
-      </div>
-
-      {/* Flights Around You banner */}
-      <div className="mt-2 flex items-center justify-between rounded-xl bg-white p-2 shadow-xs border border-slate-200/60">
-        <div className="flex items-center gap-2">
-          <div className="flex size-6 sm:size-7 items-center justify-center rounded-full bg-[#4A91F2]/20 text-[#2A4BD7]">
-            <Plane className="size-3 sm:size-3.5" />
-          </div>
-          <span className="text-[10px] sm:text-[11px] font-bold text-[#0B1B3D]">Flights around you</span>
-        </div>
-        <span className="text-slate-400 text-xs">›</span>
-      </div>
-
-      {/* Distance Travelled Card with 7-Day Bar Chart */}
-      <div className="mt-2 rounded-2xl bg-white p-2.5 shadow-xs border border-slate-200/60">
-        <div className="flex items-center justify-between text-[9.5px]">
-          <span className="text-slate-500">Distance travelled · 7 days</span>
-          <div className="flex items-center gap-1">
-            <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">This week ▾</span>
-            <span className="rounded-md bg-[#2A4BD7]/10 px-1.5 py-0.5 font-bold text-[#2A4BD7]">+18%</span>
-          </div>
-        </div>
-        <div className="mt-1 flex items-baseline gap-1.5">
-          <span className="text-base sm:text-lg font-black tracking-tight text-[#0B1B3D]">1,248 km</span>
-          <span className="text-[9.5px] text-slate-400">12 moves</span>
-        </div>
-        {/* Weekly Bar Chart */}
-        <div className="mt-1.5 grid grid-cols-7 items-end gap-1.5 h-10 pt-1 border-b border-slate-100 pb-1">
-          {[
-            { day: "M", height: "40%", active: false },
-            { day: "T", height: "65%", active: false },
-            { day: "W", height: "25%", active: false },
-            { day: "T", height: "80%", active: false },
-            { day: "F", height: "55%", active: false },
-            { day: "S", height: "70%", active: false },
-            { day: "S", height: "95%", active: true },
-          ].map((bar, i) => (
-            <div key={i} className="flex flex-col items-center gap-1 h-full justify-end">
-              <div
-                className={`w-full rounded-t-sm transition-all ${bar.active ? "bg-[#2A4BD7]" : "bg-slate-400/60"}`}
-                style={{ height: bar.height }}
-              />
-              <span className={`text-[8px] font-medium ${bar.active ? "text-[#2A4BD7] font-bold" : "text-slate-400"}`}>
-                {bar.day}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom Tabs */}
-      <div className="mt-2.5 grid grid-cols-5 border-t border-slate-200/60 pt-1.5 text-center text-[8.5px] font-medium text-slate-400">
-        <div className="flex flex-col items-center gap-0.5 text-[#0B1B3D] font-bold">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-          </svg>
-          <span>Home</span>
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="6" y="7" width="12" height="13" rx="2" />
-            <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-          </svg>
-          <span>Bags</span>
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
-          </svg>
-          <span>Map</span>
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-          </svg>
-          <span>Activity</span>
-        </div>
-        <div className="flex flex-col items-center gap-0.5">
-          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>Account</span>
-        </div>
-      </div>
-      {/* Home bar */}
-      <div className="mx-auto mt-1.5 h-1 w-24 rounded-full bg-[#0B1B3D]" />
-    </div>
-  );
-}
-
 function HowItWorksHero() {
-  const { t } = useI18n();
-
   return (
     <section className="relative overflow-clip rounded-3xl bg-white border border-divider p-6 sm:p-10 xl:p-14 shadow-xs">
       <div className="grid grid-cols-1 items-center gap-8 xl:grid-cols-2 xl:gap-14">
@@ -315,20 +91,15 @@ function HowItWorksHero() {
             An engraved metal claim card and our streamlined companion app eliminate Bluetooth pairing dances. No complex setup menus—just pure Swiss-German precision.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-1 w-full sm:w-auto">
-            {/* Primary Action Button */}
-            <Link
-              href={GET_THE_APP_HREF}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0B1B3D] px-7 text-[15px] font-semibold text-white shadow-md hover:bg-[#0047AD] active:scale-95 transition-all text-center"
-            >
-              <span>{t("landing.heroGetApp", "Get the app")}</span>
-              <span aria-hidden="true">&rarr;</span>
-            </Link>
+          <div className="flex flex-wrap items-center gap-3 pt-2 w-full sm:w-auto">
+            {/* Authentic App Store & Play Store Badges */}
+            <AppleAppStoreBadge variant="dark" size="md" />
+            <GooglePlayBadge variant="dark" size="md" />
 
             {/* Secondary Action Link */}
             <a
               href="#steps"
-              className="inline-flex h-12 items-center gap-2 rounded-full border-2 border-[#0B1B3D] bg-white px-6 text-[15px] font-bold text-[#0B1B3D] shadow-xs hover:bg-[#0B1B3D] hover:text-white active:scale-95 transition-all group"
+              className="inline-flex h-12 items-center gap-2 rounded-xl border border-divider bg-white px-5 text-[14px] font-bold text-navy shadow-xs hover:bg-surface hover:text-[#0047AD] active:scale-95 transition-all group"
             >
               <span>See the steps</span>
               <svg

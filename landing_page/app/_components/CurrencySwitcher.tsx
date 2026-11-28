@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
-import { Coins, ChevronDown, Check, RefreshCw, Calculator, ArrowRight, Search } from "lucide-react";
-import { useRegion, type CurrencyInfo } from "@/lib/region";
+import { Coins, ChevronDown, Check, RefreshCw, Calculator, Search } from "lucide-react";
+import { useRegion } from "@/lib/region";
 
 export default function CurrencySwitcher({
   className = "",

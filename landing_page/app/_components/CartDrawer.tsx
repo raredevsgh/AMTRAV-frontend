@@ -149,17 +149,27 @@ export default function CartDrawer({
                 const item = resolveProduct(sku);
                 return (
                   <div key={sku} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-line bg-surface">
-                      <Image src={item.image} alt={item.name} fill className="object-contain p-2" />
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-line bg-white p-1.5">
+                      <Image
+                        src={item.image.startsWith("/images/") && !item.image.includes("?") ? `${item.image}?v=20261125b` : item.image}
+                        alt={item.name}
+                        fill
+                        className="object-contain p-1.5"
+                      />
                     </div>
                     <div className="flex flex-1 flex-col justify-between min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <h4 className="text-caption font-bold text-navy truncate">{item.name}</h4>
-                          <div className="mt-1 flex items-center gap-2 flex-wrap">
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                             <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.5 text-[10px] font-semibold text-navy">
                               {item.selectedSize}
                             </span>
+                            {item.selectedMaterial && (
+                              <span className="rounded-full bg-brand/10 border border-brand/20 px-2 py-0.5 text-[10px] font-semibold text-brand">
+                                {item.selectedMaterial}
+                              </span>
+                            )}
                             <div className="flex items-center gap-1 text-[11px] text-mid">
                               <span
                                 className="size-2.5 rounded-full border border-black/20 shrink-0 shadow-xs"

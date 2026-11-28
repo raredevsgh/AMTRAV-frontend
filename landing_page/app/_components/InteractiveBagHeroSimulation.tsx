@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Rotate3d, ShieldCheck, Scale, Radio, Zap, ArrowRight } from "lucide-react";
+import { Rotate3d, Scale, Radio, Zap, ArrowRight } from "lucide-react";
 import type * as Three from "three";
-import type { GLTF } from "three/addons/loaders/GLTFLoader.js";
-import { useI18n } from "@/lib/i18n/context";
 
 interface BagColor {
   id: string;
@@ -24,7 +21,6 @@ const LUXURY_FINISHES: BagColor[] = [
 ];
 
 export default function InteractiveBagHeroSimulation() {
-  const { t } = useI18n();
   const hostRef = useRef<HTMLDivElement>(null);
 
   const [activeModel, setActiveModel] = useState<"carry-on" | "check-in">("carry-on");

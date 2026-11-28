@@ -12,8 +12,6 @@ import Tag from "./_components/Tag";
 import Testimonials, { type Testimonial } from "./_components/Testimonials";
 import FilmModal from "./_components/FilmModal";
 import LuxurySpecs from "./_components/LuxurySpecs";
-import InteractiveBagHeroSimulation from "./_components/InteractiveBagHeroSimulation";
-import { GET_THE_APP_HREF } from "./_components/nav";
 import { useI18n } from "@/lib/i18n/context";
 
 const ROUTES = [
@@ -61,26 +59,35 @@ function Hero({ onWatchFilm }: { onWatchFilm: () => void }) {
         <p data-enter className="text-small text-blue-pale xl:w-[500px] xl:text-lead xl:tracking-normal">
           {t("landing.heroSubhead", "Amortrav bags pair to your account in seconds, stay flight-safe on the plane and keep their papers right in the app.")}
         </p>
-        <div data-enter className="flex w-full flex-col gap-3 xl:hidden">
-          <Button href={GET_THE_APP_HREF} label={t("landing.heroGetApp", "Get the app")} style="sky" size="m" arrow className="w-full" />
-          <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="m" className="w-full" />
+        {/* Mobile Action Buttons: Strict HCI Hierarchy (Primary + Secondary only) */}
+        <div data-enter className="flex w-full items-center gap-3 xl:hidden">
+          <Button
+            href="/shop"
+            label={t("nav.range", "Explore the Range")}
+            style="sky"
+            size="m"
+            arrow
+            className="flex-1 text-center"
+          />
           <button
             type="button"
             onClick={onWatchFilm}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
+            className="flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-btn-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 active:scale-95"
           >
             <Play className="size-4 fill-white" />
-            <span>{t("landing.watch", "Watch the film")}</span>
+            <span>{t("landing.watch", "Watch film")}</span>
           </button>
-
-          {/* Real 3D Bag Interactive Simulation for Mobile */}
-          <div className="w-full pt-3">
-            <InteractiveBagHeroSimulation />
-          </div>
         </div>
-        <div data-enter className="hidden w-full flex-wrap items-center gap-3 xl:flex">
-          <Button href={GET_THE_APP_HREF} label={t("landing.heroGetApp", "Get the app")} style="sky" size="l" arrow />
-          <Button href="/how-it-works" label={t("landing.heroSeeHow", "See how it works")} style="outline" size="l" />
+
+        {/* Desktop Action Buttons: Strict HCI Hierarchy (Primary + Secondary only) */}
+        <div data-enter className="hidden w-full items-center gap-4 xl:flex">
+          <Button
+            href="/shop"
+            label={t("nav.range", "Explore the Range")}
+            style="sky"
+            size="l"
+            arrow
+          />
           <button
             type="button"
             onClick={onWatchFilm}

@@ -4,14 +4,17 @@ import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingBag, Palette, Check, Layers, Rotate3d, SlidersHorizontal, ArrowUpDown, ChevronDown } from "lucide-react";
+import { ShoppingBag, Palette, Check, Rotate3d, ChevronDown } from "lucide-react";
 import Button from "../_components/Button";
 import ProductVideo from "../_components/ProductVideo";
 import BagViewer, { LUXURY_PALETTE_PRESETS } from "../_components/BagViewer";
 import TechnicalBlueprint from "../_components/TechnicalBlueprint";
 import CartDrawer from "../_components/CartDrawer";
+import ReservationModal, { type ReservationProductProps } from "../_components/ReservationModal";
+import AccessoryVisual from "./AccessoryVisual";
 import {
   CATALOG,
+  ACCESSORIES_CATALOG,
   ShopProduct,
   ColorSwatch,
   ESSENTIAL_SWATCHES,
@@ -29,7 +32,8 @@ interface CollectionCardData {
   tier: "essential" | "pro" | "executive" | "flagship";
   name: string;
   tagline: string;
-  material: "Polycarbonate" | "Aluminium";
+  material: "Polycarbonate" | "Aluminium" | "Aluminium & Polycarbonate";
+  availableMaterials?: ("Aluminium" | "Polycarbonate")[];
   swatches: ColorSwatch[];
   badge?: "Bestseller" | "Customise" | "Signature";
   baseSkus: {
@@ -67,6 +71,7 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
     name: "AMTRAV Essential",
     tagline: "High-impact resilient polycarbonate with ultra-silent Multiwheels and built-in TRACE Smart Core.",
     material: "Polycarbonate",
+    availableMaterials: ["Polycarbonate"],
     swatches: ESSENTIAL_SWATCHES,
     badge: "Bestseller",
     baseSkus: {
@@ -107,8 +112,9 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
   {
     tier: "pro",
     name: "AMTRAV Pro",
-    tagline: "Aerospace-grade grooved aluminium-magnesium alloy with reinforced corners and impact verification.",
-    material: "Aluminium",
+    tagline: "Available in Aerospace Aluminium or High-Impact Polycarbonate with reinforced corners and impact verification.",
+    material: "Aluminium & Polycarbonate",
+    availableMaterials: ["Aluminium", "Polycarbonate"],
     swatches: PRO_FLAGSHIP_SWATCHES,
     badge: "Customise",
     baseSkus: {
@@ -137,7 +143,7 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
       both: "Matched 55 + 68 cm Duo",
     },
     features: [
-      "Aerospace Aluminium-Magnesium Alloy",
+      "Aerospace Aluminium or Polycarbonate Shell",
       "Reinforced Anodized Corner Caps",
       "Stage-Free Telescopic Handle",
       "Dual TSA-Approved Latches",
@@ -149,8 +155,9 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
   {
     tier: "executive",
     name: "AMTRAV Executive",
-    tagline: "Obsidian anodized aluminium architecture designed for seamless high-frequency global executive transit.",
-    material: "Aluminium",
+    tagline: "Obsidian anodized alloy or stealth resilient polycarbonate designed for seamless high-frequency global executive transit.",
+    material: "Aluminium & Polycarbonate",
+    availableMaterials: ["Aluminium", "Polycarbonate"],
     swatches: PRO_FLAGSHIP_SWATCHES,
     baseSkus: {
       cabin: "executive-cabin-55",
@@ -178,7 +185,7 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
       both: "Matched 55 + 68 cm Duo",
     },
     features: [
-      "Diamond-Cut Grooved Anodized Alloy",
+      "Choice of Obsidian Alloy or Polycarbonate",
       "Impact Timestamp Logging",
       "Reinforced Structural Rivets",
       "Dual TSA-Approved Latches",
@@ -190,8 +197,9 @@ const LUGGAGE_COLLECTIONS: CollectionCardData[] = [
   {
     tier: "flagship",
     name: "AMTRAV Flagship",
-    tagline: "Our peak engineering achievement with luxury custom milled hardware, integrated load cells, and lifetime VIP service.",
-    material: "Aluminium",
+    tagline: "Our peak engineering achievement with luxury custom milled hardware, integrated load cells, in hand-finished alloy or ultra-light resilient polycarbonate.",
+    material: "Aluminium & Polycarbonate",
+    availableMaterials: ["Aluminium", "Polycarbonate"],
     swatches: PRO_FLAGSHIP_SWATCHES,
     badge: "Signature",
     baseSkus: {
@@ -233,19 +241,26 @@ function InteractiveLuggageCard({
   collection,
   onSelectForSpecs,
   onAddToCart,
+  onReserve,
   initialSize = "cabin",
 }: {
   collection: CollectionCardData;
   onSelectForSpecs: (product: ShopProduct) => void;
   onAddToCart: (compoundSku: string) => void;
+  onReserve?: (product: ReservationProductProps) => void;
   initialSize?: SizeOption;
 }) {
   const { formatPrice } = useRegion();
   const [selectedSize, setSelectedSize] = useState<SizeOption>(initialSize);
+  const [selectedMaterial, setSelectedMaterial] = useState<"Aluminium" | "Polycarbonate">("Aluminium");
   const [selectedSwatch, setSelectedSwatch] = useState<ColorSwatch>(collection.swatches[0]);
   const [isCustomColor, setIsCustomColor] = useState(false);
   const [customHex, setCustomHex] = useState("#c2a87d");
   const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // Essential is locked to Polycarbonate; others can toggle between Aluminium and Polycarbonate
+  const currentMaterial: "Aluminium" | "Polycarbonate" =
+    collection.tier === "essential" ? "Polycarbonate" : selectedMaterial;
 
   const currentPrice = collection.prices[selectedSize];
   const currentVolume = collection.volumes[selectedSize];
@@ -260,15 +275,34 @@ function InteractiveLuggageCard({
 
   const handleReserve = () => {
     const baseSku = collection.baseSkus[selectedSize];
+    const sizeName = selectedSize === "both"
+      ? "Cabin 55 + Check-In 68 Duo Set (100L)"
+      : selectedSize === "checkin"
+      ? "Check-In 68 (65L)"
+      : "Cabin 55 (35L)";
+
+    if (onReserve) {
+      onReserve({
+        sku: `${baseSku}__mat-${currentMaterial.toLowerCase()}`,
+        name: `${collection.name} (${selectedSize === "both" ? "The Pair" : selectedSize === "checkin" ? "Check-In 68" : "Cabin 55"})`,
+        subtitle: `${currentMaterial} Precision · TRACE Smart Core`,
+        sizeName,
+        colorName: `${activeColorName} · ${currentMaterial}`,
+        colorHex: activeColorHex,
+        priceMinor: currentPrice,
+      });
+      return;
+    }
+
     const cleanHex = activeColorHex.replace("#", "");
-    const compoundSku = `${baseSku}__${encodeURIComponent(activeColorName)}__${cleanHex}`;
+    const compoundSku = `${baseSku}__${encodeURIComponent(`${activeColorName} · ${currentMaterial}`)}__${cleanHex}__${currentMaterial.toLowerCase()}`;
     onAddToCart(compoundSku);
   };
 
   const handleSpecsClick = () => {
     const baseSku = collection.baseSkus[selectedSize];
     const resolved = CATALOG.find((p) => p.sku === baseSku) || CATALOG[1];
-    onSelectForSpecs(resolved);
+    onSelectForSpecs({ ...resolved, material: currentMaterial });
     document.getElementById("technical-specs")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -309,9 +343,20 @@ function InteractiveLuggageCard({
           {/* Header & Material */}
           <div className="flex items-start justify-between gap-2">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
-                {collection.material}
-              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-mid">
+                  {currentMaterial} Precision
+                </span>
+                {collection.tier === "essential" ? (
+                  <span className="rounded-full bg-navy/5 border border-navy/10 px-2 py-0.2 text-[9.5px] font-mono font-bold text-navy">
+                    Polycarbonate Only
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-brand/10 border border-brand/20 px-2 py-0.2 text-[9.5px] font-mono font-bold text-brand">
+                    Choice of Material
+                  </span>
+                )}
+              </div>
               <h3 className="text-h3-m font-bold text-navy xl:text-[21px]">
                 {collection.name}
               </h3>
@@ -370,6 +415,52 @@ function InteractiveLuggageCard({
                 Both (Duo)
               </button>
             </div>
+          </div>
+
+          {/* Shell Material Selection: Essential is fixed to Polycarbonate; Pro/Executive/Flagship allows choice */}
+          <div className="mt-3.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-mid">
+                Shell Material
+              </span>
+              <span className="text-[10px] font-mono font-semibold text-navy">
+                {currentMaterial}
+              </span>
+            </div>
+            {collection.tier === "essential" ? (
+              <div className="flex items-center justify-between rounded-xl bg-surface p-2 border border-divider">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-navy shrink-0" />
+                  <span className="text-[11px] font-semibold text-navy">High-Impact Resilient Polycarbonate</span>
+                </div>
+                <span className="text-[10px] font-mono text-mid font-medium">Standard</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-surface p-1 border border-divider">
+                <button
+                  type="button"
+                  onClick={() => setSelectedMaterial("Aluminium")}
+                  className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
+                    selectedMaterial === "Aluminium"
+                      ? "bg-navy text-white shadow-xs"
+                      : "text-mid hover:text-navy"
+                  }`}
+                >
+                  Aluminium Alloy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMaterial("Polycarbonate")}
+                  className={`rounded-lg py-1.5 text-center text-[11px] font-semibold transition-all ${
+                    selectedMaterial === "Polycarbonate"
+                      ? "bg-navy text-white shadow-xs"
+                      : "text-mid hover:text-navy"
+                  }`}
+                >
+                  Polycarbonate
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Color Swatch Options + Custom Color Palette Trigger */}
@@ -483,12 +574,12 @@ function InteractiveLuggageCard({
             </div>
           )}
 
-          {/* Color & Size Label */}
+          {/* Color, Material & Size Label */}
           <div className="mt-2 text-[11px] text-mid">
             <span className="font-semibold text-navy">
               {selectedSize === "both" ? "Travel Duo Set" : selectedSize === "checkin" ? "Check-In 68" : "Cabin 55"}
             </span>{" "}
-            in <span className="text-navy">{activeColorName}</span> · {currentDimensions}
+            in <span className="text-navy">{activeColorName}</span> · <span className="font-semibold text-navy">{currentMaterial}</span> · {currentDimensions}
           </div>
         </div>
 
@@ -525,16 +616,130 @@ function InteractiveLuggageCard({
   );
 }
 
+function AccessoryCard({
+  product,
+  onAddToCart,
+}: {
+  product: ShopProduct;
+  onAddToCart: (compoundSku: string) => void;
+}) {
+  const { formatPrice } = useRegion();
+  const [selectedSwatch, setSelectedSwatch] = useState<ColorSwatch>(product.swatches[0]);
+  const [addedNotice, setAddedNotice] = useState(false);
+
+  const handleAdd = () => {
+    const colorDesc = selectedSwatch.name;
+    const cleanHex = selectedSwatch.color.replace("#", "");
+    const compoundSku = `${product.sku}__${encodeURIComponent(colorDesc)}__${cleanHex}`;
+
+    onAddToCart(compoundSku);
+    setAddedNotice(true);
+    setTimeout(() => setAddedNotice(false), 2000);
+  };
+
+  return (
+    <article className="group flex flex-col justify-between rounded-3xl bg-white p-5 shadow-card transition-all duration-300 hover:shadow-xl border border-divider">
+      {/* Real Product Image */}
+      <div className="relative aspect-[1.3] overflow-hidden rounded-2xl bg-white">
+        <AccessoryVisual
+          image={product.image}
+          swatchImage={selectedSwatch.image}
+          name={product.name}
+          colorName={selectedSwatch.name}
+        />
+
+        {/* Badge */}
+        {product.badge && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className="rounded-full bg-navy/5 border border-navy/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy backdrop-blur-sm">
+              {product.badge}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Info & Controls */}
+      <div className="mt-4 flex flex-1 flex-col justify-between space-y-4">
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-mid block">
+            {product.subtitle}
+          </span>
+          <h3 className="text-small font-bold text-navy leading-snug mt-0.5">
+            {product.name}
+          </h3>
+          <p className="mt-1 text-caption text-mid line-clamp-2">
+            {product.description}
+          </p>
+        </div>
+
+        {/* Swatches */}
+        <div>
+          <div className="flex items-center justify-between text-[11px] text-mid mb-1.5">
+            <span>Color: <strong className="text-navy">{selectedSwatch.name}</strong></span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {product.swatches.map((swatch) => (
+              <button
+                key={swatch.name}
+                type="button"
+                onClick={() => setSelectedSwatch(swatch)}
+                className={`flex size-6 items-center justify-center rounded-full border transition-all ${
+                  selectedSwatch.name === swatch.name
+                    ? "border-navy ring-1 ring-navy scale-110"
+                    : "border-black/15 hover:border-black/40"
+                }`}
+                title={swatch.name}
+              >
+                <span className="size-4 rounded-full border border-black/10" style={{ backgroundColor: swatch.color }} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Price & Action Buttons */}
+        <div className="flex items-center justify-between border-t border-divider pt-3 mt-auto">
+          <div>
+            <span className="text-small font-bold text-navy">
+              {formatPrice(product.price_minor)}
+            </span>
+            <span className="block text-[10px] text-mid">incl. VAT</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            {addedNotice && (
+              <span className="text-[11px] font-bold text-emerald-600 animate-in fade-in">
+                ✓ Added
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="flex items-center gap-1.5 rounded-full bg-navy px-3.5 py-1.5 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
+            >
+              <ShoppingBag className="size-3.5" />
+              <span>Add to Bag</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function ShopView() {
   const router = useRouter();
   const { t } = useI18n();
-  const { formatPrice, isEcommerce } = useRegion();
+  const { isEcommerce } = useRegion();
   const [selectedProductForSpecs, setSelectedProductForSpecs] = useState<ShopProduct>(CATALOG[1]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [reservationProduct, setReservationProduct] = useState<ReservationProductProps | null>(null);
 
   // Filters
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [activeCollection, setActiveCollection] = useState<string>("all");
+  const [activeAccessoryCategory, setActiveAccessoryCategory] = useState<
+    "all" | "everyday" | "executive" | "hardware" | "bundles"
+  >("all");
   const [sortBy, setSortBy] = useState<SortOption>("top-sellers");
 
   const handleAddToCart = (compoundSku: string) => {
@@ -561,6 +766,48 @@ export default function ShopView() {
     }
     return list;
   }, [activeCollection, sortBy]);
+
+  // Filtered accessories
+  const filteredAccessories = useMemo(() => {
+    if (activeAccessoryCategory === "all") return ACCESSORIES_CATALOG;
+    if (activeAccessoryCategory === "hardware") {
+      return ACCESSORIES_CATALOG.filter(
+        (a) => a.sku === "accessory-pet-carrier" || a.sku === "accessory-duffel-side-bag"
+      );
+    }
+    if (activeAccessoryCategory === "everyday") {
+      return ACCESSORIES_CATALOG.filter((a) =>
+        [
+          "accessory-compression-cubes",
+          "accessory-luggage-cover",
+          "accessory-toiletry-organiser",
+          "accessory-tech-organiser",
+          "accessory-shoe-laundry-set",
+          "accessory-passport-wallet",
+          "accessory-leather-tag",
+          "accessory-foldable-day-bag",
+        ].includes(a.sku)
+      );
+    }
+    if (activeAccessoryCategory === "executive") {
+      return ACCESSORIES_CATALOG.filter((a) =>
+        [
+          "accessory-jewellery-case",
+          "accessory-watch-case",
+          "accessory-valuables-case",
+          "accessory-cross-body",
+          "accessory-luxury-pouch",
+          "accessory-vanity-case",
+          "accessory-sunglasses-case",
+          "accessory-executive-briefcase",
+        ].includes(a.sku)
+      );
+    }
+    if (activeAccessoryCategory === "bundles") {
+      return ACCESSORIES_CATALOG.filter((a) => a.sku.startsWith("bundle-"));
+    }
+    return ACCESSORIES_CATALOG;
+  }, [activeAccessoryCategory]);
 
   return (
     <>
@@ -589,6 +836,7 @@ export default function ShopView() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button href="#range" label={t("nav.shop", "Shop the range")} style="sky" arrow />
+            <Button href="#accessories" label="Accessories" style="outline" />
             <Button href="#3d-inspection" label="3D Studio Inspection" style="outline" />
           </div>
         </div>
@@ -700,9 +948,9 @@ export default function ShopView() {
                 >
                   <option value="all">All Collections</option>
                   <option value="essential">Essential (Polycarbonate)</option>
-                  <option value="pro">Pro (Aluminium)</option>
-                  <option value="executive">Executive (Obsidian Alloy)</option>
-                  <option value="flagship">Flagship (Signature Alloy)</option>
+                  <option value="pro">Pro (Aluminium & Polycarbonate)</option>
+                  <option value="executive">Executive (Aluminium & Polycarbonate)</option>
+                  <option value="flagship">Flagship (Aluminium & Polycarbonate)</option>
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-navy/60" />
               </div>
@@ -742,13 +990,151 @@ export default function ShopView() {
                 initialSize={initialSize}
                 onSelectForSpecs={(prod) => setSelectedProductForSpecs(prod)}
                 onAddToCart={handleAddToCart}
+                onReserve={(prod) => setReservationProduct(prod)}
               />
             );
           })}
         </div>
       </section>
 
-      {/* 4. Technical Blueprint CAD Dimensions Section */}
+      {/* 4. AMTRAV Official Accessories & Travel Collection */}
+      <section
+        id="accessories"
+        className="scroll-mt-28 my-8 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
+      >
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-divider pb-6">
+          <div>
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-brand">
+              AMTRAV Official Collection
+            </span>
+            <h2 className="text-display-m font-bold text-navy md:text-h1 tracking-tight mt-1">
+              Accessories & Travel Essentials
+            </h2>
+            <p className="mt-2 text-small text-mid max-w-xl">
+              Everyday travel essentials, premium valuables cases, executive business accessories, and smart hardware with built-in TRACE™ telemetry.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-navy/5 border border-divider px-3 py-1 text-caption font-mono text-navy font-semibold">
+              {ACCESSORIES_CATALOG.length} Official Products
+            </span>
+          </div>
+        </div>
+
+        {/* 3 Featured Category Banners (Reference Inspiration) */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div
+            onClick={() => setActiveAccessoryCategory("everyday")}
+            className={`cursor-pointer group relative overflow-hidden rounded-2xl p-5 text-white transition-all shadow-card border ${
+              activeAccessoryCategory === "everyday"
+                ? "bg-navy-deep ring-2 ring-brand"
+                : "bg-navy hover:bg-navy-deep"
+            }`}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-sky">
+              Everyday Travel Essentials
+            </span>
+            <h3 className="text-small font-bold mt-1 text-white group-hover:text-sky transition-colors">
+              Organisers & Protection
+            </h3>
+            <p className="text-caption text-white/70 mt-1 line-clamp-2">
+              Compression packing cubes, tech organisers, hanging wash kits, passport wallets, and scuff covers.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-sky">
+              Explore Essentials →
+            </span>
+          </div>
+
+          <div
+            onClick={() => setActiveAccessoryCategory("executive")}
+            className={`cursor-pointer group relative overflow-hidden rounded-2xl p-5 text-white transition-all shadow-card border ${
+              activeAccessoryCategory === "executive"
+                ? "bg-navy-deep ring-2 ring-brand"
+                : "bg-navy hover:bg-navy-deep"
+            }`}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-sky">
+              Biometric Aluminium Range
+            </span>
+            <h3 className="text-small font-bold mt-1 text-white group-hover:text-sky transition-colors">
+              Executive & Valuables
+            </h3>
+            <p className="text-caption text-white/70 mt-1 line-clamp-2">
+              Fingerprint biometric watch cases, executive valuables vaults, jewellery cases, and briefcases.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-sky">
+              Explore Executive →
+            </span>
+          </div>
+
+          <div
+            onClick={() => setActiveAccessoryCategory("hardware")}
+            className={`cursor-pointer group relative overflow-hidden rounded-2xl p-5 text-white transition-all shadow-card border ${
+              activeAccessoryCategory === "hardware"
+                ? "bg-navy-deep ring-2 ring-brand"
+                : "bg-navy hover:bg-navy-deep"
+            }`}
+          >
+            <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-sky">
+              TRACE™ Smart Core
+            </span>
+            <h3 className="text-small font-bold mt-1 text-white group-hover:text-sky transition-colors">
+              Smart Bags & Carriers
+            </h3>
+            <p className="text-caption text-white/70 mt-1 line-clamp-2">
+              AMTRAV Pet Carrier with real-time GPS tracking and Italian luxury suede duffel side bags.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-sky">
+              Explore Carriers →
+            </span>
+          </div>
+        </div>
+
+        {/* Category Filter Tabs */}
+        <div className="mt-6 flex flex-wrap items-center gap-2 border-b border-divider pb-4">
+          {[
+            { id: "all", label: "All Items", count: ACCESSORIES_CATALOG.length },
+            { id: "everyday", label: "Everyday Essentials", count: 8 },
+            { id: "executive", label: "Executive Range", count: 8 },
+            { id: "hardware", label: "Smart Carriers", count: 2 },
+            { id: "bundles", label: "Launch Bundles", count: 2 },
+          ].map((tab) => {
+            const isActive = activeAccessoryCategory === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveAccessoryCategory(tab.id as typeof activeAccessoryCategory)}
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-caption font-semibold transition-all ${
+                  isActive
+                    ? "bg-navy text-white shadow-xs"
+                    : "bg-white text-navy border border-divider hover:bg-surface"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  isActive ? "bg-white/20 text-white" : "bg-navy/5 text-mid"
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Accessories Grid */}
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredAccessories.map((accessory) => (
+            <AccessoryCard
+              key={accessory.sku}
+              product={accessory}
+              onAddToCart={handleAddToCart}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* 5. Technical Blueprint CAD Dimensions Section */}
       <section
         id="technical-specs"
         className="scroll-mt-28 my-8 rounded-3xl border border-divider bg-surface px-5 py-8 md:px-10 xl:rounded-[32px] xl:px-14 xl:py-12"
@@ -810,8 +1196,18 @@ export default function ShopView() {
             </div>
             <button
               type="button"
-              onClick={() => handleAddToCart("essential-the-pair__Navy%20Blue__1e2d42")}
-              className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep transition-all"
+              onClick={() =>
+                setReservationProduct({
+                  sku: "essential-the-pair",
+                  name: "Essential The Pair (Duo Set)",
+                  subtitle: "Cabin 55 + Check-In 68 · Matched Travel Duo",
+                  sizeName: "Cabin 55 + Check-In 68 Duo Set (100L)",
+                  colorName: "Navy Blue",
+                  colorHex: "#1e2d42",
+                  priceMinor: 65900,
+                })
+              }
+              className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-caption font-semibold text-white shadow-xs hover:bg-navy-deep active:scale-95 transition-all"
             >
               <span>Reserve Set</span>
             </button>
@@ -820,6 +1216,18 @@ export default function ShopView() {
       </section>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {/* Luggage Reservation & Delivery Modal */}
+      {reservationProduct && (
+        <ReservationModal
+          isOpen={!!reservationProduct}
+          onClose={() => setReservationProduct(null)}
+          product={reservationProduct}
+          onSuccess={() => {
+            setCartOpen(true);
+          }}
+        />
+      )}
     </>
   );
 }

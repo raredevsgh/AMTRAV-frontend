@@ -18,7 +18,7 @@ const HERO_ENTRANCES = "main > :first-child [data-enter]";
 const CLOSED = "inset(0% 0% 0% 0%)";
 const LIFTED = "inset(0% 0% 100% 0%)";
 
-export default function Preloader({ storageKey: _storageKey }: { storageKey?: string } = {}) {
+export default function Preloader() {
   const root = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
 
